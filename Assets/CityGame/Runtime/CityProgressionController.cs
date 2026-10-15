@@ -99,6 +99,7 @@ namespace Pozarevac.CityGame
         public void OpenPanel()
         {
             if (director == null) return;
+            game.GetComponent<CityMusicPanel>()?.Close();
             director.SetOverlayOpen(true);
             panel.Open();
         }

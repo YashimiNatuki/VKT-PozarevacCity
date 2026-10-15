@@ -12,6 +12,7 @@ namespace Pozarevac.CityGame
         private CityTouchHold up, down, left, right, sprint;
         private CityTouchLook look;
         private bool jump;
+        private bool overlayBlocked;
         private GameObject overlay;
         private GameObject ownedEvents;
         public bool IsVisible => overlay != null && overlay.activeInHierarchy;
@@ -67,6 +68,11 @@ namespace Pozarevac.CityGame
             if (up != null) up.ResetHeld(); if (down != null) down.ResetHeld(); if (left != null) left.ResetHeld(); if (right != null) right.ResetHeld(); if (sprint != null) sprint.ResetHeld();
             if (look != null) look.ResetLook();
         }
+        public void SetOverlayBlocked(bool blocked)
+        {
+            if (overlay == null || overlayBlocked == blocked) return;
+            overlayBlocked = blocked; ResetInput(); overlay.SetActive(!blocked && isActiveAndEnabled);
+        }
         private void LateUpdate()
         {
             // The mission director restores desktop cursor lock when closing overlays.
@@ -76,7 +82,7 @@ namespace Pozarevac.CityGame
             Cursor.visible = !Application.isMobilePlatform;
         }
         private void OnDisable() { ResetInput(); if (overlay != null) overlay.SetActive(false); }
-        private void OnEnable() { if (overlay != null) overlay.SetActive(true); }
+        private void OnEnable() { if (overlay != null) overlay.SetActive(!overlayBlocked); }
         private void OnApplicationFocus(bool focused) { if (!focused) ResetInput(); }
         private void OnDestroy() { if (ownedEvents != null) Destroy(ownedEvents); }
     }
@@ -101,4 +107,3 @@ namespace Pozarevac.CityGame
         private void OnDisable() { ResetLook(); }
     }
 }
-

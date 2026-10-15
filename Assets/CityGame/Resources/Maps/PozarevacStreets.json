@@ -1,0 +1,4728 @@
+{
+  "schema": 1,
+  "source": "https://api.openstreetmap.org/api/0.6/map?bbox=21.1818000,44.6174926,21.1890000,44.6224926",
+  "downloadedUtc": "2026-10-14T21:39:38.6469858Z",
+  "bbox": "21.1818000,44.6174926,21.1890000,44.6224926",
+  "anchorLongitude": 21.1854,
+  "anchorLatitude": 44.6199926,
+  "radiusMeters": 285,
+  "attribution": "© OpenStreetMap contributors",
+  "license": "ODbL-1.0",
+  "licenseUrl": "https://www.openstreetmap.org/copyright",
+  "roads": [
+    {
+      "id": "149888705",
+      "name": "Takovska",
+      "kind": "tertiary",
+      "points": [
+        {
+          "x": 46.868,
+          "z": 239.861
+        },
+        {
+          "x": 34.824,
+          "z": 242.143
+        }
+      ]
+    },
+    {
+      "id": "149888705",
+      "name": "Takovska",
+      "kind": "tertiary",
+      "points": [
+        {
+          "x": 34.824,
+          "z": 242.143
+        },
+        {
+          "x": 27.392,
+          "z": 243.546
+        }
+      ]
+    },
+    {
+      "id": "149888705",
+      "name": "Takovska",
+      "kind": "tertiary",
+      "points": [
+        {
+          "x": 27.392,
+          "z": 243.546
+        },
+        {
+          "x": 23.089,
+          "z": 244.37
+        }
+      ]
+    },
+    {
+      "id": "149888705",
+      "name": "Takovska",
+      "kind": "tertiary",
+      "points": [
+        {
+          "x": 23.089,
+          "z": 244.37
+        },
+        {
+          "x": -3.169,
+          "z": 249.335
+        }
+      ]
+    },
+    {
+      "id": "149888705",
+      "name": "Takovska",
+      "kind": "tertiary",
+      "points": [
+        {
+          "x": -3.169,
+          "z": 249.335
+        },
+        {
+          "x": -32.803,
+          "z": 255.001
+        }
+      ]
+    },
+    {
+      "id": "149888705",
+      "name": "Takovska",
+      "kind": "tertiary",
+      "points": [
+        {
+          "x": -32.803,
+          "z": 255.001
+        },
+        {
+          "x": -45.188,
+          "z": 258.118
+        }
+      ]
+    },
+    {
+      "id": "149888705",
+      "name": "Takovska",
+      "kind": "tertiary",
+      "points": [
+        {
+          "x": -45.188,
+          "z": 258.118
+        },
+        {
+          "x": -84.956,
+          "z": 268.114
+        }
+      ]
+    },
+    {
+      "id": "149888705",
+      "name": "Takovska",
+      "kind": "tertiary",
+      "points": [
+        {
+          "x": -84.956,
+          "z": 268.114
+        },
+        {
+          "x": -93.569,
+          "z": 270.853
+        }
+      ]
+    },
+    {
+      "id": "184314837",
+      "name": "Sinđelićeva",
+      "kind": "residential",
+      "points": [
+        {
+          "x": -201.036,
+          "z": -72.113
+        },
+        {
+          "x": -199.42,
+          "z": -62.339
+        }
+      ]
+    },
+    {
+      "id": "184314837",
+      "name": "Sinđelićeva",
+      "kind": "residential",
+      "points": [
+        {
+          "x": -199.42,
+          "z": -62.339
+        },
+        {
+          "x": -198.865,
+          "z": -60.168
+        }
+      ]
+    },
+    {
+      "id": "184314837",
+      "name": "Sinđelićeva",
+      "kind": "residential",
+      "points": [
+        {
+          "x": -198.865,
+          "z": -60.168
+        },
+        {
+          "x": -190.458,
+          "z": -30.312
+        }
+      ]
+    },
+    {
+      "id": "184314837",
+      "name": "Sinđelićeva",
+      "kind": "residential",
+      "points": [
+        {
+          "x": -190.458,
+          "z": -30.312
+        },
+        {
+          "x": -182.883,
+          "z": -4.397
+        }
+      ]
+    },
+    {
+      "id": "184314837",
+      "name": "Sinđelićeva",
+      "kind": "residential",
+      "points": [
+        {
+          "x": -182.883,
+          "z": -4.397
+        },
+        {
+          "x": -168.494,
+          "z": 45.263
+        }
+      ]
+    },
+    {
+      "id": "184314837",
+      "name": "Sinđelićeva",
+      "kind": "residential",
+      "points": [
+        {
+          "x": -168.494,
+          "z": 45.263
+        },
+        {
+          "x": -164.944,
+          "z": 60.636
+        }
+      ]
+    },
+    {
+      "id": "184314846",
+      "name": "Topličina",
+      "kind": "residential",
+      "points": [
+        {
+          "x": -190.458,
+          "z": -30.312
+        },
+        {
+          "x": -194.998,
+          "z": -29.166
+        }
+      ]
+    },
+    {
+      "id": "184314846",
+      "name": "Topličina",
+      "kind": "residential",
+      "points": [
+        {
+          "x": -194.998,
+          "z": -29.166
+        },
+        {
+          "x": -227.905,
+          "z": -21.262
+        }
+      ]
+    },
+    {
+      "id": "184314846",
+      "name": "Topličina",
+      "kind": "residential",
+      "points": [
+        {
+          "x": -227.905,
+          "z": -21.262
+        },
+        {
+          "x": -251.002,
+          "z": -15.674
+        }
+      ]
+    },
+    {
+      "id": "184346541",
+      "name": "Svetosavska",
+      "kind": "residential",
+      "points": [
+        {
+          "x": 9.278,
+          "z": -281.061
+        },
+        {
+          "x": 20.768,
+          "z": -276.652
+        }
+      ]
+    },
+    {
+      "id": "184346542",
+      "name": "Radomira Milenića Rusa",
+      "kind": "residential",
+      "points": [
+        {
+          "x": -158.059,
+          "z": -229.642
+        },
+        {
+          "x": -152.861,
+          "z": -230.922
+        }
+      ]
+    },
+    {
+      "id": "184346542",
+      "name": "Radomira Milenića Rusa",
+      "kind": "residential",
+      "points": [
+        {
+          "x": -152.861,
+          "z": -230.922
+        },
+        {
+          "x": -151.237,
+          "z": -231.468
+        }
+      ]
+    },
+    {
+      "id": "184346542",
+      "name": "Radomira Milenića Rusa",
+      "kind": "residential",
+      "points": [
+        {
+          "x": -151.237,
+          "z": -231.468
+        },
+        {
+          "x": -129.598,
+          "z": -238.759
+        }
+      ]
+    },
+    {
+      "id": "184346542",
+      "name": "Radomira Milenića Rusa",
+      "kind": "residential",
+      "points": [
+        {
+          "x": -129.598,
+          "z": -238.759
+        },
+        {
+          "x": -125.667,
+          "z": -240.084
+        }
+      ]
+    },
+    {
+      "id": "184346542",
+      "name": "Radomira Milenića Rusa",
+      "kind": "residential",
+      "points": [
+        {
+          "x": -125.667,
+          "z": -240.084
+        },
+        {
+          "x": -90.186,
+          "z": -252.04
+        }
+      ]
+    },
+    {
+      "id": "184346542",
+      "name": "Radomira Milenića Rusa",
+      "kind": "residential",
+      "points": [
+        {
+          "x": -90.186,
+          "z": -252.04
+        },
+        {
+          "x": -54.181,
+          "z": -265.777
+        }
+      ]
+    },
+    {
+      "id": "184346542",
+      "name": "Radomira Milenića Rusa",
+      "kind": "residential",
+      "points": [
+        {
+          "x": -54.181,
+          "z": -265.777
+        },
+        {
+          "x": -33.358,
+          "z": -273.714
+        }
+      ]
+    },
+    {
+      "id": "184346542",
+      "name": "Radomira Milenića Rusa",
+      "kind": "residential",
+      "points": [
+        {
+          "x": -33.358,
+          "z": -273.714
+        },
+        {
+          "x": -22.574,
+          "z": -277.832
+        }
+      ]
+    },
+    {
+      "id": "184346542",
+      "name": "Radomira Milenića Rusa",
+      "kind": "residential",
+      "points": [
+        {
+          "x": -22.574,
+          "z": -277.832
+        },
+        {
+          "x": -13.906,
+          "z": -281.139
+        }
+      ]
+    },
+    {
+      "id": "184346549",
+      "name": "Dositejeva",
+      "kind": "residential",
+      "points": [
+        {
+          "x": 46.963,
+          "z": -140.508
+        },
+        {
+          "x": 45.315,
+          "z": -146.375
+        }
+      ]
+    },
+    {
+      "id": "184346549",
+      "name": "Dositejeva",
+      "kind": "residential",
+      "points": [
+        {
+          "x": 45.315,
+          "z": -146.375
+        },
+        {
+          "x": 37.867,
+          "z": -174.049
+        }
+      ]
+    },
+    {
+      "id": "184346549",
+      "name": "Dositejeva",
+      "kind": "residential",
+      "points": [
+        {
+          "x": 37.867,
+          "z": -174.049
+        },
+        {
+          "x": 29.491,
+          "z": -205.675
+        }
+      ]
+    },
+    {
+      "id": "184346549",
+      "name": "Dositejeva",
+      "kind": "residential",
+      "points": [
+        {
+          "x": 29.491,
+          "z": -205.675
+        },
+        {
+          "x": 21.045,
+          "z": -237.19
+        }
+      ]
+    },
+    {
+      "id": "184346549",
+      "name": "Dositejeva",
+      "kind": "residential",
+      "points": [
+        {
+          "x": 21.045,
+          "z": -237.19
+        },
+        {
+          "x": 9.278,
+          "z": -281.061
+        }
+      ]
+    },
+    {
+      "id": "240893304",
+      "name": "Jovana Šerbanovića",
+      "kind": "residential",
+      "points": [
+        {
+          "x": 197.938,
+          "z": -176.887
+        },
+        {
+          "x": 201.638,
+          "z": -163.128
+        }
+      ]
+    },
+    {
+      "id": "240893304",
+      "name": "Jovana Šerbanovića",
+      "kind": "residential",
+      "points": [
+        {
+          "x": 201.638,
+          "z": -163.128
+        },
+        {
+          "x": 204.467,
+          "z": -147.265
+        }
+      ]
+    },
+    {
+      "id": "240893304",
+      "name": "Jovana Šerbanovića",
+      "kind": "residential",
+      "points": [
+        {
+          "x": 204.467,
+          "z": -147.265
+        },
+        {
+          "x": 208.698,
+          "z": -121.617
+        }
+      ]
+    },
+    {
+      "id": "240893304",
+      "name": "Jovana Šerbanovića",
+      "kind": "residential",
+      "points": [
+        {
+          "x": 208.698,
+          "z": -121.617
+        },
+        {
+          "x": 210.323,
+          "z": -111.776
+        }
+      ]
+    },
+    {
+      "id": "240893304",
+      "name": "Jovana Šerbanovića",
+      "kind": "residential",
+      "points": [
+        {
+          "x": 210.323,
+          "z": -111.776
+        },
+        {
+          "x": 214.324,
+          "z": -87.52
+        }
+      ]
+    },
+    {
+      "id": "240893304",
+      "name": "Jovana Šerbanovića",
+      "kind": "residential",
+      "points": [
+        {
+          "x": 214.324,
+          "z": -87.52
+        },
+        {
+          "x": 222.874,
+          "z": -35.711
+        }
+      ]
+    },
+    {
+      "id": "240893304",
+      "name": "Jovana Šerbanovića",
+      "kind": "residential",
+      "points": [
+        {
+          "x": 222.874,
+          "z": -35.711
+        },
+        {
+          "x": 223.262,
+          "z": -33.363
+        }
+      ]
+    },
+    {
+      "id": "240893304",
+      "name": "Jovana Šerbanovića",
+      "kind": "residential",
+      "points": [
+        {
+          "x": 223.262,
+          "z": -33.363
+        },
+        {
+          "x": 223.555,
+          "z": -31.559
+        }
+      ]
+    },
+    {
+      "id": "240893304",
+      "name": "Jovana Šerbanovića",
+      "kind": "residential",
+      "points": [
+        {
+          "x": 223.555,
+          "z": -31.559
+        },
+        {
+          "x": 232.754,
+          "z": 13.993
+        }
+      ]
+    },
+    {
+      "id": "240893304",
+      "name": "Jovana Šerbanovića",
+      "kind": "residential",
+      "points": [
+        {
+          "x": 232.754,
+          "z": 13.993
+        },
+        {
+          "x": 234.165,
+          "z": 20.984
+        }
+      ]
+    },
+    {
+      "id": "240893304",
+      "name": "Jovana Šerbanovića",
+      "kind": "residential",
+      "points": [
+        {
+          "x": 234.165,
+          "z": 20.984
+        },
+        {
+          "x": 238.435,
+          "z": 42.034
+        }
+      ]
+    },
+    {
+      "id": "240898354",
+      "name": "Stari korzo",
+      "kind": "pedestrian",
+      "points": [
+        {
+          "x": -34.42,
+          "z": 140.742
+        },
+        {
+          "x": -26.679,
+          "z": 137.402
+        }
+      ]
+    },
+    {
+      "id": "240898354",
+      "name": "Stari korzo",
+      "kind": "pedestrian",
+      "points": [
+        {
+          "x": -26.679,
+          "z": 137.402
+        },
+        {
+          "x": -20.403,
+          "z": 135.321
+        }
+      ]
+    },
+    {
+      "id": "240898354",
+      "name": "Stari korzo",
+      "kind": "pedestrian",
+      "points": [
+        {
+          "x": -20.403,
+          "z": 135.321
+        },
+        {
+          "x": 4.025,
+          "z": 131.48
+        }
+      ]
+    },
+    {
+      "id": "240898354",
+      "name": "Stari korzo",
+      "kind": "pedestrian",
+      "points": [
+        {
+          "x": 4.025,
+          "z": 131.48
+        },
+        {
+          "x": 26.164,
+          "z": 128.82
+        }
+      ]
+    },
+    {
+      "id": "240898354",
+      "name": "Stari korzo",
+      "kind": "pedestrian",
+      "points": [
+        {
+          "x": 26.164,
+          "z": 128.82
+        },
+        {
+          "x": 28.818,
+          "z": 128.497
+        }
+      ]
+    },
+    {
+      "id": "240898354",
+      "name": "Stari korzo",
+      "kind": "pedestrian",
+      "points": [
+        {
+          "x": 28.818,
+          "z": 128.497
+        },
+        {
+          "x": 49.546,
+          "z": 125.625
+        }
+      ]
+    },
+    {
+      "id": "240898354",
+      "name": "Stari korzo",
+      "kind": "pedestrian",
+      "points": [
+        {
+          "x": 49.546,
+          "z": 125.625
+        },
+        {
+          "x": 59.213,
+          "z": 124.278
+        }
+      ]
+    },
+    {
+      "id": "240898354",
+      "name": "Stari korzo",
+      "kind": "pedestrian",
+      "points": [
+        {
+          "x": 59.213,
+          "z": 124.278
+        },
+        {
+          "x": 72.247,
+          "z": 122.474
+        }
+      ]
+    },
+    {
+      "id": "240898354",
+      "name": "Stari korzo",
+      "kind": "pedestrian",
+      "points": [
+        {
+          "x": 72.247,
+          "z": 122.474
+        },
+        {
+          "x": 77.825,
+          "z": 121.728
+        }
+      ]
+    },
+    {
+      "id": "240898354",
+      "name": "Stari korzo",
+      "kind": "pedestrian",
+      "points": [
+        {
+          "x": 77.825,
+          "z": 121.728
+        },
+        {
+          "x": 86.145,
+          "z": 123.376
+        }
+      ]
+    },
+    {
+      "id": "240898355",
+      "name": "Dr Voje Dulića",
+      "kind": "residential",
+      "points": [
+        {
+          "x": 86.145,
+          "z": 123.376
+        },
+        {
+          "x": 87.397,
+          "z": 132.493
+        }
+      ]
+    },
+    {
+      "id": "240898355",
+      "name": "Dr Voje Dulića",
+      "kind": "residential",
+      "points": [
+        {
+          "x": 87.397,
+          "z": 132.493
+        },
+        {
+          "x": 90.463,
+          "z": 154.779
+        }
+      ]
+    },
+    {
+      "id": "240898355",
+      "name": "Dr Voje Dulića",
+      "kind": "residential",
+      "points": [
+        {
+          "x": 90.463,
+          "z": 154.779
+        },
+        {
+          "x": 91.192,
+          "z": 163.34
+        }
+      ]
+    },
+    {
+      "id": "240898355",
+      "name": "Dr Voje Dulića",
+      "kind": "residential",
+      "points": [
+        {
+          "x": 91.192,
+          "z": 163.34
+        },
+        {
+          "x": 91.786,
+          "z": 171.422
+        }
+      ]
+    },
+    {
+      "id": "240898355",
+      "name": "Dr Voje Dulića",
+      "kind": "residential",
+      "points": [
+        {
+          "x": 91.786,
+          "z": 171.422
+        },
+        {
+          "x": 93.918,
+          "z": 193.864
+        }
+      ]
+    },
+    {
+      "id": "240898355",
+      "name": "Dr Voje Dulića",
+      "kind": "residential",
+      "points": [
+        {
+          "x": 93.918,
+          "z": 193.864
+        },
+        {
+          "x": 97.182,
+          "z": 226.826
+        }
+      ]
+    },
+    {
+      "id": "240898355",
+      "name": "Dr Voje Dulića",
+      "kind": "residential",
+      "points": [
+        {
+          "x": 97.182,
+          "z": 226.826
+        },
+        {
+          "x": 99.044,
+          "z": 244.303
+        }
+      ]
+    },
+    {
+      "id": "240898355",
+      "name": "Dr Voje Dulića",
+      "kind": "residential",
+      "points": [
+        {
+          "x": 99.044,
+          "z": 244.303
+        },
+        {
+          "x": 102.095,
+          "z": 268.938
+        }
+      ]
+    },
+    {
+      "id": "240898356",
+      "name": "Stari korzo",
+      "kind": "residential",
+      "points": [
+        {
+          "x": 86.145,
+          "z": 123.376
+        },
+        {
+          "x": 92.492,
+          "z": 120.192
+        }
+      ]
+    },
+    {
+      "id": "240898356",
+      "name": "Stari korzo",
+      "kind": "residential",
+      "points": [
+        {
+          "x": 92.492,
+          "z": 120.192
+        },
+        {
+          "x": 150.405,
+          "z": 91.115
+        }
+      ]
+    },
+    {
+      "id": "240898356",
+      "name": "Stari korzo",
+      "kind": "residential",
+      "points": [
+        {
+          "x": 150.405,
+          "z": 91.115
+        },
+        {
+          "x": 158.059,
+          "z": 86.818
+        }
+      ]
+    },
+    {
+      "id": "240898356",
+      "name": "Stari korzo",
+      "kind": "residential",
+      "points": [
+        {
+          "x": 158.059,
+          "z": 86.818
+        },
+        {
+          "x": 223.301,
+          "z": 50.183
+        }
+      ]
+    },
+    {
+      "id": "240898356",
+      "name": "Stari korzo",
+      "kind": "residential",
+      "points": [
+        {
+          "x": 223.301,
+          "z": 50.183
+        },
+        {
+          "x": 229.149,
+          "z": 46.899
+        }
+      ]
+    },
+    {
+      "id": "240898356",
+      "name": "Stari korzo",
+      "kind": "residential",
+      "points": [
+        {
+          "x": 229.149,
+          "z": 46.899
+        },
+        {
+          "x": 238.435,
+          "z": 42.034
+        }
+      ]
+    },
+    {
+      "id": "240898357",
+      "name": "Drinska",
+      "kind": "residential",
+      "points": [
+        {
+          "x": -60.274,
+          "z": 109.071
+        },
+        {
+          "x": -35.521,
+          "z": 100.511
+        }
+      ]
+    },
+    {
+      "id": "240898357",
+      "name": "Drinska",
+      "kind": "residential",
+      "points": [
+        {
+          "x": -35.521,
+          "z": 100.511
+        },
+        {
+          "x": -3.692,
+          "z": 89.512
+        }
+      ]
+    },
+    {
+      "id": "240898357",
+      "name": "Drinska",
+      "kind": "residential",
+      "points": [
+        {
+          "x": -3.692,
+          "z": 89.512
+        },
+        {
+          "x": 47.787,
+          "z": 72.803
+        }
+      ]
+    },
+    {
+      "id": "240898357",
+      "name": "Drinska",
+      "kind": "residential",
+      "points": [
+        {
+          "x": 47.787,
+          "z": 72.803
+        },
+        {
+          "x": 59.3,
+          "z": 68.94
+        }
+      ]
+    },
+    {
+      "id": "240898357",
+      "name": "Drinska",
+      "kind": "residential",
+      "points": [
+        {
+          "x": 59.3,
+          "z": 68.94
+        },
+        {
+          "x": 64.197,
+          "z": 67.293
+        }
+      ]
+    },
+    {
+      "id": "240898358",
+      "name": "15. oktobra",
+      "kind": "residential",
+      "points": [
+        {
+          "x": -63.983,
+          "z": -95.791
+        },
+        {
+          "x": -59.601,
+          "z": -83.935
+        }
+      ]
+    },
+    {
+      "id": "240898358",
+      "name": "15. oktobra",
+      "kind": "residential",
+      "points": [
+        {
+          "x": -59.601,
+          "z": -83.935
+        },
+        {
+          "x": -59.205,
+          "z": -82.577
+        }
+      ]
+    },
+    {
+      "id": "240898358",
+      "name": "15. oktobra",
+      "kind": "residential",
+      "points": [
+        {
+          "x": -59.205,
+          "z": -82.577
+        },
+        {
+          "x": -55.893,
+          "z": -71.367
+        }
+      ]
+    },
+    {
+      "id": "240898358",
+      "name": "15. oktobra",
+      "kind": "residential",
+      "points": [
+        {
+          "x": -55.893,
+          "z": -71.367
+        },
+        {
+          "x": -47.478,
+          "z": -45.842
+        }
+      ]
+    },
+    {
+      "id": "240898358",
+      "name": "15. oktobra",
+      "kind": "residential",
+      "points": [
+        {
+          "x": -47.478,
+          "z": -45.842
+        },
+        {
+          "x": -37.122,
+          "z": -12.212
+        }
+      ]
+    },
+    {
+      "id": "240898358",
+      "name": "15. oktobra",
+      "kind": "residential",
+      "points": [
+        {
+          "x": -37.122,
+          "z": -12.212
+        },
+        {
+          "x": -34.776,
+          "z": -4.586
+        }
+      ]
+    },
+    {
+      "id": "240898358",
+      "name": "15. oktobra",
+      "kind": "residential",
+      "points": [
+        {
+          "x": -34.776,
+          "z": -4.586
+        },
+        {
+          "x": -25.886,
+          "z": 23.934
+        }
+      ]
+    },
+    {
+      "id": "240898358",
+      "name": "15. oktobra",
+      "kind": "residential",
+      "points": [
+        {
+          "x": -25.886,
+          "z": 23.934
+        },
+        {
+          "x": -18.454,
+          "z": 45.485
+        }
+      ]
+    },
+    {
+      "id": "240898358",
+      "name": "15. oktobra",
+      "kind": "residential",
+      "points": [
+        {
+          "x": -18.454,
+          "z": 45.485
+        },
+        {
+          "x": -6.426,
+          "z": 81.442
+        }
+      ]
+    },
+    {
+      "id": "240898358",
+      "name": "15. oktobra",
+      "kind": "residential",
+      "points": [
+        {
+          "x": -6.426,
+          "z": 81.442
+        },
+        {
+          "x": -3.692,
+          "z": 89.512
+        }
+      ]
+    },
+    {
+      "id": "240898361",
+      "name": "Njegoševa",
+      "kind": "residential",
+      "points": [
+        {
+          "x": 263.696,
+          "z": 189.645
+        },
+        {
+          "x": 255.487,
+          "z": 188.353
+        }
+      ]
+    },
+    {
+      "id": "240898361",
+      "name": "Njegoševa",
+      "kind": "residential",
+      "points": [
+        {
+          "x": 255.487,
+          "z": 188.353
+        },
+        {
+          "x": 220.338,
+          "z": 182.453
+        }
+      ]
+    },
+    {
+      "id": "240898361",
+      "name": "Njegoševa",
+      "kind": "residential",
+      "points": [
+        {
+          "x": 220.338,
+          "z": 182.453
+        },
+        {
+          "x": 183.066,
+          "z": 176.253
+        }
+      ]
+    },
+    {
+      "id": "240898361",
+      "name": "Njegoševa",
+      "kind": "residential",
+      "points": [
+        {
+          "x": 183.066,
+          "z": 176.253
+        },
+        {
+          "x": 97.103,
+          "z": 163.496
+        }
+      ]
+    },
+    {
+      "id": "240898361",
+      "name": "Njegoševa",
+      "kind": "residential",
+      "points": [
+        {
+          "x": 97.103,
+          "z": 163.496
+        },
+        {
+          "x": 91.192,
+          "z": 163.34
+        }
+      ]
+    },
+    {
+      "id": "240898363",
+      "name": "Jovana Šerbanovića",
+      "kind": "residential",
+      "points": [
+        {
+          "x": 238.435,
+          "z": 42.034
+        },
+        {
+          "x": 240.955,
+          "z": 53.946
+        }
+      ]
+    },
+    {
+      "id": "240898363",
+      "name": "Jovana Šerbanovića",
+      "kind": "residential",
+      "points": [
+        {
+          "x": 240.955,
+          "z": 53.946
+        },
+        {
+          "x": 242.104,
+          "z": 60.692
+        }
+      ]
+    },
+    {
+      "id": "240898363",
+      "name": "Jovana Šerbanovića",
+      "kind": "residential",
+      "points": [
+        {
+          "x": 242.104,
+          "z": 60.692
+        },
+        {
+          "x": 245.891,
+          "z": 82.833
+        }
+      ]
+    },
+    {
+      "id": "240898363",
+      "name": "Jovana Šerbanovića",
+      "kind": "residential",
+      "points": [
+        {
+          "x": 245.891,
+          "z": 82.833
+        },
+        {
+          "x": 249.394,
+          "z": 103.338
+        }
+      ]
+    },
+    {
+      "id": "240898363",
+      "name": "Jovana Šerbanovića",
+      "kind": "residential",
+      "points": [
+        {
+          "x": 249.394,
+          "z": 103.338
+        },
+        {
+          "x": 252.983,
+          "z": 124.311
+        }
+      ]
+    },
+    {
+      "id": "240898363",
+      "name": "Jovana Šerbanovića",
+      "kind": "residential",
+      "points": [
+        {
+          "x": 252.983,
+          "z": 124.311
+        },
+        {
+          "x": 253.823,
+          "z": 129.254
+        }
+      ]
+    },
+    {
+      "id": "240898363",
+      "name": "Jovana Šerbanovića",
+      "kind": "residential",
+      "points": [
+        {
+          "x": 253.823,
+          "z": 129.254
+        },
+        {
+          "x": 257.484,
+          "z": 150.649
+        }
+      ]
+    },
+    {
+      "id": "240898363",
+      "name": "Jovana Šerbanovića",
+      "kind": "residential",
+      "points": [
+        {
+          "x": 257.484,
+          "z": 150.649
+        },
+        {
+          "x": 262.364,
+          "z": 183.121
+        }
+      ]
+    },
+    {
+      "id": "240898363",
+      "name": "Jovana Šerbanovića",
+      "kind": "residential",
+      "points": [
+        {
+          "x": 262.364,
+          "z": 183.121
+        },
+        {
+          "x": 263.696,
+          "z": 189.645
+        }
+      ]
+    },
+    {
+      "id": "327224004",
+      "name": "Tabačka čaršija",
+      "kind": "secondary",
+      "points": [
+        {
+          "x": -80.67,
+          "z": 91.973
+        },
+        {
+          "x": -81.05,
+          "z": 90.436
+        }
+      ]
+    },
+    {
+      "id": "327224004",
+      "name": "Tabačka čaršija",
+      "kind": "secondary",
+      "points": [
+        {
+          "x": -81.05,
+          "z": 90.436
+        },
+        {
+          "x": -81.311,
+          "z": 89.39
+        }
+      ]
+    },
+    {
+      "id": "327224004",
+      "name": "Tabačka čaršija",
+      "kind": "secondary",
+      "points": [
+        {
+          "x": -81.311,
+          "z": 89.39
+        },
+        {
+          "x": -92.214,
+          "z": 44.951
+        }
+      ]
+    },
+    {
+      "id": "327224004",
+      "name": "Tabačka čaršija",
+      "kind": "secondary",
+      "points": [
+        {
+          "x": -92.214,
+          "z": 44.951
+        },
+        {
+          "x": -93.022,
+          "z": 42.001
+        }
+      ]
+    },
+    {
+      "id": "327224004",
+      "name": "Tabačka čaršija",
+      "kind": "secondary",
+      "points": [
+        {
+          "x": -93.022,
+          "z": 42.001
+        },
+        {
+          "x": -93.545,
+          "z": 39.93
+        }
+      ]
+    },
+    {
+      "id": "327224004",
+      "name": "Tabačka čaršija",
+      "kind": "secondary",
+      "points": [
+        {
+          "x": -93.545,
+          "z": 39.93
+        },
+        {
+          "x": -111.579,
+          "z": -32.951
+        }
+      ]
+    },
+    {
+      "id": "327224005",
+      "name": "Trg Radomira Vujovića",
+      "kind": "secondary",
+      "points": [
+        {
+          "x": -138.234,
+          "z": -146.096
+        },
+        {
+          "x": -153.107,
+          "z": -211.909
+        }
+      ]
+    },
+    {
+      "id": "327224005",
+      "name": "Trg Radomira Vujovića",
+      "kind": "secondary",
+      "points": [
+        {
+          "x": -153.107,
+          "z": -211.909
+        },
+        {
+          "x": -154.232,
+          "z": -216.896
+        }
+      ]
+    },
+    {
+      "id": "327224005",
+      "name": "Trg Radomira Vujovića",
+      "kind": "secondary",
+      "points": [
+        {
+          "x": -154.232,
+          "z": -216.896
+        },
+        {
+          "x": -156.054,
+          "z": -223.096
+        }
+      ]
+    },
+    {
+      "id": "327224005",
+      "name": "Trg Radomira Vujovića",
+      "kind": "secondary",
+      "points": [
+        {
+          "x": -156.054,
+          "z": -223.096
+        },
+        {
+          "x": -157.401,
+          "z": -227.694
+        }
+      ]
+    },
+    {
+      "id": "327224005",
+      "name": "Trg Radomira Vujovića",
+      "kind": "secondary",
+      "points": [
+        {
+          "x": -157.401,
+          "z": -227.694
+        },
+        {
+          "x": -158.059,
+          "z": -229.642
+        }
+      ]
+    },
+    {
+      "id": "327224005",
+      "name": "Trg Radomira Vujovića",
+      "kind": "secondary",
+      "points": [
+        {
+          "x": -158.059,
+          "z": -229.642
+        },
+        {
+          "x": -171.37,
+          "z": -272.066
+        }
+      ]
+    },
+    {
+      "id": "327233232",
+      "name": "Njegoševa",
+      "kind": "residential",
+      "points": [
+        {
+          "x": 263.696,
+          "z": 189.645
+        },
+        {
+          "x": 279.083,
+          "z": 192.94
+        }
+      ]
+    },
+    {
+      "id": "384662390",
+      "name": "Sinđelićeva",
+      "kind": "residential",
+      "points": [
+        {
+          "x": -155.595,
+          "z": 165.711
+        },
+        {
+          "x": -157.988,
+          "z": 173.314
+        }
+      ]
+    },
+    {
+      "id": "384662390",
+      "name": "Sinđelićeva",
+      "kind": "residential",
+      "points": [
+        {
+          "x": -157.988,
+          "z": 173.314
+        },
+        {
+          "x": -171.481,
+          "z": 216.195
+        }
+      ]
+    },
+    {
+      "id": "384662390",
+      "name": "Sinđelićeva",
+      "kind": "residential",
+      "points": [
+        {
+          "x": -171.481,
+          "z": 216.195
+        },
+        {
+          "x": -180.99,
+          "z": 252.73
+        }
+      ]
+    },
+    {
+      "id": "384662390",
+      "name": "Sinđelićeva",
+      "kind": "residential",
+      "points": [
+        {
+          "x": -180.99,
+          "z": 252.73
+        },
+        {
+          "x": -183.121,
+          "z": 267.658
+        }
+      ]
+    },
+    {
+      "id": "384662885",
+      "name": "Kosančićeva",
+      "kind": "residential",
+      "points": [
+        {
+          "x": -270.383,
+          "z": 86.896
+        },
+        {
+          "x": -173.169,
+          "z": 47.066
+        }
+      ]
+    },
+    {
+      "id": "384662885",
+      "name": "Kosančićeva",
+      "kind": "residential",
+      "points": [
+        {
+          "x": -173.169,
+          "z": 47.066
+        },
+        {
+          "x": -168.494,
+          "z": 45.263
+        }
+      ]
+    },
+    {
+      "id": "384663737",
+      "name": "Trg oslobođenja",
+      "kind": "secondary",
+      "points": [
+        {
+          "x": -72.659,
+          "z": 141.733
+        },
+        {
+          "x": -79.735,
+          "z": 141.477
+        }
+      ]
+    },
+    {
+      "id": "384663737",
+      "name": "Trg oslobođenja",
+      "kind": "secondary",
+      "points": [
+        {
+          "x": -79.735,
+          "z": 141.477
+        },
+        {
+          "x": -82.128,
+          "z": 141.265
+        }
+      ]
+    },
+    {
+      "id": "384663737",
+      "name": "Trg oslobođenja",
+      "kind": "secondary",
+      "points": [
+        {
+          "x": -82.128,
+          "z": 141.265
+        },
+        {
+          "x": -84.061,
+          "z": 140.118
+        }
+      ]
+    },
+    {
+      "id": "384663737",
+      "name": "Trg oslobođenja",
+      "kind": "secondary",
+      "points": [
+        {
+          "x": -84.061,
+          "z": 140.118
+        },
+        {
+          "x": -86.2,
+          "z": 137.514
+        }
+      ]
+    },
+    {
+      "id": "384663737",
+      "name": "Trg oslobođenja",
+      "kind": "secondary",
+      "points": [
+        {
+          "x": -86.2,
+          "z": 137.514
+        },
+        {
+          "x": -86.755,
+          "z": 133.673
+        }
+      ]
+    },
+    {
+      "id": "384663737",
+      "name": "Trg oslobođenja",
+      "kind": "secondary",
+      "points": [
+        {
+          "x": -86.755,
+          "z": 133.673
+        },
+        {
+          "x": -87.127,
+          "z": 129.643
+        }
+      ]
+    },
+    {
+      "id": "384663737",
+      "name": "Trg oslobođenja",
+      "kind": "secondary",
+      "points": [
+        {
+          "x": -87.127,
+          "z": 129.643
+        },
+        {
+          "x": -86.787,
+          "z": 125.424
+        }
+      ]
+    },
+    {
+      "id": "384663737",
+      "name": "Trg oslobođenja",
+      "kind": "secondary",
+      "points": [
+        {
+          "x": -86.787,
+          "z": 125.424
+        },
+        {
+          "x": -86.335,
+          "z": 122.953
+        }
+      ]
+    },
+    {
+      "id": "384663737",
+      "name": "Trg oslobođenja",
+      "kind": "secondary",
+      "points": [
+        {
+          "x": -86.335,
+          "z": 122.953
+        },
+        {
+          "x": -83.926,
+          "z": 116.641
+        }
+      ]
+    },
+    {
+      "id": "384664165",
+      "name": "Lenjinova",
+      "kind": "secondary",
+      "points": [
+        {
+          "x": 13.842,
+          "z": 205.152
+        },
+        {
+          "x": 32.479,
+          "z": 225.868
+        }
+      ]
+    },
+    {
+      "id": "384664165",
+      "name": "Lenjinova",
+      "kind": "secondary",
+      "points": [
+        {
+          "x": 32.479,
+          "z": 225.868
+        },
+        {
+          "x": 34.563,
+          "z": 227.972
+        }
+      ]
+    },
+    {
+      "id": "384664165",
+      "name": "Lenjinova",
+      "kind": "secondary",
+      "points": [
+        {
+          "x": 34.563,
+          "z": 227.972
+        },
+        {
+          "x": 36.211,
+          "z": 229.52
+        }
+      ]
+    },
+    {
+      "id": "384664165",
+      "name": "Lenjinova",
+      "kind": "secondary",
+      "points": [
+        {
+          "x": 36.211,
+          "z": 229.52
+        },
+        {
+          "x": 46.868,
+          "z": 239.861
+        }
+      ]
+    },
+    {
+      "id": "384664243",
+      "name": "Tabačka čaršija",
+      "kind": "secondary",
+      "points": [
+        {
+          "x": -80.67,
+          "z": 91.973
+        },
+        {
+          "x": -64.878,
+          "z": 108.292
+        }
+      ]
+    },
+    {
+      "id": "384664373",
+      "name": "Kneza Lazara",
+      "kind": "residential",
+      "points": [
+        {
+          "x": -72.659,
+          "z": 141.733
+        },
+        {
+          "x": -74.497,
+          "z": 143.703
+        }
+      ]
+    },
+    {
+      "id": "384664373",
+      "name": "Kneza Lazara",
+      "kind": "residential",
+      "points": [
+        {
+          "x": -74.497,
+          "z": 143.703
+        },
+        {
+          "x": -77.08,
+          "z": 145.673
+        }
+      ]
+    },
+    {
+      "id": "384664373",
+      "name": "Kneza Lazara",
+      "kind": "residential",
+      "points": [
+        {
+          "x": -77.08,
+          "z": 145.673
+        },
+        {
+          "x": -86.596,
+          "z": 149.147
+        }
+      ]
+    },
+    {
+      "id": "384664373",
+      "name": "Kneza Lazara",
+      "kind": "residential",
+      "points": [
+        {
+          "x": -86.596,
+          "z": 149.147
+        },
+        {
+          "x": -98.07,
+          "z": 153.343
+        }
+      ]
+    },
+    {
+      "id": "384664852",
+      "name": "Veljka Dugoševića",
+      "kind": "tertiary",
+      "points": [
+        {
+          "x": -152.275,
+          "z": 280.025
+        },
+        {
+          "x": -146.649,
+          "z": 269.394
+        }
+      ]
+    },
+    {
+      "id": "384664852",
+      "name": "Veljka Dugoševića",
+      "kind": "tertiary",
+      "points": [
+        {
+          "x": -146.649,
+          "z": 269.394
+        },
+        {
+          "x": -144.763,
+          "z": 266.077
+        }
+      ]
+    },
+    {
+      "id": "384664852",
+      "name": "Veljka Dugoševića",
+      "kind": "tertiary",
+      "points": [
+        {
+          "x": -144.763,
+          "z": 266.077
+        },
+        {
+          "x": -104.012,
+          "z": 199.029
+        }
+      ]
+    },
+    {
+      "id": "384664852",
+      "name": "Veljka Dugoševića",
+      "kind": "tertiary",
+      "points": [
+        {
+          "x": -104.012,
+          "z": 199.029
+        },
+        {
+          "x": -98.593,
+          "z": 189.467
+        }
+      ]
+    },
+    {
+      "id": "384664852",
+      "name": "Veljka Dugoševića",
+      "kind": "tertiary",
+      "points": [
+        {
+          "x": -98.593,
+          "z": 189.467
+        },
+        {
+          "x": -97.048,
+          "z": 184.569
+        }
+      ]
+    },
+    {
+      "id": "384664852",
+      "name": "Veljka Dugoševića",
+      "kind": "tertiary",
+      "points": [
+        {
+          "x": -97.048,
+          "z": 184.569
+        },
+        {
+          "x": -96.723,
+          "z": 179.67
+        }
+      ]
+    },
+    {
+      "id": "384664852",
+      "name": "Veljka Dugoševića",
+      "kind": "tertiary",
+      "points": [
+        {
+          "x": -96.723,
+          "z": 179.67
+        },
+        {
+          "x": -97.737,
+          "z": 161.403
+        }
+      ]
+    },
+    {
+      "id": "384664852",
+      "name": "Veljka Dugoševića",
+      "kind": "tertiary",
+      "points": [
+        {
+          "x": -97.737,
+          "z": 161.403
+        },
+        {
+          "x": -98.07,
+          "z": 153.343
+        }
+      ]
+    },
+    {
+      "id": "384664852",
+      "name": "Veljka Dugoševića",
+      "kind": "tertiary",
+      "points": [
+        {
+          "x": -98.07,
+          "z": 153.343
+        },
+        {
+          "x": -94.037,
+          "z": 147.354
+        }
+      ]
+    },
+    {
+      "id": "384664852",
+      "name": "Veljka Dugoševića",
+      "kind": "tertiary",
+      "points": [
+        {
+          "x": -94.037,
+          "z": 147.354
+        },
+        {
+          "x": -90.875,
+          "z": 141.777
+        }
+      ]
+    },
+    {
+      "id": "384664852",
+      "name": "Veljka Dugoševića",
+      "kind": "tertiary",
+      "points": [
+        {
+          "x": -90.875,
+          "z": 141.777
+        },
+        {
+          "x": -89.005,
+          "z": 134.608
+        }
+      ]
+    },
+    {
+      "id": "384664852",
+      "name": "Veljka Dugoševića",
+      "kind": "tertiary",
+      "points": [
+        {
+          "x": -89.005,
+          "z": 134.608
+        },
+        {
+          "x": -87.127,
+          "z": 129.643
+        }
+      ]
+    },
+    {
+      "id": "384664898",
+      "name": "Tabačka čaršija",
+      "kind": "secondary",
+      "points": [
+        {
+          "x": -83.926,
+          "z": 116.641
+        },
+        {
+          "x": -81.177,
+          "z": 95.791
+        }
+      ]
+    },
+    {
+      "id": "384664898",
+      "name": "Tabačka čaršija",
+      "kind": "secondary",
+      "points": [
+        {
+          "x": -81.177,
+          "z": 95.791
+        },
+        {
+          "x": -80.67,
+          "z": 91.973
+        }
+      ]
+    },
+    {
+      "id": "384667269",
+      "name": "Porečka",
+      "kind": "residential",
+      "points": [
+        {
+          "x": 201.638,
+          "z": -163.128
+        },
+        {
+          "x": 208.991,
+          "z": -164.475
+        }
+      ]
+    },
+    {
+      "id": "384667269",
+      "name": "Porečka",
+      "kind": "residential",
+      "points": [
+        {
+          "x": 208.991,
+          "z": -164.475
+        },
+        {
+          "x": 229.339,
+          "z": -168.193
+        }
+      ]
+    },
+    {
+      "id": "384667269",
+      "name": "Porečka",
+      "kind": "residential",
+      "points": [
+        {
+          "x": 229.339,
+          "z": -168.193
+        },
+        {
+          "x": 269.092,
+          "z": -175.451
+        }
+      ]
+    },
+    {
+      "id": "475949643",
+      "name": "Drinska",
+      "kind": "residential",
+      "points": [
+        {
+          "x": 64.197,
+          "z": 67.293
+        },
+        {
+          "x": 72.088,
+          "z": 64.51
+        }
+      ]
+    },
+    {
+      "id": "475949643",
+      "name": "Drinska",
+      "kind": "residential",
+      "points": [
+        {
+          "x": 72.088,
+          "z": 64.51
+        },
+        {
+          "x": 128.084,
+          "z": 44.806
+        }
+      ]
+    },
+    {
+      "id": "709047614",
+      "name": "Kneza Lazara",
+      "kind": "residential",
+      "points": [
+        {
+          "x": -98.07,
+          "z": 153.343
+        },
+        {
+          "x": -102.974,
+          "z": 154.256
+        }
+      ]
+    },
+    {
+      "id": "709047614",
+      "name": "Kneza Lazara",
+      "kind": "residential",
+      "points": [
+        {
+          "x": -102.974,
+          "z": 154.256
+        },
+        {
+          "x": -105.074,
+          "z": 154.824
+        }
+      ]
+    },
+    {
+      "id": "709047614",
+      "name": "Kneza Lazara",
+      "kind": "residential",
+      "points": [
+        {
+          "x": -105.074,
+          "z": 154.824
+        },
+        {
+          "x": -148.329,
+          "z": 163.985
+        }
+      ]
+    },
+    {
+      "id": "709047614",
+      "name": "Kneza Lazara",
+      "kind": "residential",
+      "points": [
+        {
+          "x": -148.329,
+          "z": 163.985
+        },
+        {
+          "x": -155.595,
+          "z": 165.711
+        }
+      ]
+    },
+    {
+      "id": "709047615",
+      "name": "Sinđelićeva",
+      "kind": "residential",
+      "points": [
+        {
+          "x": -164.944,
+          "z": 60.636
+        },
+        {
+          "x": -163.36,
+          "z": 72.503
+        }
+      ]
+    },
+    {
+      "id": "709047615",
+      "name": "Sinđelićeva",
+      "kind": "residential",
+      "points": [
+        {
+          "x": -163.36,
+          "z": 72.503
+        },
+        {
+          "x": -163.067,
+          "z": 76.622
+        }
+      ]
+    },
+    {
+      "id": "709047615",
+      "name": "Sinđelićeva",
+      "kind": "residential",
+      "points": [
+        {
+          "x": -163.067,
+          "z": 76.622
+        },
+        {
+          "x": -158.923,
+          "z": 123.554
+        }
+      ]
+    },
+    {
+      "id": "709047615",
+      "name": "Sinđelićeva",
+      "kind": "residential",
+      "points": [
+        {
+          "x": -158.923,
+          "z": 123.554
+        },
+        {
+          "x": -156.221,
+          "z": 155.681
+        }
+      ]
+    },
+    {
+      "id": "709047615",
+      "name": "Sinđelićeva",
+      "kind": "residential",
+      "points": [
+        {
+          "x": -156.221,
+          "z": 155.681
+        },
+        {
+          "x": -155.595,
+          "z": 165.711
+        }
+      ]
+    },
+    {
+      "id": "709047616",
+      "name": "Kneza Lazara",
+      "kind": "residential",
+      "points": [
+        {
+          "x": -155.595,
+          "z": 165.711
+        },
+        {
+          "x": -164.358,
+          "z": 166.357
+        }
+      ]
+    },
+    {
+      "id": "709047616",
+      "name": "Kneza Lazara",
+      "kind": "residential",
+      "points": [
+        {
+          "x": -164.358,
+          "z": 166.357
+        },
+        {
+          "x": -283.885,
+          "z": 175.173
+        }
+      ]
+    },
+    {
+      "id": "722291666",
+      "name": "Jovana Šerbanovića",
+      "kind": "residential",
+      "points": [
+        {
+          "x": 255.487,
+          "z": 188.353
+        },
+        {
+          "x": 256.018,
+          "z": 191.47
+        }
+      ]
+    },
+    {
+      "id": "722291666",
+      "name": "Jovana Šerbanovića",
+      "kind": "residential",
+      "points": [
+        {
+          "x": 256.018,
+          "z": 191.47
+        },
+        {
+          "x": 255.978,
+          "z": 200.242
+        }
+      ]
+    },
+    {
+      "id": "722291666",
+      "name": "Jovana Šerbanovića",
+      "kind": "residential",
+      "points": [
+        {
+          "x": 255.978,
+          "z": 200.242
+        },
+        {
+          "x": 255.835,
+          "z": 209.527
+        }
+      ]
+    },
+    {
+      "id": "722291666",
+      "name": "Jovana Šerbanovića",
+      "kind": "residential",
+      "points": [
+        {
+          "x": 255.835,
+          "z": 209.527
+        },
+        {
+          "x": 256.343,
+          "z": 225.891
+        }
+      ]
+    },
+    {
+      "id": "722291666",
+      "name": "Jovana Šerbanovića",
+      "kind": "residential",
+      "points": [
+        {
+          "x": 256.343,
+          "z": 225.891
+        },
+        {
+          "x": 256.01,
+          "z": 238.87
+        }
+      ]
+    },
+    {
+      "id": "722291666",
+      "name": "Jovana Šerbanovića",
+      "kind": "residential",
+      "points": [
+        {
+          "x": 256.01,
+          "z": 238.87
+        },
+        {
+          "x": 261.604,
+          "z": 276.307
+        }
+      ]
+    },
+    {
+      "id": "722291666",
+      "name": "Jovana Šerbanovića",
+      "kind": "residential",
+      "points": [
+        {
+          "x": 261.604,
+          "z": 276.307
+        },
+        {
+          "x": 241.938,
+          "z": 280.348
+        }
+      ]
+    },
+    {
+      "id": "723395406",
+      "name": "Svetosavska",
+      "kind": "residential",
+      "points": [
+        {
+          "x": 20.768,
+          "z": -276.652
+        },
+        {
+          "x": 46.82,
+          "z": -250.592
+        }
+      ]
+    },
+    {
+      "id": "723395406",
+      "name": "Svetosavska",
+      "kind": "residential",
+      "points": [
+        {
+          "x": 46.82,
+          "z": -250.592
+        },
+        {
+          "x": 78.8,
+          "z": -218.588
+        }
+      ]
+    },
+    {
+      "id": "723395406",
+      "name": "Svetosavska",
+      "kind": "residential",
+      "points": [
+        {
+          "x": 78.8,
+          "z": -218.588
+        },
+        {
+          "x": 91.905,
+          "z": -205.474
+        }
+      ]
+    },
+    {
+      "id": "723395406",
+      "name": "Svetosavska",
+      "kind": "residential",
+      "points": [
+        {
+          "x": 91.905,
+          "z": -205.474
+        },
+        {
+          "x": 111.421,
+          "z": -187.853
+        }
+      ]
+    },
+    {
+      "id": "723395406",
+      "name": "Svetosavska",
+      "kind": "residential",
+      "points": [
+        {
+          "x": 111.421,
+          "z": -187.853
+        },
+        {
+          "x": 119.852,
+          "z": -180.238
+        }
+      ]
+    },
+    {
+      "id": "723552291",
+      "name": "Lenjinova",
+      "kind": "secondary",
+      "points": [
+        {
+          "x": -48.421,
+          "z": 123.743
+        },
+        {
+          "x": -34.42,
+          "z": 140.742
+        }
+      ]
+    },
+    {
+      "id": "723552292",
+      "name": "Lenjinova",
+      "kind": "secondary",
+      "points": [
+        {
+          "x": -34.42,
+          "z": 140.742
+        },
+        {
+          "x": -40.64,
+          "z": 138.671
+        }
+      ]
+    },
+    {
+      "id": "723552292",
+      "name": "Lenjinova",
+      "kind": "secondary",
+      "points": [
+        {
+          "x": -40.64,
+          "z": 138.671
+        },
+        {
+          "x": -46.321,
+          "z": 137.937
+        }
+      ]
+    },
+    {
+      "id": "723552292",
+      "name": "Lenjinova",
+      "kind": "secondary",
+      "points": [
+        {
+          "x": -46.321,
+          "z": 137.937
+        },
+        {
+          "x": -55.623,
+          "z": 136.79
+        }
+      ]
+    },
+    {
+      "id": "790538991",
+      "name": "Moše Pijade",
+      "kind": "tertiary",
+      "points": [
+        {
+          "x": 119.852,
+          "z": -180.238
+        },
+        {
+          "x": 111.548,
+          "z": -175.04
+        }
+      ]
+    },
+    {
+      "id": "790538991",
+      "name": "Moše Pijade",
+      "kind": "tertiary",
+      "points": [
+        {
+          "x": 111.548,
+          "z": -175.04
+        },
+        {
+          "x": 90.471,
+          "z": -163.128
+        }
+      ]
+    },
+    {
+      "id": "790538991",
+      "name": "Moše Pijade",
+      "kind": "tertiary",
+      "points": [
+        {
+          "x": 90.471,
+          "z": -163.128
+        },
+        {
+          "x": 89.52,
+          "z": -162.605
+        }
+      ]
+    },
+    {
+      "id": "790538991",
+      "name": "Moše Pijade",
+      "kind": "tertiary",
+      "points": [
+        {
+          "x": 89.52,
+          "z": -162.605
+        },
+        {
+          "x": 87.84,
+          "z": -161.737
+        }
+      ]
+    },
+    {
+      "id": "790538991",
+      "name": "Moše Pijade",
+      "kind": "tertiary",
+      "points": [
+        {
+          "x": 87.84,
+          "z": -161.737
+        },
+        {
+          "x": 74.846,
+          "z": -154.991
+        }
+      ]
+    },
+    {
+      "id": "790538991",
+      "name": "Moše Pijade",
+      "kind": "tertiary",
+      "points": [
+        {
+          "x": 74.846,
+          "z": -154.991
+        },
+        {
+          "x": 64.315,
+          "z": -149.525
+        }
+      ]
+    },
+    {
+      "id": "790538991",
+      "name": "Moše Pijade",
+      "kind": "tertiary",
+      "points": [
+        {
+          "x": 64.315,
+          "z": -149.525
+        },
+        {
+          "x": 46.963,
+          "z": -140.508
+        }
+      ]
+    },
+    {
+      "id": "790538991",
+      "name": "Moše Pijade",
+      "kind": "tertiary",
+      "points": [
+        {
+          "x": 46.963,
+          "z": -140.508
+        },
+        {
+          "x": 19.983,
+          "z": -127.94
+        }
+      ]
+    },
+    {
+      "id": "790538991",
+      "name": "Moše Pijade",
+      "kind": "tertiary",
+      "points": [
+        {
+          "x": 19.983,
+          "z": -127.94
+        },
+        {
+          "x": 9.128,
+          "z": -122.452
+        }
+      ]
+    },
+    {
+      "id": "790538991",
+      "name": "Moše Pijade",
+      "kind": "tertiary",
+      "points": [
+        {
+          "x": 9.128,
+          "z": -122.452
+        },
+        {
+          "x": -0.713,
+          "z": -117.465
+        }
+      ]
+    },
+    {
+      "id": "790538991",
+      "name": "Moše Pijade",
+      "kind": "tertiary",
+      "points": [
+        {
+          "x": -0.713,
+          "z": -117.465
+        },
+        {
+          "x": -5.99,
+          "z": -115.283
+        }
+      ]
+    },
+    {
+      "id": "790538991",
+      "name": "Moše Pijade",
+      "kind": "tertiary",
+      "points": [
+        {
+          "x": -5.99,
+          "z": -115.283
+        },
+        {
+          "x": -9.548,
+          "z": -113.936
+        }
+      ]
+    },
+    {
+      "id": "790538991",
+      "name": "Moše Pijade",
+      "kind": "tertiary",
+      "points": [
+        {
+          "x": -9.548,
+          "z": -113.936
+        },
+        {
+          "x": -49.625,
+          "z": -100.578
+        }
+      ]
+    },
+    {
+      "id": "790538991",
+      "name": "Moše Pijade",
+      "kind": "tertiary",
+      "points": [
+        {
+          "x": -49.625,
+          "z": -100.578
+        },
+        {
+          "x": -63.983,
+          "z": -95.791
+        }
+      ]
+    },
+    {
+      "id": "916263178",
+      "name": "",
+      "kind": "service",
+      "points": [
+        {
+          "x": 46.82,
+          "z": -250.592
+        },
+        {
+          "x": 49.023,
+          "z": -252.752
+        }
+      ]
+    },
+    {
+      "id": "916263178",
+      "name": "",
+      "kind": "service",
+      "points": [
+        {
+          "x": 49.023,
+          "z": -252.752
+        },
+        {
+          "x": 54.062,
+          "z": -257.695
+        }
+      ]
+    },
+    {
+      "id": "916263178",
+      "name": "",
+      "kind": "service",
+      "points": [
+        {
+          "x": 54.062,
+          "z": -257.695
+        },
+        {
+          "x": 72.128,
+          "z": -275.406
+        }
+      ]
+    },
+    {
+      "id": "916263178",
+      "name": "",
+      "kind": "service",
+      "points": [
+        {
+          "x": 72.128,
+          "z": -275.406
+        },
+        {
+          "x": 75.187,
+          "z": -275.851
+        }
+      ]
+    },
+    {
+      "id": "916263178",
+      "name": "",
+      "kind": "service",
+      "points": [
+        {
+          "x": 75.187,
+          "z": -275.851
+        },
+        {
+          "x": 83.593,
+          "z": -267.814
+        }
+      ]
+    },
+    {
+      "id": "916263178",
+      "name": "",
+      "kind": "service",
+      "points": [
+        {
+          "x": 83.593,
+          "z": -267.814
+        },
+        {
+          "x": 98.395,
+          "z": -253.754
+        }
+      ]
+    },
+    {
+      "id": "916263178",
+      "name": "",
+      "kind": "service",
+      "points": [
+        {
+          "x": 98.395,
+          "z": -253.754
+        },
+        {
+          "x": 100.059,
+          "z": -252.073
+        }
+      ]
+    }
+  ],
+  "buildings": [
+    {
+      "id": "240898360",
+      "height": 9,
+      "heightSource": "authored-default",
+      "points": [
+        {
+          "x": 75.892,
+          "z": -104.83
+        },
+        {
+          "x": 61.415,
+          "z": -142.033
+        },
+        {
+          "x": 14.286,
+          "z": -118.478
+        },
+        {
+          "x": 24.206,
+          "z": -85.817
+        },
+        {
+          "x": 75.892,
+          "z": -104.83
+        }
+      ]
+    },
+    {
+      "id": "256268929",
+      "height": 9,
+      "heightSource": "authored-default",
+      "points": [
+        {
+          "x": 117.879,
+          "z": -78.514
+        },
+        {
+          "x": 121.801,
+          "z": -87.241
+        },
+        {
+          "x": 118.037,
+          "z": -97.795
+        },
+        {
+          "x": 123.092,
+          "z": -107.969
+        },
+        {
+          "x": 130.628,
+          "z": -104.218
+        },
+        {
+          "x": 136.031,
+          "z": -115.071
+        },
+        {
+          "x": 129.32,
+          "z": -118.422
+        },
+        {
+          "x": 138.71,
+          "z": -137.28
+        },
+        {
+          "x": 157.148,
+          "z": -128.096
+        },
+        {
+          "x": 154.786,
+          "z": -123.365
+        },
+        {
+          "x": 153.907,
+          "z": -121.595
+        },
+        {
+          "x": 164.477,
+          "z": -116.329
+        },
+        {
+          "x": 168.035,
+          "z": -123.476
+        },
+        {
+          "x": 177.923,
+          "z": -118.556
+        },
+        {
+          "x": 186.417,
+          "z": -94.088
+        },
+        {
+          "x": 177.408,
+          "z": -77.1
+        },
+        {
+          "x": 170.412,
+          "z": -80.807
+        },
+        {
+          "x": 166.181,
+          "z": -72.826
+        },
+        {
+          "x": 154.739,
+          "z": -69.252
+        },
+        {
+          "x": 147.996,
+          "z": -71.902
+        },
+        {
+          "x": 143.297,
+          "z": -65.668
+        },
+        {
+          "x": 134.795,
+          "z": -69.341
+        },
+        {
+          "x": 131.761,
+          "z": -62.317
+        },
+        {
+          "x": 122.308,
+          "z": -66.391
+        },
+        {
+          "x": 117.879,
+          "z": -78.514
+        }
+      ]
+    },
+    {
+      "id": "508252203",
+      "height": 9,
+      "heightSource": "authored-default",
+      "points": [
+        {
+          "x": 102.776,
+          "z": 195.556
+        },
+        {
+          "x": 104.876,
+          "z": 216.328
+        },
+        {
+          "x": 134.684,
+          "z": 213.311
+        },
+        {
+          "x": 133.686,
+          "z": 203.46
+        },
+        {
+          "x": 123.314,
+          "z": 204.506
+        },
+        {
+          "x": 122.205,
+          "z": 193.585
+        },
+        {
+          "x": 102.776,
+          "z": 195.556
+        }
+      ]
+    },
+    {
+      "id": "515134250",
+      "height": 6,
+      "heightSource": "osm-levels-times-3m",
+      "points": [
+        {
+          "x": -185.308,
+          "z": -33.351
+        },
+        {
+          "x": -169.223,
+          "z": -37.225
+        },
+        {
+          "x": -171.909,
+          "z": -48.369
+        },
+        {
+          "x": -172.202,
+          "z": -49.571
+        },
+        {
+          "x": -150.722,
+          "z": -54.747
+        },
+        {
+          "x": -143.361,
+          "z": -56.528
+        },
+        {
+          "x": -136.515,
+          "z": -58.176
+        },
+        {
+          "x": -138.678,
+          "z": -67.516
+        },
+        {
+          "x": -139.969,
+          "z": -73.082
+        },
+        {
+          "x": -191.782,
+          "z": -60.591
+        },
+        {
+          "x": -188.335,
+          "z": -46.309
+        },
+        {
+          "x": -188.43,
+          "z": -46.287
+        },
+        {
+          "x": -185.308,
+          "z": -33.351
+        }
+      ]
+    },
+    {
+      "id": "515135801",
+      "height": 18,
+      "heightSource": "osm-levels-times-3m",
+      "points": [
+        {
+          "x": -136.515,
+          "z": -58.176
+        },
+        {
+          "x": -143.361,
+          "z": -56.528
+        },
+        {
+          "x": -150.722,
+          "z": -54.747
+        },
+        {
+          "x": -148.535,
+          "z": -45.819
+        },
+        {
+          "x": -139.938,
+          "z": -10.119
+        },
+        {
+          "x": -126.919,
+          "z": 43.949
+        },
+        {
+          "x": -113.386,
+          "z": 40.687
+        },
+        {
+          "x": -112.712,
+          "z": 40.532
+        },
+        {
+          "x": -114.638,
+          "z": 32.539
+        },
+        {
+          "x": -119.36,
+          "z": 12.947
+        },
+        {
+          "x": -124.083,
+          "z": -6.646
+        },
+        {
+          "x": -125.731,
+          "z": -13.47
+        },
+        {
+          "x": -127.783,
+          "z": -21.975
+        },
+        {
+          "x": -132.648,
+          "z": -42.146
+        },
+        {
+          "x": -134.415,
+          "z": -49.493
+        },
+        {
+          "x": -136.515,
+          "z": -58.176
+        }
+      ]
+    },
+    {
+      "id": "515135802",
+      "height": 18,
+      "heightSource": "osm-levels-times-3m",
+      "points": [
+        {
+          "x": -113.386,
+          "z": 40.687
+        },
+        {
+          "x": -126.919,
+          "z": 43.949
+        },
+        {
+          "x": -132.434,
+          "z": 45.285
+        },
+        {
+          "x": -130.683,
+          "z": 52.532
+        },
+        {
+          "x": -117.641,
+          "z": 106.622
+        },
+        {
+          "x": -110.882,
+          "z": 104.986
+        },
+        {
+          "x": -98.593,
+          "z": 102.025
+        },
+        {
+          "x": -100.827,
+          "z": 92.741
+        },
+        {
+          "x": -105.145,
+          "z": 74.852
+        },
+        {
+          "x": -109.733,
+          "z": 55.838
+        },
+        {
+          "x": -111.777,
+          "z": 47.367
+        },
+        {
+          "x": -113.386,
+          "z": 40.687
+        }
+      ]
+    },
+    {
+      "id": "515138290",
+      "height": 15,
+      "heightSource": "osm-levels-times-3m",
+      "points": [
+        {
+          "x": -80.25,
+          "z": 33.608
+        },
+        {
+          "x": -75.789,
+          "z": 32.461
+        },
+        {
+          "x": -70.29,
+          "z": 31.092
+        },
+        {
+          "x": -93.189,
+          "z": -65.657
+        },
+        {
+          "x": -93.458,
+          "z": -67.115
+        },
+        {
+          "x": -98.197,
+          "z": -66.002
+        },
+        {
+          "x": -100.851,
+          "z": -65.367
+        },
+        {
+          "x": -103.45,
+          "z": -64.755
+        },
+        {
+          "x": -103.109,
+          "z": -63.374
+        },
+        {
+          "x": -99.417,
+          "z": -47.645
+        },
+        {
+          "x": -94.678,
+          "z": -27.552
+        },
+        {
+          "x": -91.604,
+          "z": -14.527
+        },
+        {
+          "x": -86.47,
+          "z": 7.225
+        },
+        {
+          "x": -82.888,
+          "z": 22.431
+        },
+        {
+          "x": -80.25,
+          "z": 33.608
+        }
+      ]
+    },
+    {
+      "id": "515138291",
+      "height": 12,
+      "heightSource": "osm-levels-times-3m",
+      "points": [
+        {
+          "x": -53.801,
+          "z": -49.727
+        },
+        {
+          "x": -62.715,
+          "z": -46.944
+        },
+        {
+          "x": -44.126,
+          "z": 12.579
+        },
+        {
+          "x": -42.439,
+          "z": 12.156
+        },
+        {
+          "x": -35.22,
+          "z": 9.796
+        },
+        {
+          "x": -36.306,
+          "z": 6.568
+        },
+        {
+          "x": -43.373,
+          "z": -16.542
+        },
+        {
+          "x": -45.552,
+          "z": -23.923
+        },
+        {
+          "x": -52.62,
+          "z": -45.652
+        },
+        {
+          "x": -53.801,
+          "z": -49.727
+        }
+      ]
+    },
+    {
+      "id": "515138292",
+      "height": 12,
+      "heightSource": "osm-levels-times-3m",
+      "points": [
+        {
+          "x": -42.439,
+          "z": 12.156
+        },
+        {
+          "x": -37.241,
+          "z": 27.785
+        },
+        {
+          "x": -33.136,
+          "z": 40.621
+        },
+        {
+          "x": -25.458,
+          "z": 37.849
+        },
+        {
+          "x": -26.267,
+          "z": 34.943
+        },
+        {
+          "x": -29.317,
+          "z": 25.025
+        },
+        {
+          "x": -32.962,
+          "z": 13.158
+        },
+        {
+          "x": -33.984,
+          "z": 9.451
+        },
+        {
+          "x": -35.22,
+          "z": 9.796
+        },
+        {
+          "x": -42.439,
+          "z": 12.156
+        }
+      ]
+    },
+    {
+      "id": "515138293",
+      "height": 12,
+      "heightSource": "osm-levels-times-3m",
+      "points": [
+        {
+          "x": -12.725,
+          "z": 77.479
+        },
+        {
+          "x": -14.952,
+          "z": 70.12
+        },
+        {
+          "x": -23.343,
+          "z": 43.816
+        },
+        {
+          "x": -25.157,
+          "z": 38.105
+        },
+        {
+          "x": -33.136,
+          "z": 40.621
+        },
+        {
+          "x": -34.483,
+          "z": 41.044
+        },
+        {
+          "x": -24.967,
+          "z": 69.764
+        },
+        {
+          "x": -22.115,
+          "z": 80.44
+        },
+        {
+          "x": -12.725,
+          "z": 77.479
+        }
+      ]
+    },
+    {
+      "id": "515138294",
+      "height": 15,
+      "heightSource": "osm-levels-times-3m",
+      "points": [
+        {
+          "x": -54.435,
+          "z": 77.846
+        },
+        {
+          "x": -52.097,
+          "z": 86.863
+        },
+        {
+          "x": -51.337,
+          "z": 89.713
+        },
+        {
+          "x": -21.75,
+          "z": 81.809
+        },
+        {
+          "x": -22.115,
+          "z": 80.44
+        },
+        {
+          "x": -24.967,
+          "z": 69.764
+        },
+        {
+          "x": -54.435,
+          "z": 77.846
+        }
+      ]
+    },
+    {
+      "id": "515138295",
+      "height": 12,
+      "heightSource": "osm-levels-times-3m",
+      "points": [
+        {
+          "x": -62.493,
+          "z": -79.171
+        },
+        {
+          "x": -72.017,
+          "z": -76.265
+        },
+        {
+          "x": -71.027,
+          "z": -73.026
+        },
+        {
+          "x": -62.715,
+          "z": -46.944
+        },
+        {
+          "x": -53.801,
+          "z": -49.727
+        },
+        {
+          "x": -55.013,
+          "z": -54.636
+        },
+        {
+          "x": -60.964,
+          "z": -73.972
+        },
+        {
+          "x": -62.493,
+          "z": -79.171
+        }
+      ]
+    },
+    {
+      "id": "515138296",
+      "height": 9,
+      "heightSource": "authored-default",
+      "points": [
+        {
+          "x": -98.197,
+          "z": -66.002
+        },
+        {
+          "x": -93.458,
+          "z": -67.115
+        },
+        {
+          "x": -71.027,
+          "z": -73.026
+        },
+        {
+          "x": -72.017,
+          "z": -76.265
+        },
+        {
+          "x": -73.935,
+          "z": -83.612
+        },
+        {
+          "x": -100.819,
+          "z": -77.234
+        },
+        {
+          "x": -98.197,
+          "z": -66.002
+        }
+      ]
+    },
+    {
+      "id": "515138297",
+      "height": 15,
+      "heightSource": "osm-levels-times-3m",
+      "points": [
+        {
+          "x": -61.542,
+          "z": 89.423
+        },
+        {
+          "x": -52.129,
+          "z": 87.063
+        },
+        {
+          "x": -54.435,
+          "z": 77.846
+        },
+        {
+          "x": -65.25,
+          "z": 34.676
+        },
+        {
+          "x": -66.368,
+          "z": 30.112
+        },
+        {
+          "x": -70.29,
+          "z": 31.092
+        },
+        {
+          "x": -75.789,
+          "z": 32.461
+        },
+        {
+          "x": -74.695,
+          "z": 36.825
+        },
+        {
+          "x": -72.168,
+          "z": 46.955
+        },
+        {
+          "x": -68.198,
+          "z": 62.807
+        },
+        {
+          "x": -64.514,
+          "z": 77.557
+        },
+        {
+          "x": -61.542,
+          "z": 89.423
+        }
+      ]
+    },
+    {
+      "id": "515142007",
+      "height": 9,
+      "heightSource": "authored-default",
+      "points": [
+        {
+          "x": -147.307,
+          "z": 156.226
+        },
+        {
+          "x": -101.651,
+          "z": 146.085
+        },
+        {
+          "x": -103.735,
+          "z": 137.079
+        },
+        {
+          "x": -109.139,
+          "z": 113.736
+        },
+        {
+          "x": -153.479,
+          "z": 124.745
+        },
+        {
+          "x": -147.307,
+          "z": 156.226
+        }
+      ]
+    },
+    {
+      "id": "725310284",
+      "height": 9,
+      "heightSource": "authored-default",
+      "points": [
+        {
+          "x": -223.801,
+          "z": -83.134
+        },
+        {
+          "x": -214.887,
+          "z": -84.125
+        },
+        {
+          "x": -193.311,
+          "z": -86.084
+        },
+        {
+          "x": -191.552,
+          "z": -86.273
+        },
+        {
+          "x": -187.36,
+          "z": -86.729
+        },
+        {
+          "x": -185.609,
+          "z": -86.896
+        },
+        {
+          "x": -186.916,
+          "z": -100.233
+        },
+        {
+          "x": -189.967,
+          "z": -100.01
+        },
+        {
+          "x": -191.298,
+          "z": -99.876
+        },
+        {
+          "x": -225.116,
+          "z": -96.47
+        },
+        {
+          "x": -223.801,
+          "z": -83.134
+        }
+      ]
+    },
+    {
+      "id": "965642567",
+      "height": 9,
+      "heightSource": "authored-default",
+      "points": [
+        {
+          "x": 155.151,
+          "z": 15.752
+        },
+        {
+          "x": 148.662,
+          "z": -3.217
+        },
+        {
+          "x": 152.782,
+          "z": -4.631
+        },
+        {
+          "x": 151.039,
+          "z": -9.718
+        },
+        {
+          "x": 170.253,
+          "z": -16.297
+        },
+        {
+          "x": 171.703,
+          "z": -12.045
+        },
+        {
+          "x": 214.086,
+          "z": -26.539
+        },
+        {
+          "x": 218.698,
+          "z": -13.069
+        },
+        {
+          "x": 187.265,
+          "z": -2.315
+        },
+        {
+          "x": 188.509,
+          "z": 1.302
+        },
+        {
+          "x": 177.67,
+          "z": 5.009
+        },
+        {
+          "x": 178.597,
+          "z": 7.726
+        },
+        {
+          "x": 155.151,
+          "z": 15.752
+        }
+      ]
+    },
+    {
+      "id": "965642568",
+      "height": 9,
+      "heightSource": "authored-default",
+      "points": [
+        {
+          "x": 194.872,
+          "z": 52.599
+        },
+        {
+          "x": 189.729,
+          "z": 40.621
+        },
+        {
+          "x": 208.112,
+          "z": 31.036
+        },
+        {
+          "x": 206.202,
+          "z": 24.769
+        },
+        {
+          "x": 211.654,
+          "z": 20.884
+        },
+        {
+          "x": 205.386,
+          "z": -6.902
+        },
+        {
+          "x": 219.902,
+          "z": -12.379
+        },
+        {
+          "x": 225.892,
+          "z": 24.156
+        },
+        {
+          "x": 227.136,
+          "z": 31.682
+        },
+        {
+          "x": 215.584,
+          "z": 39.14
+        },
+        {
+          "x": 216.543,
+          "z": 41.166
+        },
+        {
+          "x": 194.872,
+          "z": 52.599
+        }
+      ]
+    },
+    {
+      "id": "974914401",
+      "height": 9,
+      "heightSource": "authored-default",
+      "points": [
+        {
+          "x": -175.023,
+          "z": 274.638
+        },
+        {
+          "x": -172.963,
+          "z": 270.786
+        },
+        {
+          "x": -169.287,
+          "z": 263.929
+        },
+        {
+          "x": -162.353,
+          "z": 267.647
+        },
+        {
+          "x": -165.412,
+          "z": 273.357
+        },
+        {
+          "x": -168.09,
+          "z": 278.356
+        },
+        {
+          "x": -175.023,
+          "z": 274.638
+        }
+      ]
+    },
+    {
+      "id": "1042750131",
+      "height": 9,
+      "heightSource": "authored-default",
+      "points": [
+        {
+          "x": 79.481,
+          "z": -207.2
+        },
+        {
+          "x": 83.752,
+          "z": -210.039
+        },
+        {
+          "x": 79.402,
+          "z": -216.595
+        },
+        {
+          "x": 75.123,
+          "z": -213.768
+        },
+        {
+          "x": 79.481,
+          "z": -207.2
+        }
+      ]
+    },
+    {
+      "id": "1046709887",
+      "height": 9,
+      "heightSource": "authored-default",
+      "points": [
+        {
+          "x": -208.342,
+          "z": -245.127
+        },
+        {
+          "x": -186.251,
+          "z": -258.875
+        },
+        {
+          "x": -187.534,
+          "z": -260.823
+        },
+        {
+          "x": -197.082,
+          "z": -275.294
+        },
+        {
+          "x": -198.635,
+          "z": -278.79
+        },
+        {
+          "x": -220.734,
+          "z": -265.042
+        },
+        {
+          "x": -208.342,
+          "z": -245.127
+        }
+      ]
+    },
+    {
+      "id": "1073201886",
+      "height": 9,
+      "heightSource": "authored-default",
+      "points": [
+        {
+          "x": 177.979,
+          "z": 112.288
+        },
+        {
+          "x": 185.49,
+          "z": 107.869
+        },
+        {
+          "x": 180.831,
+          "z": 99.954
+        },
+        {
+          "x": 184.603,
+          "z": 97.728
+        },
+        {
+          "x": 177.939,
+          "z": 86.407
+        },
+        {
+          "x": 166.656,
+          "z": 93.041
+        },
+        {
+          "x": 177.979,
+          "z": 112.288
+        }
+      ]
+    },
+    {
+      "id": "1073201887",
+      "height": 9,
+      "heightSource": "authored-default",
+      "points": [
+        {
+          "x": 183.422,
+          "z": 83.011
+        },
+        {
+          "x": 187.812,
+          "z": 80.54
+        },
+        {
+          "x": 191.932,
+          "z": 87.676
+        },
+        {
+          "x": 187.4,
+          "z": 89.869
+        },
+        {
+          "x": 183.422,
+          "z": 83.011
+        }
+      ]
+    },
+    {
+      "id": "1073201888",
+      "height": 9,
+      "heightSource": "authored-default",
+      "points": [
+        {
+          "x": 195.046,
+          "z": 87.442
+        },
+        {
+          "x": 203.532,
+          "z": 82.8
+        },
+        {
+          "x": 198.437,
+          "z": 73.471
+        },
+        {
+          "x": 189.951,
+          "z": 78.102
+        },
+        {
+          "x": 195.046,
+          "z": 87.442
+        }
+      ]
+    },
+    {
+      "id": "1073201889",
+      "height": 9,
+      "heightSource": "authored-default",
+      "points": [
+        {
+          "x": 205.418,
+          "z": 89.223
+        },
+        {
+          "x": 234.426,
+          "z": 83.702
+        },
+        {
+          "x": 232.065,
+          "z": 71.289
+        },
+        {
+          "x": 203.057,
+          "z": 76.822
+        },
+        {
+          "x": 205.418,
+          "z": 89.223
+        }
+      ]
+    },
+    {
+      "id": "1073201890",
+      "height": 9,
+      "heightSource": "authored-default",
+      "points": [
+        {
+          "x": 220.576,
+          "z": 105.743
+        },
+        {
+          "x": 236.502,
+          "z": 102.782
+        },
+        {
+          "x": 233.039,
+          "z": 84.18
+        },
+        {
+          "x": 217.113,
+          "z": 87.152
+        },
+        {
+          "x": 220.576,
+          "z": 105.743
+        }
+      ]
+    },
+    {
+      "id": "1096155670",
+      "height": 9,
+      "heightSource": "authored-default",
+      "points": [
+        {
+          "x": -176.378,
+          "z": 179.693
+        },
+        {
+          "x": -167.884,
+          "z": 179.693
+        },
+        {
+          "x": -165.119,
+          "z": 169.707
+        },
+        {
+          "x": -176.806,
+          "z": 170.976
+        },
+        {
+          "x": -176.378,
+          "z": 179.693
+        }
+      ]
+    },
+    {
+      "id": "1101552957",
+      "height": 9,
+      "heightSource": "authored-default",
+      "points": [
+        {
+          "x": -16.275,
+          "z": 227.059
+        },
+        {
+          "x": 6.703,
+          "z": 224.165
+        },
+        {
+          "x": 8.28,
+          "z": 236.711
+        },
+        {
+          "x": -17.25,
+          "z": 239.338
+        },
+        {
+          "x": -14.96,
+          "z": 237.468
+        },
+        {
+          "x": -16.275,
+          "z": 227.059
+        }
+      ]
+    },
+    {
+      "id": "1101552958",
+      "height": 9,
+      "heightSource": "authored-default",
+      "points": [
+        {
+          "x": 37.669,
+          "z": 260.3
+        },
+        {
+          "x": 41.527,
+          "z": 249.524
+        },
+        {
+          "x": 60.94,
+          "z": 256.47
+        },
+        {
+          "x": 57.081,
+          "z": 267.246
+        },
+        {
+          "x": 37.669,
+          "z": 260.3
+        }
+      ]
+    },
+    {
+      "id": "1106880543",
+      "height": 9,
+      "heightSource": "authored-default",
+      "points": [
+        {
+          "x": -5.031,
+          "z": 96.147
+        },
+        {
+          "x": -10.412,
+          "z": 97.45
+        },
+        {
+          "x": -14.571,
+          "z": 98.54
+        },
+        {
+          "x": -12.543,
+          "z": 106.633
+        },
+        {
+          "x": -2.995,
+          "z": 104.229
+        },
+        {
+          "x": -5.031,
+          "z": 96.147
+        }
+      ]
+    },
+    {
+      "id": "1106880544",
+      "height": 9,
+      "heightSource": "authored-default",
+      "points": [
+        {
+          "x": -2.742,
+          "z": 108.659
+        },
+        {
+          "x": -8.827,
+          "z": 109.294
+        },
+        {
+          "x": -9.033,
+          "z": 107.29
+        },
+        {
+          "x": -13.533,
+          "z": 107.758
+        },
+        {
+          "x": -12.828,
+          "z": 114.571
+        },
+        {
+          "x": -11.568,
+          "z": 124.934
+        },
+        {
+          "x": -9.065,
+          "z": 124.567
+        },
+        {
+          "x": -4.152,
+          "z": 123.866
+        },
+        {
+          "x": -1.038,
+          "z": 123.42
+        },
+        {
+          "x": -1.656,
+          "z": 119.146
+        },
+        {
+          "x": -2.742,
+          "z": 108.659
+        }
+      ]
+    },
+    {
+      "id": "1106880545",
+      "height": 9,
+      "heightSource": "authored-default",
+      "points": [
+        {
+          "x": -12.828,
+          "z": 114.571
+        },
+        {
+          "x": -19.001,
+          "z": 115.695
+        },
+        {
+          "x": -20.047,
+          "z": 109.172
+        },
+        {
+          "x": -12.543,
+          "z": 106.633
+        },
+        {
+          "x": -14.571,
+          "z": 98.54
+        },
+        {
+          "x": -31.726,
+          "z": 104.429
+        },
+        {
+          "x": -33.493,
+          "z": 106.11
+        },
+        {
+          "x": -33.659,
+          "z": 108.37
+        },
+        {
+          "x": -28.58,
+          "z": 123.832
+        },
+        {
+          "x": -26.568,
+          "z": 125.202
+        },
+        {
+          "x": -21.6,
+          "z": 126.37
+        },
+        {
+          "x": -18.28,
+          "z": 125.892
+        },
+        {
+          "x": -11.568,
+          "z": 124.934
+        },
+        {
+          "x": -12.828,
+          "z": 114.571
+        }
+      ]
+    },
+    {
+      "id": "1106880546",
+      "height": 9,
+      "heightSource": "authored-default",
+      "points": [
+        {
+          "x": 0.547,
+          "z": 123.198
+        },
+        {
+          "x": -0.46,
+          "z": 115.606
+        },
+        {
+          "x": 1.418,
+          "z": 115.394
+        },
+        {
+          "x": 0.515,
+          "z": 106.967
+        },
+        {
+          "x": 4.921,
+          "z": 106.5
+        },
+        {
+          "x": 5.396,
+          "z": 110.897
+        },
+        {
+          "x": 10.998,
+          "z": 110.296
+        },
+        {
+          "x": 11.426,
+          "z": 114.281
+        },
+        {
+          "x": 13.628,
+          "z": 114.036
+        },
+        {
+          "x": 14.009,
+          "z": 117.454
+        },
+        {
+          "x": 14.571,
+          "z": 121.183
+        },
+        {
+          "x": 7.147,
+          "z": 122.252
+        },
+        {
+          "x": 0.547,
+          "z": 123.198
+        }
+      ]
+    },
+    {
+      "id": "1106880547",
+      "height": 9,
+      "heightSource": "authored-default",
+      "points": [
+        {
+          "x": 2.409,
+          "z": 94.299
+        },
+        {
+          "x": -3.288,
+          "z": 95.346
+        },
+        {
+          "x": -2.496,
+          "z": 99.665
+        },
+        {
+          "x": -1.117,
+          "z": 99.42
+        },
+        {
+          "x": 0.174,
+          "z": 106.422
+        },
+        {
+          "x": 4.501,
+          "z": 105.62
+        },
+        {
+          "x": 2.409,
+          "z": 94.299
+        }
+      ]
+    },
+    {
+      "id": "1106880548",
+      "height": 9,
+      "heightSource": "authored-default",
+      "points": [
+        {
+          "x": 7.622,
+          "z": 90.503
+        },
+        {
+          "x": 2.837,
+          "z": 91.405
+        },
+        {
+          "x": 4.857,
+          "z": 102.214
+        },
+        {
+          "x": 6.584,
+          "z": 101.891
+        },
+        {
+          "x": 7.187,
+          "z": 105.119
+        },
+        {
+          "x": 10.261,
+          "z": 104.552
+        },
+        {
+          "x": 7.622,
+          "z": 90.503
+        }
+      ]
+    },
+    {
+      "id": "1106880549",
+      "height": 9,
+      "heightSource": "authored-default",
+      "points": [
+        {
+          "x": 14.27,
+          "z": 89.256
+        },
+        {
+          "x": 8.795,
+          "z": 90.269
+        },
+        {
+          "x": 12.939,
+          "z": 112.711
+        },
+        {
+          "x": 18.406,
+          "z": 111.71
+        },
+        {
+          "x": 14.27,
+          "z": 89.256
+        }
+      ]
+    },
+    {
+      "id": "1106880550",
+      "height": 9,
+      "heightSource": "authored-default",
+      "points": [
+        {
+          "x": 24.468,
+          "z": 86.596
+        },
+        {
+          "x": 20.173,
+          "z": 87.331
+        },
+        {
+          "x": 15.292,
+          "z": 88.065
+        },
+        {
+          "x": 20.617,
+          "z": 120.315
+        },
+        {
+          "x": 26.164,
+          "z": 119.524
+        },
+        {
+          "x": 30.268,
+          "z": 118.934
+        },
+        {
+          "x": 27.994,
+          "z": 105.854
+        },
+        {
+          "x": 25.395,
+          "z": 106.266
+        },
+        {
+          "x": 25.126,
+          "z": 104.541
+        },
+        {
+          "x": 27.455,
+          "z": 104.173
+        },
+        {
+          "x": 26.496,
+          "z": 98.129
+        },
+        {
+          "x": 23.248,
+          "z": 98.641
+        },
+        {
+          "x": 22.527,
+          "z": 94.121
+        },
+        {
+          "x": 25.593,
+          "z": 93.642
+        },
+        {
+          "x": 24.468,
+          "z": 86.596
+        }
+      ]
+    },
+    {
+      "id": "1106880551",
+      "height": 9,
+      "heightSource": "authored-default",
+      "points": [
+        {
+          "x": 29.206,
+          "z": 88.744
+        },
+        {
+          "x": 25.363,
+          "z": 89.524
+        },
+        {
+          "x": 28.16,
+          "z": 103.26
+        },
+        {
+          "x": 32.011,
+          "z": 102.481
+        },
+        {
+          "x": 29.206,
+          "z": 88.744
+        }
+      ]
+    },
+    {
+      "id": "1106880552",
+      "height": 9,
+      "heightSource": "authored-default",
+      "points": [
+        {
+          "x": 33.683,
+          "z": 103.906
+        },
+        {
+          "x": 28.303,
+          "z": 104.741
+        },
+        {
+          "x": 30.68,
+          "z": 118.879
+        },
+        {
+          "x": 33.731,
+          "z": 118.444
+        },
+        {
+          "x": 36.068,
+          "z": 118.099
+        },
+        {
+          "x": 33.683,
+          "z": 103.906
+        }
+      ]
+    },
+    {
+      "id": "1106880553",
+      "height": 9,
+      "heightSource": "authored-default",
+      "points": [
+        {
+          "x": 42.177,
+          "z": 109.071
+        },
+        {
+          "x": 39.634,
+          "z": 109.494
+        },
+        {
+          "x": 39.404,
+          "z": 108.081
+        },
+        {
+          "x": 35.315,
+          "z": 108.76
+        },
+        {
+          "x": 37.027,
+          "z": 117.966
+        },
+        {
+          "x": 38.905,
+          "z": 117.699
+        },
+        {
+          "x": 41.725,
+          "z": 117.298
+        },
+        {
+          "x": 43.675,
+          "z": 117.02
+        },
+        {
+          "x": 42.177,
+          "z": 109.071
+        }
+      ]
+    }
+  ]
+}

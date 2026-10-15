@@ -1,0 +1,37 @@
+{
+  "date": "2026-10-15",
+  "unity": "6000.6.5f1",
+  "stage": "development",
+  "tests": {
+    "failed": 0,
+    "skipReason": "Optional ArcGIS package absent from public export",
+    "skipped": 1,
+    "passed": 75,
+    "total": 76
+  },
+  "windows": {
+    "playerSmokePassed": true,
+    "zipSha256": "8CAEB69EAE49443C0C6CBCFE88809BE4A5D68B5DFB99667694CE2C11B02DD251",
+    "cardCapture": "Screenshots/botanical-card-windows-20261015.png",
+    "zipBytes": 105841466,
+    "reportedBuildBytes": 227705869,
+    "cityCapture": "Screenshots/city-windows-20261015.png",
+    "graphics": "Direct3D11",
+    "buildErrors": 0
+  },
+  "android": {
+    "apkSha256": "0C8C43BC45C968CC94C81D2364BA6C147FDF40DCF34FEE5021FE64923D496BFA",
+    "targetApi": 36,
+    "deviceRuntimeVerified": false,
+    "apkV2SignatureVerified": true,
+    "package": "com.yashimi.vkt",
+    "debuggable": true,
+    "apkBytes": 51984055,
+    "zipSha256": "255E6218D731B5774AE3FB58ABA699350EC5781B3E5CEE234FA1DD7778CC0B7D",
+    "minApi": 28,
+    "gradleResult": "BUILD SUCCESSFUL",
+    "abi": "arm64-v8a",
+    "backend": "IL2CPP",
+    "deviceAttached": false
+  }
+}

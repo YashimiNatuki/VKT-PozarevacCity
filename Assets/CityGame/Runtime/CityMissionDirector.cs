@@ -27,11 +27,13 @@ namespace Pozarevac.CityGame
         private CityPlayerVitals vitals;
         private bool CanAct => vitals == null || vitals.CanAct;
         public void BindVitals(CityPlayerVitals value) { vitals = value; }
-        public void FailCurrent(string reason) { if (run != null) { run.Abort(reason); RefreshPresentation(); } }
+        public void FailCurrent(string reason) { Jobs?.Cancel(reason); if (run != null) { run.Abort(reason); RefreshPresentation(); } }
         public event Action<int> ContractCompleted;
 
         public CitySession Session { get; private set; }
         public CityMissionRun Run => run;
+        public CityStreetJobs Jobs { get; private set; }
+        public bool StreetJobsUnlocked => run != null && run.State == CityMissionState.Completed && contractIndex == contracts.Length - 1;
         public int ContractNumber => contractIndex + 1;
         public int ContractCount => contracts?.Length ?? 0;
         public bool IsPaused { get; private set; }
@@ -54,6 +56,7 @@ namespace Pozarevac.CityGame
             player = cityPlayer != null ? cityPlayer : throw new ArgumentNullException(nameof(cityPlayer));
             view = camera != null ? camera : throw new ArgumentNullException(nameof(camera));
             contracts = CreateContracts();
+            Jobs = new CityStreetJobs(Session);
             if (completedContracts < 0 || completedContracts > contracts.Length) throw new ArgumentOutOfRangeException(nameof(completedContracts));
             contractIndex = Math.Min(completedContracts, contracts.Length - 1);
             run = completedContracts == contracts.Length ? CityMissionRun.RestoreCompleted(contracts[contractIndex], Session) : new CityMissionRun(contracts[contractIndex], Session);
@@ -64,16 +67,35 @@ namespace Pozarevac.CityGame
             RefreshPresentation();
         }
 
-        public bool IsStationAvailable(int index) => CanAct && !IsPaused && run != null && run.CanVisit(index);
-        public bool IsStationComplete(int index) => run != null && run.ObjectiveIndex > index;
+        public bool IsStationAvailable(int index) => CanAct && !IsPaused && run != null && (Jobs.IsActive ? index == Jobs.Offer.StationAt(Jobs.ObjectiveIndex) : run.CanVisit(index));
+        public bool IsStationComplete(int index)
+        {
+            if (Jobs != null && Jobs.IsActive)
+            {
+                for (int objective = 0; objective < Jobs.ObjectiveIndex; objective++)
+                    if (Jobs.Offer.StationAt(objective) == index) return true;
+                return false;
+            }
+            return run != null && run.ObjectiveIndex > index;
+        }
+
+        public bool TryAcceptStreetJob()
+        {
+            if (!CanAct || IsPaused || !StreetJobsUnlocked || !Jobs.TryAccept()) return false;
+            hud.ShowNotification(Jobs.Message, 6f);
+            RefreshPresentation();
+            return true;
+        }
 
         public string PromptFor(int index)
         {
             if (run == null) return "City terrain is loading";
             if (IsPaused) return "Paused - Esc to resume";
+            if (Jobs.IsActive)
+                return index == Jobs.Offer.StationAt(Jobs.ObjectiveIndex) ? "[E] " + Jobs.Offer.ObjectiveTitle(Jobs.ObjectiveIndex) : "Sporedni posao: prati plavi marker";
             if (run.State == CityMissionState.Failed) return run.Message;
             if (run.State == CityMissionState.Completed)
-                return contractIndex + 1 < contracts.Length ? "Contract complete - N for next contract" : "All three contracts complete";
+                return contractIndex + 1 < contracts.Length ? "Contract complete - N for next contract" : "Kampanja završena / telefon: SPOR. POSAO";
             if (Session.Heat >= run.EffectiveHeatLimit) return "Too much heat - wait to cool down";
             if (index != run.ObjectiveIndex) return "Follow the cyan objective marker first";
             return run.State == CityMissionState.Ready
@@ -83,6 +105,13 @@ namespace Pozarevac.CityGame
 
         public bool TryInteract(int index)
         {
+            if (Jobs != null && Jobs.IsActive)
+            {
+                if (!CanAct || IsPaused || !Jobs.TryVisit(index)) return false;
+                hud.ShowNotification(Jobs.Message, 5f);
+                RefreshPresentation();
+                return true;
+            }
             if (!CanAct || IsPaused || run == null || !run.TryVisit(index))
                 return false;
             hud.ShowNotification(run.Message, 4f);
@@ -155,6 +184,9 @@ namespace Pozarevac.CityGame
             if (keyboard != null && keyboard.nKey.wasPressedThisFrame) TryNextContract();
             if (keyboard != null && keyboard.rKey.wasPressedThisFrame) TryRetry();
 
+            bool streetJobWasActive = Jobs.IsActive;
+            Jobs.Tick(Time.deltaTime);
+            if (streetJobWasActive && !Jobs.IsActive) { hud.ShowNotification(Jobs.Message, 5f); RefreshPresentation(); }
             run.Tick(Time.deltaTime);
             // Cool down while waiting or recovering, once per game second.
             coolingCountdown += Time.deltaTime;
@@ -181,11 +213,16 @@ namespace Pozarevac.CityGame
             for (int i = 0; i < stations.Length; i++)
             {
                 if (stationRenderers[i] == null) continue;
-                int appearance = IsStationComplete(i) ? 2 : run.HasTarget && i == run.ObjectiveIndex ? 1 : 0;
+                bool target = Jobs.IsActive ? i == Jobs.Offer.StationAt(Jobs.ObjectiveIndex) : run.HasTarget && i == run.ObjectiveIndex;
+                int appearance = IsStationComplete(i) ? 2 : target ? 1 : 0;
                 stationRenderers[i].sharedMaterial = materials[appearance];
                 if (stationLabels[i] != null)
                 {
-                    stationLabels[i].text = $"{i + 1:00}  {run.Contract.ObjectiveTitle(i)}";
+                    string title = run.Contract.ObjectiveTitle(i);
+                    if (Jobs.IsActive)
+                        for (int objective = 0; objective < 3; objective++)
+                            if (Jobs.Offer.StationAt(objective) == i) title = Jobs.Offer.ObjectiveTitle(objective);
+                    stationLabels[i].text = $"{i + 1:00}  {title}";
                     stationLabels[i].color = appearance == 1 ? Color.cyan : appearance == 2 ? Color.green : Color.gray;
                 }
             }
@@ -202,9 +239,17 @@ namespace Pozarevac.CityGame
                 hud.SetMissionText($"{heading}\nPAUSED - Esc to resume");
                 return;
             }
+            if (Jobs.IsActive)
+            {
+                int station = Jobs.Offer.StationAt(Jobs.ObjectiveIndex);
+                Vector3 streetDelta = stations[station].transform.position - player.position;
+                float meters = new Vector2(streetDelta.x, streetDelta.z).magnitude;
+                hud.SetMissionText($"SPOREDNI POSAO / {Jobs.Offer.Title}\n{Jobs.ObjectiveIndex + 1}/3 {Jobs.Offer.ObjectiveTitle(Jobs.ObjectiveIndex)} / marker {station + 1} / {meters:0}m {NavigationHint(player, streetDelta)}\nRok {Math.Ceiling(Jobs.RemainingSeconds)}s / nagrada {Jobs.Offer.CashReward} cash + {Jobs.Offer.ReputationReward} REP\nE: interakcija / P: telefon");
+                return;
+            }
             if (run.State == CityMissionState.Completed)
             {
-                string next = contractIndex + 1 < contracts.Length ? "Press N to unlock the next contract" : "CITY ROUTE COMPLETE - all three contracts paid";
+                string next = contractIndex + 1 < contracts.Length ? "Press N to unlock the next contract" : "KAMPANJA ZAVRŠENA / P: telefon i novi sporedni posao";
                 hud.SetMissionText($"{heading}\n{run.Message}\n{next}");
                 return;
             }

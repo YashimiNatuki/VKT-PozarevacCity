@@ -198,6 +198,15 @@ namespace Pozarevac.CityGame.Editor
             Ensure(game.Hideout != null && !game.Hideout.IsInside, "Hideout was not composed.");
             InteractWith(game, game.Hideout.Entrance, 0.9f);
             Ensure(game.Hideout.IsInside, "Door did not enter the hideout.");
+            CityProgressionController controller = game.GetComponent<CityProgressionController>();
+            controller.OpenPanel();
+            CityPhonePanel phone = UnityEngine.Object.FindAnyObjectByType<CityPhonePanel>(FindObjectsInactive.Include);
+            phone.OpenCatalog();
+            phone.transform.Find("CatalogPanel/Variety_1").GetComponent<UnityEngine.UI.Button>().onClick.Invoke();
+            Ensure(game.Hideout.SelectedVariety == 1, "Catalog row did not select physical garden variety.");
+            phone.transform.Find("CatalogPanel/Variety_0").GetComponent<UnityEngine.UI.Button>().onClick.Invoke();
+            Ensure(game.Hideout.SelectedVariety == 0, "Catalog row did not reset physical garden variety.");
+            controller.ClosePanel();
             int cashBefore = game.Session.Cash;
             for (int i = 0; i < CityGarden.PlotCount; i++)
             {
@@ -208,16 +217,22 @@ namespace Pozarevac.CityGame.Editor
                 Ensure(game.Progression.Garden.Plot(i).moistureSeconds > 7100, "Physical plot did not water.");
             }
             Ensure(game.Session.Cash == cashBefore - 240, "Garden seed costs were incorrect.");
-            CityProgressionController controller = game.GetComponent<CityProgressionController>();
             CitySaveStore saved = new CitySaveStore(controller.SavePath);
             Ensure(saved.TryLoad(out CityProfileData profile, out _), "Garden profile was not saved.");
             Ensure(profile.garden.plots[3].planted && profile.garden.plots[3].moistureSeconds > 7100, "Garden restore lost care state.");
             InteractWith(game, game.Hideout.Exit, 1.05f);
             Ensure(!game.Hideout.IsInside && game.Player.position.y < game.Hideout.Exit.position.y - 900, "Exit failed to return to the city.");
+            InteractWith(game, game.Hideout.Entrance, 0.9f);
+            Ensure(game.Hideout.IsInside, "Could not reenter hideout before fatal damage.");
             Ensure(game.Vitals.ApplyDamage(100) && !game.Vitals.IsAlive, "Fatal damage did not enter dead state.");
             Ensure(!game.Player.GetComponent<CityPlayerInteraction>().TryInteract(), "Dead player could interact.");
             Ensure(game.Vitals.Respawn() && game.Vitals.Health.Current == 100, "Hospital respawn failed.");
             Ensure(!game.Vitals.ApplyDamage(10), "Respawn protection failed.");
+            Ensure(!game.Hideout.IsInside && !game.Hideout.Exit.gameObject.activeInHierarchy, "Hospital did not reset hideout and deactivate interior.");
+            InteractWith(game, game.Hideout.Entrance, 0.9f);
+            Ensure(game.Hideout.IsInside, "Hospital return could not reenter hideout.");
+            InteractWith(game, game.Hideout.Exit, 1.05f);
+            Ensure(!game.Hideout.IsInside, "Hospital return could not exit hideout.");
         }
 
         private static void InteractWith(CityGameBootstrap game, Transform target, float footOffset)

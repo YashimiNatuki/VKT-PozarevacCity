@@ -61,6 +61,7 @@ namespace Pozarevac.CityGame
             Atmosphere = atmosphere;
             Light sun = FindObjectsByType<Light>(FindObjectsInactive.Include).FirstOrDefault(light => light.type == LightType.Directional);
             atmosphere.Configure(sun);
+            if (UnityEngine.SceneManagement.SceneManager.GetActiveScene().name == "VKTOffline") atmosphere.ConfigureCycle(1080, 720, 8);
             hud = new GameObject("CityHUD").AddComponent<CityHud>();
             hud.Initialize(Session, atmosphere);
             progressionController = gameObject.AddComponent<CityProgressionController>();
@@ -86,6 +87,7 @@ namespace Pozarevac.CityGame
 
         private void Update()
         {
+            if (Touch != null && Director != null) Touch.SetOverlayBlocked(Director.IsPaused);
             if (Vitals != null)
             {
                 hud.SetHealth(Vitals.Health.Current, Vitals.Health.Maximum);
@@ -183,6 +185,15 @@ namespace Pozarevac.CityGame
                     CreateHazard(spawn + new Vector3(-22, 0, 20), CityHazardKind.HostileAdult);
                     CityAmbience ambience = gameObject.AddComponent<CityAmbience>();
                     ambience.Initialize(Atmosphere, () => Hideout != null && Hideout.IsInside, () => Audio.Muted);
+                    CityMusicPlayer music = gameObject.AddComponent<CityMusicPlayer>();
+                    music.Initialize();
+                    gameObject.AddComponent<CityMusicPanel>().Initialize(music, () => Director.IsPaused, open => Director.SetOverlayOpen(open));
+                    bool offline = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name == "VKTOffline";
+                    bool authored = Array.Exists(Environment.GetCommandLineArgs(), arg => arg == "-vktAuthoredCenter");
+                    if (offline && !authored && CityOsmStreets.Load() != null)
+                        gameObject.AddComponent<CityOsmStreets>().Initialize(georeference.transform, new Vector3(spawn.x, spawn.y, spawn.z));
+                    else if (offline || authored)
+                        gameObject.AddComponent<CityCityDetail>().Initialize(georeference.transform, spawn, Atmosphere);
                     if (Intro != null && Intro.IsActive) Director.SetPaused(true);
                     WorldReady = true;
                     Debug.Log("CITY_GAME_READY: grounded player, three mission contracts and one active audio listener.");
@@ -209,6 +220,6 @@ namespace Pozarevac.CityGame
             Director?.FailCurrent("Pao si. H / BOLNICA: vrati se na bezbedno mesto; zatim R za novi pokušaj.");
             hud.ShowNotification("Nema života. H: bolnica. Nezavršena misija ne isplaćuje nagradu.", 10);
         }
-        private void OnPlayerRespawned() { Director?.TryRetry(); hud.ShowNotification("Oporavljen si. Kratka zaštita od napada je aktivna.", 5); }
+        private void OnPlayerRespawned() { Hideout?.ResetAfterRespawn(); Director?.TryRetry(); hud.ShowNotification("Oporavljen si. Kratka zaštita od napada je aktivna.", 5); }
     }
 }

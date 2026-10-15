@@ -35,3 +35,19 @@ Tools/Audio/voices.local.json
 *.jks
 .DS_Store
 Thumbs.db
+
+# Recreated by the public portable-playground generator or Unity package import.
+Assets/CesiumSettings/
+Assets/CesiumSettings.meta
+Assets/CityGame/PortableSettings/
+Assets/CityGame/PortableSettings.meta
+Assets/Scenes/VKTOffline.unity
+Assets/Scenes/VKTOffline.unity.meta
+Assets/DefaultVolumeProfile.asset
+Assets/DefaultVolumeProfile.asset.meta
+Assets/UniversalRenderPipelineGlobalSettings.asset
+Assets/UniversalRenderPipelineGlobalSettings.asset.meta
+# Keep only deliberately authored public project settings.
+ProjectSettings/*
+!ProjectSettings/ProjectSettings.asset
+!ProjectSettings/ProjectVersion.txt

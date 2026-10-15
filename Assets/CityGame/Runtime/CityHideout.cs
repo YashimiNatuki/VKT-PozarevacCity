@@ -92,9 +92,21 @@ namespace Pozarevac.CityGame
             room.SetActive(false);
         }
 
+        public void SelectVariety(int index)
+        {
+            CityPlantCatalog.Get(index); // Locked varieties remain selectable for catalog previews.
+            SelectedVariety = index;
+        }
+
+        public void ResetAfterRespawn()
+        {
+            IsInside = false;
+            if (room != null) room.SetActive(false);
+        }
+
         public bool Travel(bool enter)
         {
-            if (game.Director.IsPaused || enter == IsInside || (enter && !Progression.PhoneUnlocked)) return false;
+            if ((game.Vitals != null && !game.Vitals.CanAct) || game.Director.IsPaused || enter == IsInside || (enter && !Progression.PhoneUnlocked)) return false;
             if (enter) { room.SetActive(true); IsInside = true; Teleport(room.transform.TransformPoint(roomSpawn)); }
             else { Teleport(Entrance.position + new Vector3(0, -0.9f, -2.5f)); IsInside = false; room.SetActive(false); }
             game.Audio.Speak(enter ? CityVoice.Mila : CityVoice.Vuk);
@@ -138,7 +150,7 @@ namespace Pozarevac.CityGame
         {
             if (!IsInside) return;
             if (!game.Director.IsPaused && UnityEngine.InputSystem.Keyboard.current != null && UnityEngine.InputSystem.Keyboard.current.vKey.wasPressedThisFrame)
-            { SelectedVariety = (SelectedVariety + 1) % CityPlantCatalog.Count; progression.Notify("Vrsta: " + CityGarden.VarietyName(SelectedVariety)); }
+            { SelectVariety((SelectedVariety + 1) % CityPlantCatalog.Count); progression.Notify("Vrsta: " + CityGarden.VarietyName(SelectedVariety)); }
             if (!game.Director.IsPaused && UnityEngine.InputSystem.Keyboard.current != null)
             {
                 if (UnityEngine.InputSystem.Keyboard.current.bKey.wasPressedThisFrame) { SelectedBuyer = (SelectedBuyer + 1) % CityGardenMarket.BuyerCount; progression.Notify(MarketPrompt); }
@@ -212,4 +224,3 @@ namespace Pozarevac.CityGame
         }
     }
 }
-

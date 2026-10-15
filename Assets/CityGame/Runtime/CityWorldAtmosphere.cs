@@ -12,6 +12,7 @@ namespace Pozarevac.CityGame
         [SerializeField] private AnimationCurve fogDensity = AnimationCurve.Linear(0f, 0.012f, 1f, 0.003f);
 
         private CityWorldClock clock;
+        private bool ownsAmbient;
         public float Hour => clock != null ? clock.Hour : startingHour;
         public bool IsDay => Hour >= 6f && Hour < 18f;
         public float DayDurationSeconds => dayDurationSeconds;
@@ -29,6 +30,7 @@ namespace Pozarevac.CityGame
 
         private void Awake()
         {
+            ownsAmbient = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name == "VKTOffline";
             clock = new CityWorldClock(Mathf.Max(30f, dayDurationSeconds), Mathf.Max(30f, nightDurationSeconds), startingHour);
             if (fogColor == null || fogColor.colorKeys.Length == 0)
                 fogColor = CreateDefaultSkyGradient();
@@ -42,10 +44,18 @@ namespace Pozarevac.CityGame
 
         private void ApplyAtmosphere(float normalizedTime)
         {
+            float daylight = Mathf.Clamp01(Mathf.Sin((normalizedTime - 0.25f) * Mathf.PI * 2f));
             if (sun != null)
             {
                 sun.transform.rotation = Quaternion.Euler(normalizedTime * 360f - 90f, 25f, 0f);
-                sun.intensity = Mathf.Clamp01(Mathf.Sin((normalizedTime - 0.25f) * Mathf.PI * 2f)) * 1.15f + 0.05f;
+                sun.intensity = daylight * 1.15f + 0.05f;
+            }
+            if (ownsAmbient)
+            {
+                RenderSettings.ambientMode = UnityEngine.Rendering.AmbientMode.Trilight;
+                RenderSettings.ambientSkyColor = Color.Lerp(new Color(.035f, .045f, .08f), new Color(.55f, .63f, .74f), daylight);
+                RenderSettings.ambientEquatorColor = Color.Lerp(new Color(.025f, .03f, .045f), new Color(.33f, .35f, .38f), daylight);
+                RenderSettings.ambientGroundColor = Color.Lerp(new Color(.015f, .018f, .025f), new Color(.18f, .16f, .13f), daylight);
             }
 
             RenderSettings.fog = true;
@@ -70,4 +80,3 @@ namespace Pozarevac.CityGame
         }
     }
 }
-

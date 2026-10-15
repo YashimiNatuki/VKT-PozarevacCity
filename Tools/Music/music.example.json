@@ -1,0 +1,13 @@
+{
+  "localFolder": "",
+  "stations": [
+    {
+      "url": "https://ice2.somafm.com/sonicuniverse-128-mp3",
+      "name": "SomaFM Sonic Universe - jazz"
+    },
+    {
+      "url": "https://stream.onestation.fr/128.mp3",
+      "name": "One Station - hip-hop / soul / funk"
+    }
+  ]
+}

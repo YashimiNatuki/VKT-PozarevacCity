@@ -23,7 +23,11 @@ namespace Pozarevac.CityGame.Editor
             Directory.CreateDirectory("Assets/Scenes");
             UniversalRenderPipelineAsset pipeline = EnsurePipeline();
             GraphicsSettings.defaultRenderPipeline = pipeline; QualitySettings.renderPipeline = pipeline;
-            if (File.Exists(ScenePath)) { EditorSceneManager.OpenScene(ScenePath); return; }
+            if (File.Exists(ScenePath))
+            {
+                EditorSceneManager.OpenScene(ScenePath); UpgradeOfflineGeometry();
+                EditorSceneManager.SaveScene(EditorSceneManager.GetActiveScene(), ScenePath); return;
+            }
             EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
             CesiumGeoreference origin = new GameObject("VKT_Georeference").AddComponent<CesiumGeoreference>();
             origin.SetOriginLongitudeLatitudeHeight(21.1764, 44.6193, 0);
@@ -36,8 +40,34 @@ namespace Pozarevac.CityGame.Editor
             camera.tag = "MainCamera"; camera.nearClipPlane = 0.05f; camera.farClipPlane = 500;
             new GameObject("Sun").AddComponent<Light>().type = LightType.Directional;
             new GameObject("CityGame").AddComponent<CityGameBootstrap>();
+            UpgradeOfflineGeometry();
             EditorSceneManager.SaveScene(EditorSceneManager.GetActiveScene(), ScenePath);
             AssetDatabase.SaveAssets();
+        }
+
+        private static void UpgradeOfflineGeometry()
+        {
+            CityOsmStreets.Data source = CityOsmStreets.Load();
+            CesiumGeoreference origin = UnityEngine.Object.FindAnyObjectByType<CesiumGeoreference>();
+            if (source != null && origin != null) origin.SetOriginLongitudeLatitudeHeight(source.anchorLongitude, source.anchorLatitude, 0);
+            GameObject floor = GameObject.Find("VKT_Offline_Practice_Surface");
+            if (floor != null)
+            {
+                floor.transform.localPosition = new Vector3(0, -.52f, 0); floor.transform.localScale = new Vector3(640, 1, 640);
+                string path = SettingsRoot + "/PortableGround.mat";
+                Material ground = AssetDatabase.LoadAssetAtPath<Material>(path);
+                if (ground == null)
+                {
+                    Material template = Resources.Load<Material>("CityMissionMarker");
+                    if (template == null) throw new InvalidOperationException("Portable ground shader template is missing.");
+                    ground = new Material(template); ground.color = new Color(.28f, .30f, .25f);
+                    ground.DisableKeyword("_EMISSION"); if (ground.HasProperty("_EmissionColor")) ground.SetColor("_EmissionColor", Color.black);
+                    if (ground.HasProperty("_Smoothness")) ground.SetFloat("_Smoothness", .1f);
+                    AssetDatabase.CreateAsset(ground, path);
+                }
+                floor.GetComponent<Renderer>().sharedMaterial = ground;
+            }
+            Camera camera = Camera.main; if (camera != null) camera.farClipPlane = 800;
         }
 
         private static UniversalRenderPipelineAsset EnsurePipeline()
@@ -64,8 +94,13 @@ namespace Pozarevac.CityGame.Editor
 
         public static void BuildWindows() => Build(false);
         public static void BuildAndroid() => Build(true);
-        private static void Build(bool android)
+        public static void ExportAndroidProject() => Build(true, true);
+        private static void Build(bool android, bool exportAndroid = false)
         {
+            string previousBuildThreads = Environment.GetEnvironmentVariable("BEE_BUILD_THREADS");
+            if (string.IsNullOrWhiteSpace(previousBuildThreads)) Environment.SetEnvironmentVariable("BEE_BUILD_THREADS", "4");
+            bool windowsRootTrust = android && Array.IndexOf(Environment.GetCommandLineArgs(), "-vktWindowsRootTrust") >= 0;
+            string previousJavaOptions = Environment.GetEnvironmentVariable("JAVA_TOOL_OPTIONS");
             RenderPipelineAsset previousDefault = GraphicsSettings.defaultRenderPipeline;
             RenderPipelineAsset previousQuality = QualitySettings.renderPipeline;
             AndroidSdkVersions previousMin = PlayerSettings.Android.minSdkVersion;
@@ -73,20 +108,34 @@ namespace Pozarevac.CityGame.Editor
             AndroidArchitecture previousArchitectures = PlayerSettings.Android.targetArchitectures;
             ScriptingImplementation previousBackend = PlayerSettings.GetScriptingBackend(NamedBuildTarget.Android);
             string previousId = PlayerSettings.GetApplicationIdentifier(NamedBuildTarget.Android);
+            bool previousExport = EditorUserBuildSettings.exportAsGoogleAndroidProject;
+            bool previousDefaultGraphics = PlayerSettings.GetUseDefaultGraphicsAPIs(BuildTarget.StandaloneWindows64);
+            GraphicsDeviceType[] previousGraphics = PlayerSettings.GetGraphicsAPIs(BuildTarget.StandaloneWindows64);
             try
             {
+                if (windowsRootTrust)
+                {
+                    if (Application.platform != RuntimePlatform.WindowsEditor) throw new InvalidOperationException("Windows root trust requires Windows.");
+                    Environment.SetEnvironmentVariable("JAVA_TOOL_OPTIONS", "-Djavax.net.ssl.trustStoreType=Windows-ROOT -Djavax.net.ssl.trustStore=NONE");
+                }
                 CreatePlayground();
                 UniversalRenderPipelineAsset pipeline = EnsurePipeline();
                 GraphicsSettings.defaultRenderPipeline = pipeline; QualitySettings.renderPipeline = pipeline;
+                if (!android)
+                {
+                    PlayerSettings.SetUseDefaultGraphicsAPIs(BuildTarget.StandaloneWindows64, false);
+                    PlayerSettings.SetGraphicsAPIs(BuildTarget.StandaloneWindows64, new[] { GraphicsDeviceType.Direct3D11 });
+                }
                 if (android)
                 {
+                    EditorUserBuildSettings.exportAsGoogleAndroidProject = exportAndroid;
                     PlayerSettings.Android.minSdkVersion = AndroidSdkVersions.AndroidApiLevel28;
                     PlayerSettings.Android.targetArchitectures = AndroidArchitecture.ARM64;
                     PlayerSettings.SetScriptingBackend(NamedBuildTarget.Android, ScriptingImplementation.IL2CPP);
                     PlayerSettings.SetApplicationIdentifier(NamedBuildTarget.Android, "com.yashimi.vkt");
                     PlayerSettings.defaultInterfaceOrientation = UIOrientation.LandscapeLeft;
                 }
-                string output = Argument("-vktOutput", Path.Combine(Path.GetTempPath(), "VKT-Portable", android ? "VKT.apk" : "VKT.exe"));
+                string output = Argument("-vktOutput", Path.Combine(Path.GetTempPath(), "VKT-Portable", exportAndroid ? "AndroidGradle" : android ? "VKT.apk" : "VKT.exe"));
                 Directory.CreateDirectory(Path.GetDirectoryName(Path.GetFullPath(output)));
                 BuildReport report = BuildPipeline.BuildPlayer(new BuildPlayerOptions
                 {
@@ -99,11 +148,16 @@ namespace Pozarevac.CityGame.Editor
             }
             finally
             {
+                Environment.SetEnvironmentVariable("BEE_BUILD_THREADS", previousBuildThreads);
+                if (windowsRootTrust) Environment.SetEnvironmentVariable("JAVA_TOOL_OPTIONS", previousJavaOptions);
+                PlayerSettings.SetUseDefaultGraphicsAPIs(BuildTarget.StandaloneWindows64, previousDefaultGraphics);
+                PlayerSettings.SetGraphicsAPIs(BuildTarget.StandaloneWindows64, previousGraphics);
                 GraphicsSettings.defaultRenderPipeline = previousDefault; QualitySettings.renderPipeline = previousQuality;
                 PlayerSettings.Android.minSdkVersion = previousMin; PlayerSettings.Android.targetArchitectures = previousArchitectures;
                 PlayerSettings.SetScriptingBackend(NamedBuildTarget.Android, previousBackend);
                 PlayerSettings.SetApplicationIdentifier(NamedBuildTarget.Android, previousId);
                 PlayerSettings.defaultInterfaceOrientation = previousOrientation;
+                EditorUserBuildSettings.exportAsGoogleAndroidProject = previousExport;
                 AssetDatabase.SaveAssets();
             }
         }

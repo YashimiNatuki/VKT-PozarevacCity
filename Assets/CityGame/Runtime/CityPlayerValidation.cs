@@ -34,9 +34,44 @@ namespace Pozarevac.CityGame
             if (game == null || !game.WorldReady) { Finish(false, "City terrain did not become ready."); yield break; }
             yield return new WaitForSecondsRealtime(1);
             if (!Verify(game, out string details)) { Finish(false, details); yield break; }
+            if (Array.Exists(Environment.GetCommandLineArgs(), arg => arg == "-vktEnhanced"))
+            {
+                if (!VerifyEnhanced(game, out string extra)) { Finish(false, extra); yield break; }
+                details += " " + extra;
+                CityMusicPlayer music = game.GetComponent<CityMusicPlayer>();
+                if (music.LocalCount > 0)
+                {
+                    music.Next(); float audioDeadline = Time.realtimeSinceStartup + 20;
+                    while (!music.IsPlaying && Time.realtimeSinceStartup < audioDeadline) yield return null;
+                    if (!music.IsPlaying) { Finish(false, "Local audio did not decode and start within 20 seconds."); yield break; }
+                    music.TogglePause(); details += " Local audio decoded and playback started.";
+                }
+            }
             yield return new WaitForSecondsRealtime(0.5f);
             if (Vector3.Distance(game.Player.GetComponentInChildren<Camera>().transform.localPosition, new Vector3(0, 1.62f, 0)) > 0.01f)
             { Finish(false, "Camera left the player's eye position after validation frames."); yield break; }
+            if (Array.Exists(Environment.GetCommandLineArgs(), arg => arg == "-vktCatalogCapture"))
+            {
+                game.GetComponent<CityProgressionController>().OpenPanel();
+                FindAnyObjectByType<CityPhonePanel>(FindObjectsInactive.Include).OpenCatalog();
+                yield return null;
+            }
+            if (Array.Exists(Environment.GetCommandLineArgs(), arg => arg == "-vktCardsCapture"))
+            {
+                game.GetComponent<CityProgressionController>().OpenPanel();
+                CityPhonePanel phone = FindAnyObjectByType<CityPhonePanel>(FindObjectsInactive.Include); phone.OpenCatalog();
+                phone.transform.Find("CatalogPanel/Identity").GetComponent<UnityEngine.UI.Button>().onClick.Invoke();
+                yield return null;
+            }
+            if (Array.Exists(Environment.GetCommandLineArgs(), arg => arg == "-vktCityCapture"))
+            {
+                game.GetComponent<CityProgressionController>().ClosePanel();
+                if (game.Hideout.IsInside) game.Hideout.Travel(false);
+                CharacterController body = game.Player.GetComponent<CharacterController>(); body.enabled = false;
+                game.Player.position = new Vector3(0, 12, -40); body.enabled = true;
+                game.Player.GetComponentInChildren<Camera>().transform.LookAt(new Vector3(0, 3, 12));
+                yield return null;
+            }
             string screenshot = Argument("-vktScreenshot", "");
             if (!string.IsNullOrEmpty(screenshot))
             {
@@ -45,6 +80,36 @@ namespace Pozarevac.CityGame
                 if (!File.Exists(screenshot) || !ContainsRenderedPixels(screenshot)) { Finish(false, "Player screenshot is missing or blank; visual validation did not pass."); yield break; }
             }
             Finish(true, details);
+        }
+
+        private static bool VerifyEnhanced(CityGameBootstrap game, out string details)
+        {
+            try
+            {
+                CityMusicPlayer music = game.GetComponent<CityMusicPlayer>();
+                Ensure(music != null && music.Count >= 3, "Music presets were not initialized.");
+                CityMusicPanel musicPanel = game.GetComponent<CityMusicPanel>();
+                game.GetComponent<CityProgressionController>().ClosePanel();
+                musicPanel.Toggle(); Ensure(musicPanel.IsOpen && game.Director.IsPaused, "Music overlay did not pause input.");
+                musicPanel.Close(); Ensure(!game.Director.IsPaused, "Music overlay left the game paused.");
+                Ensure(Resources.Load<Texture2D>("Art/CityFacades") != null, "City facade atlas is missing.");
+                Ensure(CityPlantEncyclopedia.Count == 16 && Resources.Load<Texture2D>("Art/BotanicalAtlas") != null, "Botanical cards or atlas are missing.");
+                CityOsmStreets streets = game.GetComponent<CityOsmStreets>();
+                Ensure(streets != null && streets.SegmentCount > 0 && streets.Source.buildings.Length > 0, "Actual OSM streets/footprints were not composed.");
+                if (game.Hideout.IsInside) Ensure(game.Hideout.Travel(false), "Could not leave hideout for street job.");
+                int before = game.Session.Cash;
+                Ensure(game.Director.TryAcceptStreetJob(), "Repeatable street job did not unlock.");
+                CityStreetJobOffer offer = game.Director.Jobs.Offer;
+                for (int i = 0; i < 3; i++) Visit(game, offer.StationAt(i));
+                Ensure(!game.Director.Jobs.IsActive && game.Session.Cash == before + offer.CashReward, "Street job payout or route failed.");
+                Ensure(!game.Director.TryInteract(offer.StationAt(2)), "Street job paid twice.");
+                game.GetComponent<CityProgressionController>().SaveNow();
+                InteractWith(game, game.Hideout.Entrance, .9f);
+                game.Player.GetComponentInChildren<Camera>().transform.LookAt((game.Hideout.PlotTransform(0).position + game.Hideout.PlotTransform(3).position) / 2 + Vector3.up * .5f);
+                details = $"Enhanced: {streets.SegmentCount} OSM segments, {streets.Source.buildings.Length} building footprints, 16 botanical cards, music overlay and physical street-job payout passed.";
+                return true;
+            }
+            catch (Exception error) { details = error.GetType().Name + ": " + error.Message; return false; }
         }
 
         private static bool Verify(CityGameBootstrap game, out string details)
@@ -78,6 +143,12 @@ namespace Pozarevac.CityGame
                 Ensure(game.Director.IsPaused, "Phone did not pause the player.");
                 if (Array.Exists(Environment.GetCommandLineArgs(), arg => arg == "-vktHideout"))
                 {
+                    CityPhonePanel phone = FindAnyObjectByType<CityPhonePanel>(FindObjectsInactive.Include);
+                    phone.OpenCatalog();
+                    phone.transform.Find("CatalogPanel/Variety_1").GetComponent<UnityEngine.UI.Button>().onClick.Invoke();
+                    Ensure(game.Hideout.SelectedVariety == 1, "Catalog row did not select the physical garden variety.");
+                    phone.transform.Find("CatalogPanel/Variety_0").GetComponent<UnityEngine.UI.Button>().onClick.Invoke();
+                    Ensure(game.Hideout.SelectedVariety == 0, "Catalog row did not reset the physical garden variety.");
                     controller.ClosePanel();
                     InteractWith(game, game.Hideout.Entrance, 0.9f);
                     Ensure(game.Hideout.IsInside, "Player could not enter hideout.");
@@ -93,9 +164,16 @@ namespace Pozarevac.CityGame
                         "Player garden save restore failed.");
                     InteractWith(game, game.Hideout.Exit, 1.05f);
                     Ensure(!game.Hideout.IsInside, "Player could not exit hideout.");
+                    InteractWith(game, game.Hideout.Entrance, 0.9f);
+                    Ensure(game.Hideout.IsInside, "Could not reenter hideout before fatal damage.");
                     Ensure(game.Vitals.ApplyDamage(100) && !game.Vitals.IsAlive, "Player fatal damage did not enter dead state.");
                     Ensure(!game.Player.GetComponent<CityPlayerInteraction>().TryInteract(), "Dead player interacted.");
                     Ensure(game.Vitals.Respawn() && !game.Vitals.ApplyDamage(10), "Player hospital or respawn protection failed.");
+                    Ensure(!game.Hideout.IsInside && !game.Hideout.Exit.gameObject.activeInHierarchy, "Hospital did not reset hideout and deactivate interior.");
+                    InteractWith(game, game.Hideout.Entrance, 0.9f);
+                    Ensure(game.Hideout.IsInside, "Hospital return could not reenter hideout.");
+                    InteractWith(game, game.Hideout.Exit, 1.05f);
+                    Ensure(!game.Hideout.IsInside, "Hospital return could not exit hideout.");
                     InteractWith(game, game.Hideout.Entrance, 0.9f);
                     Camera roomCamera = game.Player.GetComponentInChildren<Camera>();
                     roomCamera.transform.LookAt((game.Hideout.PlotTransform(0).position + game.Hideout.PlotTransform(3).position) / 2 + Vector3.up * 0.5f);
