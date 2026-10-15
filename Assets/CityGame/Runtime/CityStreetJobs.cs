@@ -112,7 +112,7 @@ namespace Pozarevac.CityGame
             int[] route = { 0, 1, 2 };
             for (int i = 2; i > 0; i--) { int selected = (int)(Next() % (uint)(i + 1)); int swap = route[i]; route[i] = route[selected]; route[selected] = swap; }
             int type = (int)(Next() % 4u), chapter = StoryChapter;
-            string title = type switch { 0 => "Cveće za komšiluk", 1 => "Izgubljena torba", 2 => "Delovi za bicikl", _ => "Kasna dostava" };
+            string title = type switch { 0 => "Porudžbina iz šteka", 1 => "Izgubljena torba", 2 => "Delovi za bicikl", _ => "Kasna dostava" };
             string story = chapter == 1 ? "Mila proverava može li da ti poveri prve porudžbine." : chapter == 2 ? "Vuk te preporučuje novim kontaktima iz kraja." : "Luka organizuje gradsku mrežu pouzdanih kurira.";
             Offer = new CityStreetJobOffer("Poglavlje " + chapter + " / " + title,
                 story + " Obiđi markere " + (route[0] + 1) + " → " + (route[1] + 1) + " → " + (route[2] + 1) + ".",

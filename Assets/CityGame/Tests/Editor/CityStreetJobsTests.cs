@@ -81,8 +81,9 @@ namespace Pozarevac.CityGame.Tests.Editor
             {
                 CityPlantCard card = CityPlantEncyclopedia.Get(i);
                 Assert.That(card.IsTradable, Is.EqualTo(i < 8));
-                Assert.That(card.SourceUrl, Does.StartWith("https://plants.ces.ncsu.edu/plants/"));
-                Assert.That(card.ScientificName, Is.Not.Empty);
+                Assert.That(new Uri(card.SourceUrl).Scheme, Is.EqualTo("https"));
+                CollectionAssert.Contains(new[] { "www.royalqueenseeds.com", "www.barneysfarm.com", "sensiseeds.com", "www.seriousseeds.com", "dutch-passion.com" }, new Uri(card.SourceUrl).Host);
+                Assert.That(card.ScientificName, Does.StartWith("Cannabis sativa L."));
                 if (i < 8) { Assert.That(card.CatalogIndex, Is.EqualTo(i)); Assert.That(card.Name, Is.EqualTo(CityPlantCatalog.Get(i).Name)); }
             }
             Assert.Throws<ArgumentOutOfRangeException>(() => CityPlantEncyclopedia.Get(16));

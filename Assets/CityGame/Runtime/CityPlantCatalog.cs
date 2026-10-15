@@ -14,18 +14,18 @@ namespace Pozarevac.CityGame
         { Name = name; SeedPrice = seedPrice; GrowSeconds = growSeconds; Yield = yield; BaseUnitPrice = unitPrice; RequiredReputation = reputation; }
     }
 
-    // All varieties are fictional ornamental plants. Balancing values are game-only.
+    // Real cannabis strain names; every price, timer and inventory yield is fictional game balance.
     public static class CityPlantCatalog
     {
         private static readonly CityPlantDefinition[] Entries = {
-            new CityPlantDefinition("Noćni cvet", 60, 21600, 3, 60, 0),
-            new CityPlantDefinition("Plava iskra", 85, 25200, 3, 75, 0),
-            new CityPlantDefinition("Zlatna magla", 110, 28800, 3, 90, 0),
-            new CityPlantDefinition("Dunavski biser", 140, 32400, 4, 95, 0),
-            new CityPlantDefinition("Ljubičasti fenjer", 175, 36000, 4, 115, 0),
-            new CityPlantDefinition("Srebrni oblak", 230, 39600, 5, 125, 30),
-            new CityPlantDefinition("Moravska zvezda", 310, 43200, 5, 160, 60),
-            new CityPlantDefinition("Carski safir", 420, 50400, 6, 190, 100)
+            new CityPlantDefinition("Amnesia Haze", 60, 21600, 3, 60, 0),
+            new CityPlantDefinition("OG Kush", 85, 25200, 3, 75, 0),
+            new CityPlantDefinition("Wedding Cake", 110, 28800, 3, 90, 0),
+            new CityPlantDefinition("Purple Haze", 140, 32400, 4, 95, 0),
+            new CityPlantDefinition("AK-47", 175, 36000, 4, 115, 0),
+            new CityPlantDefinition("White Widow", 230, 39600, 5, 125, 30),
+            new CityPlantDefinition("Sour Diesel", 310, 43200, 5, 160, 60),
+            new CityPlantDefinition("Green Gelato", 420, 50400, 6, 190, 100)
         };
         public static int Count => Entries.Length;
         public static CityPlantDefinition Get(int variety)

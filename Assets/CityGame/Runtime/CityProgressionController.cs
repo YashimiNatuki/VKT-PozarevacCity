@@ -45,7 +45,7 @@ namespace Pozarevac.CityGame
             SaveNow(); // Reward and completed count are now committed together.
             RefreshIdentity();
             game.Audio.Speak(CityVoice.Luka);
-            if (count == 1) hud.ShowNotification("Phone unlocked: P. Buy a fictional seed, plant, harvest and trade.", 7);
+            if (count == 1) hud.ShowNotification("Telefon otključan: P. Strejn katalog, seme, štek i trgovina.", 7);
             else if (count == 2) hud.ShowNotification("Crew unlocked at REP 30. Open P for recruitment.", 7);
             else hud.ShowNotification("City route complete. Recruit two crew members to claim three districts.", 7);
         }
@@ -77,7 +77,7 @@ namespace Pozarevac.CityGame
             if (director != null && !director.IsPaused)
             {
                 if (Progression.IsGrowing) dirty = true;
-                if (Progression.Tick(Time.deltaTime)) hud.ShowNotification("Night Bloom is ready. P to harvest.", 5);
+                if (Progression.Tick(Time.deltaTime)) hud.ShowNotification("Probna saksija je spremna. P: berba.", 5);
             }
             saveCountdown -= Time.unscaledDeltaTime;
             if (saveCountdown <= 0) { SaveNow(); saveCountdown = 5; }

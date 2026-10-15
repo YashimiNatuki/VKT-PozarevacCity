@@ -45,6 +45,12 @@ namespace Pozarevac.CityGame
             Click("PONOVI", new Vector2(1, 1), new Vector2(-290, -170), retry);
             Click("BOLNICA", new Vector2(1, 1), new Vector2(-400, -170), respawn);
         }
+        public void BindCombat(Action attack, Action cycle)
+        {
+            if (overlay == null) return;
+            Click("NAPAD", new Vector2(1, 0), new Vector2(-170, 160), attack);
+            Click("OPREMA", new Vector2(1, 0), new Vector2(-280, 160), cycle);
+        }
         private GameObject MakeButton(string title, Vector2 anchor, Vector2 position)
         {
             GameObject obj = new GameObject(title, typeof(RectTransform), typeof(Image)); obj.transform.SetParent(overlay.transform, false);

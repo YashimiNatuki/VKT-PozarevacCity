@@ -6,7 +6,7 @@ namespace Pozarevac.CityGame.Tests.Editor
     public sealed class CityPlantMarketTests
     {
         [Test]
-        public void CatalogHasEightFictionalPlantsWithFiveInitiallyAvailable()
+        public void CatalogHasEightCannabisStrainsWithFiveInitiallyAvailable()
         {
             CityGarden garden = new CityGarden(new CitySession(1000));
             Assert.That(CityPlantCatalog.Count, Is.EqualTo(8));
@@ -17,6 +17,27 @@ namespace Pozarevac.CityGame.Tests.Editor
             }
             Assert.That(garden.BuySeed(5), Is.False);
             Assert.That(garden.PlantFromInventory(0, 0, 1000), Is.False);
+        }
+
+        [Test]
+        public void StrainRenameKeepsAllEightSaveIdsAndEconomyValues()
+        {
+            string[] names = { "Amnesia Haze", "OG Kush", "Wedding Cake", "Purple Haze", "AK-47", "White Widow", "Sour Diesel", "Green Gelato" };
+            int[] prices = { 60, 85, 110, 140, 175, 230, 310, 420 };
+            int[] seconds = { 21600, 25200, 28800, 32400, 36000, 39600, 43200, 50400 };
+            int[] yields = { 3, 3, 3, 4, 4, 5, 5, 6 };
+            int[] values = { 60, 75, 90, 95, 115, 125, 160, 190 };
+            CityGardenData saved = new CityGarden(new CitySession(1000)).Snapshot();
+            for (int i = 0; i < 8; i++)
+            {
+                CityPlantDefinition plant = CityPlantCatalog.Get(i);
+                Assert.That(plant.Name, Is.EqualTo(names[i]));
+                Assert.That(plant.SeedPrice, Is.EqualTo(prices[i])); Assert.That(plant.GrowSeconds, Is.EqualTo(seconds[i]));
+                Assert.That(plant.Yield, Is.EqualTo(yields[i])); Assert.That(plant.BaseUnitPrice, Is.EqualTo(values[i]));
+                saved.seeds[i] = i + 1; saved.stock[i] = 8 - i;
+            }
+            CityGarden restored = new CityGarden(new CitySession(1000), saved);
+            for (int i = 0; i < 8; i++) { Assert.That(restored.Seeds(i), Is.EqualTo(i + 1)); Assert.That(restored.Stock(i), Is.EqualTo(8 - i)); }
         }
 
         [Test]
@@ -143,5 +164,3 @@ namespace Pozarevac.CityGame.Tests.Editor
         }
     }
 }
-
-

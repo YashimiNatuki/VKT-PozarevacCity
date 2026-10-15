@@ -42,6 +42,7 @@ namespace Pozarevac.CityGame
         public CityGameAudio Audio { get; private set; }
         public CityPlayerVitals Vitals { get; private set; }
         public CityTouchControls Touch { get; private set; }
+        public CityCombatRuntime Combat { get; private set; }
         public CityWorldAtmosphere Atmosphere { get; private set; }
 
         private void Awake()
@@ -181,6 +182,8 @@ namespace Pozarevac.CityGame
                     Touch.Initialize(() => Player.GetComponent<CityPlayerInteraction>().TryInteract(), progressionController.TogglePanel,
                         () => Director.TryNextContract(), () => Director.TryRetry(), () => { if (!Director.IsPaused) Vitals.Respawn(); });
                     movement.ConfigureTouch(Touch);
+                    Combat = gameObject.AddComponent<CityCombatRuntime>();
+                    Combat.Initialize(this, hud, georeference.transform, Player.position);
                     CreateHazard(spawn + new Vector3(18, 0, 8), CityHazardKind.GuardDog);
                     CreateHazard(spawn + new Vector3(-22, 0, 20), CityHazardKind.HostileAdult);
                     CityAmbience ambience = gameObject.AddComponent<CityAmbience>();

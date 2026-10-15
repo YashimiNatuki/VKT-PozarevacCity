@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Pozarevac.CityGame
@@ -19,6 +20,11 @@ namespace Pozarevac.CityGame
         private Vector3 roomSpawn;
         private Material wallMaterial, floorMaterial, potMaterial, leafMaterial;
         private readonly Transform[] plants = new Transform[CityGarden.PlotCount];
+        private readonly Transform[] budClusters = new Transform[CityGarden.PlotCount];
+        private readonly Renderer[,] budRenderers = new Renderer[CityGarden.PlotCount, 5];
+        private readonly int[] visualVarieties = { -1, -1, -1, -1 };
+        private Material[] budMaterials;
+        private Mesh plantMesh;
         private readonly TextMesh[] labels = new TextMesh[CityGarden.PlotCount];
         private float refreshCountdown;
         private Transform view;
@@ -41,7 +47,14 @@ namespace Pozarevac.CityGame
             wallMaterial = Material(template, new Color(0.13f, 0.19f, 0.23f));
             floorMaterial = Material(template, new Color(0.22f, 0.25f, 0.28f));
             potMaterial = Material(template, new Color(0.38f, 0.22f, 0.12f));
-            leafMaterial = Material(template, new Color(0.16f, 0.65f, 0.35f));
+            leafMaterial = Material(template, new Color(0.12f, 0.42f, 0.17f));
+            plantMesh = CreatePlantSilhouette();
+            // Artistic palette identifiers, not claims of authenticated strain phenotypes.
+            Color[] budColors = { new Color(.42f,.55f,.23f), new Color(.28f,.40f,.16f), new Color(.66f,.66f,.49f),
+                new Color(.46f,.20f,.53f), new Color(.45f,.43f,.20f), new Color(.73f,.79f,.62f),
+                new Color(.43f,.52f,.25f), new Color(.57f,.44f,.62f) };
+            budMaterials = new Material[CityPlantCatalog.Count];
+            for (int variety = 0; variety < budMaterials.Length; variety++) budMaterials[variety] = Material(template, budColors[variety]);
             Transform globeRoot = game.Player.parent;
             Entrance = Box("VKT_Stek_Ulaz", globeRoot, contactGround + new Vector3(4, 1.1f, 0), new Vector3(1.4f, 2.2f, 0.3f), wallMaterial).transform;
             Entrance.gameObject.AddComponent<CityHideoutDoor>().Configure(this, true);
@@ -70,21 +83,29 @@ namespace Pozarevac.CityGame
                 pot.AddComponent<CityGardenPlot>().Configure(this, i);
                 GameObject stem = Box("Biljka", pot.transform, new Vector3(0, 1, 0), new Vector3(0.3f, 1.2f, 0.3f), leafMaterial, true);
                 plants[i] = stem.transform;
-                for (int leafIndex = 0; leafIndex < 3; leafIndex++)
+                // Retain the original Biljka transform, cube collider and pot interaction ancestry.
+                stem.GetComponent<MeshFilter>().sharedMesh = plantMesh;
+                GameObject cluster = new GameObject("BudKlaster"); cluster.transform.SetParent(stem.transform, false);
+                budClusters[i] = cluster.transform;
+                for (int bud = 0; bud < 5; bud++)
                 {
-                    GameObject leaf = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-                    leaf.name = "List_" + leafIndex; leaf.transform.SetParent(stem.transform, false);
-                    leaf.transform.localPosition = new Vector3(leafIndex % 2 == 0 ? 0.7f : -0.7f, leafIndex * 0.25f, 0);
-                    leaf.transform.localScale = new Vector3(2.2f, 0.2f, 1.1f);
-                    leaf.GetComponent<Renderer>().sharedMaterial = leafMaterial;
-                    Destroy(leaf.GetComponent<Collider>());
+                    GameObject bloom = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+                    bloom.name = "Bud_" + bud; bloom.transform.SetParent(cluster.transform, false);
+                    float angle = bud * 137.5f * Mathf.Deg2Rad;
+                    float radius = bud == 0 ? 0f : .64f;
+                    bloom.transform.localPosition = new Vector3(Mathf.Cos(angle) * radius, .47f - bud * .065f, Mathf.Sin(angle) * radius);
+                    bloom.transform.localScale = new Vector3(bud == 0 ? .65f : .48f, bud == 0 ? .36f : .25f, bud == 0 ? .65f : .48f);
+                    budRenderers[i, bud] = bloom.GetComponent<Renderer>();
+                    budRenderers[i, bud].sharedMaterial = budMaterials[0];
+                    Destroy(bloom.GetComponent<Collider>());
                 }
+                cluster.SetActive(false);
                 labels[i] = Text(pot.transform, "", new Vector3(0, i < 2 ? 1.7f : 2.6f, 0));
             }
             GameObject seedCounter = Box("KatalogSemena", room.transform, new Vector3(-3.5f, 0.7f, -3), new Vector3(1.2f, 1.3f, 1), potMaterial, true);
             seedCounter.AddComponent<CityGardenVendor>().Configure(this, false);
             Text(seedCounter.transform, "KATALOG / [E] Kupi seme\n[V] vrsta", new Vector3(0, 1.1f, 0));
-            GameObject marketCounter = Box("OtkupCveca", room.transform, new Vector3(3.5f, 0.7f, -3), new Vector3(1.2f, 1.3f, 1), potMaterial, true);
+            GameObject marketCounter = Box("OtkupBuda", room.transform, new Vector3(3.5f, 0.7f, -3), new Vector3(1.2f, 1.3f, 1), potMaterial, true);
             marketCounter.AddComponent<CityGardenVendor>().Configure(this, true);
             Text(marketCounter.transform, "OTKUP / [E] Prodaj izabrano\n[B] kupac / [J] lokacija", new Vector3(0, 1.1f, 0));
             catalogBoard = Text(room.transform, "", new Vector3(0, 2.6f, 5.6f));
@@ -172,7 +193,7 @@ namespace Pozarevac.CityGame
         }
         private void Refresh()
         {
-            System.Text.StringBuilder catalog = new System.Text.StringBuilder("UKRASNE BILJKE / KATALOG\n");
+            System.Text.StringBuilder catalog = new System.Text.StringBuilder("STREJNOVI / SEME I BUD\n");
             for (int variety = 0; variety < CityPlantCatalog.Count; variety++)
             {
                 CityPlantDefinition plant = CityPlantCatalog.Get(variety);
@@ -189,13 +210,69 @@ namespace Pozarevac.CityGame
                 CityGardenPlotData p = Progression.Garden.Plot(i);
                 plants[i].gameObject.SetActive(p.planted);
                 float plantHeight = 0.2f + (float)(p.grownSeconds / CityGarden.GrowDuration(p.variety));
-                plants[i].localScale = new Vector3(0.3f, plantHeight, 0.3f);
+                float visualProgress = (float)(p.grownSeconds / CityGarden.GrowDuration(p.variety));
+                if (visualVarieties[i] != p.variety)
+                {
+                    for (int bud = 0; bud < 5; bud++) budRenderers[i, bud].sharedMaterial = budMaterials[p.variety];
+                    visualVarieties[i] = p.variety;
+                }
+                budClusters[i].gameObject.SetActive(p.planted && visualProgress >= .45f);
+                float budSize = Mathf.Lerp(.15f, 1f, Mathf.InverseLerp(.45f, 1f, visualProgress));
+                budClusters[i].localScale = Vector3.one * budSize;
+                float canopy = .3f * Mathf.Lerp(.12f, 1f, Mathf.Clamp01(visualProgress));
+                plants[i].localScale = new Vector3(canopy, plantHeight, canopy);
                 plants[i].localPosition = new Vector3(0, 0.5f + plantHeight * 0.5f, 0);
                 string state = !p.planted ? "Prazno / E: sadnja" : Progression.Garden.IsReady(i) ? "SPREMNO / E: berba" :
                     Progression.Garden.NeedsWater(i) ? "SUVO / E: zalivanje" : $"Rast {p.grownSeconds / CityGarden.GrowDuration(p.variety):P0} / voda {Math.Ceiling(p.moistureSeconds / 60)} min";
                 labels[i].text = $"{i + 1:00} / {(p.planted ? CityGarden.VarietyName(p.variety) : CityGarden.VarietyName(SelectedVariety))}\n{state}";
                 labels[i].color = !p.planted ? Color.gray : Progression.Garden.IsReady(i) ? Color.cyan : Progression.Garden.NeedsWater(i) ? new Color(1, 0.75f, 0.25f) : Color.white;
                 labels[i].transform.rotation = view.rotation;
+            }
+        }
+        private static Mesh CreatePlantSilhouette()
+        {
+            List<Vector3> vertices = new List<Vector3>(1024);
+            List<int> triangles = new List<int>(4096);
+            // A thin stem inside the retained interaction collider.
+            vertices.AddRange(new[] { new Vector3(-.10f,-.5f,-.10f), new Vector3(.10f,-.5f,-.10f), new Vector3(.10f,.5f,-.10f), new Vector3(-.10f,.5f,-.10f),
+                new Vector3(-.10f,-.5f,.10f), new Vector3(.10f,-.5f,.10f), new Vector3(.10f,.5f,.10f), new Vector3(-.10f,.5f,.10f) });
+            triangles.AddRange(new[] { 0,2,1,0,3,2,4,5,6,4,6,7,0,4,7,0,7,3,1,2,6,1,6,5,3,7,6,3,6,2 });
+            for (int level = 0; level < 4; level++)
+                for (int side = 0; side < 2; side++)
+                    for (int finger = -3; finger <= 3; finger++)
+                    {
+                        float angle = (level * 85f + side * 180f + finger * 22f) * Mathf.Deg2Rad;
+                        float length = (2.25f - Mathf.Abs(finger) * .42f) * (level == 3 ? .72f : 1f);
+                        AddSerratedLeaflet(vertices, triangles, new Vector3(0, -.34f + level * .21f, 0), angle, length);
+                    }
+            Mesh mesh = new Mesh { name = "VKT_StylizedCannabisFanLeaves" };
+            mesh.SetVertices(vertices); mesh.SetTriangles(triangles, 0); mesh.RecalculateNormals(); mesh.RecalculateBounds();
+            mesh.UploadMeshData(true);
+            return mesh;
+        }
+        private static void AddSerratedLeaflet(List<Vector3> vertices, List<int> triangles, Vector3 origin, float angle, float length)
+        {
+            Vector3 forward = new Vector3(Mathf.Cos(angle), .07f, Mathf.Sin(angle));
+            Vector3 right = new Vector3(-Mathf.Sin(angle), 0, Mathf.Cos(angle));
+            int first = vertices.Count;
+            vertices.Add(origin);
+            for (int edge = 0; edge < 2; edge++)
+            {
+                if (edge == 1) vertices.Add(origin + forward * length);
+                for (int point = 1; point <= 6; point++)
+                {
+                    float t = (edge == 0 ? point : 7 - point) / 7f;
+                    float width = Mathf.Sin(t * Mathf.PI) * .17f * (point % 2 == 0 ? 1.18f : .76f);
+                    vertices.Add(origin + forward * (length * t) + right * (width * (edge == 0 ? 1f : -1f)));
+                }
+            }
+            int count = vertices.Count - first;
+            for (int vertex = 0; vertex < count; vertex++) vertices.Add(vertices[first + vertex]);
+            int back = first + count;
+            for (int i = 1; i < count - 1; i++)
+            {
+                triangles.Add(first); triangles.Add(first + i); triangles.Add(first + i + 1);
+                triangles.Add(back); triangles.Add(back + i + 1); triangles.Add(back + i);
             }
         }
         private static Material Material(Material source, Color color)
@@ -221,6 +298,8 @@ namespace Pozarevac.CityGame
             if (room != null) Destroy(room);
             if (Entrance != null) Destroy(Entrance.gameObject);
             foreach (Material m in new[] { wallMaterial, floorMaterial, potMaterial, leafMaterial }) if (m != null) Destroy(m);
+            if (budMaterials != null) foreach (Material m in budMaterials) if (m != null) Destroy(m);
+            if (plantMesh != null) Destroy(plantMesh);
         }
     }
 }

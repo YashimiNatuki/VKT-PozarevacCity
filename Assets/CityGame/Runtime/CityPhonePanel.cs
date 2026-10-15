@@ -17,7 +17,7 @@ namespace Pozarevac.CityGame
         private Text summary;
         private Text status, catalogStatus;
         private Button create;
-        private Button buy, plant, harvest, sell, recruit, claim;
+        private Button recruit, claim;
         private float refreshCountdown;
         private string feedback;
         private float feedbackUntil;
@@ -74,17 +74,13 @@ namespace Pozarevac.CityGame
             summary = Label("Summary", content.transform, "", 23, 180, 180);
             summary.supportRichText = false;
             economy = Rect("Economy", content.transform, new Vector2(640, 250), new Vector2(0, -90)).gameObject;
-            buy = Button("Buy", economy.transform, "Seme / 40 cash", new Vector2(-160, 85), () => Act(owner.Progression.BuySeed));
-            plant = Button("Plant", economy.transform, "Posadi / 30 sekundi igre", new Vector2(160, 85), () => Act(owner.Progression.Plant));
-            harvest = Button("Harvest", economy.transform, "Uberi / 3 komada", new Vector2(-160, 10), () => Act(owner.Progression.Harvest));
-            sell = Button("Sell", economy.transform, "Prodaj / 35 po komadu", new Vector2(160, 10), () => Act(owner.Progression.Sell));
-            recruit = Button("Recruit", economy.transform, "Angažuj / 250 cash", new Vector2(-160, -65), () => Act(owner.Progression.Recruit));
-            claim = Button("Claim", economy.transform, "Preuzmi blok / 750 cash", new Vector2(160, -65), () => Act(owner.Progression.ClaimTerritory));
+            recruit = Button("Recruit", economy.transform, "Angažuj / 250 cash", new Vector2(-160, 40), () => Act(owner.Progression.Recruit));
+            claim = Button("Claim", economy.transform, "Preuzmi blok / 750 cash", new Vector2(160, 40), () => Act(owner.Progression.ClaimTerritory));
             status = Label("Status", content.transform, "", 18, 645, 35);
             Button("Catalog", content.transform, "KATALOG / BAŠTA", new Vector2(-160, -290), OpenCatalog);
             Button("StreetJob", content.transform, "DNEVNIK / POSLOVI", new Vector2(160, -290), OpenJobs);
             Button("Close", content.transform, "Nazad u igru / P ili Esc", new Vector2(0, -350), owner.ClosePanel);
-            Label("Help", content.transform, "Štek: vrata kod trećeg markera. Četiri saksije / E: nega / V: vrsta.\nBašta: stvarni sati. Probna biljka: vreme igre. Ekipa: REP 30.", 16, 820, 45);
+            Label("Help", content.transform, "Štek: vrata kod trećeg markera. E: interakcija / V: strejn.\nE: pokupi opremu / Q: promeni / LMB: napad. Ekipa: REP 30.", 16, 820, 45);
             BuildCatalog();
             BuildEncyclopedia();
             BuildJobs();
@@ -107,14 +103,10 @@ namespace Pozarevac.CityGame
             callsign.gameObject.SetActive(!p.IsCreated);
             create.gameObject.SetActive(!p.IsCreated);
             summary.gameObject.SetActive(p.IsCreated);
-            summary.text = $"{p.Callsign} / CASH {p.Session.Cash} / REP {p.Session.Reputation}\nUgovori {p.CompletedContracts}/3 / Crew {p.Crew}/3 / Blocks {p.Territories}/3\nProbna biljka: seme {p.Seeds}/30 / zaliha {p.Stock}/30\n" +
-                (p.HarvestReady ? "Spremno za berbu" : p.IsGrowing ? $"Rast: {Math.Ceiling(p.GrowSeconds)} sekundi igre do berbe" : "Probna saksija je prazna") +
-                $"\nŠtek: 4 saksije / ukupno berbi {p.Garden.Harvests}" + (p.Territories == 3 ? "\nPo-Blok-C: kampanja blokova završena." : "");
+            int seeds = 0, bud = 0;
+            for (int i = 0; i < CityPlantCatalog.Count; i++) { seeds += p.Garden.Seeds(i); bud += p.Garden.Stock(i); }
+            summary.text = $"{p.Callsign} / CASH {p.Session.Cash} / REP {p.Session.Reputation}\nUgovori {p.CompletedContracts}/3 / Ekipa {p.Crew}/3 / Blokovi {p.Territories}/3\nŠtek: 4 saksije / seme {seeds} / bud {bud}\nUkupno berbi: {p.Garden.Harvests}\nKATALOG: seme, cene i kontakti za otkup" + (p.Territories == 3 ? "\nPo-Blok-C: kampanja blokova završena." : "");
             economy.SetActive(p.PhoneUnlocked);
-            buy.interactable = p.Seeds < 30 && p.Session.Cash >= CityProgression.SeedPrice;
-            plant.interactable = p.Seeds > 0 && !p.IsGrowing && !p.HarvestReady;
-            harvest.interactable = p.HarvestReady && p.Stock <= 27;
-            sell.interactable = p.Stock > 0;
             recruit.interactable = p.Session.Reputation >= 30 && p.Crew < 3 && p.Session.Cash >= CityProgression.CrewPrice;
             claim.interactable = p.CompletedContracts == 3 && p.Crew >= 2 && p.Territories < 3 && p.Session.Cash >= CityProgression.TerritoryPrice;
             status.text = Time.unscaledTime < feedbackUntil ? feedback : owner.SaveStatus;
@@ -183,7 +175,7 @@ namespace Pozarevac.CityGame
         {
             catalog = Rect("CatalogPanel", transform, new Vector2(720, 880), Vector2.zero).gameObject;
             catalog.AddComponent<Image>().color = new Color(0.025f, 0.04f, 0.065f, 0.99f);
-            Label("CatalogTitle", catalog.transform, "KATALOG BAŠTE / IZABERI VRSTU", 25, 18, 30);
+            Label("CatalogTitle", catalog.transform, "STREJN KATALOG / SEME I BUD", 25, 18, 30);
             catalogStatus = Label("CatalogStatus", catalog.transform, "", 15, 50, 18);
             for (int i = 0; i < catalogRows.Length; i++)
             {
@@ -215,7 +207,7 @@ namespace Pozarevac.CityGame
             RectTransform detail = Rect("BotanicalDetails", encyclopedia.transform, new Vector2(410, 610), new Vector2(235, 80));
             plantDetail = ChildText(detail, "Text", "", 19); plantDetail.alignment = TextAnchor.UpperLeft; plantDetail.supportRichText = false;
             RectTransform notice = Rect("ImageProvenance", encyclopedia.transform, new Vector2(420, 110), new Vector2(-235, -145));
-            ChildText(notice, "Text", "Originalna AI botanička ilustracija.\nFiktivni naziv iz igre; stvarna botanička analogija.\nInformativne vrste nisu roba za prodaju.", 19);
+            ChildText(notice, "Text", "Reprezentativna AI ilustracija kanabisa.\nNije fotografija potvrđenog fenotipa.\nCene i ciklusi su izmišljena pravila igre.", 19);
             Button("PreviousCard", encyclopedia.transform, "PRETHODNA", new Vector2(-160, -300), () => { selectedCard = (selectedCard + CityPlantEncyclopedia.Count - 1) % CityPlantEncyclopedia.Count; RefreshCard(); });
             Button("NextCard", encyclopedia.transform, "SLEDEĆA", new Vector2(160, -300), () => { selectedCard = (selectedCard + 1) % CityPlantEncyclopedia.Count; RefreshCard(); });
             Button("BackToCatalog", encyclopedia.transform, "NAZAD U KATALOG", new Vector2(0, -400), OpenCatalog);
@@ -237,7 +229,7 @@ namespace Pozarevac.CityGame
             {
                 CityPlantDefinition p = CityPlantCatalog.Get(i);
                 catalogRows[i].text = $"{(i == selectedPlant ? "> " : "")}{p.Name} / seme {p.SeedPrice} / {p.GrowSeconds / 3600:0}h / prinos {p.Yield}\n" +
-                    (garden.IsUnlocked(i) ? $"Seme {garden.Seeds(i)} / roba {garden.Stock(i)}" : $"ZAKLJUČANO / REP {p.RequiredReputation}");
+                    (garden.IsUnlocked(i) ? $"Seme {garden.Seeds(i)} / bud {garden.Stock(i)}" : $"ZAKLJUČANO / REP {p.RequiredReputation}");
                 catalogRows[i].color = garden.IsUnlocked(i) ? Color.white : Color.gray;
                 catalogButtons[i].GetComponent<Image>().color = i == selectedPlant ? new Color(.10f, .43f, .35f) : garden.IsUnlocked(i) ? new Color(.06f, .24f, .30f) : new Color(.09f, .12f, .16f);
             }

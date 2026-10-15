@@ -1,0 +1,75 @@
+{
+  "milestone": "VKT street-action and strain catalog",
+  "date": "2026-10-15",
+  "baseCommit": "1c2ccea0aab69e10ea272dcc7eaa7dd4dcf46d5e",
+  "unity": "6000.6.5f1",
+  "tests": {
+    "scope": "EditMode domain/component/catalog tests; final player runs also cover later UI/canopy and diagnostic harness changes",
+    "skip": "Optional ArcGIS integration absent from portable fixture",
+    "failed": 0,
+    "skipped": 1,
+    "total": 94,
+    "passed": 93
+  },
+  "windows": {
+    "checks": [
+      "campaign and durable saves",
+      "garden and trade",
+      "physical street-job payout and saved chapter",
+      "stone/stick E pickups",
+      "swept stone/window impact",
+      "NPC melee reaction and wall occlusion",
+      "cooldown and 8-projectile pool exhaustion/reuse",
+      "pause freeze and death cleanup"
+    ],
+    "gardenCaptureInspected": true,
+    "startupArguments": "-force-d3d11 -job-worker-count 4",
+    "buildErrors": 0,
+    "runtimePassed": true,
+    "buildBytes": 227743368,
+    "zip": {
+      "file": "VKT-Street-Windows-20261015.zip",
+      "bytes": 84876042,
+      "sha256": "A0EEDBBC130008C5AC297DA9DE8081E5807E1A710FA1718A8C760D432F91A883"
+    },
+    "touchPreviewPassed": true
+  },
+  "android": {
+    "apkSha256": "3DF0C1FED87CB971C8B8BCDFCB309DFD295DDCE2784C69C9B408AC5FEADE4562",
+    "apkV2SignatureVerified": true,
+    "architecture": "arm64-v8a",
+    "backend": "IL2CPP",
+    "deviceRuntimeVerified": false,
+    "exportBytes": 1178179142,
+    "applicationId": "com.yashimi.vkt",
+    "targetApi": 36,
+    "exportErrors": 0,
+    "attachedDevices": 0,
+    "zip": {
+      "file": "VKT-Street-Android-20261015.zip",
+      "bytes": 50872648,
+      "sha256": "9FEC4D58FE7A7B080AD56314D0647C3A0222FFB2817B38547954E4288D090AD3"
+    },
+    "minimumApi": 28,
+    "developmentDebuggable": true,
+    "gradleAssembled": true,
+    "apkBytes": 52119391
+  },
+  "catalog": {
+    "saveVersion": 4,
+    "informational": 8,
+    "stableLegacyIds": true,
+    "provenance": "Breeder-attributed text and representative AI illustrations; not authenticated cultivar photos",
+    "tradeable": 8,
+    "equipmentPersistence": "Session only; application restart resets equipment",
+    "illustrated": 8
+  },
+  "limitations": [
+    "Prototype city, actors, procedural plants and interiors",
+    "No actual phone installation/performance evidence",
+    "Natural Serbian character voice recordings absent",
+    "Continuous radio playback unverified",
+    "Slingshot, water pistol, firecracker and tank not implemented"
+  ],
+  "publication": "Source and reviewed captures only; binary packages local; private scenes, tokens, personal music and logs excluded"
+}

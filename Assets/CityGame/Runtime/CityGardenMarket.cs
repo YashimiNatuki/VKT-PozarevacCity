@@ -6,7 +6,7 @@ namespace Pozarevac.CityGame
     {
         public const int BuyerCount = 3, DistrictCount = 3;
         public static string BuyerName(int buyer) => buyer switch {
-            0 => "Cvećara Mila", 1 => "Kolekcionar Luka", 2 => "Hotel Vuk", _ => throw new ArgumentOutOfRangeException(nameof(buyer)) };
+            0 => "Mila / ulični kontakt", 1 => "Luka / preprodavac", 2 => "Vuk / klupski kontakt", _ => throw new ArgumentOutOfRangeException(nameof(buyer)) };
         public static string DistrictName(int district) => district switch {
             0 => "Pijaca", 1 => "Centar", 2 => "Obod grada", _ => throw new ArgumentOutOfRangeException(nameof(district)) };
         public static int RequiredReputation(int buyer) { BuyerName(buyer); return buyer == 0 ? 0 : buyer == 1 ? 30 : 60; }

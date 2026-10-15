@@ -22,7 +22,7 @@ namespace Pozarevac.CityGame
         public CityGardenPlotData[] plots;
     }
 
-    // Fictional ornamental plants; timings and varieties are game design values.
+    // Fictional game-balanced cannabis plants; timings and varieties are game design values.
     public sealed class CityGarden
     {
         public const int PlotCount = 4, SeedCost = 60, InventoryCapacity = 999;
@@ -157,6 +157,3 @@ namespace Pozarevac.CityGame
         }
     }
 }
-
-
-

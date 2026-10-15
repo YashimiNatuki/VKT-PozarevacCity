@@ -13,6 +13,7 @@ namespace Pozarevac.CityGame
         private Text notification;
         private Text identity;
         private Text health;
+        private Text equipment;
         private float notificationUntil;
         private int displayedMinute = -1;
         private CitySession session;
@@ -76,6 +77,7 @@ namespace Pozarevac.CityGame
             identity = CreateLabel("VKTIdentity", new Vector2(32f, -78f), new Vector2(1100f, 26f), 16, TextAnchor.UpperLeft);
             identity.text = "VKT / Velika Kradja Točkova / Po-Blok-C / what bike since 1995";
             health = CreateLabel("Health", new Vector2(-36f, -120f), new Vector2(400f, 42f), 20, TextAnchor.UpperRight);
+            equipment = CreateLabel("Equipment", new Vector2(-36f, -175f), new Vector2(440f, 80f), 17, TextAnchor.UpperRight);
             cash = CreateLabel("Cash", new Vector2(-36f, -34f), new Vector2(360f, 48f), 24, TextAnchor.UpperRight);
             clock = CreateLabel("Clock", new Vector2(-36f, -78f), new Vector2(360f, 38f), 16, TextAnchor.UpperRight);
             prompt = CreateLabel("Prompt", new Vector2(0f, 72f), new Vector2(900f, 48f), 20, TextAnchor.LowerCenter);
@@ -142,6 +144,7 @@ namespace Pozarevac.CityGame
             health.text = current > 0 ? $"ŽIVOT {current:0}/{maximum:0}" : "PAO SI / H: povratak";
             health.color = current > maximum * 0.3f ? Color.white : new Color(1, 0.35f, 0.3f);
         }
+        public void SetEquipment(string value) { if (equipment != null) equipment.text = value ?? string.Empty; }
 
         public void ShowNotification(string value, float seconds)
         {

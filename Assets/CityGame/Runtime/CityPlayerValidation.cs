@@ -47,6 +47,33 @@ namespace Pozarevac.CityGame
                     music.TogglePause(); details += " Local audio decoded and playback started.";
                 }
             }
+            if (Array.Exists(Environment.GetCommandLineArgs(), arg => arg == "-vktCombatSmoke"))
+            {
+                if (!BeginCombatCheck(game, out string combatError)) { Finish(false, combatError); yield break; }
+                float impactDeadline = Time.realtimeSinceStartup + 3;
+                while (!game.Combat.PracticeWindow.IsBroken && Time.realtimeSinceStartup < impactDeadline) yield return null;
+                if (!game.Combat.PracticeWindow.IsBroken) { Finish(false, "Thrown stone did not hit and break the physical window."); yield break; }
+                if (!FinishCombatCheck(game, out combatError)) { Finish(false, combatError); yield break; }
+                if (!PrepareProjectileCheck(game, out combatError)) { Finish(false, combatError); yield break; }
+                GameObject tracked = GameObject.Find("StoneProjectile_0");
+                if (tracked == null) { Finish(false, "Pooled projectile visual missing."); yield break; }
+                Vector3 frozen = tracked.transform.position;
+                CityProgressionController combatController = game.GetComponent<CityProgressionController>();
+                combatController.OpenPanel();
+                yield return new WaitForSecondsRealtime(.2f);
+                bool pausedProjectile = tracked != null && Vector3.Distance(frozen, tracked.transform.position) < .001f && game.Combat.ActiveProjectiles == 8;
+                combatController.ClosePanel();
+                if (!pausedProjectile) { Finish(false, "Phone pause did not freeze pooled projectiles."); yield break; }
+                float expiryDeadline = Time.realtimeSinceStartup + 4;
+                while (game.Combat.ActiveProjectiles > 0 && Time.realtimeSinceStartup < expiryDeadline) yield return null;
+                if (game.Combat.ActiveProjectiles != 0 || !game.Combat.TryAttack()) { Finish(false, "Projectile pool did not expire and become reusable."); yield break; }
+                if (!game.Vitals.ApplyDamage(100) || game.Combat.TryAttack()) { Finish(false, "Dead player attack gating failed."); yield break; }
+                yield return null;
+                if (game.Combat.ActiveProjectiles != 0 || !game.Vitals.Respawn()) { Finish(false, "Death did not clear projectiles and restore the player."); yield break; }
+                game.Combat.Inventory.SelectWeapon(CityWeapon.Stick);
+                game.Player.GetComponentInChildren<Camera>().transform.LookAt(game.Combat.PracticeWindow.transform.position);
+                details += " Physical stone/stick pickups, paused attack gating, swept stone/window impact, single glass break, stick hit/NPC reaction, wall occlusion, pool exhaustion/reuse, projectile pause and death cleanup passed.";
+            }
             yield return new WaitForSecondsRealtime(0.5f);
             if (Vector3.Distance(game.Player.GetComponentInChildren<Camera>().transform.localPosition, new Vector3(0, 1.62f, 0)) > 0.01f)
             { Finish(false, "Camera left the player's eye position after validation frames."); yield break; }
@@ -126,6 +153,82 @@ namespace Pozarevac.CityGame
                 return true;
             }
             catch (Exception error) { details = error.GetType().Name + ": " + error.Message; return false; }
+        }
+        private static bool BeginCombatCheck(CityGameBootstrap game, out string error)
+        {
+            try
+            {
+                game.GetComponent<CityProgressionController>().ClosePanel();
+                if (game.Hideout.IsInside) Ensure(game.Hideout.Travel(false), "Could not leave hideout for combat.");
+                CityCombatRuntime combat = game.Combat;
+                Ensure(combat != null && combat.Pickups.Length == 4, "Combat pickups missing.");
+                InteractWith(game, combat.Pickups[0].transform, .3f);
+                InteractWith(game, combat.Pickups[3].transform, .3f);
+                Ensure(combat.Inventory.StoneCount == 1 && combat.Inventory.HasStick, "Physical pickup inventory mismatch.");
+                CityProgressionController controller = game.GetComponent<CityProgressionController>();
+                controller.OpenPanel();
+                Ensure(!combat.TryAttack() && combat.Inventory.CooldownRemaining == 0, "Paused UI allowed an attack.");
+                controller.ClosePanel();
+                Ensure(combat.Inventory.SelectWeapon(CityWeapon.Stone), "Could not select collected stone.");
+                CharacterController body = game.Player.GetComponent<CharacterController>(); body.enabled = false;
+                game.Player.position = combat.PracticeWindow.transform.position + new Vector3(0, -1.3f, -4); body.enabled = true;
+                game.Player.GetComponentInChildren<Camera>().transform.LookAt(combat.PracticeWindow.transform.position);
+                Physics.SyncTransforms();
+                Ensure(combat.TryAttack() && combat.Inventory.StoneCount == 0 && combat.ActiveProjectiles == 1, "Stone did not launch or consume one inventory item.");
+                Ensure(!combat.TryAttack(), "Cooldown allowed a second projectile.");
+                error = ""; return true;
+            }
+            catch (Exception failure) { error = "Combat setup: " + failure.Message; return false; }
+        }
+        private static bool FinishCombatCheck(CityGameBootstrap game, out string error)
+        {
+            CityHazard opponent = null; bool wasEnabled = false; GameObject blocker = null;
+            try
+            {
+                CityCombatRuntime combat = game.Combat;
+                Ensure(combat.ActiveProjectiles == 0 && !combat.PracticeWindow.ReceiveImpact(12), "Glass repeated its break or projectile remained active.");
+                foreach (CityHazard actor in FindObjectsByType<CityHazard>(FindObjectsSortMode.None))
+                    if (actor.Kind == CityHazardKind.HostileAdult) { opponent = actor; break; }
+                Ensure(opponent != null, "Adult encounter missing.");
+                wasEnabled = opponent.enabled; opponent.enabled = false;
+                combat.Inventory.Tick(2);
+                Ensure(combat.Inventory.SelectWeapon(CityWeapon.Stick), "Stick selection failed.");
+                CharacterController body = game.Player.GetComponent<CharacterController>(); body.enabled = false;
+                game.Player.position = opponent.transform.position + new Vector3(0, 0, -1.5f); body.enabled = true;
+                game.Player.GetComponentInChildren<Camera>().transform.LookAt(opponent.transform.position + Vector3.up * .9f);
+                Physics.SyncTransforms(); float health = opponent.CurrentHitPoints;
+                Ensure(combat.TryAttack() && opponent.CurrentHitPoints == health - 15 && !opponent.IsAttacking, "Physical stick hit did not interrupt the opponent.");
+                blocker = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                blocker.name = "SmokeOnlyCombatOccluder"; blocker.transform.position = opponent.transform.position + new Vector3(0, 1, -.75f);
+                blocker.transform.localScale = new Vector3(.8f, 2, .2f); Physics.SyncTransforms();
+                combat.Inventory.Tick(2); health = opponent.CurrentHitPoints; float heat = game.Session.Heat;
+                Ensure(combat.TryAttack() && opponent.CurrentHitPoints == health && game.Session.Heat == heat, "Melee passed through an intervening wall.");
+                game.GetComponent<CityProgressionController>().SaveNow();
+                error = ""; return true;
+            }
+            catch (Exception failure) { error = "Combat result: " + failure.Message; return false; }
+            finally
+            {
+                if (blocker != null) { blocker.GetComponent<Collider>().enabled = false; Destroy(blocker); }
+                if (opponent != null) opponent.enabled = wasEnabled;
+            }
+        }
+        private static bool PrepareProjectileCheck(CityGameBootstrap game, out string error)
+        {
+            try
+            {
+                CityCombatRuntime combat = game.Combat;
+                CharacterController body = game.Player.GetComponent<CharacterController>(); body.enabled = false;
+                game.Player.position = combat.PracticeWindow.transform.position + new Vector3(-7, -1.3f, -7); body.enabled = true;
+                game.Player.GetComponentInChildren<Camera>().transform.rotation = Quaternion.LookRotation(Vector3.up, Vector3.forward);
+                for (int i = combat.Inventory.StoneCount; i < CityCombat.MaxStones; i++) Ensure(combat.Inventory.TryCollectStone(), "Could not prepare bounded pool inventory.");
+                Ensure(combat.Inventory.SelectWeapon(CityWeapon.Stone), "Pool stone selection failed.");
+                for (int i = 0; i < 8; i++) { combat.Inventory.Tick(2); Ensure(combat.TryAttack(), "Projectile pool filled before its configured capacity."); }
+                combat.Inventory.Tick(2); int remaining = combat.Inventory.StoneCount;
+                Ensure(combat.ActiveProjectiles == 8 && !combat.TryAttack() && combat.Inventory.StoneCount == remaining, "Full projectile pool consumed ammunition or exceeded its bound.");
+                error = ""; return true;
+            }
+            catch (Exception failure) { error = "Projectile check: " + failure.Message; return false; }
         }
 
         private static bool Verify(CityGameBootstrap game, out string details)
