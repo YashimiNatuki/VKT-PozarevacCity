@@ -53,7 +53,8 @@ namespace Pozarevac.CityGame.Editor
             GameObject floor = GameObject.Find("VKT_Offline_Practice_Surface");
             if (floor != null)
             {
-                floor.transform.localPosition = new Vector3(0, -.52f, 0); floor.transform.localScale = new Vector3(640, 1, 640);
+                float diameter = source != null ? source.radiusMeters * 2 + 20 : 640;
+                floor.transform.localPosition = new Vector3(0, -.52f, 0); floor.transform.localScale = new Vector3(diameter, 1, diameter);
                 string path = SettingsRoot + "/PortableGround.mat";
                 Material ground = AssetDatabase.LoadAssetAtPath<Material>(path);
                 if (ground == null)

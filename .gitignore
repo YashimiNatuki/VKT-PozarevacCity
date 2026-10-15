@@ -47,6 +47,9 @@ Assets/DefaultVolumeProfile.asset
 Assets/DefaultVolumeProfile.asset.meta
 Assets/UniversalRenderPipelineGlobalSettings.asset
 Assets/UniversalRenderPipelineGlobalSettings.asset.meta
+# Generated performance-test machine metadata; not game content.
+Assets/Resources/PerformanceTestRun*.json
+Assets/Resources/PerformanceTestRun*.json.meta
 # Keep only deliberately authored public project settings.
 ProjectSettings/*
 !ProjectSettings/ProjectSettings.asset

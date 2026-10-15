@@ -1,0 +1,94 @@
+{
+  "milestone": "VKT bounded geographic expansion, phone map and audio lifecycle",
+  "date": "2026-10-16",
+  "baseCommit": "40be46e79e1ca95215247d8a3b915f3cc5a62e7e",
+  "unity": "6000.6.5f1",
+  "tests": {
+    "skip": "Optional ArcGIS integration absent from portable fixture",
+    "total": 101,
+    "skipped": 1,
+    "finalSourceSuite": true,
+    "passed": 100,
+    "failed": 0
+  },
+  "geography": {
+    "buildingFootprints": 100,
+    "authoredTrees": 24,
+    "multiCityTravelImplemented": false,
+    "candidatePins": 18,
+    "roadSegments": 600,
+    "authoredBenches": 12,
+    "anchorLatitude": 44.6199926,
+    "radiusMeters": 650,
+    "sidewalks": "Authored visual ribbons",
+    "originMigrated": false,
+    "anchorLongitude": 21.1854,
+    "greenPolygons": 22,
+    "wallColliders": 878,
+    "candidatePinsVerified": false,
+    "conflictingLjubicevoPinFlagged": true,
+    "ground": "Flat; no acquired DEM or photogrammetry"
+  },
+  "windows": {
+    "zip": {
+      "bytes": 84913816,
+      "file": "VKT-Geo-Audio-Windows-20261016.zip",
+      "sha256": "5247D12EEA450C2F11478FFA5DD33BA3C415FFBFC727AE96AADEF5A5CE19BC4C"
+    },
+    "mapAndCityCapturesInspected": true,
+    "pcTouchPreviewPassed": true,
+    "buildErrors": 0,
+    "buildBytes": 227927900,
+    "pcRuntimePassed": true,
+    "startupArguments": "-force-d3d11 -job-worker-count 4",
+    "checks": [
+      "campaign and durable save",
+      "garden and death/respawn",
+      "city map/pause ownership",
+      "expanded geometry and bounded park props",
+      "street jobs and saved chapter",
+      "stone/stick pickups, melee, wall occlusion and swept stone/window hit",
+      "projectile pool exhaustion/reuse, pause freeze, death cleanup",
+      "local audio loaded silently under simulated app-pause callback and started after resume"
+    ]
+  },
+  "android": {
+    "minimumApi": 28,
+    "zip": {
+      "bytes": 50914392,
+      "file": "VKT-Geo-Audio-Android-20261016.zip",
+      "sha256": "9F93B1538CD260880B869198C34B90EA0E20E10E79E512A5F19CA35B34F331BC"
+    },
+    "apkV2SignatureVerified": true,
+    "apkSha256": "E343341906AA59CD563844AF0EB24C2B3024FE75569D26270BF2ECD14F3C88DB",
+    "architecture": "arm64-v8a",
+    "applicationId": "com.yashimi.vkt",
+    "deviceRuntimeVerified": false,
+    "gradleAssembled": true,
+    "backend": "IL2CPP",
+    "targetApi": 36,
+    "developmentDebuggable": true,
+    "exportErrors": 0,
+    "attachedDevices": 0,
+    "exportBytes": 1178709524,
+    "apkBytes": 52149495
+  },
+  "compatibility": {
+    "privateStreamedMapScenesPublished": false,
+    "equipment": "Session only",
+    "cashGardenAndCompletedJobsPersist": true,
+    "saveVersion": 4,
+    "browserProjectModified": false,
+    "plantIdsRetained": true
+  },
+  "limitations": [
+    "Partial flat stylized city, selected source geometry",
+    "Candidate coordinates and exact neighborhoods need verification",
+    "No physical-phone frame time/memory/thermal evidence",
+    "No implemented driving or moving traffic",
+    "Natural Serbian character voices absent; subjective listening and full ducking/mute hearing tests outstanding",
+    "Continuous radio and OS-level phone background/resume unverified",
+    "Additional cities and bus/train transitions planned, not implemented"
+  ],
+  "publication": "Reviewed first-party source, derived OSM data and six captures; no private scenes, personal audio, credentials or raw logs"
+}

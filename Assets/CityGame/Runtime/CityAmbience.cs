@@ -13,6 +13,7 @@ namespace Pozarevac.CityGame
         private AudioSource daySource, nightSource;
         private AudioClip generatedDay, generatedNight;
         private bool initialized;
+        private CityGameAudio dialogue;
         public bool IsUsingSyntheticFallback { get; private set; }
 
         public void Initialize(CityWorldAtmosphere worldClock, Func<bool> interior, Func<bool> muted)
@@ -22,6 +23,7 @@ namespace Pozarevac.CityGame
             clock = worldClock;
             isInterior = interior ?? throw new ArgumentNullException(nameof(interior));
             isMuted = muted ?? throw new ArgumentNullException(nameof(muted));
+            dialogue = GetComponent<CityGameAudio>();
             AudioClip day = Resources.Load<AudioClip>("Audio/Ambience/day");
             AudioClip night = Resources.Load<AudioClip>("Audio/Ambience/night");
             if (day == null) day = generatedDay = CreateSyntheticLoop(false);
@@ -54,7 +56,7 @@ namespace Pozarevac.CityGame
                 nightSource.volume = 0f;
                 return;
             }
-            float target = OutdoorVolume * (isInterior() ? InteriorAttenuation : 1f);
+            float target = OutdoorVolume * (isInterior() ? InteriorAttenuation : 1f) * (dialogue != null && dialogue.IsDialoguePlaying ? 0.5f : 1f);
             float blend = 1f - Mathf.Exp(-2f * Time.unscaledDeltaTime);
             daySource.volume = Mathf.Lerp(daySource.volume, clock.IsDay ? target : 0f, blend);
             nightSource.volume = Mathf.Lerp(nightSource.volume, clock.IsDay ? 0f : target, blend);
@@ -100,7 +102,7 @@ namespace Pozarevac.CityGame
         private void OnEnable()
         {
             if (!initialized) return;
-            daySource.Play(); nightSource.Play();
+            daySource.UnPause(); nightSource.UnPause();
         }
         private void OnDisable()
         {
@@ -117,4 +119,3 @@ namespace Pozarevac.CityGame
         }
     }
 }
-

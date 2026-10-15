@@ -69,6 +69,7 @@ namespace Pozarevac.CityGame
             item.GetComponent<Image>().color = new Color(0.12f, 0.22f, 0.3f, 1); item.GetComponent<Button>().onClick.AddListener(action);
             Label(item.transform, text, new Vector2(5, -8), new Vector2(110, 30));
         }
+        private void OnDisable() { Close(); }
         private void OnDestroy() { Close(); if (overlay != null) Destroy(overlay); if (ownedEvents != null) Destroy(ownedEvents); }
     }
 }

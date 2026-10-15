@@ -41,10 +41,14 @@ namespace Pozarevac.CityGame
                 CityMusicPlayer music = game.GetComponent<CityMusicPlayer>();
                 if (music.LocalCount > 0)
                 {
+                    music.SendMessage("OnApplicationPause",true);
                     music.Next(); float audioDeadline = Time.realtimeSinceStartup + 20;
-                    while (!music.IsPlaying && Time.realtimeSinceStartup < audioDeadline) yield return null;
-                    if (!music.IsPlaying) { Finish(false, "Local audio did not decode and start within 20 seconds."); yield break; }
-                    music.TogglePause(); details += " Local audio decoded and playback started.";
+                    while (!music.IsReady && Time.realtimeSinceStartup < audioDeadline) yield return null;
+                    if (!music.IsReady || music.IsPlaying) { Finish(false, "Local audio did not finish loading silently during application suspension."); yield break; }
+                    music.SendMessage("OnApplicationPause",false);
+                    yield return new WaitForSecondsRealtime(.5f);
+                    if (!music.IsPlaying) { Finish(false, "Deferred audio did not start on application resume."); yield break; }
+                    music.TogglePause(); details += " Local audio decoded while suspended, stayed silent and started on application resume.";
                 }
             }
             if (Array.Exists(Environment.GetCommandLineArgs(), arg => arg == "-vktCombatSmoke"))
@@ -105,6 +109,12 @@ namespace Pozarevac.CityGame
                 FindAnyObjectByType<CityPhonePanel>(FindObjectsInactive.Include).OpenJobs();
                 yield return null;
             }
+            if (Array.Exists(Environment.GetCommandLineArgs(), arg => arg == "-vktMapCapture"))
+            {
+                game.GetComponent<CityProgressionController>().OpenPanel();
+                FindAnyObjectByType<CityPhonePanel>(FindObjectsInactive.Include).OpenMap();
+                yield return null;
+            }
             string screenshot = Argument("-vktScreenshot", "");
             if (!string.IsNullOrEmpty(screenshot))
             {
@@ -130,11 +140,14 @@ namespace Pozarevac.CityGame
                 CityOsmStreets streets = game.GetComponent<CityOsmStreets>();
                 Ensure(streets != null && streets.SegmentCount > 0 && streets.Source.buildings.Length > 0, "Actual OSM streets/footprints were not composed.");
                 Ensure(streets.WallColliderCount > 0, "Building collision was not composed.");
+                Ensure(streets.SegmentCount > 200 && streets.Source.buildings.Length > 40 && streets.ParkCount > 0, "Expanded city roads, buildings or parks were not composed.");
                 if (game.Hideout.IsInside) Ensure(game.Hideout.Travel(false), "Could not leave hideout for street job.");
                 int before = game.Session.Cash;
                 CityProgressionController controller = game.GetComponent<CityProgressionController>();
                 controller.OpenPanel();
                 CityPhonePanel phone = FindAnyObjectByType<CityPhonePanel>(FindObjectsInactive.Include);
+                phone.OpenMap();
+                Ensure(phone.IsOpen && game.Director.IsPaused && phone.transform.Find("MapPanel").gameObject.activeSelf, "City map did not own the paused phone state.");
                 phone.OpenJobs();
                 Ensure(phone.transform.Find("JobsPanel").gameObject.activeSelf && game.Director.IsPaused, "Job journal did not open and pause the player.");
                 phone.transform.Find("JobsPanel/AcceptJob").GetComponent<UnityEngine.UI.Button>().onClick.Invoke();
@@ -149,7 +162,9 @@ namespace Pozarevac.CityGame
                     "Completed street-job progress did not survive save/reload.");
                 InteractWith(game, game.Hideout.Entrance, .9f);
                 game.Player.GetComponentInChildren<Camera>().transform.LookAt((game.Hideout.PlotTransform(0).position + game.Hideout.PlotTransform(3).position) / 2 + Vector3.up * .5f);
-                details = $"Enhanced: {streets.SegmentCount} OSM segments, {streets.Source.buildings.Length} building footprints, {streets.WallColliderCount} wall colliders, 16 botanical cards, music overlay, job journal, physical street-job payout and durable story progress passed.";
+                CityParkDetails parkDetails=game.GetComponent<CityParkDetails>();
+                Ensure(parkDetails!=null && parkDetails.PlacedBenches>0 && parkDetails.PlacedTrees>0,"Park furniture was not composed.");
+                details = $"Enhanced: {streets.SegmentCount} OSM segments, {streets.Source.buildings.Length} building footprints, {streets.ParkCount} green polygons, {streets.WallColliderCount} wall colliders, {parkDetails.PlacedBenches} benches/{parkDetails.PlacedTrees} trees, city map, 16 strain cards, music overlay, job journal, physical street-job payout and durable story progress passed.";
                 return true;
             }
             catch (Exception error) { details = error.GetType().Name + ": " + error.Message; return false; }

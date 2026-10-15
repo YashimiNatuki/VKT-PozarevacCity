@@ -32,10 +32,12 @@ namespace Pozarevac.CityGame
         private Text plantDetail;
         private int selectedCard;
         private Texture2D botanicalAtlas;
+        private GameObject map;
+        private CityMapView mapView;
         private GameObject journal;
         private Text jobDetails;
         private Button acceptJob, cancelJob;
-        public bool IsOpen => (content != null && content.activeSelf) || (catalog != null && catalog.activeSelf) || (encyclopedia != null && encyclopedia.activeSelf) || (journal != null && journal.activeSelf);
+        public bool IsOpen => (map != null && map.activeSelf) || (content != null && content.activeSelf) || (catalog != null && catalog.activeSelf) || (encyclopedia != null && encyclopedia.activeSelf) || (journal != null && journal.activeSelf);
 
         public void Initialize(CityProgressionController controller)
         {
@@ -79,18 +81,35 @@ namespace Pozarevac.CityGame
             status = Label("Status", content.transform, "", 18, 645, 35);
             Button("Catalog", content.transform, "KATALOG / BAŠTA", new Vector2(-160, -290), OpenCatalog);
             Button("StreetJob", content.transform, "DNEVNIK / POSLOVI", new Vector2(160, -290), OpenJobs);
-            Button("Close", content.transform, "Nazad u igru / P ili Esc", new Vector2(0, -350), owner.ClosePanel);
+            Button("Map", content.transform, "MAPA", new Vector2(-160, -350), OpenMap);
+            Button("Close", content.transform, "NAZAD U IGRU", new Vector2(160, -350), owner.ClosePanel);
             Label("Help", content.transform, "Štek: vrata kod trećeg markera. E: interakcija / V: strejn.\nE: pokupi opremu / Q: promeni / LMB: napad. Ekipa: REP 30.", 16, 820, 45);
             BuildCatalog();
             BuildEncyclopedia();
             BuildJobs();
+            BuildMap();
             Close();
         }
 
-        private void Act(Func<bool> action) { if (!owner.Perform(action)) ShowFeedback("Akcija nije dostupna: proveri uslove, prostor i novac."); Refresh(); }
+        private void BuildMap()
+        {
+            map=Rect("MapPanel",transform,new Vector2(720,880),Vector2.zero).gameObject;
+            map.AddComponent<Image>().color=new Color(.025f,.04f,.065f,.99f);
+            Label("MapTitle",map.transform,"POŽAREVAC / MAPA ULICA",25,12,40);
+            mapView=map.AddComponent<CityMapView>();
+            Button("BackFromMap",map.transform,"NAZAD U TELEFON",new Vector2(0,-395),Open);
+            map.SetActive(false);
+        }
+        public void OpenMap()
+        {
+            if(gameObject==null||map==null)return;
+            if(!IsOpen)owner.OpenPanel();
+            content.SetActive(false);catalog.SetActive(false);encyclopedia.SetActive(false);journal.SetActive(false);
+            backdrop.SetActive(true);map.SetActive(true);mapView.Initialize();mapView.RefreshPosition();
+        }        private void Act(Func<bool> action) { if (!owner.Perform(action)) ShowFeedback("Akcija nije dostupna: proveri uslove, prostor i novac."); Refresh(); }
         private void ShowFeedback(string message) { feedback = message; feedbackUntil = Time.unscaledTime + 5; status.text = message; }
-        public void Open() { backdrop.SetActive(true); journal.SetActive(false); encyclopedia.SetActive(false); catalog.SetActive(false); content.SetActive(true); Refresh(); }
-        public void Close() { if (content != null) content.SetActive(false); if (catalog != null) catalog.SetActive(false); if (encyclopedia != null) encyclopedia.SetActive(false); if (journal != null) journal.SetActive(false); if (backdrop != null) backdrop.SetActive(false); }
+        public void Open() { if(map!=null) map.SetActive(false); backdrop.SetActive(true); journal.SetActive(false); encyclopedia.SetActive(false); catalog.SetActive(false); content.SetActive(true); Refresh(); }
+        public void Close() { if(map!=null) map.SetActive(false); if (content != null) content.SetActive(false); if (catalog != null) catalog.SetActive(false); if (encyclopedia != null) encyclopedia.SetActive(false); if (journal != null) journal.SetActive(false); if (backdrop != null) backdrop.SetActive(false); }
         private void Update()
         {
             if (!IsOpen) return;
@@ -124,6 +143,7 @@ namespace Pozarevac.CityGame
         public void OpenJobs()
         {
             if (!owner.Progression.PhoneUnlocked) return;
+            map.SetActive(false);
             content.SetActive(false); catalog.SetActive(false); encyclopedia.SetActive(false);
             journal.SetActive(true); RefreshJobs();
         }
@@ -132,7 +152,7 @@ namespace Pozarevac.CityGame
             journal = Rect("JobsPanel", transform, new Vector2(720, 880), Vector2.zero).gameObject;
             journal.AddComponent<Image>().color = new Color(.025f, .04f, .065f, .99f);
             Label("JobsTitle", journal.transform, "DNEVNIK / ULIČNI POSLOVI", 28, 25, 50);
-            jobDetails = Label("JobDetails", journal.transform, "", 23, 100, 560);
+            jobDetails = Label("JobDetails", journal.transform, "", 20, 100, 560);
             jobDetails.alignment = TextAnchor.UpperLeft; jobDetails.supportRichText = false;
             acceptJob = Button("AcceptJob", journal.transform, "PRIHVATI POSAO", new Vector2(-160, -280), () =>
             {

@@ -11,25 +11,28 @@ namespace Pozarevac.CityGame
         [Serializable] public sealed class Point { public float x,z; }
         [Serializable] public sealed class Road { public string id,name,kind; public Point[] points; }
         [Serializable] public sealed class Building { public string id,heightSource;public float height;public Point[] points; }
+        [Serializable] public sealed class Park { public string id,name;public Point[] points; }
         [Serializable] public sealed class Data
         {
             public int schema;public string source,downloadedUtc,bbox,attribution,license,licenseUrl;
-            public double anchorLongitude,anchorLatitude;public float radiusMeters;public Road[] roads;public Building[] buildings;
+            public double anchorLongitude,anchorLatitude;public float radiusMeters;public Road[] roads;public Building[] buildings;public Park[] parks;
         }
         private GameObject layout;
-        private Material roadMaterial,walkMaterial,roofMaterial;
+        private Material roadMaterial,walkMaterial,roofMaterial,parkMaterial;
         private readonly List<Material> facadeMaterials=new List<Material>(4);
         private Mesh mesh;
         private readonly List<Mesh> buildingMeshes=new List<Mesh>(40);
         public int SegmentCount {get;private set;}
         public int WallColliderCount {get;private set;}
+        public int ParkCount {get;private set;}
+        public Vector3 GroundAnchor => layout != null ? layout.transform.position : Vector3.zero;
         public Data Source {get;private set;}
         public static Data Load()
         {
             TextAsset asset=Resources.Load<TextAsset>("Maps/PozarevacStreets");
             if(asset==null)return null;
             Data data=JsonUtility.FromJson<Data>(asset.text);
-            if(data==null||data.schema!=1||data.roads==null||data.roads.Length==0||data.radiusMeters<=0||data.radiusMeters>300)throw new InvalidOperationException("Unsupported offline OSM dataset.");
+            if(data==null||data.schema!=1||data.roads==null||data.roads.Length==0||data.radiusMeters<=0||data.radiusMeters>900)throw new InvalidOperationException("Unsupported offline OSM dataset.");
             return data;
         }
         public void Initialize(Transform georoot,Vector3 groundAnchor)
@@ -49,11 +52,12 @@ namespace Pozarevac.CityGame
                 PrepareMaterial(facade);if(facade.HasProperty("_Cull"))facade.SetFloat("_Cull",0);facadeMaterials.Add(facade);
             }
             roofMaterial=new Material(template);roofMaterial.color=new Color(.40f,.19f,.12f);PrepareMaterial(roofMaterial);
-            List<Vector3> vertices=new List<Vector3>(800);List<int> triangles=new List<int>(1200);HashSet<string> labels=new HashSet<string>();
+            parkMaterial=new Material(template);parkMaterial.color=new Color(.19f,.29f,.12f);PrepareMaterial(parkMaterial);
+            List<Vector3> vertices=new List<Vector3>(4800);List<int> triangles=new List<int>(7200),sidewalks=new List<int>(),parks=new List<int>();HashSet<string> labels=new HashSet<string>();
             foreach(Road road in Source.roads)
             {
                 if(road.points==null||road.points.Length<2)continue;
-                for(int i=1;i<road.points.Length&&SegmentCount<200;i++)
+                for(int i=1;i<road.points.Length&&SegmentCount<900;i++)
                 {
                     Vector3 a=new Vector3(road.points[i-1].x,.035f,road.points[i-1].z),b=new Vector3(road.points[i].x,.035f,road.points[i].z);
                     if(!Valid(a)||!Valid(b)||(a-b).sqrMagnitude<.01f)continue;
@@ -61,13 +65,31 @@ namespace Pozarevac.CityGame
                     Vector3 normal=Vector3.Cross((b-a).normalized,Vector3.up)*width*.5f;int at=vertices.Count;
                     vertices.Add(a-normal);vertices.Add(a+normal);vertices.Add(b-normal);vertices.Add(b+normal);
                     triangles.Add(at);triangles.Add(at+1);triangles.Add(at+2);triangles.Add(at+1);triangles.Add(at+3);triangles.Add(at+2);SegmentCount++;
+                    if(road.kind!="footway"&&road.kind!="pedestrian")
+                    {
+                        Vector3 unit=normal.normalized;
+                        for(int side=-1;side<=1;side+=2)
+                        {
+                            int edge=vertices.Count;Vector3 inner=unit*side*width*.5f,outer=unit*side*(width*.5f+1.5f);
+                            Vector3 lo=side<0?outer:inner,hi=side<0?inner:outer;
+                            vertices.Add(a+lo+Vector3.up*.02f);vertices.Add(a+hi+Vector3.up*.02f);vertices.Add(b+lo+Vector3.up*.02f);vertices.Add(b+hi+Vector3.up*.02f);
+                            sidewalks.AddRange(new[]{edge,edge+1,edge+2,edge+1,edge+3,edge+2});
+                        }
+                    }
                     if(!string.IsNullOrEmpty(road.name)&&labels.Add(road.name))Label(road.name,(a+b)*.5f+Vector3.up*2);
                 }
-                if(SegmentCount>=200)break;
+                if(SegmentCount>=900)break;
             }
             if(SegmentCount==0)throw new InvalidOperationException("No valid OSM segments were available.");
-            mesh=new Mesh{name="OSM centerline road ribbons"};mesh.SetVertices(vertices);mesh.SetTriangles(triangles,0);mesh.RecalculateNormals();mesh.RecalculateBounds();
-            layout.AddComponent<MeshFilter>().sharedMesh=mesh;layout.AddComponent<MeshRenderer>().sharedMaterial=roadMaterial;
+            if(Source.parks!=null)foreach(Park park in Source.parks)
+            {
+                if(ParkCount>=24)break;
+                if(park.points==null||park.points.Length<4||park.points.Length>128)continue;
+                int before=parks.Count;AddRoof(park.points,.018f,vertices,parks);
+                if(parks.Count>before){ParkCount++;if(!string.IsNullOrEmpty(park.name))Label(park.name,new Vector3(park.points[0].x,2,park.points[0].z));}
+            }
+            mesh=new Mesh{name="OSM roads, authored sidewalks and park outlines"};mesh.SetVertices(vertices);mesh.subMeshCount=3;mesh.SetTriangles(triangles,0);mesh.SetTriangles(sidewalks,1);mesh.SetTriangles(parks,2);mesh.RecalculateNormals();mesh.RecalculateBounds();
+            layout.AddComponent<MeshFilter>().sharedMesh=mesh;layout.AddComponent<MeshRenderer>().sharedMaterials=new[]{roadMaterial,walkMaterial,parkMaterial};
             // A single bounded walkable ground plane; roads retain actual node layout without invented elevation.
             GameObject floor=GameObject.CreatePrimitive(PrimitiveType.Cube);floor.name="OSM_FlatOfflineGround";floor.transform.SetParent(layout.transform,false);
             floor.transform.localPosition=new Vector3(0,-.15f,0);floor.transform.localScale=new Vector3(Source.radiusMeters*2,.3f,Source.radiusMeters*2);floor.GetComponent<Renderer>().sharedMaterial=walkMaterial;
@@ -86,7 +108,7 @@ namespace Pozarevac.CityGame
             int count=0;
             foreach(Building building in Source.buildings)
             {
-                if(count>=40)break;
+                if(count>=160)break;
                 if(building.points==null||building.points.Length<4||building.points.Length>128||float.IsNaN(building.height)||float.IsInfinity(building.height))continue;
                 List<Vector3> vertices=new List<Vector3>();List<int> walls=new List<int>();List<int> roofs=new List<int>();List<Vector2> uv=new List<Vector2>();
                 float height=Mathf.Clamp(building.height,3,40);
@@ -137,7 +159,7 @@ namespace Pozarevac.CityGame
         }        private void BuildWallCollision(Transform buildingRoot,Building building,float height)
         {
             int entrance=EntranceEdge(building);
-            for(int i=1;i<building.points.Length&&WallColliderCount<512;i++)
+            for(int i=1;i<building.points.Length&&WallColliderCount<2048;i++)
             {
                 Vector3 a=new Vector3(building.points[i-1].x,0,building.points[i-1].z),b=new Vector3(building.points[i].x,0,building.points[i].z);
                 if(!Valid(a)||!Valid(b)||(b-a).sqrMagnitude<.01f)continue;
@@ -153,7 +175,7 @@ namespace Pozarevac.CityGame
         private void WallSpan(Transform parent,Vector3 a,Vector3 b,float bottom,float top)
         {
             float length=Vector3.Distance(a,b);
-            if(WallColliderCount>=512||length<.05f||top-bottom<.05f)return;
+            if(WallColliderCount>=2048||length<.05f||top-bottom<.05f)return;
             GameObject wall=new GameObject("OSM_WallCollision");wall.transform.SetParent(parent,false);
             wall.transform.localPosition=(a+b)*.5f+Vector3.up*((bottom+top)*.5f);wall.transform.localRotation=Quaternion.LookRotation(b-a,Vector3.up);
             BoxCollider collider=wall.AddComponent<BoxCollider>();collider.size=new Vector3(.24f,top-bottom,length);WallColliderCount++;
@@ -231,7 +253,7 @@ namespace Pozarevac.CityGame
         {
             Release(layout);Release(mesh);
             foreach(Mesh facade in buildingMeshes)Release(facade);
-            Release(roadMaterial);Release(walkMaterial);Release(roofMaterial);
+            Release(roadMaterial);Release(walkMaterial);Release(roofMaterial);Release(parkMaterial);
             foreach(Material material in facadeMaterials)Release(material);
         }
     }

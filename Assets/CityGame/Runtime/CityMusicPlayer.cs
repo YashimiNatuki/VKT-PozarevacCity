@@ -18,18 +18,23 @@ namespace Pozarevac.CityGame
         private UnityWebRequest pending;
         private Coroutine loading;
         private int current = -1;
-        private bool paused, started;
+        private bool paused, started, hasPlayed, applicationPaused, deferredStart;
+        private float userVolume = 0.35f;
+        private bool userMuted;
+        private CityGameAudio gameAudio;
         public string Status { get; private set; } = "Dodaj MP3, OGG ili WAV u Music folder.";
         public string Folder => Path.Combine(Application.persistentDataPath, "Music");
         public int Count => tracks.Count;
         public bool IsPlaying => source != null && source.isPlaying;
+        public bool IsReady => ownedClip != null && loading == null;
         public int LocalCount { get { int count = 0; foreach (Track track in tracks) if (!track.Radio) count++; return count; } }
-        public float Volume { get => source != null ? source.volume : 0.35f; set { if (source != null) source.volume = Mathf.Clamp01(value); } }
-        public bool Muted { get => source != null && source.mute; set { if (source != null) source.mute = value; } }
+        public float Volume { get => userVolume; set => userVolume = float.IsNaN(value) ? 0f : Mathf.Clamp01(value); }
+        public bool Muted { get => userMuted; set => userMuted = value; }
         public void Initialize()
         {
             if (source != null) return;
             source = gameObject.AddComponent<AudioSource>(); source.playOnAwake = false; source.spatialBlend = 0; source.volume = 0.35f;
+            source.priority = 180; gameAudio = GetComponent<CityGameAudio>();
             Refresh();
         }
         public void Refresh()
@@ -93,12 +98,12 @@ namespace Pozarevac.CityGame
             if (source == null) Initialize();
             if (current < 0) { Next(); return; }
             if (loading != null && !started) return;
-            paused = !paused; if (paused) source.Pause(); else source.UnPause();
+            paused = !paused; if (paused) source.Pause(); else if (!applicationPaused) ResumePlayback();
             Status = (paused ? "Pauza: " : "Svira: ") + tracks[current].Name;
         }
         private void Play(int index)
         {
-            StopLoading(); source.Stop(); ReleaseClip(); current = index; paused = started = false;
+            StopLoading(); source.Stop(); ReleaseClip(); current = index; paused = started = hasPlayed = false;
             loading = StartCoroutine(Load(tracks[index]));
         }
         private IEnumerator Load(Track track)
@@ -122,7 +127,7 @@ namespace Pozarevac.CityGame
                         AudioClip available = null;
                         try { available = handler.audioClip; } catch (InvalidOperationException) { }
                         if (available != null && available.loadState == AudioDataLoadState.Loaded)
-                        { ownedClip = available; source.clip = ownedClip; source.Play(); started = true; Status = "Radio • eksperimentalno: " + track.Name; }
+                        { ownedClip = available; source.clip = ownedClip; BeginPlayback(); Status = "Radio • eksperimentalno: " + track.Name; }
                     }
                     if ((!started && Time.realtimeSinceStartup - began > 20) || Time.realtimeSinceStartup - lastData > 20 || pending.downloadedBytes > 16UL * 1024 * 1024 || Time.realtimeSinceStartup - began > 600)
                     {
@@ -136,7 +141,7 @@ namespace Pozarevac.CityGame
             if (pending.result == UnityWebRequest.Result.Success)
             {
                 if (ownedClip == null) ownedClip = DownloadHandlerAudioClip.GetContent(pending);
-                if (ownedClip != null) { source.clip = ownedClip; source.Play(); started = true; Status = "Svira: " + track.Name; }
+                if (ownedClip != null) { source.clip = ownedClip; BeginPlayback(); Status = "Svira: " + track.Name; }
                 else Status = "Format zvuka nije podržan.";
             }
             else Status = "Zvuk nije dostupan. Izaberi drugu pesmu ili proveri vezu.";
@@ -144,10 +149,39 @@ namespace Pozarevac.CityGame
         }
         private void Update()
         {
-            if (started && !paused && source != null && !source.isPlaying && ownedClip != null && source.time >= Mathf.Max(0, ownedClip.length - 0.25f)) { started = false; Next(); }
+            if (source == null) return;
+            source.mute = userMuted || (gameAudio != null && gameAudio.Muted);
+            float targetVolume = userVolume * (gameAudio != null && gameAudio.IsDialoguePlaying ? 0.25f : 1f);
+            source.volume = Mathf.MoveTowards(source.volume, targetVolume, Time.unscaledDeltaTime * 2f);
+            if (started && !paused && !applicationPaused)
+            {
+                if (source.isPlaying) hasPlayed = true;
+                else if (hasPlayed && ownedClip != null && loading == null) { started = false; Next(); }
+            }
+        }
+        private void OnApplicationPause(bool suspended)
+        {
+            applicationPaused = suspended;
+            if (source == null || !started || paused) return;
+            if (suspended) source.Pause(); else ResumePlayback();
+        }
+        private void BeginPlayback()
+        {
+            started = true; deferredStart = applicationPaused || paused;
+            if (!deferredStart) source.Play();
+        }
+        private void ResumePlayback()
+        {
+            if (deferredStart) { source.Play(); deferredStart = false; }
+            else source.UnPause();
+        }
+        private void OnDisable()
+        {
+            StopLoading(); if (source != null) source.Stop(); ReleaseClip();
+            started = paused = hasPlayed = false; current = -1;
         }
         private void StopLoading() { if (pending != null) { pending.Abort(); pending.Dispose(); pending = null; } if (loading != null) { StopCoroutine(loading); loading = null; } }
-        private void ReleaseClip() { if (source != null) source.clip = null; if (ownedClip != null) Destroy(ownedClip); ownedClip = null; }
+        private void ReleaseClip() { deferredStart = false; if (source != null) source.clip = null; if (ownedClip != null) Destroy(ownedClip); ownedClip = null; }
         private void OnDestroy() { StopLoading(); ReleaseClip(); if (source != null) Destroy(source); }
     }
 }

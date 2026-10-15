@@ -12,7 +12,7 @@ namespace Pozarevac.CityGame.Tests.Editor
             try
             {
                 CityOsmStreets streets=owner.AddComponent<CityOsmStreets>();streets.Initialize(owner.transform,Vector3.zero);Physics.SyncTransforms();
-                Assert.That(streets.WallColliderCount,Is.InRange(1,512));
+                Assert.That(streets.WallColliderCount,Is.InRange(1,2048));
                 BoxCollider sample=null;
                 foreach(BoxCollider collider in owner.GetComponentsInChildren<BoxCollider>())
                 {
@@ -59,8 +59,8 @@ namespace Pozarevac.CityGame.Tests.Editor
                 foreach(Vector3 vertex in road.vertices)
                 {
                     Assert.That(float.IsNaN(vertex.x)||float.IsInfinity(vertex.x)||float.IsNaN(vertex.z)||float.IsInfinity(vertex.z),Is.False);
-                    Assert.That(Mathf.Abs(vertex.x),Is.LessThanOrEqualTo(streets.Source.radiusMeters+5));
-                    Assert.That(Mathf.Abs(vertex.z),Is.LessThanOrEqualTo(streets.Source.radiusMeters+5));
+                    Assert.That(Mathf.Abs(vertex.x),Is.LessThanOrEqualTo(streets.Source.radiusMeters+8));
+                    Assert.That(Mathf.Abs(vertex.z),Is.LessThanOrEqualTo(streets.Source.radiusMeters+8));
                 }
             }
             finally{Object.DestroyImmediate(owner);}
@@ -96,7 +96,8 @@ namespace Pozarevac.CityGame.Tests.Editor
             Assert.That(double.IsNaN(source.anchorLatitude)||double.IsInfinity(source.anchorLatitude),Is.False);
             Assert.That(double.IsNaN(source.anchorLongitude)||double.IsInfinity(source.anchorLongitude),Is.False);
             Assert.That(source.anchorLatitude,Is.InRange(-90d,90d));Assert.That(source.anchorLongitude,Is.InRange(-180d,180d));
-            Assert.That(source.roads.Length,Is.InRange(1,200));Assert.That(source.buildings.Length,Is.InRange(1,40));
+            Assert.That(source.roads.Length,Is.InRange(201,900));Assert.That(source.buildings.Length,Is.InRange(41,160));
+            Assert.That(source.parks,Is.Not.Null);Assert.That(source.parks.Length,Is.InRange(1,24));
             Assert.That(source.attribution,Does.Contain("OpenStreetMap"));Assert.That(source.license,Is.EqualTo("ODbL-1.0"));
         }
     }

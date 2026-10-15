@@ -194,7 +194,11 @@ namespace Pozarevac.CityGame
                     bool offline = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name == "VKTOffline";
                     bool authored = Array.Exists(Environment.GetCommandLineArgs(), arg => arg == "-vktAuthoredCenter");
                     if (offline && !authored && CityOsmStreets.Load() != null)
-                        gameObject.AddComponent<CityOsmStreets>().Initialize(georeference.transform, new Vector3(spawn.x, spawn.y, spawn.z));
+                    {
+                        CityOsmStreets streets=gameObject.AddComponent<CityOsmStreets>();
+                        streets.Initialize(georeference.transform, new Vector3(spawn.x, spawn.y, spawn.z));
+                        gameObject.AddComponent<CityParkDetails>().Initialize(georeference.transform,streets.GroundAnchor,streets.Source);
+                    }
                     else if (offline || authored)
                         gameObject.AddComponent<CityCityDetail>().Initialize(georeference.transform, spawn, Atmosphere);
                     if (Intro != null && Intro.IsActive) Director.SetPaused(true);
