@@ -1,5 +1,7 @@
 # VKT desktop, mobile, and audio readiness — 2026-10-14
 
+> Earlier city/art/audio baseline published as 9a96f7f. The newer [gameplay milestone](Gameplay-20261015.md) supersedes session-only street progress and adds collision/journal validation.
+
 ## Status refresh — 2026-10-15
 
 Final source checks: 75 passed, zero failed, one optional ArcGIS-specific skip (76 total). Final Windows player built with zero errors, 227,705,869 bytes. The exact final Windows player passed local audio decoding/playback, 200 OSM road segments, 40 extruded OSM footprints, 16 encyclopedia cards and side-job payout. Both final screenshots were visually inspected: facade atlas and encyclopedia card aspect are correct. The city remains a prototype. Direct3D 11 is selected after an earlier Direct3D 12 startup stall.

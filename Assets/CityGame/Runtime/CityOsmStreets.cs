@@ -22,6 +22,7 @@ namespace Pozarevac.CityGame
         private Mesh mesh;
         private readonly List<Mesh> buildingMeshes=new List<Mesh>(40);
         public int SegmentCount {get;private set;}
+        public int WallColliderCount {get;private set;}
         public Data Source {get;private set;}
         public static Data Load()
         {
@@ -90,28 +91,72 @@ namespace Pozarevac.CityGame
                 List<Vector3> vertices=new List<Vector3>();List<int> walls=new List<int>();List<int> roofs=new List<int>();List<Vector2> uv=new List<Vector2>();
                 float height=Mathf.Clamp(building.height,3,40);
                 int tile=count%4;float u=(tile%2)*.5f,v=(1-tile/2)*.5f;
+                int entrance=EntranceEdge(building);
                 for(int i=1;i<building.points.Length;i++)
                 {
                     Vector3 a=new Vector3(building.points[i-1].x,0,building.points[i-1].z),b=new Vector3(building.points[i].x,0,building.points[i].z);
-                    if(!Valid(a)||!Valid(b)||(b-a).sqrMagnitude<.0001f)continue;
-                    int sections=Mathf.CeilToInt(Vector3.Distance(a,b)/8f);
-                    for(int section=0;section<sections;section++)
-                    {
-                        Vector3 from=Vector3.Lerp(a,b,(float)section/sections),to=Vector3.Lerp(a,b,(float)(section+1)/sections);
-                        int at=vertices.Count;vertices.Add(from);vertices.Add(to);vertices.Add(from+Vector3.up*height);vertices.Add(to+Vector3.up*height);
-                        // Slight inset prevents neighboring atlas panels bleeding across facade edges.
-                        uv.Add(new Vector2(u+.002f,v+.002f));uv.Add(new Vector2(u+.498f,v+.002f));uv.Add(new Vector2(u+.002f,v+.498f));uv.Add(new Vector2(u+.498f,v+.498f));
-                        walls.AddRange(new[]{at,at+2,at+1,at+1,at+2,at+3});
-                    }
-                }
-                if(vertices.Count==0)continue;
+                    if(!Valid(a)||!Valid(b)||(b-a).sqrMagnitude<.01f)continue;
+                    if(i!=entrance){AppendFacadeSpan(a,b,0,height,height,u,v,vertices,walls,uv);continue;}
+                    Vector3 direction=(b-a).normalized,mid=(a+b)*.5f;
+                    Vector3 left=mid-direction*1.2f,right=mid+direction*1.2f;
+                    AppendFacadeSpan(a,left,0,height,height,u,v,vertices,walls,uv);
+                    AppendFacadeSpan(right,b,0,height,height,u,v,vertices,walls,uv);
+                    AppendFacadeSpan(left,right,2.5f,height,height,u,v,vertices,walls,uv);
+                }                if(vertices.Count==0)continue;
                 AddRoof(building.points,height,vertices,roofs);
                 while(uv.Count<vertices.Count)uv.Add(Vector2.zero);
                 Mesh facade=new Mesh{name="OSM footprint "+building.id};facade.SetVertices(vertices);facade.SetUVs(0,uv);facade.subMeshCount=2;
                 facade.SetTriangles(walls,0);facade.SetTriangles(roofs,1);facade.RecalculateNormals();facade.RecalculateBounds();buildingMeshes.Add(facade);
                 GameObject block=new GameObject("OSM_Building_"+building.id);block.transform.SetParent(layout.transform,false);
-                block.AddComponent<MeshFilter>().sharedMesh=facade;block.AddComponent<MeshRenderer>().sharedMaterials=new[]{facadeMaterials[tile],roofMaterial};count++;
+                block.AddComponent<MeshFilter>().sharedMesh=facade;block.AddComponent<MeshRenderer>().sharedMaterials=new[]{facadeMaterials[tile],roofMaterial};
+                BuildWallCollision(block.transform,building,height);count++;
             }
+        }        private static void AppendFacadeSpan(Vector3 a,Vector3 b,float bottom,float top,float height,float u,float v,List<Vector3> vertices,List<int> triangles,List<Vector2> uv)
+        {
+            if(top-bottom<.05f||(b-a).sqrMagnitude<.0025f)return;
+            int sections=Mathf.CeilToInt(Vector3.Distance(a,b)/8f);
+            for(int section=0;section<sections;section++)
+            {
+                Vector3 from=Vector3.Lerp(a,b,(float)section/sections),to=Vector3.Lerp(a,b,(float)(section+1)/sections);
+                int at=vertices.Count;vertices.Add(from+Vector3.up*bottom);vertices.Add(to+Vector3.up*bottom);vertices.Add(from+Vector3.up*top);vertices.Add(to+Vector3.up*top);
+                float low=v+.002f+.496f*bottom/height,high=v+.002f+.496f*top/height;
+                uv.Add(new Vector2(u+.002f,low));uv.Add(new Vector2(u+.498f,low));uv.Add(new Vector2(u+.002f,high));uv.Add(new Vector2(u+.498f,high));
+                triangles.AddRange(new[]{at,at+2,at+1,at+1,at+2,at+3});
+            }
+        }
+        private int EntranceEdge(Building building)
+        {
+            int entrance=-1;float nearest=float.MaxValue;
+            for(int i=1;i<building.points.Length;i++)
+            {
+                Vector3 a=new Vector3(building.points[i-1].x,0,building.points[i-1].z),b=new Vector3(building.points[i].x,0,building.points[i].z);
+                if(!Valid(a)||!Valid(b)||Vector3.Distance(a,b)<3.4f)continue;
+                float distance=((a+b)*.5f).sqrMagnitude;if(distance<nearest){nearest=distance;entrance=i;}
+            }
+            return entrance;
+        }        private void BuildWallCollision(Transform buildingRoot,Building building,float height)
+        {
+            int entrance=EntranceEdge(building);
+            for(int i=1;i<building.points.Length&&WallColliderCount<512;i++)
+            {
+                Vector3 a=new Vector3(building.points[i-1].x,0,building.points[i-1].z),b=new Vector3(building.points[i].x,0,building.points[i].z);
+                if(!Valid(a)||!Valid(b)||(b-a).sqrMagnitude<.01f)continue;
+                if(i!=entrance){WallSpan(buildingRoot,a,b,0,height);continue;}
+                // Authored gameplay doorway, not an OSM assertion: leave an escape opening.
+                Vector3 direction=(b-a).normalized,mid=(a+b)*.5f;
+                Vector3 left=mid-direction*1.2f,right=mid+direction*1.2f;
+                WallSpan(buildingRoot,a,left,0,height);WallSpan(buildingRoot,right,b,0,height);
+                WallSpan(buildingRoot,left,right,2.5f,height);
+                GameObject doorway=new GameObject("OSM_Doorway");doorway.transform.SetParent(buildingRoot,false);doorway.transform.localPosition=mid;doorway.transform.localRotation=Quaternion.LookRotation(b-a,Vector3.up);
+            }
+        }
+        private void WallSpan(Transform parent,Vector3 a,Vector3 b,float bottom,float top)
+        {
+            float length=Vector3.Distance(a,b);
+            if(WallColliderCount>=512||length<.05f||top-bottom<.05f)return;
+            GameObject wall=new GameObject("OSM_WallCollision");wall.transform.SetParent(parent,false);
+            wall.transform.localPosition=(a+b)*.5f+Vector3.up*((bottom+top)*.5f);wall.transform.localRotation=Quaternion.LookRotation(b-a,Vector3.up);
+            BoxCollider collider=wall.AddComponent<BoxCollider>();collider.size=new Vector3(.24f,top-bottom,length);WallColliderCount++;
         }        private static void PrepareMaterial(Material material)
         {
             material.DisableKeyword("_EMISSION");

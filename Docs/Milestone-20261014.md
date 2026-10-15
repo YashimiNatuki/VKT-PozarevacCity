@@ -1,6 +1,8 @@
 # Source milestone — 2026-10-14
 
-Status refreshed 2026-10-15: **75 passed, zero failed, one optional ArcGIS test skipped (76 total)**, including geometry-normal regression tests. Final Windows build: **zero errors, 227,705,869 bytes**. The exact final Windows-player runtime passed local MP3 decode/playback, 200 OSM roads, 40 extruded OSM footprints, 16 cards and side-job payout. Final city and encyclopedia captures were visually inspected; facade atlas and card aspect are correct, while the city remains a prototype. Direct3D 11 is selected after an earlier Direct3D 12 startup stall. Android split export/Gradle packaging succeeded after strict Windows-root TLS configuration; real-device installation/runtime remain unverified. Initial source commit `6cc06d2` was pushed; later changes require their own commit.
+> Earlier city/art/audio baseline published as 9a96f7f. The newer [gameplay milestone](Gameplay-20261015.md) supersedes session-only street progress and adds collision/journal validation.
+
+Status refreshed 2026-10-15: **75 passed, zero failed, one optional ArcGIS test skipped (76 total)**, including geometry-normal regression tests. Final Windows build: **zero errors, 227,705,869 bytes**. The exact final Windows-player runtime passed local MP3 decode/playback, 200 OSM roads, 40 extruded OSM footprints, 16 cards and side-job payout. Final city and encyclopedia captures were visually inspected; facade atlas and card aspect are correct, while the city remains a prototype. Direct3D 11 is selected after an earlier Direct3D 12 startup stall. Android split export/Gradle packaging succeeded after strict Windows-root TLS configuration; real-device installation/runtime remain unverified. The initial source was pushed as `6cc06d2`; this city/art/audio baseline was published in `9a96f7f`.
 
 ## Added in this milestone
 

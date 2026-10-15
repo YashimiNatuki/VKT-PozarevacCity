@@ -34,6 +34,8 @@ namespace Pozarevac.CityGame
         {
             director = game.Director;
             director.ContractCompleted += OnContractCompleted;
+            Progression.BindStreetJobs(director.Jobs);
+            director.Jobs.Completed += OnStreetJobCompleted;
         }
 
         private void OnContractCompleted(int count)
@@ -46,6 +48,12 @@ namespace Pozarevac.CityGame
             if (count == 1) hud.ShowNotification("Phone unlocked: P. Buy a fictional seed, plant, harvest and trade.", 7);
             else if (count == 2) hud.ShowNotification("Crew unlocked at REP 30. Open P for recruitment.", 7);
             else hud.ShowNotification("City route complete. Recruit two crew members to claim three districts.", 7);
+        }
+
+        private void OnStreetJobCompleted(int completedCount)
+        {
+            dirty = true;
+            SaveNow(); // Snapshot includes the committed count and its cash/reputation reward together.
         }
 
         private void MarkDirty() => dirty = true;
@@ -132,21 +140,21 @@ namespace Pozarevac.CityGame
         {
             if (game == null) return;
             game.Session.Changed += MarkDirty;
-            if (director != null) director.ContractCompleted += OnContractCompleted;
+            if (director != null) { director.ContractCompleted += OnContractCompleted; director.Jobs.Completed += OnStreetJobCompleted; }
         }
         private void OnDisable()
         {
             if (game == null) return;
             SaveNow();
             game.Session.Changed -= MarkDirty;
-            if (director != null) { director.ContractCompleted -= OnContractCompleted; director.SetOverlayOpen(false); }
+            if (director != null) { director.ContractCompleted -= OnContractCompleted; director.Jobs.Completed -= OnStreetJobCompleted; director.SetOverlayOpen(false); }
             if (panel != null) panel.Close();
         }
         private void OnDestroy()
         {
             SaveNow();
             if (game != null && game.Session != null) game.Session.Changed -= MarkDirty;
-            if (director != null) director.ContractCompleted -= OnContractCompleted;
+            if (director != null) { director.ContractCompleted -= OnContractCompleted; director.Jobs.Completed -= OnStreetJobCompleted; }
             if (panel != null) Destroy(panel.gameObject);
         }
     }

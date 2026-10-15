@@ -1,5 +1,7 @@
 # Build and validation notes — 2026-10-15
 
+> Earlier city/art/audio baseline published as 9a96f7f. The newer [gameplay milestone](Gameplay-20261015.md) supersedes session-only street progress and adds collision/journal validation.
+
 ## Verified state
 
 - Tests: **75 passed / zero failed / one optional ArcGIS-specific skip**, 76 total, including geometry-normal regression coverage.

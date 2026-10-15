@@ -72,6 +72,12 @@ namespace Pozarevac.CityGame
                 game.Player.GetComponentInChildren<Camera>().transform.LookAt(new Vector3(0, 3, 12));
                 yield return null;
             }
+            if (Array.Exists(Environment.GetCommandLineArgs(), arg => arg == "-vktJobsCapture"))
+            {
+                game.GetComponent<CityProgressionController>().OpenPanel();
+                FindAnyObjectByType<CityPhonePanel>(FindObjectsInactive.Include).OpenJobs();
+                yield return null;
+            }
             string screenshot = Argument("-vktScreenshot", "");
             if (!string.IsNullOrEmpty(screenshot))
             {
@@ -96,17 +102,27 @@ namespace Pozarevac.CityGame
                 Ensure(CityPlantEncyclopedia.Count == 16 && Resources.Load<Texture2D>("Art/BotanicalAtlas") != null, "Botanical cards or atlas are missing.");
                 CityOsmStreets streets = game.GetComponent<CityOsmStreets>();
                 Ensure(streets != null && streets.SegmentCount > 0 && streets.Source.buildings.Length > 0, "Actual OSM streets/footprints were not composed.");
+                Ensure(streets.WallColliderCount > 0, "Building collision was not composed.");
                 if (game.Hideout.IsInside) Ensure(game.Hideout.Travel(false), "Could not leave hideout for street job.");
                 int before = game.Session.Cash;
-                Ensure(game.Director.TryAcceptStreetJob(), "Repeatable street job did not unlock.");
+                CityProgressionController controller = game.GetComponent<CityProgressionController>();
+                controller.OpenPanel();
+                CityPhonePanel phone = FindAnyObjectByType<CityPhonePanel>(FindObjectsInactive.Include);
+                phone.OpenJobs();
+                Ensure(phone.transform.Find("JobsPanel").gameObject.activeSelf && game.Director.IsPaused, "Job journal did not open and pause the player.");
+                phone.transform.Find("JobsPanel/AcceptJob").GetComponent<UnityEngine.UI.Button>().onClick.Invoke();
+                Ensure(game.Director.Jobs.IsActive && !phone.IsOpen && !game.Director.IsPaused, "Journal did not accept the job and resume the player.");
                 CityStreetJobOffer offer = game.Director.Jobs.Offer;
                 for (int i = 0; i < 3; i++) Visit(game, offer.StationAt(i));
                 Ensure(!game.Director.Jobs.IsActive && game.Session.Cash == before + offer.CashReward, "Street job payout or route failed.");
                 Ensure(!game.Director.TryInteract(offer.StationAt(2)), "Street job paid twice.");
                 game.GetComponent<CityProgressionController>().SaveNow();
+                CitySaveStore jobStore = new CitySaveStore(controller.SavePath);
+                Ensure(jobStore.TryLoad(out CityProfileData jobSaved, out _) && jobSaved.completedStreetJobs == game.Director.Jobs.CompletedJobs && jobSaved.completedStreetJobs == 1,
+                    "Completed street-job progress did not survive save/reload.");
                 InteractWith(game, game.Hideout.Entrance, .9f);
                 game.Player.GetComponentInChildren<Camera>().transform.LookAt((game.Hideout.PlotTransform(0).position + game.Hideout.PlotTransform(3).position) / 2 + Vector3.up * .5f);
-                details = $"Enhanced: {streets.SegmentCount} OSM segments, {streets.Source.buildings.Length} building footprints, 16 botanical cards, music overlay and physical street-job payout passed.";
+                details = $"Enhanced: {streets.SegmentCount} OSM segments, {streets.Source.buildings.Length} building footprints, {streets.WallColliderCount} wall colliders, 16 botanical cards, music overlay, job journal, physical street-job payout and durable story progress passed.";
                 return true;
             }
             catch (Exception error) { details = error.GetType().Name + ": " + error.Message; return false; }

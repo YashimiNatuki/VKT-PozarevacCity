@@ -32,7 +32,10 @@ namespace Pozarevac.CityGame
         private Text plantDetail;
         private int selectedCard;
         private Texture2D botanicalAtlas;
-        public bool IsOpen => (content != null && content.activeSelf) || (catalog != null && catalog.activeSelf) || (encyclopedia != null && encyclopedia.activeSelf);
+        private GameObject journal;
+        private Text jobDetails;
+        private Button acceptJob, cancelJob;
+        public bool IsOpen => (content != null && content.activeSelf) || (catalog != null && catalog.activeSelf) || (encyclopedia != null && encyclopedia.activeSelf) || (journal != null && journal.activeSelf);
 
         public void Initialize(CityProgressionController controller)
         {
@@ -79,24 +82,19 @@ namespace Pozarevac.CityGame
             claim = Button("Claim", economy.transform, "Preuzmi blok / 750 cash", new Vector2(160, -65), () => Act(owner.Progression.ClaimTerritory));
             status = Label("Status", content.transform, "", 18, 645, 35);
             Button("Catalog", content.transform, "KATALOG / BAŠTA", new Vector2(-160, -290), OpenCatalog);
-            Button("StreetJob", content.transform, "ULIČNI POSAO", new Vector2(160, -290), () =>
-            {
-                CityMissionDirector director = owner.GetComponent<CityMissionDirector>();
-                owner.ClosePanel();
-                if (director == null || !director.TryAcceptStreetJob())
-                { owner.OpenPanel(); ShowFeedback("Ulični poslovi: završi 3 ugovora, zatim sačekaj da se ponuda obnovi."); }
-            });
+            Button("StreetJob", content.transform, "DNEVNIK / POSLOVI", new Vector2(160, -290), OpenJobs);
             Button("Close", content.transform, "Nazad u igru / P ili Esc", new Vector2(0, -350), owner.ClosePanel);
             Label("Help", content.transform, "Štek: vrata kod trećeg markera. Četiri saksije / E: nega / V: vrsta.\nBašta: stvarni sati. Probna biljka: vreme igre. Ekipa: REP 30.", 16, 820, 45);
             BuildCatalog();
             BuildEncyclopedia();
+            BuildJobs();
             Close();
         }
 
         private void Act(Func<bool> action) { if (!owner.Perform(action)) ShowFeedback("Akcija nije dostupna: proveri uslove, prostor i novac."); Refresh(); }
         private void ShowFeedback(string message) { feedback = message; feedbackUntil = Time.unscaledTime + 5; status.text = message; }
-        public void Open() { backdrop.SetActive(true); encyclopedia.SetActive(false); catalog.SetActive(false); content.SetActive(true); Refresh(); }
-        public void Close() { if (content != null) content.SetActive(false); if (catalog != null) catalog.SetActive(false); if (encyclopedia != null) encyclopedia.SetActive(false); if (backdrop != null) backdrop.SetActive(false); }
+        public void Open() { backdrop.SetActive(true); journal.SetActive(false); encyclopedia.SetActive(false); catalog.SetActive(false); content.SetActive(true); Refresh(); }
+        public void Close() { if (content != null) content.SetActive(false); if (catalog != null) catalog.SetActive(false); if (encyclopedia != null) encyclopedia.SetActive(false); if (journal != null) journal.SetActive(false); if (backdrop != null) backdrop.SetActive(false); }
         private void Update()
         {
             if (!IsOpen) return;
@@ -121,13 +119,65 @@ namespace Pozarevac.CityGame
             claim.interactable = p.CompletedContracts == 3 && p.Crew >= 2 && p.Territories < 3 && p.Session.Cash >= CityProgression.TerritoryPrice;
             status.text = Time.unscaledTime < feedbackUntil ? feedback : owner.SaveStatus;
             if (catalog != null && catalog.activeSelf) RefreshCatalog();
+            if (journal != null && journal.activeSelf) RefreshJobs();
         }
 
         public void OpenCatalog()
         {
             if (!owner.Progression.PhoneUnlocked) return;
             encyclopedia.SetActive(false);
+            journal.SetActive(false);
             content.SetActive(false); catalog.SetActive(true); RefreshCatalog();
+        }
+        public void OpenJobs()
+        {
+            if (!owner.Progression.PhoneUnlocked) return;
+            content.SetActive(false); catalog.SetActive(false); encyclopedia.SetActive(false);
+            journal.SetActive(true); RefreshJobs();
+        }
+        private void BuildJobs()
+        {
+            journal = Rect("JobsPanel", transform, new Vector2(720, 880), Vector2.zero).gameObject;
+            journal.AddComponent<Image>().color = new Color(.025f, .04f, .065f, .99f);
+            Label("JobsTitle", journal.transform, "DNEVNIK / ULIČNI POSLOVI", 28, 25, 50);
+            jobDetails = Label("JobDetails", journal.transform, "", 23, 100, 560);
+            jobDetails.alignment = TextAnchor.UpperLeft; jobDetails.supportRichText = false;
+            acceptJob = Button("AcceptJob", journal.transform, "PRIHVATI POSAO", new Vector2(-160, -280), () =>
+            {
+                CityMissionDirector director = owner.GetComponent<CityMissionDirector>();
+                owner.ClosePanel();
+                if (director != null && director.TryAcceptStreetJob()) return;
+                owner.OpenPanel(); OpenJobs(); ShowFeedback("Ponuda trenutno nije dostupna. Proveri ugovore, rok i stanje lika.");
+            });
+            cancelJob = Button("CancelJob", journal.transform, "OTKAŽI / BEZ ISPLATE", new Vector2(160, -280), () =>
+            {
+                CityGameBootstrap game = owner.GetComponent<CityGameBootstrap>();
+                if (game != null && game.Vitals.CanAct && game.Director.Jobs.Cancel())
+                    ShowFeedback("Posao otkazan; paket vraćen, bez isplate.");
+                RefreshJobs();
+            });
+            Button("BackFromJobs", journal.transform, "NAZAD U TELEFON", new Vector2(0, -365), Open);
+            journal.SetActive(false);
+        }
+        private void RefreshJobs()
+        {
+            CityMissionDirector director = owner.GetComponent<CityMissionDirector>();
+            CityStreetJobs jobs = director != null ? director.Jobs : null;
+            if (jobs == null) { jobDetails.text = "Učitavanje dnevnika..."; acceptJob.interactable = cancelJob.interactable = false; return; }
+            bool unlocked = director.StreetJobsUnlocked;
+            string route = "";
+            for (int i = 0; i < 3; i++)
+            {
+                string state = !jobs.IsActive ? "PONUDA" : i < jobs.ObjectiveIndex ? "GOTOVO" : i == jobs.ObjectiveIndex ? "SLEDEĆE" : "ČEKA";
+                route += $"[{state}] {i + 1}. {jobs.Offer.ObjectiveTitle(i)} / marker {jobs.Offer.StationAt(i) + 1}\n";
+            }
+            string availability = !unlocked ? "Završi sva 3 glavna ugovora da otključaš posao." : jobs.IsActive
+                ? $"Aktivno / preostalo {Math.Ceiling(jobs.RemainingSeconds)} sekundi igre"
+                : jobs.CooldownSeconds > 0 ? $"Novi poziv za {Math.Ceiling(jobs.CooldownSeconds)} sekundi igre" : "Ponuda je spremna za prihvatanje.";
+            if (Time.unscaledTime < feedbackUntil) availability = feedback;
+            jobDetails.text = $"Glavni ugovori: {owner.Progression.CompletedContracts}/3\nZavršeni poslovi: {jobs.CompletedJobs} / poglavlje {jobs.StoryChapter}/3\n\n{jobs.Offer.Title}\n{jobs.Offer.Briefing}\n\n{route}\nNagrada: {jobs.Offer.CashReward} cash + {jobs.Offer.ReputationReward} REP\nRok ponude: {jobs.Offer.TimeLimit:0}s\n\n{availability}\nTelefon pauzira rok; zatvori ga za nastavak.";
+            acceptJob.interactable = unlocked && !jobs.IsActive && jobs.CooldownSeconds <= 0;
+            cancelJob.interactable = jobs.IsActive;
         }
         private void BuildCatalog()
         {

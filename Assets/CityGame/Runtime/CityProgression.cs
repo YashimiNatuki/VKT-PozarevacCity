@@ -11,6 +11,7 @@ namespace Pozarevac.CityGame
         public int reputation;
         public float heat;
         public int completedContracts;
+        public int completedStreetJobs;
         public int seeds;
         public int stock;
         public double growSeconds;
@@ -27,6 +28,9 @@ namespace Pozarevac.CityGame
         public const int CrewPrice = 250, TerritoryPrice = 750, Capacity = 30;
         public const double GrowDuration = 30;
         private readonly CityProfileData data;
+        private CityStreetJobs streetJobs;
+        public const int CurrentProfileVersion = 4;
+        public int CompletedStreetJobs => streetJobs != null ? streetJobs.CompletedJobs : data.completedStreetJobs;
         public CitySession Session { get; }
         public CityGarden Garden { get; }
         public string Callsign => data.callsign;
@@ -51,8 +55,10 @@ namespace Pozarevac.CityGame
 
         public static void Validate(CityProfileData value)
         {
-            if (value == null || value.version < 1 || value.version > 3) throw new ArgumentException("Unsupported profile version.");
+            if (value == null || value.version < 1 || value.version > CurrentProfileVersion) throw new ArgumentException("Unsupported profile version.");
             CityGarden.Validate(value.garden);
+            CityStreetJobs.ValidateCompletedCount(value.completedStreetJobs);
+            if (value.completedStreetJobs > 0 && value.completedContracts != 3) throw new ArgumentException("Street progress requires the city campaign.");
             if (value.callsign == null || (value.callsign.Length > 0 && !ValidCallsign(value.callsign)))
                 throw new ArgumentException("Invalid callsign.");
             if (value.cash < 0 || value.reputation < 0 || float.IsNaN(value.heat) || float.IsInfinity(value.heat) || value.heat < 0 || value.heat > 100)
@@ -146,13 +152,23 @@ namespace Pozarevac.CityGame
             return Session.TrySpend(TerritoryPrice);
         }
 
+        public void BindStreetJobs(CityStreetJobs jobs)
+        {
+            if (jobs == null) throw new ArgumentNullException(nameof(jobs));
+            if (ReferenceEquals(streetJobs, jobs)) return;
+            if (streetJobs != null) throw new InvalidOperationException("Street jobs are already bound.");
+            jobs.RestoreCompletedCount(data.completedStreetJobs);
+            streetJobs = jobs;
+        }
+
         public CityProfileData Snapshot()
         {
             CityProfileData snapshot = Copy(data);
             snapshot.cash = Session.Cash;
             snapshot.reputation = Session.Reputation;
             snapshot.heat = Session.Heat;
-            snapshot.version = 3;
+            snapshot.version = CurrentProfileVersion;
+            snapshot.completedStreetJobs = CompletedStreetJobs;
             snapshot.garden = Garden.Snapshot();
             return snapshot;
         }
@@ -160,7 +176,7 @@ namespace Pozarevac.CityGame
         private static CityProfileData Copy(CityProfileData source) => new CityProfileData
         {
             version = source.version, callsign = source.callsign, cash = source.cash, reputation = source.reputation, heat = source.heat,
-            completedContracts = source.completedContracts, seeds = source.seeds, stock = source.stock, growSeconds = source.growSeconds,
+            completedContracts = source.completedContracts, completedStreetJobs = source.completedStreetJobs, seeds = source.seeds, stock = source.stock, growSeconds = source.growSeconds,
             harvestReady = source.harvestReady, crew = source.crew, territories = source.territories, garden = CityGarden.Copy(source.garden)
         };
     }

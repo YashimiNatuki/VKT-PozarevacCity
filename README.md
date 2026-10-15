@@ -17,15 +17,17 @@ This repository is the standalone Unity source milestone. The older [browser/Thr
 - A local mini music player with F6/mobile controls, local MP3/OGG/WAV and three optional official SomaFM presets. Radio decoding is experimental and bounded to ten-minute sessions; continuous 24/7 playback is not verified. Sixteen local audio files were counted through metadata only; personal music is not published.
 - A 16-entry phone botanical encyclopedia: eight tradeable fictional varieties plus eight informational entries. The original illustrated atlas contains eight illustrations, not photographs.
 - A bounded offline Požarevac center using 200 real OSM road segments and 40 building footprints, with original facade textures. Flat terrain, default widths and authored textures limit fidelity; this is not full-city photogrammetry.
-- Repeatable three-chapter side jobs available after the campaign; their progress is session-only.
+- Repeatable three-chapter side jobs after the campaign, with completed counts/chapters persisted in save v4 alongside cash/reputation. Unfinished routes and their cooldown reset on reload without paying rewards.
 
-**Verification (2026-10-15):** 75 tests passed, zero failed and one optional ArcGIS-specific test skipped (76 total). The latest Windows development build succeeded with zero build errors (227,705,869 bytes). That exact player passed mission, physics interaction, garden, save/restore, damage/respawn, side-job payout, 200 OSM road segments, 40 footprints, 16 cards, music overlay and local audio decoding/playback checks. City facades and the corrected botanical card framing were captured and visually inspected. The portable builder uses Direct3D 11 after an earlier Direct3D 12 startup stall. Android ARM64/IL2CPP APK assembly succeeded: 51,984,055 bytes, API 28 minimum / target 36, APK v2 signature verified. No ADB device was attached, so installation, touch usability and phone runtime/performance are unverified.
+**Verification (2026-10-15, gameplay upgrade):** 85 tests passed, zero failed and one optional ArcGIS test skipped (86 total). Windows build: zero errors, 227,714,152 bytes. Two actual player runs with `-force-d3d11 -job-worker-count 4` passed campaign, garden, save/restore, damage/respawn, music, journal UI, one-time side-job payout and saved story-count checks. Scene: 200 OSM segments, 40 footprints, 397 wall colliders. Journal/city captures were visually inspected. One earlier default-worker startup stalled before scene load; use the supplied `Launch-VKT.cmd`. Updated Android ARM64/IL2CPP APK assembly succeeded: 51,990,619 bytes, API 28 minimum/target 36, APK v2 signature verified. No device was attached, so phone installation/runtime/performance remain unverified.
 
 ## Actual Windows player captures
 
 ![Partial OSM center with authored facade textures](Docs/Screenshots/city-windows-20261015.png)
 
 ![Botanical phone card](Docs/Screenshots/botanical-card-windows-20261015.png)
+
+![Mission journal](Docs/Screenshots/journal-windows-20261015.png)
 
 ## Map and art
 
@@ -47,7 +49,7 @@ Windows batch entry point:
 & 'PATH/TO/Unity.exe' -batchmode -quit -projectPath $PWD -executeMethod Pozarevac.CityGame.Editor.CityPortableBuild.BuildWindows -vktOutput 'PATH/TO/Build/VKT.exe' -logFile 'PATH/TO/windows-build.log'
 ```
 
-Distribute the whole Windows folder, including `VKT_Data` and supporting DLLs. Players launch `VKT.exe` without Unity Editor. Development diagnostic backup folders are excluded from the distribution ZIP.
+Distribute the whole Windows folder, including `VKT_Data` and supporting DLLs. Copy `Tools/Launch-VKT.cmd` next to `VKT.exe` and start that launcher for the verified Direct3D11/four-worker path; Unity Editor is not required. Development diagnostic backup folders are excluded from the distribution ZIP.
 
 Android needs Unity Android Build Support, SDK/NDK/OpenJDK. `.BuildAndroid` builds an APK with ARM64, IL2CPP, API 28 minimum and landscape orientation, then restores prior settings. For Windows installations requiring the existing OS trusted-root store, the split export/assemble script uses PowerShell 7:
 
@@ -72,11 +74,11 @@ It exports through `.ExportAndroidProject` then invokes bundled Gradle with expl
 ## Next work
 
 1. Install/test the verified Android development APK on a real ARM64 phone: touch, save/resume, economy, damage, frame time, memory and thermals.
-2. Add colliders/interiors, sidewalks/junctions and recognizable authored landmarks; current footprint shells are visual geometry over flat walking ground.
+2. Add furnished interiors, sidewalks/junctions and recognizable authored landmarks; perimeter walls now block movement with authored visible door passages, while roofs have no walking collision.
 3. Add physical customer delivery routes and animated encounters with readable reactions.
 4. Obtain three natural Serbian character voices with clear rights and authentic city ambience. Validate long-running radio; endpoint discovery does not prove 24/7 playback.
-5. Persist street-job story/chapter progress, which currently resets each session, while cash and reputation persist.
+5. Expand route stations and branching stories; completed job/chapter progress now persists, while unfinished jobs are safely abandoned on reload.
 
 See [milestone](Docs/Milestone-20261014.md), [platform/audio readiness](Docs/Platform-Audio-Plan-20261014.md), [music](Docs/Music.md), [source boundaries](Docs/Source-Publication.md) and [third-party notices](THIRD_PARTY_NOTICES.md). MIT covers first-party code under [LICENSE](LICENSE); OSM, Unity and dependencies retain their own terms.
 
-Verification hashes and package metadata: [2026-10-15 receipt](Docs/Verification-20261015.json). Binary packages were produced locally; this repository publishes source and captures, not a binary release.
+Latest gameplay status: [2026-10-15 gameplay upgrade](Docs/Gameplay-20261015.md), [verification receipt](Docs/Verification-Gameplay-20261015.json). Earlier city/art/audio package hashes: [baseline receipt](Docs/Verification-20261015.json). Binary packages were produced locally; this repository publishes source and captures, not a binary release.

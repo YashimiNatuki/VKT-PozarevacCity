@@ -1,0 +1,58 @@
+{
+  "date": "2026-10-15",
+  "stage": "gameplay development",
+  "saveFormat": {
+    "unfinishedRoutePolicy": "abandon without reward; cooldown resets",
+    "persists": "completed street-job count, chapter, cash and reputation",
+    "readVersions": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "current": 4
+  },
+  "tests": {
+    "skipped": 1,
+    "failed": 0,
+    "total": 86,
+    "skipReason": "optional ArcGIS absent",
+    "passed": 85
+  },
+  "windows": {
+    "osmRoadSegments": 200,
+    "wallColliders": 397,
+    "playerChecks": "campaign, garden, save/reload, damage/respawn, journal UI acceptance/resume, single payout, persisted street count, local audio",
+    "zipSha256": "76B1EE40AE6AAEF4C5C1B33A0697D9650F983BF169B7724ED0CE85B809D41175",
+    "successfulPlayerRuns": 2,
+    "osmFootprints": 40,
+    "zipBytes": 105846692,
+    "buildErrors": 0,
+    "verifiedArguments": [
+      "-force-d3d11",
+      "-job-worker-count",
+      "4"
+    ],
+    "defaultWorkerStartupStalls": 1,
+    "reportedBuildBytes": 227714152
+  },
+  "android": {
+    "minApi": 28,
+    "backend": "IL2CPP",
+    "deviceRuntimeVerified": false,
+    "zipSha256": "662E02CE2301A06F5D9F7345A81A75883DCA6B0B62E5327E491ACA10E5023D51",
+    "exportErrors": 0,
+    "package": "com.yashimi.vkt",
+    "versionName": "1.0",
+    "apkSha256": "F6C74B1D6DCF9D1D340E14CF90142B2E21B3B3922C0F9CC83761EBAA2F5B6E71",
+    "assembly": "BUILD SUCCESSFUL",
+    "targetApi": 36,
+    "abi": "arm64-v8a",
+    "zipBytes": 53999336,
+    "versionCode": 1,
+    "apkBytes": 51990619,
+    "debuggable": true,
+    "signers": 1,
+    "signatureV2Verified": true
+  }
+}

@@ -112,7 +112,7 @@ namespace Pozarevac.CityGame
             if (envelope.version != 1) throw new NotSupportedException("Unsupported save format.");
             if (envelope.payload == null || envelope.sha256 != Hash(envelope.payload)) throw new InvalidDataException("Save checksum mismatch.");
             CityProfileData profile = JsonUtility.FromJson<CityProfileData>(envelope.payload);
-            if (profile != null && profile.version > 3) throw new NotSupportedException("Newer profile format.");
+            if (profile != null && profile.version > CityProgression.CurrentProfileVersion) throw new NotSupportedException("Newer profile format.");
             CityProgression.Validate(profile);
             return profile;
         }

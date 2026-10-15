@@ -6,6 +6,47 @@ namespace Pozarevac.CityGame.Tests.Editor
     public sealed class CityOsmGeometryTests
     {
         [Test]
+        public void StaticPerimetersBlockWallCrossingWhileMissionGroundRemainsReachable()
+        {
+            GameObject owner=new GameObject("OsmCollisionTest");
+            try
+            {
+                CityOsmStreets streets=owner.AddComponent<CityOsmStreets>();streets.Initialize(owner.transform,Vector3.zero);Physics.SyncTransforms();
+                Assert.That(streets.WallColliderCount,Is.InRange(1,512));
+                BoxCollider sample=null;
+                foreach(BoxCollider collider in owner.GetComponentsInChildren<BoxCollider>())
+                {
+                    if(collider.name!="OSM_WallCollision")continue;
+                    Assert.That(collider.size.x*collider.size.y*collider.size.z,Is.GreaterThan(0));
+                    Assert.That(collider.isTrigger,Is.False);sample=collider;
+                    Vector3 origin=collider.transform.position+collider.transform.right*2;
+                    Assert.That(collider.Raycast(new Ray(origin,-collider.transform.right),out RaycastHit wallHit,4),Is.True,"Perimeter wall did not block a crossing ray.");
+                }
+                Assert.That(sample,Is.Not.Null);
+                int doors=0;
+                foreach(Transform doorway in owner.GetComponentsInChildren<Transform>())
+                {
+                    if(doorway.name!="OSM_Doorway")continue;doors++;
+                    Ray open=new Ray(doorway.position+Vector3.up+doorway.right*.3f,-doorway.right);
+                    Ray header=new Ray(doorway.position+Vector3.up*2.75f+doorway.right*.3f,-doorway.right);
+                    bool headerBlocked=false;
+                    foreach(BoxCollider wall in doorway.parent.GetComponentsInChildren<BoxCollider>())
+                    {
+                        Assert.That(wall.Raycast(open,out RaycastHit openHit,.6f),Is.False,"Authored doorway was blocked at walking height.");
+                        headerBlocked|=wall.Raycast(header,out RaycastHit headerHit,.6f);
+                    }
+                    Assert.That(headerBlocked,Is.True,"Doorway header did not block above the opening.");
+                }
+                Assert.That(doors,Is.GreaterThan(0));
+                Vector3[] stations={Vector3.zero,new Vector3(2,0,8),new Vector3(-5,0,22),new Vector3(4,0,36),new Vector3(8,0,36)};
+                foreach(Vector3 station in stations)
+                {
+                    Assert.That(Physics.Raycast(station+Vector3.up*2,Vector3.down,out RaycastHit ground,3),Is.True);
+                    Assert.That(ground.collider.name,Is.EqualTo("OSM_FlatOfflineGround"),"A current mission position was enclosed by building collision.");
+                }
+            }
+            finally{Object.DestroyImmediate(owner);}
+        }        [Test]
         public void RoadRibbonsFaceUpAndStayWithinTheDeclaredOfflineBounds()
         {
             GameObject owner=new GameObject("OsmRoadTest");

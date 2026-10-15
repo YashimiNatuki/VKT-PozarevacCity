@@ -79,7 +79,7 @@ namespace Pozarevac.CityGame.Tests.Editor
                 CitySaveStore store = new CitySaveStore(Path.Combine(folder, "profile.json"));
                 store.Save(p.Snapshot());
                 Assert.That(store.TryLoad(out CityProfileData loaded, out _), Is.True);
-                Assert.That(loaded.version, Is.EqualTo(3));
+                Assert.That(loaded.version, Is.EqualTo(CityProgression.CurrentProfileVersion));
                 CityProgression restored = new CityProgression(CitySession.Restore(loaded), loaded);
                 Assert.That(restored.Garden.Plot(2).variety, Is.EqualTo(2));
                 Assert.That(restored.Garden.Plot(2).grownSeconds, Is.EqualTo(300));

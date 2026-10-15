@@ -24,10 +24,12 @@ namespace Pozarevac.CityGame
         }
     }
 
-    // Session-local repeatable side contracts. Rewards use the existing saved CitySession.
+    // Completed counts persist; active routes are deliberately abandoned on reload.
     // No claims of geographically accurate addresses: routes reuse three authored local stations.
     public sealed class CityStreetJobs
     {
+        public const int MaximumCompletedJobs = 1000000;
+        public event Action<int> Completed;
         private readonly CitySession session;
         private uint random;
         public CityStreetJobOffer Offer { get; private set; }
@@ -39,10 +41,23 @@ namespace Pozarevac.CityGame
         public string Message { get; private set; }
         public int StoryChapter => Math.Min(3, CompletedJobs / 3 + 1);
 
-        public CityStreetJobs(CitySession citySession, uint seed = 0x56b23d91u)
+        public CityStreetJobs(CitySession citySession, uint seed = 0x56b23d91u, int completedJobs = 0)
         {
             session = citySession ?? throw new ArgumentNullException(nameof(citySession));
             random = seed == 0 ? 0x56b23d91u : seed;
+            ValidateCompletedCount(completedJobs);
+            CompletedJobs = completedJobs;
+            GenerateOffer();
+        }
+        public static void ValidateCompletedCount(int count)
+        {
+            if (count < 0 || count > MaximumCompletedJobs) throw new ArgumentOutOfRangeException(nameof(count));
+        }
+        internal void RestoreCompletedCount(int count)
+        {
+            ValidateCompletedCount(count);
+            if (IsActive || CompletedJobs != 0) throw new InvalidOperationException("Street progress must be restored before play.");
+            CompletedJobs = count;
             GenerateOffer();
         }
         public bool TryAccept()
@@ -64,11 +79,12 @@ namespace Pozarevac.CityGame
             }
             int cash = Offer.CashReward, reputation = Offer.ReputationReward;
             IsActive = false; RemainingSeconds = 0; CooldownSeconds = 30;
-            CompletedJobs = Math.Min(int.MaxValue - 1, CompletedJobs) + 1;
+            CompletedJobs = Math.Min(MaximumCompletedJobs - 1, CompletedJobs) + 1;
             // Commit terminal state and next offer before cash observers may reenter this module.
             GenerateOffer();
             Message = "Sporedni posao završen: +" + cash + " cash / +" + reputation + " REP. Novi poziv za 30 sekundi igre.";
             session.Earn(cash, reputation);
+            Completed?.Invoke(CompletedJobs);
             return true;
         }
         public void Tick(double seconds)
