@@ -88,7 +88,7 @@ namespace Pozarevac.CityGame
 
         private void Update()
         {
-            if (Touch != null && Director != null) Touch.SetOverlayBlocked(Director.IsPaused);
+            if (Touch != null && Director != null) Touch.SetOverlayBlocked(Director.IsPaused || Progression.Lifestyle.IsTraining);
             if (Vitals != null)
             {
                 hud.SetHealth(Vitals.Health.Current, Vitals.Health.Maximum);

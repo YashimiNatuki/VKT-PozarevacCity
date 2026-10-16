@@ -30,7 +30,7 @@ namespace Pozarevac.CityGame
         public CityWeaponPickup[] Pickups { get; private set; }
         public CityBreakableWindow PracticeWindow { get; private set; }
         public int ActiveProjectiles { get { int count = 0; foreach (Projectile p in projectiles) if (p != null && p.Active) count++; return count; } }
-        public bool CanAct => game != null && game.WorldReady && game.Vitals.CanAct && !game.Director.IsPaused && Time.timeScale > 0;
+        public bool CanAct => game != null && game.WorldReady && !game.Progression.Lifestyle.IsTraining && game.Vitals.CanAct && !game.Director.IsPaused && Time.timeScale > 0;
 
         public void Initialize(CityGameBootstrap owner, CityHud cityHud, Transform worldRoot, Vector3 spawn)
         {

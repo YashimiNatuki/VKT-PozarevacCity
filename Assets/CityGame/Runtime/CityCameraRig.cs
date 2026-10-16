@@ -15,6 +15,13 @@ namespace Pozarevac.CityGame
         private readonly RaycastHit[] hits = new RaycastHit[24];
         private readonly RaycastHit[] aimHits = new RaycastHit[24];
         private Transform weapon;
+        private CityBenchVisual bench;
+        private CityLifestyle lifestyle;
+        private CityCharacterPhysique physique;
+        private bool wasTraining;
+        private CursorLockMode previousCursor;
+        private bool previousCursorVisible;
+        public void ConfigureBench(CityBenchVisual visual,CityLifestyle state){bench=visual;lifestyle=state;}
         public CityCameraMode Mode { get; private set; }
         public bool AvatarAvailable => avatar != null;
 
@@ -28,6 +35,7 @@ namespace Pozarevac.CityGame
                 avatar = new GameObject("VKT_PlayerVisual"); avatar.transform.SetParent(owner, false);
                 Transform wrapper = new GameObject("NormalizedCharacter").transform; wrapper.SetParent(avatar.transform, false);
                 GameObject model = Instantiate(source, wrapper);
+                physique = new CityCharacterPhysique(model);
                 AnimationClip idle = Clip("idle"), run = Clip("run");
                 if (!CityCharacterModel.Normalize(wrapper, model, idle)) { Destroy(avatar); avatar = null; }
                 else
@@ -60,7 +68,7 @@ namespace Pozarevac.CityGame
                 if (!clip.name.StartsWith("__preview__", System.StringComparison.Ordinal)) return clip;
             return null;
         }
-        public void Cycle() { if (Time.timeScale > 0) SetMode((CityCameraMode)(((int)Mode + 1) % 3)); }
+        public void Cycle() { if ((lifestyle==null||!lifestyle.IsTraining) && Time.timeScale > 0) SetMode((CityCameraMode)(((int)Mode + 1) % 3)); }
         public void SetMode(CityCameraMode mode)
         {
             if ((int)mode < 0 || (int)mode > 2) throw new System.ArgumentOutOfRangeException(nameof(mode));
@@ -94,6 +102,22 @@ namespace Pozarevac.CityGame
         private void LateUpdate()
         {
             if (owner == null || view == null) return;
+            if(weapon==null)weapon=view.Find("VKT_HeldWeapon");
+            bool training=lifestyle!=null&&lifestyle.IsTraining&&bench!=null;
+            if(physique!=null)physique.Apply(lifestyle!=null?lifestyle.Strength:0);
+            if(avatar!=null)avatar.SetActive(!training&&Mode!=CityCameraMode.FirstPerson);
+            if(training)
+            {
+                if(!wasTraining){previousCursor=Cursor.lockState;previousCursorVisible=Cursor.visible;}
+                Cursor.lockState=CursorLockMode.None;Cursor.visible=!Application.isMobilePlatform;
+                float blend=1-Mathf.Exp(-8*Time.deltaTime);
+                view.position=Vector3.Lerp(view.position,bench.CameraPosition,blend);
+                view.rotation=Quaternion.Slerp(view.rotation,Quaternion.LookRotation(bench.CameraTarget-view.position,Vector3.up),blend);
+                if(weapon!=null)weapon.gameObject.SetActive(false);
+                wasTraining=true;
+                return;
+            }
+            if(wasTraining){wasTraining=false;owner.GetComponent<CityPlayerController>().ResetView();Cursor.lockState=previousCursor;Cursor.visible=previousCursorVisible;}
             Vector3 eye = owner.TransformPoint(new Vector3(0, 1.62f, 0));
             Vector3 offset = view.rotation * Offset(Mode);
             float distance = offset.magnitude;

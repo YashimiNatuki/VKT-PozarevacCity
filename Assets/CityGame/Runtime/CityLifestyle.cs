@@ -14,8 +14,8 @@ namespace Pozarevac.CityGame
     // Game-time character development; no offline hunger or automatic offline escape.
     public sealed class CityLifestyle
     {
-        public const int MealPrice = 35, RequiredReps = 24, MaximumCount = 1000000;
-        public const double WorkoutDuration = 15, EscapeDuration = 18, ArrestDuration = 2.5;
+        public const int MealPrice = 35, RequiredReps = 8, MaximumCount = 1000000;
+        public const double WorkoutDuration = 45, EscapeDuration = 18, ArrestDuration = 2.5;
         private readonly CityLifestyleData data;
         private readonly CitySession session;
         private double tapCooldown, dirtyClock;
@@ -72,8 +72,8 @@ namespace Pozarevac.CityGame
         }
         public bool TryRep()
         {
-            if (!IsTraining || tapCooldown > 0 || Stamina < 1) return false;
-            Reps++; data.stamina=Math.Max(0,Stamina-1); tapCooldown=.18;
+            if (!IsTraining || tapCooldown > 0 || Stamina < 3) return false;
+            Reps++; data.stamina=Math.Max(0,Stamina-3); tapCooldown=1.6;
             if (Reps >= RequiredReps)
             {
                 IsTraining=false;TrainingRemaining=0;data.workouts=Increment(data.workouts);data.workoutCooldown=90;

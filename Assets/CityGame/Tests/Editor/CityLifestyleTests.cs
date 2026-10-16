@@ -8,7 +8,7 @@ namespace Pozarevac.CityGame.Tests
         private static void Workout(CityLifestyle life)
         {
             Assert.That(life.TryStartWorkout(),Is.True);
-            for(int i=0;i<CityLifestyle.RequiredReps;i++){Assert.That(life.TryRep(),Is.True);life.Tick(.2,false);}
+            for(int i=0;i<CityLifestyle.RequiredReps;i++){Assert.That(life.TryRep(),Is.True);life.Tick(1.8,false);}
         }
         [TestCase(1)][TestCase(2)][TestCase(3)][TestCase(4)]
         public void OlderProfilesMigrateWithoutChangingBalances(int version)
@@ -31,7 +31,7 @@ namespace Pozarevac.CityGame.Tests
         {
             CityLifestyle life=new CityLifestyle(new CitySession(0));Assert.That(life.TryStartWorkout(),Is.True);
             Assert.That(life.TryRep(),Is.True);Assert.That(life.TryRep(),Is.False);
-            for(int i=1;i<CityLifestyle.RequiredReps;i++){life.Tick(.2,false);Assert.That(life.TryRep(),Is.True);}
+            for(int i=1;i<CityLifestyle.RequiredReps;i++){life.Tick(1.8,false);Assert.That(life.TryRep(),Is.True);}
             Assert.That(life.Workouts,Is.EqualTo(1));Assert.That(life.Experience,Is.EqualTo(40));Assert.That(life.TryRep(),Is.False);
             Assert.That(life.TryStartWorkout(),Is.False);Assert.That(life.WorkoutCooldown,Is.EqualTo(90));
         }
@@ -44,7 +44,7 @@ namespace Pozarevac.CityGame.Tests
         [Test]public void TimeoutAndReloadCannotCompleteAnUnfinishedWorkout()
         {
             CitySession session=new CitySession(0);CityLifestyle life=new CityLifestyle(session);
-            life.TryStartWorkout();life.TryRep();life.Tick(16,false);
+            life.TryStartWorkout();life.TryRep();life.Tick(CityLifestyle.WorkoutDuration+1,false);
             Assert.That(life.IsTraining,Is.False);Assert.That(life.Workouts,Is.Zero);Assert.That(life.Experience,Is.Zero);
             CityLifestyle restored=new CityLifestyle(session,life.Snapshot());Assert.That(restored.IsTraining,Is.False);
         }

@@ -35,3 +35,10 @@ Desktop touch preview verifies that input path on PC; it does not replace Androi
 Rounded furniture/ceramic geometry, procedural asphalt/paving/grass surfaces and rounded UI sprites are first-party generated runtime content. They are not photographs or surveyed material/shape measurements. Reviewed Kenney CC0 character/skin/idle/run assets have separate creator/license provenance under Models/KenneyRetro/License.txt and THIRD_PARTY_NOTICES.md. The model is a generic fictional NPC, not the user's likeness. Authored pitched roofs and procedural sky/postprocessing remain artistic presentation, not a scanned city.
 
 Block Life (2026-10-16): the gym, kiosk, police caps, UI and procedural siren are first-party authored code/geometry/audio. Patrol humans reuse the reviewed Kenney CC0 subset; no new external assets or personal audio were imported.
+
+
+## Bench press - 2026-10-16
+
+The bench pad/supports, rack, bar and round plate arrangement are original first-party procedural geometry. Bench posing and the small strength-dependent chest/shoulder proportion changes reuse the already reviewed Kenney Retro character and humanMaleA texture under their existing CC0 notice. No additional downloaded assets, voice recordings or provider-generated media were introduced.
+
+The bench screenshot is an actual render from the Windows standalone player, not concept art. The procedural animation is stylized and has no mocap entry/exit sequence.

@@ -47,7 +47,7 @@ namespace Pozarevac.CityGame
         private void Update()
         {
             bool touchActive = touch != null && touch.IsVisible;
-            if (view == null || Time.deltaTime <= 0f || (canAct != null && !canAct()) || (vitals != null && !vitals.IsAlive))
+            if (view == null || (lifestyle != null && lifestyle.IsTraining) || Time.deltaTime <= 0f || (canAct != null && !canAct()) || (vitals != null && !vitals.IsAlive))
             {
                 if (touch != null) touch.ResetInput();
                 return;

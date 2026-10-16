@@ -4,7 +4,19 @@ A modular Unity street-action prototype with missions, a cannabis-themed game ec
 
 This repository is the standalone Unity source milestone. The older [browser/Three.js project](https://github.com/YashimiNatuki/3D-gta-Pozarevac) remains separate. No browser source or history is replaced.
 
-## Latest: Block Life development milestone - 2026-10-16
+## Latest: bench press and character posing - 2026-10-16
+
+The street gym now has a real-time bench press sequence: eight complete lower/press repetitions within 45 seconds, a timed press window, round plate weights, planted feet, articulated arms and a side camera. The same player skin/skeleton is reused. Early taps and incomplete strokes earn no repetitions; walking, jumping and attacks are blocked during the set. Saved strength subtly changes chest/shoulder proportions.
+
+**Verified:** 125 EditMode tests passed, zero failed, one optional skip; Windows build completed with zero errors. See [controls, scope and limitations](Docs/Bench-Training-20261016.md). Existing profile v5, food, police and mission progression remain integrated. Android binaries from earlier milestones do not include this update.
+
+[Download new Windows ZIP](https://github.com/YashimiNatuki/VKT-PozarevacCity/releases/download/vkt-bench-20261016/VKT-Bench-Windows-20261016.zip) | [Verification receipt](Docs/Verification-Bench-20261016.json)
+
+Actual Windows player regression passed gym repetitions, attack gating, hand/foot contacts, meals, pursuit, profile v5, missions, garden, combat and the existing three cameras.
+
+![Actual Windows bench press](Docs/Screenshots/bench-training-windows-20261016.png)
+
+## Previous: Block Life development milestone - 2026-10-16
 
 **L / BLOK / LIK** opens character development. A physical street gym offers a 24-tap / 15-second workout; food, stamina, XP and strength affect the character. Buy a 35 DIN meal or steal it and trigger a foot pursuit. Two patrols use physics visibility and local steering, with escape, arrest, fines, a paused/muted procedural siren and one-time neighborhood challenge rewards.
 
@@ -133,4 +145,4 @@ It exports through `.ExportAndroidProject` then invokes bundled Gradle with expl
 
 See [milestone](Docs/Milestone-20261014.md), [platform/audio readiness](Docs/Platform-Audio-Plan-20261014.md), [music](Docs/Music.md), [source boundaries](Docs/Source-Publication.md) and [third-party notices](THIRD_PARTY_NOTICES.md). MIT covers first-party code under [LICENSE](LICENSE); OSM, Unity and dependencies retain their own terms.
 
-Latest geo/audio wave: [verification receipt](Docs/Verification-Geo-Audio-20261016.json), [document/coordinate review](Docs/Geo-Intake-20261016.md), [sources and city-expansion plan](Docs/Geo-Expansion-20261015.md), [audio audit](Docs/Audio-Audit-20261015.md). Earlier wave: [street-action and strain catalog](Docs/Street-Combat-20261015.md), [current verification receipt](Docs/Verification-Street-20261015.json). Earlier gameplay status: [2026-10-15 gameplay upgrade](Docs/Gameplay-20261015.md), [verification receipt](Docs/Verification-Gameplay-20261015.json). Earlier city/art/audio package hashes: [baseline receipt](Docs/Verification-20261015.json). Binary packages were produced locally; this repository publishes source and captures, not a binary release.
+Latest geo/audio wave: [verification receipt](Docs/Verification-Geo-Audio-20261016.json), [document/coordinate review](Docs/Geo-Intake-20261016.md), [sources and city-expansion plan](Docs/Geo-Expansion-20261015.md), [audio audit](Docs/Audio-Audit-20261015.md). Earlier wave: [street-action and strain catalog](Docs/Street-Combat-20261015.md), [current verification receipt](Docs/Verification-Street-20261015.json). Earlier gameplay status: [2026-10-15 gameplay upgrade](Docs/Gameplay-20261015.md), [verification receipt](Docs/Verification-Gameplay-20261015.json). Earlier city/art/audio package hashes: [baseline receipt](Docs/Verification-20261015.json). Source and captures are tracked here; downloadable development binaries are published separately in the linked GitHub Releases.

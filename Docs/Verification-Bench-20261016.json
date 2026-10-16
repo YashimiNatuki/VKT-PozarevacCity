@@ -1,0 +1,25 @@
+{
+  "milestone": "bench-press-20261016",
+  "tests": {
+    "total": 126,
+    "passed": 125,
+    "failed": 0,
+    "skipped": 1
+  },
+  "windowsBuildErrors": 0,
+  "windowsPlayerPassed": true,
+  "runtime": "Actual Windows player: terrain loaded, nine physics interactions, three contracts, growth/trade, crew, district campaign and durable save restore passed. Catalog seed purchases, hideout entry/exit, four physical plants, watering, garden save restoration, death and hospital respawn passed. Enhanced: 600 OSM segments, 100 building footprints, 22 green polygons, 878 wall colliders, 12 benches/24 trees, city map, 16 strain cards, music overlay, job journal, physical street-job payout and durable story progress passed. Local audio decoded while suspended, stayed silent and started on application resume. Physical stone/stick pickups, paused attack gating, swept stone/window impact, single glass break, stick hit/NPC reaction, wall occlusion, pool exhaustion/reuse, projectile pause and death cleanup passed. Three camera modes, imported player avatar, bounded orbit, obstruction retraction and first-person restoration passed. Block life: physical gym and kiosk interaction, UI repetitions and anti-spam, pause ownership, paid/stolen food, wanted save restoration, police line-of-sight/occlusion and capture range, accelerated escape/arrest, one-time challenge and durable v5 character stats passed.",
+  "capture": "Docs/Screenshots/bench-training-windows-20261016.png",
+  "artifact": {
+    "name": "VKT-Bench-Windows-20261016.zip",
+    "bytes": 79518410,
+    "sha256": "4fe5f1fccd77b16961fbc7db7f67f34ccbcdb246c3475e1992d6f25c08d3bcb1"
+  },
+  "android": "No new APK in this wave; physical Android runtime remains unverified.",
+  "limits": [
+    "Procedural posing, no motion-captured entry/exit",
+    "Collision controller stays at station approach during presentation",
+    "Fixed gym camera offset, not validated against every obstacle",
+    "Police timer checks use accelerated game time"
+  ]
+}

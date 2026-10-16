@@ -23,6 +23,10 @@ namespace Pozarevac.CityGame
         private float uiCountdown;
         private bool menuOwnedPause, lastWanted;
         private bool applicationSuspended;
+        private CityBenchVisual benchVisual;
+        private CityBenchPress bench;
+        public CityBenchPress Bench => bench;
+        public CityBenchVisual BenchVisual => benchVisual;
         private int lastArrests, lastEscapes, lastWorkouts, locationIndex = -1;
         public Transform Gym { get; private set; }
         public Transform Food { get; private set; }
@@ -67,13 +71,9 @@ namespace Pozarevac.CityGame
             }
             else
             {
-                Shape("GymBench",root,new Vector3(0,.5f,0),new Vector3(1.8f,.2f,.65f),blue,true);
-                for(int side=-1;side<=1;side+=2)
-                {
-                    Shape("GymRack",root,new Vector3(side*.9f,1,0),new Vector3(.12f,2,.14f),metal,true);
-                    Shape("Weight",root,new Vector3(side*.9f,1.5f,0),new Vector3(.35f,.5f,.5f),metal,false);
-                }
-                Shape("Bar",root,new Vector3(0,1.5f,0),new Vector3(2.3f,.08f,.08f),wood,false);
+                benchVisual = root.gameObject.AddComponent<CityBenchVisual>();
+                benchVisual.Initialize(rounded, metal, blue);
+                game.Player.GetComponentInChildren<CityCameraRig>().ConfigureBench(benchVisual, Life);
             }
             GameObject target=new GameObject("Interaction",typeof(BoxCollider));target.transform.SetParent(root,false);target.transform.localPosition=Vector3.up;
             target.GetComponent<BoxCollider>().size=new Vector3(2.8f,2,.9f);root.gameObject.AddComponent<CityLifestyleStation>().Initialize(this,food);
@@ -109,9 +109,10 @@ namespace Pozarevac.CityGame
             Button(menu.transform,"STREJN KATALOG",new Vector2(145,-125),()=>{CloseMenu();if(!game.Progression.PhoneUnlocked){hud.ShowNotification("Prvi ugovor otključava telefon i katalog.",5);return;}progress.OpenPanel();FindAnyObjectByType<CityPhonePanel>().OpenCatalog();});
             Button(menu.transform,"DELOVI GRADA",new Vector2(-145,-185),()=>{locationIndex=(locationIndex+1)%CityGeoRegistry.Count;RefreshUi();});
             Button(menu.transform,"NAZAD U IGRU",new Vector2(145,-185),CloseMenu);
-            workout=Rect("Workout",canvas.transform,new Vector2(420,110),new Vector2(0,200),new Vector2(.5f,0)).gameObject;workout.AddComponent<Image>().color=new Color(.03f,.08f,.11f,.9f);
-            workoutText=Text(Rect("WorkoutText",workout.transform,new Vector2(400,48),new Vector2(0,25),new Vector2(.5f,.5f)),"",20);
-            Button(workout.transform,"TAP / F: PONAVLJANJE",new Vector2(0,-23),()=>Rep());
+            workout=Rect("Workout",canvas.transform,new Vector2(600,160),new Vector2(0,125),new Vector2(.5f,0)).gameObject;workout.AddComponent<Image>().color=new Color(.03f,.08f,.11f,.9f);
+            workoutText=Text(Rect("WorkoutText",workout.transform,new Vector2(580,48),new Vector2(0,50),new Vector2(.5f,.5f)),"",20);
+            Button(workout.transform,"TAP / F: PONAVLJANJE",new Vector2(0,-2),()=>Rep());
+            Button(workout.transform,"PREKINI SERIJU",new Vector2(0,-55),()=>Life.CancelWorkout());
             canvas.AddComponent<CityUiSkin>().ApplyTree();menu.SetActive(false);workout.SetActive(false);alert.gameObject.SetActive(false);
         }
         private static RectTransform Rect(string name,Transform parent,Vector2 size,Vector2 at,Vector2 anchor)
@@ -129,8 +130,8 @@ namespace Pozarevac.CityGame
         public void CloseMenu(){if(menu!=null)menu.SetActive(false);if(menuOwnedPause){menuOwnedPause=false;game.Director.SetOverlayOpen(false);}}
         public bool Near(Transform station)=>station!=null&&Vector3.Distance(game.Player.position,station.position)<3.5f;
         public bool StartWorkout()
-        {if(!CanSimulate||!Near(Gym)||!Life.TryStartWorkout())return false;progress.SaveNow();hud.ShowNotification("TRENING: 24 ponavljanja za 15 s. F ili TAP. Drži ritam!",5);return true;}
-        public bool Rep()=>CanSimulate&&Near(Gym)&&Life.TryRep();
+        {if(!CanSimulate||!Near(Gym)||benchVisual==null||!benchVisual.RigReady||!benchVisual.FeetReady||!Life.TryStartWorkout())return false;bench=new CityBenchPress();progress.SaveNow();hud.ShowNotification("BENČ: 8 celih ponavljanja za 45 s. F/TAP: spusti, pa pritisni kad piše GURAJ. ESC: prekid.",5);return true;}
+        public bool Rep()=>CanSimulate&&Life.IsTraining&&Near(Gym)&&bench!=null&&bench.Press();
         public bool Eat(bool steal)
         {
             if(!CanSimulate||!Near(Food)||!Life.TryEat(steal)){hud.ShowNotification("Priđi kiosku. Proveri novac, glad, poternicu i pauzu između obroka.",5);return false;}
@@ -147,7 +148,9 @@ namespace Pozarevac.CityGame
             {
                 if(Life.IsTraining&&!Near(Gym))Life.CancelWorkout();
                 Life.Tick(Time.deltaTime,delta.magnitude/Mathf.Max(.001f,Time.deltaTime)>6.1f);
+                if(Life.IsTraining&&Keyboard.current!=null&&Keyboard.current.escapeKey.wasPressedThisFrame)Life.CancelWorkout();
                 if(Life.IsTraining&&Keyboard.current!=null&&Keyboard.current.fKey.wasPressedThisFrame)Rep();
+                if(Life.IsTraining&&bench!=null&&bench.Tick(Time.deltaTime))Life.TryRep();
                 if(game.Session.Heat>=45&&!Life.Wanted)Life.ReportCrime();
                 bool visible=false,close=false;
                 foreach(CityPoliceOfficer officer in officers){officer.Step(Time.deltaTime,Life.Wanted);visible|=officer.SeesPlayer;close|=officer.CanCapture;}
@@ -156,6 +159,8 @@ namespace Pozarevac.CityGame
                 if(Life.Escapes!=lastEscapes){lastEscapes=Life.Escapes;hud.ShowNotification("IZGUBIO SI POTERU / +30 XP. Blok pamti kako se vraćaš.",6);progress.SaveNow();}
                 if(Life.Workouts!=lastWorkouts){lastWorkouts=Life.Workouts;hud.ShowNotification("TRENING ZAVRŠEN / +40 XP. Svaka 3 treninga podižu snagu.",6);progress.SaveNow();}
             }
+            benchVisual.SetStrength(Life.Strength);
+            benchVisual.Pose(Life.IsTraining,bench!=null?bench.Extension:1);
             if(Life.Wanted&&!lastWanted){hud.ShowNotification("POTERA: zaklon prekida vidljivost. Policija mora da priđe za privođenje.",6);progress.SaveNow();}
             lastWanted=Life.Wanted;
             if(simulate&&Life.Wanted&&!game.Audio.Muted){if(!siren.isPlaying){if(siren.timeSamples>0)siren.UnPause();else siren.Play();}}
@@ -167,10 +172,22 @@ namespace Pozarevac.CityGame
             shade.SetActive(IsMenuOpen);banner.transform.parent.gameObject.SetActive(!IsMenuOpen);
             banner.text=$"LVL {Life.Level} / XP {Life.Experience} / SNAGA {Life.Strength}\nHRANA {Life.Nutrition:0}% / ENERGIJA {Life.Stamina:0}% / L: BLOK";
             policeBanner.gameObject.SetActive(Life.Wanted&&!IsMenuOpen);policeBanner.color=Mathf.Sin(Time.unscaledTime*5)>0?new Color(.4f,.08f,.08f,.9f):new Color(.05f,.15f,.45f,.9f);
-            workout.SetActive(Life.IsTraining);workoutText.text=$"{Life.Reps}/{CityLifestyle.RequiredReps} / {Life.TrainingRemaining:0.0} s";
+            workout.SetActive(Life.IsTraining);workoutText.text=$"{Life.Reps}/{CityLifestyle.RequiredReps} / {Life.TrainingRemaining:0.0}s / "+BenchPrompt();
             if(!IsMenuOpen)return;
             if(locationIndex>=0){var p=CityGeoRegistry.At(locationIndex);stats.text=$"DELOVI GRADA / {locationIndex+1}/{CityGeoRegistry.Count}\n{p.Name}\n{p.Latitude:F6}, {p.Longitude:F6}\nKorisnički kandidat, nije izgrađena zona.\n"+(p.ConflictingPin?"Lokacija je sporna: potrebno proveriti.":"Misije trenutno koriste centralnu igrivu zonu.")+"\nDELOVI GRADA: sledeći zapis.";return;}
             stats.text=$"RAZVOJ LIKA / LVL {Life.Level}\n"+(Life.Wanted?"STATUS: POTERA / igra je pauzirana\n":"STATUS: MIRNO\n")+$"Hrana {Life.Nutrition:0}% / energija {Life.Stamina:0}%\nTreninzi {Life.Workouts} / snaga {Life.Strength}/5\nObroci {Life.Meals} / bekstva {Life.Escapes} / privođenja {Life.Arrests}\nIZAZOV BLOKA: trening + obrok + bekstvo\n"+(Life.ChallengeClaimed?"ZAVRŠEN / 250 DIN + 10 REP + 60 XP":"Jednokratna nagrada: 250 DIN / 10 REP / 60 XP")+$"\nKlupa {Vector3.Distance(game.Player.position,Gym.position):0} m / kiosk {Vector3.Distance(game.Player.position,Food.position):0} m\nOdmor posle treninga {Life.WorkoutCooldown:0} s";
+        }
+        private string BenchPrompt()
+        {
+            if(bench==null)return "";
+            switch(bench.Phase)
+            {
+                case CityBenchPhase.Lowering:return "SPUŠTAJ / sačekaj";
+                case CityBenchPhase.PressWindow:return "GURAJ! F / TAP";
+                case CityBenchPhase.Pressing:return "POTISAK / izdah";
+                case CityBenchPhase.Recovery:return "ODMOR";
+                default:return "F / TAP: SPUSTI";
+            }
         }
         private static AudioClip CreateSiren()
         {
@@ -180,7 +197,7 @@ namespace Pozarevac.CityGame
         }
         private void OnDeath(){Life.OnDeath();CloseMenu();progress.SaveNow();}
         private void OnApplicationPause(bool paused){applicationSuspended=paused;if(paused&&siren!=null)siren.Pause();}
-        private void OnDisable(){if(game!=null){Life.CancelWorkout();CloseMenu();}if(siren!=null)siren.Stop();}
+        private void OnDisable(){if(game!=null){Life.CancelWorkout();CloseMenu();}if(benchVisual!=null)benchVisual.Pose(false,1);if(siren!=null)siren.Stop();}
         private void OnDestroy()
         {
             if(game!=null)game.Vitals.Died-=OnDeath;

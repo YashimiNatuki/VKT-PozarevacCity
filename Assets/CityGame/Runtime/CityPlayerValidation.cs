@@ -200,14 +200,26 @@ namespace Pozarevac.CityGame
             if(Mathf.Abs(life.Nutrition-nutrition)>.001f){Finish(false,"Nutrition changed while menu paused gameplay.");yield break;}
             runtime.CloseMenu();
             if(!runtime.StartWorkout()){Finish(false,"Physical gym workout could not start.");yield break;}
+            if(game.Combat.CanAct){Finish(false,"Combat remained enabled during bench training.");yield break;}
             yield return new WaitForSeconds(.2f);
             UnityEngine.UI.Button tap=Array.Find(FindObjectsByType<UnityEngine.UI.Button>(FindObjectsSortMode.None),b=>b.name=="TAP / F: PONAVLJANJE");
             if(tap==null){Finish(false,"Workout touch button absent.");yield break;}
             for(int i=0;i<CityLifestyle.RequiredReps;i++)
             {
-                tap.onClick.Invoke();int repetitions=life.Reps;tap.onClick.Invoke();
-                if(repetitions!=i+1||life.Reps!=repetitions){Finish(false,"UI repetition count or anti-spam failed.");yield break;}
-                yield return new WaitForSeconds(.2f);
+                tap.onClick.Invoke();tap.onClick.Invoke();
+                if(life.Reps!=i){Finish(false,"Bench awarded an incomplete repetition.");yield break;}
+                yield return new WaitForSeconds(1.0f);
+                if(i==2)
+                {
+                    string capture=Argument("-vktBenchScreenshot","");
+                    if(!string.IsNullOrEmpty(capture)&&!CaptureRenderedFrame(game,capture,out string captureError))
+                    {Finish(false,captureError);yield break;}
+                }
+                tap.onClick.Invoke();
+                yield return new WaitForSeconds(1.15f);
+                if(life.Reps!=i+1){Finish(false,"Full bench repetition failed.");yield break;}
+                if(!runtime.BenchVisual.RigReady||runtime.BenchVisual.HandError>.03f||runtime.BenchVisual.FootError>.03f)
+                {Finish(false,"Bench rig or hand contact failed: "+runtime.BenchVisual.HandError);yield break;}
             }
             if(life.Workouts!=1||life.IsTraining||life.Experience!=40){Finish(false,"Workout reward/state failed.");yield break;}
             body.enabled=false;game.Player.position=runtime.Food.position+Vector3.back*2;body.enabled=true;Physics.SyncTransforms();
