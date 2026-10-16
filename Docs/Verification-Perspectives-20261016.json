@@ -1,0 +1,68 @@
+{
+  "date": "2026-10-16",
+  "baseCommit": "d0030fd54d5b3f87a174488cc63e47399e6adb8c",
+  "tests": {
+    "passed": 107,
+    "skipped": 1,
+    "failed": 0,
+    "skip": "Optional ArcGIS",
+    "total": 108
+  },
+  "windows": {
+    "runtimeChecks": [
+      "campaign",
+      "physical garden and save restoration",
+      "map",
+      "suspended audio resume",
+      "physical combat",
+      "imported player avatar",
+      "three camera modes",
+      "bounded orbit",
+      "obstruction retraction",
+      "first-person restoration"
+    ],
+    "finalPlayerRuns": [
+      "Chase",
+      "Shoulder",
+      "FirstPerson"
+    ],
+    "allPassed": true,
+    "capturesInspected": true,
+    "buildErrors": 0,
+    "buildReportBytes": 228302104
+  },
+  "android": {
+    "exportErrors": 0,
+    "targetApi": 36,
+    "build": "ARM64 IL2CPP development",
+    "debuggable": true,
+    "exportBuildReportBytes": 1180175377,
+    "phoneRuntimeVerified": false,
+    "signatureV2Verified": true,
+    "minimumApi": 28
+  },
+  "scale": {
+    "geographicCoverageChanged": false,
+    "eyeHeightMeters": 1.62,
+    "controllerHeightMeters": 1.8
+  },
+  "artifacts": [
+    {
+      "file": "VKT-Perspectives-Windows-20261016.zip",
+      "bytes": 85058282,
+      "sha256": "4F2DCD848BCA345602D6C31F1B403C0DAD566D87B7EF4502EAF9F7792B0B5CF7"
+    },
+    {
+      "file": "VKT.apk",
+      "bytes": 52401427,
+      "sha256": "966CA77F1CC97C3B165E1F7097E156711EFCEB477907C9C61837815AE6210896"
+    }
+  ],
+  "release": "https://github.com/YashimiNatuki/VKT-PozarevacCity/releases/tag/vkt-perspectives-20261016",
+  "limitations": [
+    "Physical Android runtime, GPU performance and safe-area ergonomics unverified",
+    "Stylized partial center with flat terrain",
+    "Third-person weapon-holding animation not implemented",
+    "Natural recorded Serbian dialogue and real traffic/driving unfinished"
+  ]
+}

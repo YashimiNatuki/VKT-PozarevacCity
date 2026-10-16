@@ -81,6 +81,45 @@ namespace Pozarevac.CityGame
             yield return new WaitForSecondsRealtime(0.5f);
             if (Vector3.Distance(game.Player.GetComponentInChildren<Camera>().transform.localPosition, new Vector3(0, 1.62f, 0)) > 0.01f)
             { Finish(false, "Camera left the player's eye position after validation frames."); yield break; }
+            CityCameraRig cameraRig = game.Player.GetComponentInChildren<CityCameraRig>();
+            if (cameraRig == null || !cameraRig.AvatarAvailable) { Finish(false, "Player camera rig/avatar missing."); yield break; }
+            Camera perspectiveCamera = game.Player.GetComponentInChildren<Camera>();
+            Vector3 cameraEye = game.Player.TransformPoint(new Vector3(0, 1.62f, 0));
+            Vector3 savedPlayerPosition = game.Player.position;
+            CharacterController cameraBody = game.Player.GetComponent<CharacterController>();
+            cameraBody.enabled = false; game.Player.position += Vector3.up * 40; cameraBody.enabled = true;
+            foreach (CityCameraMode mode in new[] { CityCameraMode.Shoulder, CityCameraMode.Chase })
+            {
+                cameraRig.SetMode(mode); yield return new WaitForEndOfFrame();
+                cameraEye = game.Player.TransformPoint(new Vector3(0, 1.62f, 0));
+                float actualDistance = Vector3.Distance(perspectiveCamera.transform.position, cameraEye);
+                if (actualDistance < 1 || actualDistance > CityCameraRig.Offset(mode).magnitude + .02f)
+                { Finish(false, "Third-person camera did not maintain its bounded orbit."); yield break; }
+            }
+            Vector3 obstructionOffset = perspectiveCamera.transform.rotation * CityCameraRig.Offset(CityCameraMode.Chase);
+            GameObject cameraWall = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+            cameraWall.name = "CameraOcclusionValidation"; cameraWall.transform.position = cameraEye + obstructionOffset * .5f; cameraWall.transform.localScale = Vector3.one;
+            Physics.SyncTransforms(); yield return new WaitForEndOfFrame();
+            float blockedDistance = Vector3.Distance(perspectiveCamera.transform.position, game.Player.TransformPoint(new Vector3(0,1.62f,0)));
+            Destroy(cameraWall);
+            if (blockedDistance >= obstructionOffset.magnitude * .65f)
+            { Finish(false, "Camera did not retract before an obstruction."); yield break; }
+            cameraRig.SetMode(CityCameraMode.FirstPerson);
+            cameraBody.enabled = false; game.Player.position = savedPlayerPosition; cameraBody.enabled = true;
+            yield return new WaitForEndOfFrame();
+            details += " Three camera modes, imported player avatar, bounded orbit, obstruction retraction and first-person restoration passed.";
+            if (Array.Exists(Environment.GetCommandLineArgs(), arg => arg == "-vktPerspectiveCapture"))
+            {
+                game.GetComponent<CityProgressionController>().ClosePanel();
+                if (game.Hideout.IsInside) game.Hideout.Travel(false);
+                game.Atmosphere.ConfigureCycle(18,12,15);
+                cameraBody.enabled = false; game.Player.position = game.Hideout.Entrance.position + new Vector3(-6,-.9f,-7); cameraBody.enabled = true;
+                game.Player.rotation = Quaternion.Euler(0,145,0);
+                perspectiveCamera.transform.localRotation = Quaternion.Euler(12,0,0);
+                string requestedMode = Argument("-vktCameraMode", "Chase");
+                cameraRig.SetMode(requestedMode == "Shoulder" ? CityCameraMode.Shoulder : requestedMode == "FirstPerson" ? CityCameraMode.FirstPerson : CityCameraMode.Chase);
+                yield return new WaitForEndOfFrame();
+            }
             if (Array.Exists(Environment.GetCommandLineArgs(), arg => arg == "-vktCatalogCapture"))
             {
                 game.GetComponent<CityProgressionController>().OpenPanel();

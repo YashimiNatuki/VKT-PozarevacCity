@@ -4,6 +4,18 @@ A modular Unity street-action prototype with missions, a cannabis-themed game ec
 
 This repository is the standalone Unity source milestone. The older [browser/Three.js project](https://github.com/YashimiNatuki/3D-gta-Pozarevac) remains separate. No browser source or history is replaced.
 
+## Three perspectives and Android access — 2026-10-16
+
+**C** on desktop / **KAMERA** on touch cycles first person, shoulder and chase. Third person shows the animated player character. Camera obstruction checks retract before walls; interactions and attacks keep eye-origin reach. V remains strain selection. Character height remains 1.8 m and the map stays in meters; city coverage is unchanged.
+
+The hideout entrance now has rounded door/frame/panel/handle/canopy detail. Tree crowns have a less uniform silhouette. Touch controls respect the reported screen safe area. See [implementation and device limitations](Docs/Camera-Perspectives-20261016.md) and [verification receipt](Docs/Verification-Perspectives-20261016.json).
+
+Android: download the APK from the [perspectives development release](https://github.com/YashimiNatuki/VKT-PozarevacCity/releases/tag/vkt-perspectives-20261016), open it and allow installation from your browser if prompted. Requires ARM64 Android 9+. The older [visual-only APK](https://github.com/YashimiNatuki/VKT-PozarevacCity/releases/download/vkt-visual-20261016/VKT.apk) remains available separately.
+**Current verification:** 107 passed, 0 failed, 1 optional ArcGIS skip (108 total). Final Windows build: 0 errors, 228,302,104 build-report bytes. All three final perspective runs passed campaign, physical garden, persistent saves, audio, combat and camera obstruction/restoration checks. All three captures were inspected. Physical Android runtime/performance remains unverified.
+
+![Actual Windows chase perspective with touch preview](Docs/Screenshots/perspective-Chase-windows-20261016.png)
+
+![Actual Windows shoulder perspective](Docs/Screenshots/perspective-Shoulder-windows-20261016.png)
 ## Visual upgrade — 2026-10-16
 
 Rounded ceramic planters, curved props and a round held stick replace selected box placeholders. Textured Kenney CC0 humans have correctly scaled idle/run animation and relaxed arms. Pitched roofs, repeating asphalt/paving/grass textures, a procedural sky, soft shadows and modest URP grading improve the center. Rounded HUD/phone cards, health bar and separated touch controls improve readability.

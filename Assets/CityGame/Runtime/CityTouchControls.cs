@@ -15,6 +15,9 @@ namespace Pozarevac.CityGame
         private bool overlayBlocked;
         private GameObject overlay;
         private GameObject ownedEvents;
+        private RectTransform safeArea;
+        private Rect lastSafeArea;
+        private int lastWidth, lastHeight;
         public bool IsVisible => overlay != null && overlay.activeInHierarchy;
         public Vector2 MovementVector => !IsVisible ? Vector2.zero : Vector2.ClampMagnitude(new Vector2((right.Held ? 1 : 0) - (left.Held ? 1 : 0), (up.Held ? 1 : 0) - (down.Held ? 1 : 0)), 1f);
         public bool Sprint => IsVisible && sprint.Held;
@@ -28,9 +31,11 @@ namespace Pozarevac.CityGame
             Canvas canvas = overlay.GetComponent<Canvas>(); canvas.renderMode = RenderMode.ScreenSpaceOverlay; canvas.sortingOrder = 15;
             CanvasScaler scaler = overlay.GetComponent<CanvasScaler>(); scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
             scaler.referenceResolution = new Vector2(1280, 720); scaler.matchWidthOrHeight = 0.5f;
+            safeArea = new GameObject("SafeArea", typeof(RectTransform)).GetComponent<RectTransform>();
+            safeArea.SetParent(overlay.transform, false); UpdateSafeArea();
             if (EventSystem.current == null) ownedEvents = new GameObject("VKT_TouchEvents", typeof(EventSystem), typeof(InputSystemUIInputModule));
             // This transparent panel receives look gestures only on the right side.
-            GameObject drag = new GameObject("Look", typeof(RectTransform), typeof(Image), typeof(CityTouchLook)); drag.transform.SetParent(overlay.transform, false);
+            GameObject drag = new GameObject("Look", typeof(RectTransform), typeof(Image), typeof(CityTouchLook)); drag.transform.SetParent(safeArea, false);
             RectTransform area = drag.GetComponent<RectTransform>(); area.anchorMin = new Vector2(0.48f, 0.23f); area.anchorMax = new Vector2(0.98f, 0.90f); area.offsetMin = area.offsetMax = Vector2.zero;
             drag.GetComponent<Image>().color = new Color(0, 0, 0, 0.005f); look = drag.GetComponent<CityTouchLook>();
             up = Hold("↑", new Vector2(0, 0), new Vector2(145, 230));
@@ -45,6 +50,7 @@ namespace Pozarevac.CityGame
             Click("PONOVI", new Vector2(.5f, 1), new Vector2(55, -35), retry);
             Click("BOLNICA", new Vector2(.5f, 1), new Vector2(165, -35), respawn);
         }
+        public void BindCamera(Action cycle) { if (overlay != null) Click("KAMERA", new Vector2(1, 0), new Vector2(-60, 250), cycle); }
         public void BindCombat(Action attack, Action cycle)
         {
             if (overlay == null) return;
@@ -54,7 +60,7 @@ namespace Pozarevac.CityGame
         }
         private GameObject MakeButton(string title, Vector2 anchor, Vector2 position)
         {
-            GameObject obj = new GameObject(title, typeof(RectTransform), typeof(Image)); obj.transform.SetParent(overlay.transform, false);
+            GameObject obj = new GameObject(title, typeof(RectTransform), typeof(Image)); obj.transform.SetParent(safeArea, false);
             RectTransform rect = obj.GetComponent<RectTransform>(); rect.anchorMin = rect.anchorMax = anchor; rect.sizeDelta = anchor.y>.5f ? new Vector2(100,42) : new Vector2(86,72); rect.anchoredPosition = position;
             obj.GetComponent<Image>().color = new Color(0.035f, 0.095f, 0.12f, 0.72f);
             GameObject caption = new GameObject("Label", typeof(RectTransform), typeof(Text)); caption.transform.SetParent(obj.transform, false);
@@ -80,11 +86,22 @@ namespace Pozarevac.CityGame
             if (overlay == null || overlayBlocked == blocked) return;
             overlayBlocked = blocked; ResetInput(); overlay.SetActive(!blocked && isActiveAndEnabled);
         }
+        private void UpdateSafeArea()
+        {
+            if (safeArea == null || Screen.width <= 0 || Screen.height <= 0) return;
+            Rect bounds = Screen.safeArea;
+            if (bounds == lastSafeArea && lastWidth == Screen.width && lastHeight == Screen.height) return;
+            lastSafeArea = bounds; lastWidth = Screen.width; lastHeight = Screen.height;
+            safeArea.anchorMin = new Vector2(bounds.xMin / Screen.width, bounds.yMin / Screen.height);
+            safeArea.anchorMax = new Vector2(bounds.xMax / Screen.width, bounds.yMax / Screen.height);
+            safeArea.offsetMin = safeArea.offsetMax = Vector2.zero;
+        }
         private void LateUpdate()
         {
             // The mission director restores desktop cursor lock when closing overlays.
             // Touch preview must keep pointer coordinates available to the EventSystem.
             if (!IsVisible) return;
+            UpdateSafeArea();
             Cursor.lockState = CursorLockMode.None;
             Cursor.visible = !Application.isMobilePlatform;
         }

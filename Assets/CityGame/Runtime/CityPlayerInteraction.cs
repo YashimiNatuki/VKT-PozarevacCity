@@ -8,6 +8,7 @@ namespace Pozarevac.CityGame
         [SerializeField, Min(0.5f)] private float range = 4f;
 
         private Camera viewCamera;
+        private CityCameraRig rig;
         private CitySession session;
         private CityHud hud;
         private CityMission focusedMission;
@@ -47,7 +48,9 @@ namespace Pozarevac.CityGame
             Collider nextCollider = null;
             if (viewCamera != null)
             {
-                int count = Physics.RaycastNonAlloc(viewCamera.transform.position, viewCamera.transform.forward,
+                if (rig == null) rig = viewCamera.GetComponent<CityCameraRig>();
+                Ray aim = rig != null ? rig.AimRay : new Ray(viewCamera.transform.position, viewCamera.transform.forward);
+                int count = Physics.RaycastNonAlloc(aim.origin, aim.direction,
                     interactionHits, range, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore);
                 float nearest = float.PositiveInfinity;
                 // A saturated buffer is ambiguous; do not interact through an unseen obstruction.

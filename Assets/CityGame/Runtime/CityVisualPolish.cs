@@ -42,6 +42,7 @@ namespace Pozarevac.CityGame
                 {replaced.Add((filter,filter.sharedMesh));filter.sharedMesh=rounded;RoundedProps++;}
             }
             foreach(CityHazard actor in FindObjectsByType<CityHazard>(FindObjectsSortMode.None))Sculpt(actor);
+            if(game.Hideout!=null&&game.Hideout.Entrance!=null)DressEntrance(game.Hideout.Entrance);
             foreach(TextMesh label in FindObjectsByType<TextMesh>(FindObjectsInactive.Include,FindObjectsSortMode.None))
             {
                 if(label.name!="Upozorenje"&&label.name!="EquipmentSign")continue;
@@ -59,6 +60,24 @@ namespace Pozarevac.CityGame
             Vignette vignette=Keep(profile.Add<Vignette>());vignette.intensity.Override(.16f);vignette.smoothness.Override(.4f);
         }
         private T Keep<T>(T value)where T:UnityEngine.Object{owned.Add(value);return value;}
+        private void DressEntrance(Transform entrance)
+        {
+            Renderer original=entrance.GetComponent<Renderer>();if(original!=null){hidden.Add(original);original.enabled=false;}
+            Transform root=Keep(new GameObject("VKT_DetailedEntrance")).transform;root.SetParent(entrance,false);
+            Vector3 scale=entrance.localScale;root.localScale=new Vector3(1/scale.x,1/scale.y,1/scale.z);
+            Material door=Material(Resources.Load<Material>("CityMissionMarker"),new Color(.10f,.23f,.22f));
+            Material stone=Material(Resources.Load<Material>("CityMissionMarker"),new Color(.52f,.49f,.42f));
+            Part("DoorPanel",root,rounded,new Vector3(0,0,-.20f),new Vector3(1.3f,2.15f,.14f),door);
+            for(int side=-1;side<=1;side+=2)Part("DoorFrame",root,rounded,new Vector3(side*.73f,0,-.17f),new Vector3(.14f,2.35f,.25f),stone);
+            Part("DoorLintel",root,rounded,new Vector3(0,1.13f,-.17f),new Vector3(1.6f,.17f,.27f),stone);
+            Part("DoorCanopy",root,rounded,new Vector3(0,1.35f,-.32f),new Vector3(1.8f,.18f,.75f),dark);
+            for(int row=-1;row<=1;row++)Part("DoorInset",root,rounded,new Vector3(0,row*.59f,-.30f),new Vector3(1.02f,.46f,.06f),cloth);
+            Part("DoorHandle",root,sphere,new Vector3(.47f,-.08f,-.37f),new Vector3(.09f,.09f,.09f),stone);
+            Part("DoorStep",root,rounded,new Vector3(0,-1.1f,-.30f),new Vector3(1.8f,.14f,.8f),stone);
+            TextMesh sign=entrance.GetComponentInChildren<TextMesh>();
+            if(sign!=null){sign.characterSize=.017f;sign.transform.localPosition=new Vector3(0,.64f,-1.5f);sign.text="ŠTEK / BAŠTA";sign.gameObject.AddComponent<CityWorldLabel>().Initialize(Camera.main.transform);}
+            RoundedProps++;
+        }
         private Material Material(Material template,Color color)
         {
             Material material=Keep(new Material(template));material.color=color;material.DisableKeyword("_EMISSION");

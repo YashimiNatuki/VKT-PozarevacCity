@@ -83,7 +83,9 @@ namespace Pozarevac.CityGame
         private void Tree(Vector3 at)
         {
             Shape("ParkTrunk",at+Vector3.up*1.6f,new Vector3(.35f,1.6f,.35f),wood,PrimitiveType.Cylinder);
-            Shape("ParkCanopy",at+Vector3.up*4,new Vector3(3.6f,4,3.6f),green,PrimitiveType.Sphere);
+            Shape("ParkCanopy",at+Vector3.up*4,new Vector3(2.8f,3.2f,2.8f),green,PrimitiveType.Sphere);
+            Shape("ParkCanopy",at+new Vector3(-1.05f,3.5f,.3f),new Vector3(2.4f,2.6f,2.3f),green,PrimitiveType.Sphere);
+            Shape("ParkCanopy",at+new Vector3(.95f,3.8f,-.3f),new Vector3(2.5f,2.8f,2.4f),green,PrimitiveType.Sphere);
         }
         private void OnDestroy()
         {

@@ -182,6 +182,9 @@ namespace Pozarevac.CityGame
                     Touch.Initialize(() => Player.GetComponent<CityPlayerInteraction>().TryInteract(), progressionController.TogglePanel,
                         () => Director.TryNextContract(), () => Director.TryRetry(), () => { if (!Director.IsPaused) Vitals.Respawn(); });
                     movement.ConfigureTouch(Touch);
+                    CityCameraRig cameraRig = playerCamera.gameObject.AddComponent<CityCameraRig>();
+                    cameraRig.Initialize(Player, playerCamera.transform);
+                    Touch.BindCamera(cameraRig.Cycle);
                     Combat = gameObject.AddComponent<CityCombatRuntime>();
                     Combat.Initialize(this, hud, georeference.transform, Player.position);
                     CreateHazard(spawn + new Vector3(18, 0, 8), CityHazardKind.GuardDog);

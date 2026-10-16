@@ -20,6 +20,8 @@ namespace Pozarevac.CityGame
         private CityGameBootstrap game;
         private CityHud hud;
         private Camera view;
+        private CityCameraRig cameraRig;
+        private Ray Aim => cameraRig != null ? cameraRig.AimRay : new Ray(view.transform.position, view.transform.forward);
         private Transform props, held;
         private GameObject heldStone, heldStick;
         private Material stoneMaterial, woodMaterial, glassMaterial;
@@ -35,6 +37,7 @@ namespace Pozarevac.CityGame
             if (game != null) throw new System.InvalidOperationException("Combat already initialized.");
             game = owner; hud = cityHud; Inventory = new CityCombat();
             view = game.Player.GetComponentInChildren<Camera>();
+            cameraRig = view.GetComponent<CityCameraRig>();
             props = new GameObject("VKT_CombatProps").transform; props.SetParent(worldRoot, false);
             Material template = Resources.Load<Material>("CityMissionMarker");
             stoneMaterial = MakeMaterial(template, new Color(.35f, .36f, .38f));
@@ -121,12 +124,12 @@ namespace Pozarevac.CityGame
             swing = .2f;
             if (attack.Weapon == CityWeapon.Stone)
             {
-                available.Attack = attack; available.Position = view.transform.position;
-                available.Velocity = view.transform.forward * attack.ProjectileSpeed; available.Age = available.Distance = 0;
+                available.Attack = attack; available.Position = Aim.origin;
+                available.Velocity = Aim.direction * attack.ProjectileSpeed; available.Age = available.Distance = 0;
                 available.Active = true; available.Visual.transform.position = available.Position; available.Visual.SetActive(true);
             }
-            else if (NearestHit(view.transform.position, view.transform.forward, attack.Range, false, out RaycastHit hit))
-                ResolveImpact(hit.collider, view.transform.forward, attack);
+            else if (NearestHit(Aim.origin, Aim.direction, attack.Range, false, out RaycastHit hit))
+                ResolveImpact(hit.collider, Aim.direction, attack);
             RefreshHeld(); return true;
         }
         private bool NearestHit(Vector3 origin, Vector3 direction, float range, bool sphere, out RaycastHit nearest)

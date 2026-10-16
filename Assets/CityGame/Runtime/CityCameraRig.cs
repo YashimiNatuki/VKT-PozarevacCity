@@ -1,0 +1,114 @@
+using UnityEngine;
+using UnityEngine.InputSystem;
+
+namespace Pozarevac.CityGame
+{
+    public enum CityCameraMode { FirstPerson, Shoulder, Chase }
+
+    // Presentation only: the controller keeps movement, health and world scale authority.
+    [DefaultExecutionOrder(100)]
+    public sealed class CityCameraRig : MonoBehaviour
+    {
+        private Transform owner, view;
+        private GameObject avatar;
+        private Material skin;
+        private readonly RaycastHit[] hits = new RaycastHit[24];
+        private readonly RaycastHit[] aimHits = new RaycastHit[24];
+        private Transform weapon;
+        public CityCameraMode Mode { get; private set; }
+        public bool AvatarAvailable => avatar != null;
+
+        public void Initialize(Transform player, Transform cameraView)
+        {
+            owner = player; view = cameraView;
+            GameObject source = CityCharacterModel.LoadSource();
+            Texture2D texture = Resources.Load<Texture2D>("Models/KenneyRetro/humanMaleA");
+            if (source != null && texture != null)
+            {
+                avatar = new GameObject("VKT_PlayerVisual"); avatar.transform.SetParent(owner, false);
+                Transform wrapper = new GameObject("NormalizedCharacter").transform; wrapper.SetParent(avatar.transform, false);
+                GameObject model = Instantiate(source, wrapper);
+                AnimationClip idle = Clip("idle"), run = Clip("run");
+                if (!CityCharacterModel.Normalize(wrapper, model, idle)) { Destroy(avatar); avatar = null; }
+                else
+                {
+                    Material template = Resources.Load<Material>("CityMissionMarker");
+                    skin = new Material(template); skin.color = Color.white; skin.mainTexture = texture;
+                    if (skin.HasProperty("_BaseMap")) skin.SetTexture("_BaseMap", texture);
+                    foreach (Renderer renderer in model.GetComponentsInChildren<Renderer>())
+                    {
+                        Material[] slots = new Material[Mathf.Max(1, renderer.sharedMaterials.Length)];
+                        for (int i = 0; i < slots.Length; i++) slots[i] = skin;
+                        renderer.sharedMaterials = slots;
+                    }
+                    if (idle != null && run != null)
+                    {
+                        GameObject root = CityCharacterModel.AnimationRoot(model);
+                        Animation motion = root.GetComponent<Animation>(); if (motion == null) motion = root.AddComponent<Animation>();
+                        motion.enabled = true; motion.cullingType = AnimationCullingType.AlwaysAnimate;
+                        motion.AddClip(idle, "VKT_Idle"); motion.AddClip(run, "VKT_Run"); motion.wrapMode = WrapMode.Loop; motion.Play("VKT_Idle");
+                        wrapper.gameObject.AddComponent<CityActorMotion>().Initialize(owner, motion);
+                    }
+                }
+            }
+            SetMode(CityCameraMode.FirstPerson);
+        }
+
+        private static AnimationClip Clip(string name)
+        {
+            foreach (AnimationClip clip in Resources.LoadAll<AnimationClip>("Models/KenneyRetro/" + name))
+                if (!clip.name.StartsWith("__preview__", System.StringComparison.Ordinal)) return clip;
+            return null;
+        }
+        public void Cycle() { if (Time.timeScale > 0) SetMode((CityCameraMode)(((int)Mode + 1) % 3)); }
+        public void SetMode(CityCameraMode mode)
+        {
+            if ((int)mode < 0 || (int)mode > 2) throw new System.ArgumentOutOfRangeException(nameof(mode));
+            Mode = mode;
+            if (avatar != null) avatar.SetActive(mode != CityCameraMode.FirstPerson);
+        }
+        public static Vector3 Offset(CityCameraMode mode) => mode == CityCameraMode.FirstPerson ? Vector3.zero :
+            mode == CityCameraMode.Shoulder ? new Vector3(.65f, .25f, -2.6f) : new Vector3(0, 1.1f, -5f);
+
+        public Ray AimRay
+        {
+            get
+            {
+                Vector3 eye = owner.TransformPoint(new Vector3(0, 1.62f, 0));
+                if (Mode == CityCameraMode.FirstPerson) return new Ray(eye, view.forward);
+                Vector3 target = view.position + view.forward * 50f;
+                int count = Physics.RaycastNonAlloc(view.position, view.forward, aimHits, 50f, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore);
+                float nearest = 50f;
+                if (count < aimHits.Length)
+                    for (int i = 0; i < count; i++)
+                        if (aimHits[i].collider != null && !aimHits[i].collider.transform.IsChildOf(owner) && aimHits[i].distance < nearest)
+                        { nearest = aimHits[i].distance; target = aimHits[i].point; }
+                Vector3 direction = target - eye;
+                return new Ray(eye, Vector3.Dot(direction, view.forward) > 0 ? direction.normalized : view.forward);
+            }
+        }
+        private void Update()
+        {
+            if (Time.timeScale > 0 && Cursor.lockState == CursorLockMode.Locked && Keyboard.current != null && Keyboard.current.cKey.wasPressedThisFrame) Cycle();
+        }
+        private void LateUpdate()
+        {
+            if (owner == null || view == null) return;
+            Vector3 eye = owner.TransformPoint(new Vector3(0, 1.62f, 0));
+            Vector3 offset = view.rotation * Offset(Mode);
+            float distance = offset.magnitude;
+            if (distance > .001f)
+            {
+                int count = Physics.SphereCastNonAlloc(eye, .18f, offset / distance, hits, distance, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore);
+                float allowed = count == hits.Length ? 0 : distance;
+                for (int i = 0; i < count; i++)
+                    if (hits[i].collider != null && !hits[i].collider.transform.IsChildOf(owner)) allowed = Mathf.Min(allowed, Mathf.Max(0, hits[i].distance - .08f));
+                offset *= allowed / distance;
+            }
+            view.position = eye + offset;
+            if (weapon == null) weapon = view.Find("VKT_HeldWeapon");
+            if (weapon != null) weapon.gameObject.SetActive(Mode == CityCameraMode.FirstPerson);
+        }
+        private void OnDestroy() { if (avatar != null) Destroy(avatar); if (skin != null) Destroy(skin); }
+    }
+}
