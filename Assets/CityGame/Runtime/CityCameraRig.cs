@@ -11,12 +11,15 @@ namespace Pozarevac.CityGame
     {
         private Transform owner, view;
         private GameObject avatar;
-        private Material skin;
+        private CityCharacterLook look;
+        public CityOutfit CurrentOutfit => look!=null?look.Outfit:CityOutfit.Korzo;
         private readonly RaycastHit[] hits = new RaycastHit[24];
         private readonly RaycastHit[] aimHits = new RaycastHit[24];
         private Transform weapon;
         private CityBenchVisual bench;
         private CityLifestyle lifestyle;
+        private CityAppearance appearance;
+        public void ConfigureAppearance(CityAppearance state){appearance=state;}
         private CityCharacterPhysique physique;
         private bool wasTraining;
         private CursorLockMode previousCursor;
@@ -37,18 +40,10 @@ namespace Pozarevac.CityGame
                 GameObject model = Instantiate(source, wrapper);
                 physique = new CityCharacterPhysique(model);
                 AnimationClip idle = Clip("idle"), run = Clip("run");
-                if (!CityCharacterModel.Normalize(wrapper, model, idle)) { Destroy(avatar); avatar = null; }
+                if (!CityCharacterModel.Normalize(wrapper, model, idle, physique)) { physique.Dispose();physique=null;Destroy(avatar); avatar = null; }
                 else
                 {
-                    Material template = Resources.Load<Material>("CityMissionMarker");
-                    skin = new Material(template); skin.color = Color.white; skin.mainTexture = texture;
-                    if (skin.HasProperty("_BaseMap")) skin.SetTexture("_BaseMap", texture);
-                    foreach (Renderer renderer in model.GetComponentsInChildren<Renderer>())
-                    {
-                        Material[] slots = new Material[Mathf.Max(1, renderer.sharedMaterials.Length)];
-                        for (int i = 0; i < slots.Length; i++) slots[i] = skin;
-                        renderer.sharedMaterials = slots;
-                    }
+                    look = new CityCharacterLook(model,physique);
                     if (idle != null && run != null)
                     {
                         GameObject root = CityCharacterModel.AnimationRoot(model);
@@ -104,7 +99,7 @@ namespace Pozarevac.CityGame
             if (owner == null || view == null) return;
             if(weapon==null)weapon=view.Find("VKT_HeldWeapon");
             bool training=lifestyle!=null&&lifestyle.IsTraining&&bench!=null;
-            if(physique!=null)physique.Apply(lifestyle!=null?lifestyle.Strength:0);
+            if(look!=null)look.Apply(appearance!=null?appearance.Outfit:CityOutfit.Korzo,lifestyle!=null?lifestyle.Strength:0);
             if(avatar!=null)avatar.SetActive(!training&&Mode!=CityCameraMode.FirstPerson);
             if(training)
             {
@@ -133,6 +128,6 @@ namespace Pozarevac.CityGame
             if (weapon == null) weapon = view.Find("VKT_HeldWeapon");
             if (weapon != null) weapon.gameObject.SetActive(Mode == CityCameraMode.FirstPerson);
         }
-        private void OnDestroy() { if (avatar != null) Destroy(avatar); if (skin != null) Destroy(skin); }
+        private void OnDestroy() { if (avatar != null) Destroy(avatar); if(look!=null)look.Dispose();else physique?.Dispose(); }
     }
 }

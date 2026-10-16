@@ -6,9 +6,15 @@ namespace Pozarevac.CityGame
     public sealed class CityBenchVisual : MonoBehaviour
     {
         private Transform bar, athlete, leftArm, leftElbow, leftHand, rightArm, rightElbow, rightHand;
-        private Material skin;
+        private CityCharacterLook look;
+        private int strength;
+        private CityOutfit outfit;
+        public CityOutfit CurrentOutfit => outfit;
+        private readonly Transform[] thighs=new Transform[2],knees=new Transform[2],feet=new Transform[2];
         private CityCharacterPhysique physique;
-        public void SetStrength(int strength) { if(physique!=null)physique.Apply(strength); }
+        public void SetStrength(int value) { strength=value;if(look!=null)look.Apply(outfit,strength); }
+        public void SetOutfit(CityOutfit value){outfit=value;if(look!=null)look.Apply(outfit,strength);}
+        public void SetAppearance(CityOutfit value,int power){outfit=value;strength=power;if(look!=null)look.Apply(outfit,strength);}
         private float gripSide = -1, lowerHeight = .94f, upperHeight = 1.2f, barZ = -.35f;
         public bool RigReady { get; private set; }
         public float HandError { get; private set; }
@@ -43,18 +49,15 @@ namespace Pozarevac.CityGame
             AnimationClip pose = null;
             foreach (AnimationClip candidate in Resources.LoadAll<AnimationClip>("Models/KenneyRetro/idle"))
                 if (!candidate.name.StartsWith("__preview__", System.StringComparison.Ordinal)) { pose = candidate; break; }
-            if (!CityCharacterModel.Normalize(wrapper, model, pose)) { Destroy(athlete.gameObject); athlete = null; return; }
-            skin = new Material(steel); skin.color = Color.white;
-            Texture texture = Resources.Load<Texture2D>("Models/KenneyRetro/humanMaleA"); skin.mainTexture = texture;
-            if (skin.HasProperty("_BaseMap")) skin.SetTexture("_BaseMap", texture);
-            foreach (Renderer renderer in model.GetComponentsInChildren<Renderer>())
-            {
-                Material[] slots = new Material[Mathf.Max(1, renderer.sharedMaterials.Length)];
-                for (int i = 0; i < slots.Length; i++) slots[i] = skin;
-                renderer.sharedMaterials = slots;
-                if (renderer is SkinnedMeshRenderer skinned) skinned.updateWhenOffscreen = true;
-            }
+            if (!CityCharacterModel.Normalize(wrapper, model, pose,physique)) { physique.Dispose();physique=null;Destroy(athlete.gameObject); athlete = null; return; }
+            look=new CityCharacterLook(model,physique);
+            foreach(SkinnedMeshRenderer renderer in model.GetComponentsInChildren<SkinnedMeshRenderer>())renderer.updateWhenOffscreen=true;
             Transform root = CityCharacterModel.AnimationRoot(model).transform;
+            for(int i=0;i<2;i++)
+            {
+                string side=i==0?"Left":"Right";thighs[i]=root.Find("HipsCtrl/Hips/"+side+"UpLeg");
+                knees[i]=thighs[i]!=null?thighs[i].Find(side+"Leg"):null;feet[i]=knees[i]!=null?knees[i].Find(side+"Foot"):null;
+            }
             const string chest = "HipsCtrl/Hips/Spine/Chest/UpperChest/";
             leftArm = root.Find(chest + "LeftShoulder/LeftArm"); leftElbow = leftArm != null ? leftArm.Find("LeftForeArm") : null;
             leftHand = leftElbow != null ? leftElbow.Find("LeftHand") : null;
@@ -62,6 +65,11 @@ namespace Pozarevac.CityGame
             rightHand = rightElbow != null ? rightElbow.Find("RightHand") : null;
             RigReady = leftHand != null && rightHand != null;
             athlete.localPosition = new Vector3(0, .6f, .9f); athlete.localRotation = Quaternion.Euler(-90, 0, 0);
+            ConfigureReach();
+            athlete.gameObject.SetActive(false); Pose(false, 1);
+        }
+        private void ConfigureReach()
+        {
             if (RigReady)
             {
                 Vector3 shoulder = transform.InverseTransformPoint(leftArm.position);
@@ -72,15 +80,12 @@ namespace Pozarevac.CityGame
                 upperHeight = Mathf.Min(MaximumBarHeight(leftArm, leftElbow, leftHand, gripSide * .43f),
                     MaximumBarHeight(rightArm, rightElbow, rightHand, -gripSide * .43f));
             }
-            // Feet planted beside the bench, with knees bent using the same two-bone solver.
-            PlantLeg(root, "Left", -.3f); PlantLeg(root, "Right", .3f);
-            athlete.gameObject.SetActive(false); Pose(false, 1);
+            FootError=0;plantedFeet=0;
+            PlantLeg(0,-.3f);PlantLeg(1,.3f);
         }
-        private void PlantLeg(Transform root, string side, float x)
+        private void PlantLeg(int index,float x)
         {
-            Transform thigh = root.Find("HipsCtrl/Hips/" + side + "UpLeg");
-            Transform knee = thigh != null ? thigh.Find(side + "Leg") : null;
-            Transform foot = knee != null ? knee.Find(side + "Foot") : null;
+            Transform thigh=thighs[index],knee=knees[index],foot=feet[index];
             if (foot != null)
             {
                 Vector3 hip = transform.InverseTransformPoint(thigh.position);
@@ -99,6 +104,8 @@ namespace Pozarevac.CityGame
             if (athlete != null) athlete.gameObject.SetActive(active);
             bar.localPosition = new Vector3(0, Mathf.Lerp(lowerHeight, upperHeight, extension), barZ);
             if (!active || !RigReady) return;
+            ConfigureReach();
+            bar.localPosition = new Vector3(0, Mathf.Lerp(lowerHeight, upperHeight, extension), barZ);
             Vector3 left = bar.TransformPoint(new Vector3(gripSide * .43f, 0, 0)), right = bar.TransformPoint(new Vector3(-gripSide * .43f, 0, 0));
             Solve(leftArm, leftElbow, leftHand, left, transform.right * gripSide + transform.forward * .4f);
             Solve(rightArm, rightElbow, rightHand, right, -transform.right * gripSide + transform.forward * .4f);
@@ -136,6 +143,6 @@ namespace Pozarevac.CityGame
             obj.transform.localPosition = at; obj.transform.localRotation = Quaternion.Euler(0, 0, 90); obj.transform.localScale = scale;
             obj.GetComponent<Renderer>().sharedMaterial = material; obj.GetComponent<Collider>().enabled = false; obj.layer = 2;
         }
-        private void OnDestroy() { if (skin != null) { if(Application.isPlaying)Destroy(skin);else DestroyImmediate(skin); } }
+        private void OnDestroy() { if(look!=null)look.Dispose();else physique?.Dispose(); }
     }
 }

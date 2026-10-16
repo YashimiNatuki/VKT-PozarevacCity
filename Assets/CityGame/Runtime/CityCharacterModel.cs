@@ -14,10 +14,11 @@ namespace Pozarevac.CityGame
             Transform rig=instance.transform.Find("Root");return rig!=null?rig.gameObject:instance;
         }
         // Normalize the wrapper, never an animated transform whose scale curves can overwrite it.
-        public static bool Normalize(Transform wrapper,GameObject instance,AnimationClip referencePose)
+        public static bool Normalize(Transform wrapper,GameObject instance,AnimationClip referencePose,CityCharacterPhysique physique=null)
         {
             foreach(Animation player in instance.GetComponentsInChildren<Animation>()){player.Stop();player.enabled=false;}
             if(referencePose!=null)referencePose.SampleAnimation(AnimationRoot(instance),referencePose.length*.1f);
+            physique?.Apply(0);
             Bounds bounds=Measure(instance);float height=bounds.size.y;
             if(float.IsNaN(height)||float.IsInfinity(height)||height<.001f||height>10000)return false;
             float factor=1.8f/height;float bottom=bounds.min.y-wrapper.position.y;

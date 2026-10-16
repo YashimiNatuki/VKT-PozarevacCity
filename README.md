@@ -4,7 +4,21 @@ A modular Unity street-action prototype with missions, a cannabis-themed game ec
 
 This repository is the standalone Unity source milestone. The older [browser/Three.js project](https://github.com/YashimiNatuki/3D-gta-Pozarevac) remains separate. No browser source or history is replaced.
 
-## Latest: bench press and character posing - 2026-10-16
+## Latest: character body, clothes and wardrobe - 2026-10-16
+
+Adult body proportions, smaller head/hands, stable 1.8 m base height, strength-dependent chest/arm/leg shaping and a curved cap update the existing player. Three free outfits use a custom URP clothing shader. **L / BLOK / LIK > ODEĆA / 3D GARDEROBER** opens the paused full-body turntable. Outfits persist in profile v6; v1–v5 profiles migrate. The world player and bench use the same look. Walk/run clip timing and arm swing follow measured movement speed.
+
+**Verified:** 134 EditMode tests passed, zero failed, one optional ArcGIS skip. Windows build completed with zero errors; actual Windows player checks passed all wardrobe buttons, preview selection, pause ownership, v6 outfit save/load, matching world/bench clothes and prior gameplay/bench regression.
+
+[Download Windows development ZIP](https://github.com/YashimiNatuki/VKT-PozarevacCity/releases/download/vkt-character-20261016/VKT-Character-Windows-20261016.zip) | [Controls and limitations](Docs/Character-Upgrade-20261016.md) | [Verification receipt](Docs/Verification-Character-20261016.json)
+
+This remains a revised stylized character, not a photorealistic human. New garment silhouettes, facial/finger rigging and a full locomotion blend tree remain future work. No new Android APK in this wave.
+
+![Actual Windows wardrobe](Docs/Screenshots/character-wardrobe-windows-20261016.png)
+
+![Actual Windows world player](Docs/Screenshots/character-street-windows-20261016.png)
+
+## Previous: bench press and character posing - 2026-10-16
 
 The street gym now has a real-time bench press sequence: eight complete lower/press repetitions within 45 seconds, a timed press window, round plate weights, planted feet, articulated arms and a side camera. The same player skin/skeleton is reused. Early taps and incomplete strokes earn no repetitions; walking, jumping and attacks are blocked during the set. Saved strength subtly changes chest/shoulder proportions.
 

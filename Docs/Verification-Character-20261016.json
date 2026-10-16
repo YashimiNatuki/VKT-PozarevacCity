@@ -1,0 +1,33 @@
+{
+  "milestone": "character-20261016",
+  "tests": {
+    "total": 135,
+    "passed": 134,
+    "failed": 0,
+    "skipped": 1
+  },
+  "windowsBuildErrors": 0,
+  "windowsPlayerPassed": true,
+  "runtime": "Actual Windows player: terrain loaded, nine physics interactions, three contracts, growth/trade, crew, district campaign and durable save restore passed. Catalog seed purchases, hideout entry/exit, four physical plants, watering, garden save restoration, death and hospital respawn passed. Enhanced: 600 OSM segments, 100 building footprints, 22 green polygons, 878 wall colliders, 12 benches/24 trees, city map, 16 strain cards, music overlay, job journal, physical street-job payout and durable story progress passed. Local audio decoded while suspended, stayed silent and started on application resume. Physical stone/stick pickups, paused attack gating, swept stone/window impact, single glass break, stick hit/NPC reaction, wall occlusion, pool exhaustion/reuse, projectile pause and death cleanup passed. Three camera modes, imported player avatar, bounded orbit, obstruction retraction and first-person restoration passed. Block life: physical gym and kiosk interaction, UI repetitions and anti-spam, pause ownership, paid/stolen food, wanted save restoration, police line-of-sight/occlusion and capture range, accelerated escape/arrest, one-time challenge and durable v5 character stats passed.",
+  "appearanceChecks": [
+    "All three outfit buttons and matching preview",
+    "Gameplay pause ownership",
+    "v6 outfit save/load round-trip",
+    "Same outfit in world and bench",
+    "Adult body normalization and non-accumulating morphs",
+    "Hand/foot IK regression"
+  ],
+  "artifact": {
+    "name": "VKT-Character-Windows-20261016.zip",
+    "bytes": 79531089,
+    "sha256": "b7f6b8f465c7fcfc7fc79e2a16d3e31b6571a22a7ef3b6821489ef0e0f9e4ef9"
+  },
+  "android": "No new APK in this wave; hardware runtime unverified.",
+  "limits": [
+    "Stylized revised Kenney model, not a photorealistic scan",
+    "Original garment geometry with custom shading, no cloth physics",
+    "Existing idle/run clips with adjusted timing, no full blend tree",
+    "Bench entry/exit and finger grips remain unfinished",
+    "Police timer smoke checks use accelerated game time"
+  ]
+}

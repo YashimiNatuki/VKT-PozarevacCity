@@ -42,3 +42,7 @@ Block Life (2026-10-16): the gym, kiosk, police caps, UI and procedural siren ar
 The bench pad/supports, rack, bar and round plate arrangement are original first-party procedural geometry. Bench posing and the small strength-dependent chest/shoulder proportion changes reuse the already reviewed Kenney Retro character and humanMaleA texture under their existing CC0 notice. No additional downloaded assets, voice recordings or provider-generated media were introduced.
 
 The bench screenshot is an actual render from the Windows standalone player, not concept art. The procedural animation is stylized and has no mocap entry/exit sequence.
+
+## Character wardrobe - 2026-10-16
+
+The body remains the reviewed CC0 Kenney Retro skin/atlas. First-party bind-space deformation changes body proportions without replacing the source geometry or texture. The UV-region clothing shader, geometric print, curved cap mesh and wardrobe UI are original code. Model readability is enabled for owned CPU mesh copies. No new downloaded assets, provider-generated images, personal photographs or facial likeness claims are introduced. New wardrobe/street captures are actual Windows player renders.

@@ -199,6 +199,30 @@ namespace Pozarevac.CityGame
             float nutrition=life.Nutrition;yield return new WaitForSecondsRealtime(.2f);
             if(Mathf.Abs(life.Nutrition-nutrition)>.001f){Finish(false,"Nutrition changed while menu paused gameplay.");yield break;}
             runtime.CloseMenu();
+            if(Array.IndexOf(Environment.GetCommandLineArgs(),"-vktCharacterSmoke")>=0)
+            {
+                if(!runtime.Wardrobe.Open()||!game.Director.IsPaused){Finish(false,"Wardrobe did not own gameplay pause.");yield break;}
+                for(int style=0;style<3;style++)
+                {
+                    string caption=CityAppearance.Name((CityOutfit)style);
+                    var choice=Array.Find(FindObjectsByType<UnityEngine.UI.Button>(FindObjectsSortMode.None),b=>b.name==caption);
+                    if(choice==null){Finish(false,"Wardrobe outfit button missing.");yield break;}
+                    choice.onClick.Invoke();yield return new WaitForSecondsRealtime(.2f);
+                    if(runtime.Wardrobe.PreviewOutfit!=(CityOutfit)style||game.Progression.Appearance.Outfit!=(CityOutfit)style)
+                    {Finish(false,"Wardrobe choice and preview diverged.");yield break;}
+                }
+                string wardrobeCapture=Argument("-vktWardrobeScreenshot","");
+                if(!string.IsNullOrEmpty(wardrobeCapture)&&!CaptureRenderedFrame(game,wardrobeCapture,out string wardrobeError))
+                {Finish(false,wardrobeError);yield break;}
+                runtime.Wardrobe.Rotate(45);yield return new WaitForSecondsRealtime(.1f);
+                runtime.Wardrobe.Close();yield return null;
+                var wardrobeStore=new CitySaveStore(controller.SavePath);
+                if(!wardrobeStore.TryLoad(out CityProfileData wardrobeSaved,out _)||wardrobeSaved.appearance==null||wardrobeSaved.appearance.outfit!=2||
+                    new CityProgression(CitySession.Restore(wardrobeSaved),wardrobeSaved).Appearance.Outfit!=CityOutfit.Busije)
+                {Finish(false,"Wardrobe profile round-trip failed.");yield break;}
+                if(game.Player.GetComponentInChildren<CityCameraRig>().CurrentOutfit!=CityOutfit.Busije||runtime.BenchVisual.CurrentOutfit!=CityOutfit.Busije)
+                {Finish(false,"Walking and bench outfits diverged.");yield break;}
+            }
             if(!runtime.StartWorkout()){Finish(false,"Physical gym workout could not start.");yield break;}
             if(game.Combat.CanAct){Finish(false,"Combat remained enabled during bench training.");yield break;}
             yield return new WaitForSeconds(.2f);
@@ -256,7 +280,7 @@ namespace Pozarevac.CityGame
             life.TickPolice(CityLifestyle.ArrestDuration+.1,true,true);yield return new WaitForSeconds(.2f);
             if(life.Wanted||life.Arrests!=1||game.Session.Cash!=Math.Max(0,cash-120)){Finish(false,"Arrest fine or release failed.");yield break;}
             controller.SaveNow();
-            if(!new CitySaveStore(controller.SavePath).TryLoad(out CityProfileData saved,out _)||saved.version!=5||saved.lifestyle.workouts!=1||saved.lifestyle.meals!=2||saved.lifestyle.escapes!=1||saved.lifestyle.arrests!=1||!saved.lifestyle.challengeClaimed)
+            if(!new CitySaveStore(controller.SavePath).TryLoad(out CityProfileData saved,out _)||saved.version!=CityProgression.CurrentProfileVersion||saved.lifestyle.workouts!=1||saved.lifestyle.meals!=2||saved.lifestyle.escapes!=1||saved.lifestyle.arrests!=1||!saved.lifestyle.challengeClaimed)
             {Finish(false,"Development stats/challenge did not survive save restore.");yield break;}
             lifestyleVerified=true;
         }

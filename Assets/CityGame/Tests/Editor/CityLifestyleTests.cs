@@ -10,13 +10,13 @@ namespace Pozarevac.CityGame.Tests
             Assert.That(life.TryStartWorkout(),Is.True);
             for(int i=0;i<CityLifestyle.RequiredReps;i++){Assert.That(life.TryRep(),Is.True);life.Tick(1.8,false);}
         }
-        [TestCase(1)][TestCase(2)][TestCase(3)][TestCase(4)]
+        [TestCase(1)][TestCase(2)][TestCase(3)][TestCase(4)][TestCase(5)]
         public void OlderProfilesMigrateWithoutChangingBalances(int version)
         {
             CityProfileData old=new CityProfileData{version=version,callsign="Yashimi",cash=75};
             CityProgression p=new CityProgression(CitySession.Restore(old),old);
             Assert.That(p.Lifestyle.Nutrition,Is.EqualTo(80));Assert.That(p.Session.Cash,Is.EqualTo(75));
-            Assert.That(p.Snapshot().version,Is.EqualTo(5));Assert.That(p.Snapshot().lifestyle,Is.Not.Null);
+            Assert.That(p.Snapshot().version,Is.EqualTo(CityProgression.CurrentProfileVersion));Assert.That(p.Snapshot().lifestyle,Is.Not.Null);
             CityProgression.Validate(p.Snapshot());
         }
         [Test]public void SprintExhaustionAndRecoveryAreBoundedAndZeroTimeIsPaused()

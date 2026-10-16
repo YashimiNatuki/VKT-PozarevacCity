@@ -20,6 +20,7 @@ namespace Pozarevac.CityGame
         public int territories;
         public CityGardenData garden;
         public CityLifestyleData lifestyle;
+        public CityAppearanceData appearance;
     }
 
     // Fictional, game-time economy. No real-world cultivation or trafficking instructions.
@@ -30,11 +31,12 @@ namespace Pozarevac.CityGame
         public const double GrowDuration = 30;
         private readonly CityProfileData data;
         private CityStreetJobs streetJobs;
-        public const int CurrentProfileVersion = 5;
+        public const int CurrentProfileVersion = 6;
         public int CompletedStreetJobs => streetJobs != null ? streetJobs.CompletedJobs : data.completedStreetJobs;
         public CitySession Session { get; }
         public CityGarden Garden { get; }
         public CityLifestyle Lifestyle { get; }
+        public CityAppearance Appearance { get; }
         public string Callsign => data.callsign;
         public bool IsCreated => !string.IsNullOrEmpty(Callsign);
         public int CompletedContracts => data.completedContracts;
@@ -54,6 +56,7 @@ namespace Pozarevac.CityGame
             data = profile == null ? new CityProfileData() : Copy(profile);
             Garden = new CityGarden(session, data.garden);
             Lifestyle = new CityLifestyle(session, data.lifestyle);
+            Appearance = new CityAppearance(data.appearance);
         }
 
         public static void Validate(CityProfileData value)
@@ -61,6 +64,7 @@ namespace Pozarevac.CityGame
             if (value == null || value.version < 1 || value.version > CurrentProfileVersion) throw new ArgumentException("Unsupported profile version.");
             CityGarden.Validate(value.garden);
             CityLifestyle.Validate(value.lifestyle);
+            CityAppearance.Validate(value.appearance);
             CityStreetJobs.ValidateCompletedCount(value.completedStreetJobs);
             if (value.completedStreetJobs > 0 && value.completedContracts != 3) throw new ArgumentException("Street progress requires the city campaign.");
             if (value.callsign == null || (value.callsign.Length > 0 && !ValidCallsign(value.callsign)))
@@ -175,6 +179,7 @@ namespace Pozarevac.CityGame
             snapshot.completedStreetJobs = CompletedStreetJobs;
             snapshot.garden = Garden.Snapshot();
             snapshot.lifestyle = Lifestyle.Snapshot();
+            snapshot.appearance = Appearance.Snapshot();
             return snapshot;
         }
 
@@ -182,7 +187,7 @@ namespace Pozarevac.CityGame
         {
             version = source.version, callsign = source.callsign, cash = source.cash, reputation = source.reputation, heat = source.heat,
             completedContracts = source.completedContracts, completedStreetJobs = source.completedStreetJobs, seeds = source.seeds, stock = source.stock, growSeconds = source.growSeconds,
-            harvestReady = source.harvestReady, crew = source.crew, territories = source.territories, garden = CityGarden.Copy(source.garden), lifestyle = CityLifestyle.Copy(source.lifestyle)
+            harvestReady = source.harvestReady, crew = source.crew, territories = source.territories, garden = CityGarden.Copy(source.garden), lifestyle = CityLifestyle.Copy(source.lifestyle), appearance = CityAppearance.Copy(source.appearance)
         };
     }
 }
