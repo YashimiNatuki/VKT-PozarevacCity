@@ -88,6 +88,7 @@ namespace Pozarevac.CityGame
             BuildEncyclopedia();
             BuildJobs();
             BuildMap();
+            gameObject.AddComponent<CityUiSkin>().ApplyTree();
             Close();
         }
 

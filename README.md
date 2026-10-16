@@ -4,7 +4,19 @@ A modular Unity street-action prototype with missions, a cannabis-themed game ec
 
 This repository is the standalone Unity source milestone. The older [browser/Three.js project](https://github.com/YashimiNatuki/3D-gta-Pozarevac) remains separate. No browser source or history is replaced.
 
-## Current milestone — 2026-10-16
+## Visual upgrade — 2026-10-16
+
+Rounded ceramic planters, curved props and a round held stick replace selected box placeholders. Textured Kenney CC0 humans have correctly scaled idle/run animation and relaxed arms. Pitched roofs, repeating asphalt/paving/grass textures, a procedural sky, soft shadows and modest URP grading improve the center. Rounded HUD/phone cards, health bar and separated touch controls improve readability.
+
+**Verified:** 105 tests passed, zero failed, one optional ArcGIS skip. Windows build: zero errors, 228,300,069 build-report bytes. Three actual Windows player runs passed gameplay/save/audio/visual checks; all captures were inspected. Android ARM64 IL2CPP development APK: 52,387,351 bytes, API 28–36, v2 signature verified. Physical-phone runtime/performance remain unverified. This is still a stylized prototype with flat terrain and incomplete landmark detail.
+
+See [visual implementation](Docs/Visual-Upgrade-20261016.md), [current receipt](Docs/Verification-Visual-20261016.json) and [art provenance](Docs/Art-Provenance.md). Next priorities: authored central landmarks, measured device performance, traffic/driving and recorded Serbian dialogue.
+
+![Actual Windows character and UI](Docs/Screenshots/actor-visual-windows-20261016.png)
+
+![Actual Windows garden](Docs/Screenshots/garden-visual-windows-20261016.png)
+
+## Previous geography/audio milestone — 2026-10-16
 
 - Expanded offline center: **600 OSM road segments, 100 footprints and 22 green outlines**, within ±650 m. Added authored visual sidewalks, 12 benches and 24 trees with road/building exclusion checks.
 - New **P → MAPA** phone view: north-up streets/buildings/green outlines, player marker, scale and attribution. One bounded texture is generated once; marker updates at 5 Hz.
@@ -29,7 +41,7 @@ This repository is the standalone Unity source milestone. The older [browser/Thr
 - A bounded offline Požarevac center using 600 selected OSM road segments, 100 building footprints and 22 green polygons, with original facade textures. Flat terrain, default widths and authored textures limit fidelity; this is not full-city photogrammetry.
 - Repeatable three-chapter side jobs after the campaign, with completed counts/chapters persisted in save v4 alongside cash/reputation. Unfinished routes and their cooldown reset on reload without paying rewards.
 
-**Current verification (2026-10-16):** 100 tests passed, zero failed and one optional ArcGIS test skipped (101 total). Final Windows build: zero errors, 227,927,900 bytes. Actual PC and PC touch-preview runs passed campaign, garden, saved progress, map/pause ownership, city geometry, physical combat and suspended audio loading/resume. Scene composition: 878 wall colliders, 12 benches, 24 trees. Captures were inspected. Android ARM64/IL2CPP development APK: 52,149,495 bytes, minimum API 28/target 36, APK v2 signature verified. Package hashes are recorded in the current receipt; no physical-phone runtime/performance or subjective voice listening is claimed. Use `Launch-VKT.cmd` for the verified startup path.
+**Previous geography/audio verification (before the visual upgrade):** 100 tests passed, zero failed and one optional ArcGIS test skipped (101 total). Final Windows build: zero errors, 227,927,900 bytes. Actual PC and PC touch-preview runs passed campaign, garden, saved progress, map/pause ownership, city geometry, physical combat and suspended audio loading/resume. Scene composition: 878 wall colliders, 12 benches, 24 trees. Captures were inspected. Android ARM64/IL2CPP development APK: 52,149,495 bytes, minimum API 28/target 36, APK v2 signature verified. Package hashes are recorded in the current receipt; no physical-phone runtime/performance or subjective voice listening is claimed. Use `Launch-VKT.cmd` for the verified startup path.
 
 ## Actual Windows player captures
 

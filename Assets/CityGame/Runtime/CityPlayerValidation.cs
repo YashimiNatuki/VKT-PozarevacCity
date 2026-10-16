@@ -115,6 +115,15 @@ namespace Pozarevac.CityGame
                 FindAnyObjectByType<CityPhonePanel>(FindObjectsInactive.Include).OpenMap();
                 yield return null;
             }
+            if (Array.Exists(Environment.GetCommandLineArgs(), arg => arg == "-vktActorCapture"))
+            {
+                game.Atmosphere.ConfigureCycle(1080,720,15);
+                game.GetComponent<CityProgressionController>().ClosePanel();if(game.Hideout.IsInside)game.Hideout.Travel(false);
+                CityHazard actor=Array.Find(FindObjectsByType<CityHazard>(FindObjectsSortMode.None),item=>item.Kind==CityHazardKind.HostileAdult);actor.enabled=false;
+                CharacterController body=game.Player.GetComponent<CharacterController>();body.enabled=false;game.Player.position=actor.transform.position+new Vector3(1.8f,.05f,2.8f);body.enabled=true;
+                game.Player.GetComponentInChildren<Camera>().transform.LookAt(actor.transform.position+Vector3.up*1.1f);
+                yield return null;
+            }
             string screenshot = Argument("-vktScreenshot", "");
             if (!string.IsNullOrEmpty(screenshot))
             {
@@ -141,6 +150,8 @@ namespace Pozarevac.CityGame
                 Ensure(streets != null && streets.SegmentCount > 0 && streets.Source.buildings.Length > 0, "Actual OSM streets/footprints were not composed.");
                 Ensure(streets.WallColliderCount > 0, "Building collision was not composed.");
                 Ensure(streets.SegmentCount > 200 && streets.Source.buildings.Length > 40 && streets.ParkCount > 0, "Expanded city roads, buildings or parks were not composed.");
+                CityVisualPolish polish=game.GetComponent<CityVisualPolish>();
+                Ensure(polish!=null&&polish.RoundedProps>=4&&polish.SculptedActors==2&&polish.ImportedActors==1,"Rounded props or reviewed character model were not installed.");
                 if (game.Hideout.IsInside) Ensure(game.Hideout.Travel(false), "Could not leave hideout for street job.");
                 int before = game.Session.Cash;
                 CityProgressionController controller = game.GetComponent<CityProgressionController>();

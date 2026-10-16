@@ -82,7 +82,7 @@ namespace Pozarevac.CityGame.Tests.Editor
                     {
                         Assert.That(normals[i].sqrMagnitude,Is.GreaterThan(.9f),"Opposing duplicate wall triangles cancelled the facade normals.");
                         Assert.That(float.IsNaN(vertices[i].y)||float.IsInfinity(vertices[i].y),Is.False);
-                        if(normals[i].y>.99f)roofs++;
+                        if(normals[i].y>.2f)roofs++;
                     }
                 }
                 Assert.That(facades,Is.GreaterThan(0));Assert.That(roofs,Is.GreaterThan(0),"Valid bundled footprints should produce upward-facing roofs.");

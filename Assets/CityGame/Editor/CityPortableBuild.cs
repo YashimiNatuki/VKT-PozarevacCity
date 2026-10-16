@@ -69,6 +69,13 @@ namespace Pozarevac.CityGame.Editor
                 floor.GetComponent<Renderer>().sharedMaterial = ground;
             }
             Camera camera = Camera.main; if (camera != null) camera.farClipPlane = 800;
+            Shader skyShader=Shader.Find("Skybox/Procedural");
+            if(skyShader!=null)
+            {
+                string skyPath=SettingsRoot+"/PortableSky.mat";Material sky=AssetDatabase.LoadAssetAtPath<Material>(skyPath);
+                if(sky==null){sky=new Material(skyShader);sky.SetFloat("_SunSize",.035f);sky.SetFloat("_AtmosphereThickness",1.1f);sky.SetFloat("_Exposure",1.05f);AssetDatabase.CreateAsset(sky,skyPath);}
+                RenderSettings.skybox=sky;if(camera!=null)camera.clearFlags=CameraClearFlags.Skybox;
+            }
         }
 
         private static UniversalRenderPipelineAsset EnsurePipeline()
@@ -89,6 +96,7 @@ namespace Pozarevac.CityGame.Editor
                 pipeline.msaaSampleCount = 2; pipeline.renderScale = 0.85f;
                 AssetDatabase.CreateAsset(pipeline, pipelinePath);
             }
+            pipeline.renderScale=1f;pipeline.msaaSampleCount=4;pipeline.supportsHDR=true;pipeline.shadowDistance=80f;
             AssetDatabase.SaveAssets();
             return pipeline;
         }

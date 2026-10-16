@@ -33,29 +33,30 @@ namespace Pozarevac.CityGame
             GameObject drag = new GameObject("Look", typeof(RectTransform), typeof(Image), typeof(CityTouchLook)); drag.transform.SetParent(overlay.transform, false);
             RectTransform area = drag.GetComponent<RectTransform>(); area.anchorMin = new Vector2(0.48f, 0.23f); area.anchorMax = new Vector2(0.98f, 0.90f); area.offsetMin = area.offsetMax = Vector2.zero;
             drag.GetComponent<Image>().color = new Color(0, 0, 0, 0.005f); look = drag.GetComponent<CityTouchLook>();
-            up = Hold("NAPRED", new Vector2(0, 0), new Vector2(145, 230));
-            down = Hold("NAZAD", new Vector2(0, 0), new Vector2(145, 70));
-            left = Hold("LEVO", new Vector2(0, 0), new Vector2(60, 150));
-            right = Hold("DESNO", new Vector2(0, 0), new Vector2(230, 150));
+            up = Hold("↑", new Vector2(0, 0), new Vector2(145, 230));
+            down = Hold("↓", new Vector2(0, 0), new Vector2(145, 70));
+            left = Hold("←", new Vector2(0, 0), new Vector2(60, 150));
+            right = Hold("→", new Vector2(0, 0), new Vector2(230, 150));
             sprint = Hold("TRČI", new Vector2(1, 0), new Vector2(-250, 70));
             Click("SKOK", new Vector2(1, 0), new Vector2(-145, 70), () => jump = true);
             Click("KORISTI", new Vector2(1, 0), new Vector2(-60, 160), interact);
-            Click("TELEFON", new Vector2(1, 1), new Vector2(-70, -170), phone);
-            Click("SLEDEĆE", new Vector2(1, 1), new Vector2(-180, -170), next);
-            Click("PONOVI", new Vector2(1, 1), new Vector2(-290, -170), retry);
-            Click("BOLNICA", new Vector2(1, 1), new Vector2(-400, -170), respawn);
+            Click("TELEFON", new Vector2(.5f, 1), new Vector2(-165, -35), phone);
+            Click("SLEDEĆE", new Vector2(.5f, 1), new Vector2(-55, -35), next);
+            Click("PONOVI", new Vector2(.5f, 1), new Vector2(55, -35), retry);
+            Click("BOLNICA", new Vector2(.5f, 1), new Vector2(165, -35), respawn);
         }
         public void BindCombat(Action attack, Action cycle)
         {
             if (overlay == null) return;
             Click("NAPAD", new Vector2(1, 0), new Vector2(-170, 160), attack);
             Click("OPREMA", new Vector2(1, 0), new Vector2(-280, 160), cycle);
+            overlay.AddComponent<CityUiSkin>().ApplyTree();
         }
         private GameObject MakeButton(string title, Vector2 anchor, Vector2 position)
         {
             GameObject obj = new GameObject(title, typeof(RectTransform), typeof(Image)); obj.transform.SetParent(overlay.transform, false);
-            RectTransform rect = obj.GetComponent<RectTransform>(); rect.anchorMin = rect.anchorMax = anchor; rect.sizeDelta = new Vector2(100, 72); rect.anchoredPosition = position;
-            obj.GetComponent<Image>().color = new Color(0.05f, 0.12f, 0.17f, 0.78f);
+            RectTransform rect = obj.GetComponent<RectTransform>(); rect.anchorMin = rect.anchorMax = anchor; rect.sizeDelta = anchor.y>.5f ? new Vector2(100,42) : new Vector2(86,72); rect.anchoredPosition = position;
+            obj.GetComponent<Image>().color = new Color(0.035f, 0.095f, 0.12f, 0.72f);
             GameObject caption = new GameObject("Label", typeof(RectTransform), typeof(Text)); caption.transform.SetParent(obj.transform, false);
             RectTransform labelRect = caption.GetComponent<RectTransform>(); labelRect.anchorMin = Vector2.zero; labelRect.anchorMax = Vector2.one; labelRect.offsetMin = labelRect.offsetMax = Vector2.zero;
             Text text = caption.GetComponent<Text>(); text.text = title; text.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf"); text.fontSize = 17; text.color = Color.white; text.alignment = TextAnchor.MiddleCenter; text.raycastTarget = false;

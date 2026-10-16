@@ -1,0 +1,60 @@
+{
+  "date": "2026-10-16",
+  "baseCommit": "ef89e37546e967bef5af41115cb3af9440ad4639",
+  "tests": {
+    "skip": "Optional ArcGIS",
+    "failed": 0,
+    "skipped": 1,
+    "passed": 105,
+    "total": 106
+  },
+  "windows": {
+    "buildReportBytes": 228300069,
+    "allPassed": true,
+    "buildErrors": 0,
+    "actualPlayerRuns": [
+      "actor",
+      "garden",
+      "city"
+    ],
+    "capturesInspected": true
+  },
+  "android": {
+    "build": "ARM64 IL2CPP development",
+    "targetApi": 36,
+    "attachedDevices": 0,
+    "bytes": 52387351,
+    "signatureV2": true,
+    "minimumApi": 28,
+    "phoneRuntimeVerified": false
+  },
+  "assets": {
+    "source": "https://kenney.nl/assets/animated-characters-retro",
+    "archiveSha256": "1D03F1FB001F3CF629425B69C898DF58261A316616220EA25B58BD35298E6882",
+    "license": "CC0",
+    "kenney": "Animated Characters Retro 1.1"
+  },
+  "artifacts": [
+    {
+      "path": "VKT-Visual-Windows-20261016.zip",
+      "sha256": "12A0487146B8960D45B2F02CE04B46591A3CE15EC6FCAB55F4241181DEDF24A8",
+      "bytes": 85053784
+    },
+    {
+      "path": "VKT-Visual-Android-20261016.zip",
+      "sha256": "8A2F875F958B1A13447C5C7D8056E435EF4631B25EC4D879BFF1C1444F0C4216",
+      "bytes": 51148458
+    },
+    {
+      "path": "VKT-Visual-Android-20261016/VKT.apk",
+      "sha256": "57D3A67AA45CB8126429C048E2F8F2AE6F3287DA133BA52E61811984B13B8DFA",
+      "bytes": 52387351
+    }
+  ],
+  "limitations": [
+    "Stylized partial center and flat terrain, not photorealism",
+    "No measured GPU/frame-time improvement",
+    "Physical phone runtime and ergonomics unverified",
+    "Natural Serbian dialogue and real traffic/driving unfinished"
+  ]
+}

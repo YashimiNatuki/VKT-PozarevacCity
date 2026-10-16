@@ -193,17 +193,8 @@ namespace Pozarevac.CityGame
         }
         private void Refresh()
         {
-            System.Text.StringBuilder catalog = new System.Text.StringBuilder("STREJNOVI / SEME I BUD\n");
-            for (int variety = 0; variety < CityPlantCatalog.Count; variety++)
-            {
-                CityPlantDefinition plant = CityPlantCatalog.Get(variety);
-                catalog.Append(variety == SelectedVariety ? "> " : "  ").Append(plant.Name).Append(" / ").Append(plant.SeedPrice).Append(" cash / ")
-                    .Append(plant.GrowSeconds / 3600).Append("h / rod ").Append(plant.Yield).Append(" / seme ").Append(Progression.Garden.Seeds(variety)).Append(" / roba ").Append(Progression.Garden.Stock(variety))
-                    .Append(Progression.Garden.IsUnlocked(variety) ? " / dostupno" : " / REP " + plant.RequiredReputation).Append('\n');
-            }
-            catalog.Append("V: izbor / levi pult: kupovina / desni: prodaja\n").Append(CityGardenMarket.BuyerName(SelectedBuyer)).Append(" / ").Append(CityGardenMarket.DistrictName(SelectedDistrict))
-                .Append(" / ").Append(Progression.Garden.Quote(SelectedVariety, SelectedBuyer, SelectedDistrict)).Append(" cash/kom / B: kupac / J: lokacija");
-            catalogBoard.text = catalog.ToString();
+            CityPlantDefinition selected=CityPlantCatalog.Get(SelectedVariety);
+            catalogBoard.text=$"ŠTEK / {selected.Name}\nSEME {selected.SeedPrice} DIN / {Progression.Garden.Seeds(SelectedVariety)} kom\nP: katalog i kartice / V: izaberi strejn";
             catalogBoard.transform.rotation = view.rotation;
             for (int i = 0; i < plants.Length; i++)
             {
@@ -224,6 +215,7 @@ namespace Pozarevac.CityGame
                 plants[i].localPosition = new Vector3(0, 0.5f + plantHeight * 0.5f, 0);
                 string state = !p.planted ? "Prazno / E: sadnja" : Progression.Garden.IsReady(i) ? "SPREMNO / E: berba" :
                     Progression.Garden.NeedsWater(i) ? "SUVO / E: zalivanje" : $"Rast {p.grownSeconds / CityGarden.GrowDuration(p.variety):P0} / voda {Math.Ceiling(p.moistureSeconds / 60)} min";
+                labels[i].characterSize=.018f;
                 labels[i].text = $"{i + 1:00} / {(p.planted ? CityGarden.VarietyName(p.variety) : CityGarden.VarietyName(SelectedVariety))}\n{state}";
                 labels[i].color = !p.planted ? Color.gray : Progression.Garden.IsReady(i) ? Color.cyan : Progression.Garden.NeedsWater(i) ? new Color(1, 0.75f, 0.25f) : Color.white;
                 labels[i].transform.rotation = view.rotation;

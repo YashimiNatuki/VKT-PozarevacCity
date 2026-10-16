@@ -13,6 +13,7 @@ if ($Execute -and (Test-Path -LiteralPath $exportRoot)) { throw 'Destination alr
 
 $files = [Collections.Generic.List[IO.FileInfo]]::new()
 Get-ChildItem -LiteralPath "$sourceRoot/Assets/CityGame" -Recurse -File | Where-Object {
+    ($_.DirectoryName -eq "$sourceRoot\Assets\CityGame\Resources\Models\KenneyRetro" -and $_.Name -in @('characterMedium.fbx','characterMedium.fbx.meta','idle.fbx','idle.fbx.meta','run.fbx','run.fbx.meta','humanMaleA.png','humanMaleA.png.meta','License.txt','License.txt.meta')) -or
     $_.Extension -eq '.cs' -or
     ($_.Name.EndsWith('.cs.meta')) -or
     $_.Name -in @('CityMissionMarker.mat', 'CityMissionMarker.mat.meta') -or
@@ -21,7 +22,7 @@ Get-ChildItem -LiteralPath "$sourceRoot/Assets/CityGame" -Recurse -File | Where-
 foreach ($folder in @('Docs', 'Tools')) {
     if (Test-Path -LiteralPath "$sourceRoot/$folder") {
         Get-ChildItem -LiteralPath "$sourceRoot/$folder" -Recurse -File | Where-Object {
-            ($_.Extension -in @('.md', '.ps1', '.py', '.json') -or $_.FullName -in @("$sourceRoot\Docs\Screenshots\city-windows-20261015.png", "$sourceRoot\Docs\Screenshots\botanical-card-windows-20261015.png", "$sourceRoot\Docs\Screenshots\journal-windows-20261015.png", "$sourceRoot\Docs\Screenshots\combat-touch-windows-20261015.png", "$sourceRoot\Docs\Screenshots\map-windows-20261016.png", "$sourceRoot\Docs\Screenshots\city-expanded-touch-20261016.png", "$sourceRoot\Tools\Launch-VKT.cmd")) -and $_.FullName -notmatch '[\\/](\.git|__pycache__|node_modules|models)[\\/]'
+            ($_.Extension -in @('.md', '.ps1', '.py', '.json') -or $_.FullName -in @("$sourceRoot\Docs\Screenshots\city-windows-20261015.png", "$sourceRoot\Docs\Screenshots\botanical-card-windows-20261015.png", "$sourceRoot\Docs\Screenshots\journal-windows-20261015.png", "$sourceRoot\Docs\Screenshots\combat-touch-windows-20261015.png", "$sourceRoot\Docs\Screenshots\map-windows-20261016.png", "$sourceRoot\Docs\Screenshots\city-expanded-touch-20261016.png", "$sourceRoot\Docs\Screenshots\actor-visual-windows-20261016.png", "$sourceRoot\Docs\Screenshots\garden-visual-windows-20261016.png", "$sourceRoot\Tools\Launch-VKT.cmd")) -and $_.FullName -notmatch '[\\/](\.git|__pycache__|node_modules|models)[\\/]'
         } | ForEach-Object { $files.Add($_) }
     }
 }
@@ -32,7 +33,7 @@ foreach ($name in @('README.md', 'LICENSE', 'THIRD_PARTY_NOTICES.md', '.gitignor
 $secretPattern = '(?i)(gh[pousr]_[A-Za-z0-9_]{20,}|github_pat_[A-Za-z0-9_]{20,}|sk-[A-Za-z0-9_-]{20,}|eyJ[A-Za-z0-9_-]{15,}\.[A-Za-z0-9_-]{15,}\.[A-Za-z0-9_-]{15,}|-----BEGIN (RSA |EC |OPENSSH )?PRIVATE KEY-----)'
 foreach ($file in $files) {
     if ($file.Attributes -band [IO.FileAttributes]::ReparsePoint) { throw "Symbolic link excluded: $($file.Name)" }
-    if ($file.Extension -ne '.png' -and [IO.File]::ReadAllText($file.FullName) -match $secretPattern) { throw "Potential credential in allowlisted file: $($file.Name). Review locally before export." }
+    if ($file.Extension -notin @('.png', '.fbx') -and [IO.File]::ReadAllText($file.FullName) -match $secretPattern) { throw "Potential credential in allowlisted file: $($file.Name). Review locally before export." }
 }
 $manifest = Get-Content -LiteralPath "$sourceRoot/Packages/manifest.json" -Raw | ConvertFrom-Json
 $dependencies = [ordered]@{}

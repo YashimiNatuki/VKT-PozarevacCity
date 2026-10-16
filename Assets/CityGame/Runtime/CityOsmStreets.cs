@@ -21,6 +21,7 @@ namespace Pozarevac.CityGame
         private Material roadMaterial,walkMaterial,roofMaterial,parkMaterial;
         private readonly List<Material> facadeMaterials=new List<Material>(4);
         private Mesh mesh;
+        private readonly List<Texture2D> surfaceTextures=new List<Texture2D>(3);
         private readonly List<Mesh> buildingMeshes=new List<Mesh>(40);
         public int SegmentCount {get;private set;}
         public int WallColliderCount {get;private set;}
@@ -53,6 +54,12 @@ namespace Pozarevac.CityGame
             }
             roofMaterial=new Material(template);roofMaterial.color=new Color(.40f,.19f,.12f);PrepareMaterial(roofMaterial);
             parkMaterial=new Material(template);parkMaterial.color=new Color(.19f,.29f,.12f);PrepareMaterial(parkMaterial);
+            Material[] surfaces={roadMaterial,walkMaterial,parkMaterial};
+            for(int surface=0;surface<surfaces.Length;surface++)
+            {
+                Texture2D texture=CityVisualMeshes.Surface(surface);surfaceTextures.Add(texture);surfaces[surface].color=Color.white;
+                surfaces[surface].mainTexture=texture;if(surfaces[surface].HasProperty("_BaseMap"))surfaces[surface].SetTexture("_BaseMap",texture);
+            }
             List<Vector3> vertices=new List<Vector3>(4800);List<int> triangles=new List<int>(7200),sidewalks=new List<int>(),parks=new List<int>();HashSet<string> labels=new HashSet<string>();
             foreach(Road road in Source.roads)
             {
@@ -89,10 +96,17 @@ namespace Pozarevac.CityGame
                 if(parks.Count>before){ParkCount++;if(!string.IsNullOrEmpty(park.name))Label(park.name,new Vector3(park.points[0].x,2,park.points[0].z));}
             }
             mesh=new Mesh{name="OSM roads, authored sidewalks and park outlines"};mesh.SetVertices(vertices);mesh.subMeshCount=3;mesh.SetTriangles(triangles,0);mesh.SetTriangles(sidewalks,1);mesh.SetTriangles(parks,2);mesh.RecalculateNormals();mesh.RecalculateBounds();
+            List<Vector2> surfaceUv=new List<Vector2>(vertices.Count);foreach(Vector3 vertex in vertices)surfaceUv.Add(new Vector2(vertex.x*.25f,vertex.z*.25f));mesh.SetUVs(0,surfaceUv);
             layout.AddComponent<MeshFilter>().sharedMesh=mesh;layout.AddComponent<MeshRenderer>().sharedMaterials=new[]{roadMaterial,walkMaterial,parkMaterial};
             // A single bounded walkable ground plane; roads retain actual node layout without invented elevation.
             GameObject floor=GameObject.CreatePrimitive(PrimitiveType.Cube);floor.name="OSM_FlatOfflineGround";floor.transform.SetParent(layout.transform,false);
-            floor.transform.localPosition=new Vector3(0,-.15f,0);floor.transform.localScale=new Vector3(Source.radiusMeters*2,.3f,Source.radiusMeters*2);floor.GetComponent<Renderer>().sharedMaterial=walkMaterial;
+            floor.transform.localPosition=new Vector3(0,-.15f,0);floor.transform.localScale=new Vector3(Source.radiusMeters*2,.3f,Source.radiusMeters*2);
+            floor.GetComponent<Renderer>().enabled=false; // The existing portable underlay supplies the surrounding ground; this collider remains authoritative.
+            float r=Source.radiusMeters;
+            Mesh groundMesh=new Mesh{name="VKT tiled paving underlay"};
+            groundMesh.vertices=new[]{new Vector3(-r,.001f,-r),new Vector3(r,.001f,-r),new Vector3(-r,.001f,r),new Vector3(r,.001f,r)};
+            groundMesh.triangles=new[]{0,2,1,1,2,3};groundMesh.uv=new[]{new Vector2(-r,-r)*.25f,new Vector2(r,-r)*.25f,new Vector2(-r,r)*.25f,new Vector2(r,r)*.25f};groundMesh.RecalculateNormals();groundMesh.RecalculateBounds();buildingMeshes.Add(groundMesh);
+            GameObject groundVisual=new GameObject("VKT_TiledGround",typeof(MeshFilter),typeof(MeshRenderer));groundVisual.transform.SetParent(layout.transform,false);groundVisual.GetComponent<MeshFilter>().sharedMesh=groundMesh;groundVisual.GetComponent<MeshRenderer>().sharedMaterial=walkMaterial;
             BuildFootprints();
             GameObject notice=new GameObject("OSM_Attribution",typeof(RectTransform),typeof(Canvas),typeof(CanvasScaler));notice.transform.SetParent(layout.transform,false);
             Canvas canvas=notice.GetComponent<Canvas>();canvas.renderMode=RenderMode.ScreenSpaceOverlay;canvas.sortingOrder=5;
@@ -125,7 +139,7 @@ namespace Pozarevac.CityGame
                     AppendFacadeSpan(right,b,0,height,height,u,v,vertices,walls,uv);
                     AppendFacadeSpan(left,right,2.5f,height,height,u,v,vertices,walls,uv);
                 }                if(vertices.Count==0)continue;
-                AddRoof(building.points,height,vertices,roofs);
+                AddRoof(building.points,height,vertices,roofs,true);
                 while(uv.Count<vertices.Count)uv.Add(Vector2.zero);
                 Mesh facade=new Mesh{name="OSM footprint "+building.id};facade.SetVertices(vertices);facade.SetUVs(0,uv);facade.subMeshCount=2;
                 facade.SetTriangles(walls,0);facade.SetTriangles(roofs,1);facade.RecalculateNormals();facade.RecalculateBounds();buildingMeshes.Add(facade);
@@ -189,7 +203,7 @@ namespace Pozarevac.CityGame
         private static float Cross(Vector2 a,Vector2 b,Vector2 c)=>(b.x-a.x)*(c.y-a.y)-(b.y-a.y)*(c.x-a.x);
         private static bool InTriangle(Vector2 p,Vector2 a,Vector2 b,Vector2 c)
             =>Cross(a,b,p)>=-.0001f&&Cross(b,c,p)>=-.0001f&&Cross(c,a,p)>=-.0001f;
-        private void AddRoof(Point[] points,float height,List<Vector3> vertices,List<int> triangles)
+        private void AddRoof(Point[] points,float height,List<Vector3> vertices,List<int> triangles,bool pitched=false)
         {
             List<Vector2> polygon=new List<Vector2>(points.Length);
             foreach(Point point in points)
@@ -235,6 +249,19 @@ namespace Pozarevac.CityGame
             if(remaining.Count!=3||Cross(polygon[remaining[0]],polygon[remaining[1]],polygon[remaining[2]])<=.0001f)return;
             roof.Add(remaining[0]);roof.Add(remaining[2]);roof.Add(remaining[1]);
             int offset=vertices.Count;
+            bool convex=true;Vector2 center=Vector2.zero,low=polygon[0],high=polygon[0];
+            for(int i=0;i<polygon.Count;i++)
+            {
+                center+=polygon[i];low=Vector2.Min(low,polygon[i]);high=Vector2.Max(high,polygon[i]);
+                if(Cross(polygon[(i+polygon.Count-1)%polygon.Count],polygon[i],polygon[(i+1)%polygon.Count])*Mathf.Sign(area)<-.0001f)convex=false;
+            }
+            if(pitched&&convex)
+            {
+                center/=polygon.Count;foreach(Vector2 at in polygon)vertices.Add(new Vector3(at.x,height,at.y));
+                vertices.Add(new Vector3(center.x,height+Mathf.Clamp(Mathf.Min(high.x-low.x,high.y-low.y)*.18f,.6f,2.4f),center.y));
+                for(int i=0;i<polygon.Count;i++){int next=(i+1)%polygon.Count;triangles.Add(offset+i);triangles.Add(offset+(area>0?polygon.Count:next));triangles.Add(offset+(area>0?next:polygon.Count));}
+                return;
+            }
             foreach(Vector2 at in polygon)vertices.Add(new Vector3(at.x,height,at.y));
             foreach(int index in roof)triangles.Add(offset+index);
         }
@@ -255,6 +282,7 @@ namespace Pozarevac.CityGame
             foreach(Mesh facade in buildingMeshes)Release(facade);
             Release(roadMaterial);Release(walkMaterial);Release(roofMaterial);Release(parkMaterial);
             foreach(Material material in facadeMaterials)Release(material);
+            foreach(Texture2D texture in surfaceTextures)Release(texture);
         }
     }
 }

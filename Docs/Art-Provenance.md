@@ -29,3 +29,7 @@ CityFacades.png is an original AI-generated two-by-two facade texture atlas crea
 - Android native export succeeded with **zero errors, 1,178,179,142 bytes**. Its final APK is still building; no current APK success or actual-phone runtime pass is asserted.
 
 Desktop touch preview verifies that input path on PC; it does not replace Android installation, touch ergonomics, performance or thermal testing. Later slingshot/water-pistol/fictional-firecracker/tank progression remains unimplemented.
+
+## Procedural visual wave — 2026-10-16
+
+Rounded furniture/ceramic geometry, procedural asphalt/paving/grass surfaces and rounded UI sprites are first-party generated runtime content. They are not photographs or surveyed material/shape measurements. Reviewed Kenney CC0 character/skin/idle/run assets have separate creator/license provenance under Models/KenneyRetro/License.txt and THIRD_PARTY_NOTICES.md. The model is a generic fictional NPC, not the user's likeness. Authored pitched roofs and procedural sky/postprocessing remain artistic presentation, not a scanned city.

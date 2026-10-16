@@ -201,6 +201,7 @@ namespace Pozarevac.CityGame
                     }
                     else if (offline || authored)
                         gameObject.AddComponent<CityCityDetail>().Initialize(georeference.transform, spawn, Atmosphere);
+                    if (offline || authored) gameObject.AddComponent<CityVisualPolish>().Initialize(this);
                     if (Intro != null && Intro.IsActive) Director.SetPaused(true);
                     WorldReady = true;
                     Debug.Log("CITY_GAME_READY: grounded player, three mission contracts and one active audio listener.");

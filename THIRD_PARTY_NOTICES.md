@@ -12,3 +12,7 @@ The root MIT license covers first-party VKT source, tools and documentation. It 
 - **Serbian serbski_institut Piper candidate:** its model card lists a two-speaker dataset under CC BY-NC-SA 4.0. The umbrella repository MIT label does not override that restriction. No clips from this model are shipped or asserted as commercially cleared.
 
 No natural Serbian actor recordings, HeyGen output, third-party video, downloaded city sound libraries or model weights are included in this source milestone. Future additions need a per-asset source, license, author and modification record before publication.
+
+## Kenney Animated Characters Retro
+
+Reviewed subset in Assets/CityGame/Resources/Models/KenneyRetro: characterMedium.fbx, idle.fbx, run.fbx, humanMaleA.png and the original License.txt. Created/distributed by Kenney, https://kenney.nl/assets/animated-characters-retro . CC0: https://creativecommons.org/publicdomain/zero/1.0/ . Original license is included alongside the assets. These assets are separate from first-party MIT code. Original archive SHA256:1D03F1FB001F3CF629425B69C898DF58261A316616220EA25B58BD35298E6882.
