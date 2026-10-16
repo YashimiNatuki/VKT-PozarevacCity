@@ -19,6 +19,8 @@ namespace Pozarevac.CityGame
         private float pitch;
         private CityTouchControls touch;
         private CityPlayerVitals vitals;
+        private CityLifestyle lifestyle;
+        public void ConfigureLifestyle(CityLifestyle state) { lifestyle = state; }
         private Func<bool> canAct;
         public void ConfigureTouch(CityTouchControls controls) { touch = controls; }
         public void SetCanAct(Func<bool> predicate) { canAct = predicate; }
@@ -72,10 +74,9 @@ namespace Pozarevac.CityGame
 
             verticalVelocity += gravity * Time.deltaTime;
             float speed = ((desktopInput && keyboard.leftShiftKey.isPressed) || (touchActive && touch.Sprint)) ? sprintSpeed : walkSpeed;
+            if (lifestyle != null && speed > walkSpeed) speed = lifestyle.CanSprint ? speed * lifestyle.SprintMultiplier : walkSpeed;
             Vector3 direction = transform.right * moveInput.x + transform.forward * moveInput.y;
             controller.Move((direction * speed + Vector3.up * verticalVelocity) * Time.deltaTime);
         }
     }
 }
-
-

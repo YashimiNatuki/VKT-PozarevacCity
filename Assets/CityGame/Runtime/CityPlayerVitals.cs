@@ -37,5 +37,15 @@ namespace Pozarevac.CityGame
             Respawned?.Invoke();
             return true;
         }
+        public bool ReturnToCheckpoint()
+        {
+            if (checkpoint == null || !IsAlive) return false;
+            bool wasEnabled = character != null && character.enabled;
+            if (character != null) character.enabled = false;
+            transform.SetPositionAndRotation(checkpoint.position, checkpoint.rotation);
+            if (character != null) character.enabled = wasEnabled;
+            if (movement != null) movement.ResetView();
+            return true;
+        }
     }
 }

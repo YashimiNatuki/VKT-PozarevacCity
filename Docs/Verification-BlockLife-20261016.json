@@ -1,0 +1,72 @@
+{
+  "date": "2026-10-16",
+  "baseCommit": "7b99ffeb88456273b80bea58e506aa436d66ba81",
+  "profileVersion": 5,
+  "tests": {
+    "total": 122,
+    "passed": 121,
+    "failed": 0,
+    "skipped": 1,
+    "skip": "Optional ArcGIS"
+  },
+  "windows": {
+    "errors": 0,
+    "buildReportBytes": 228347133,
+    "actualFinalRuns": [
+      "panel",
+      "street"
+    ],
+    "bothPassed": true,
+    "capturesInspected": true,
+    "checks": [
+      "campaign/garden/combat/camera regressions",
+      "physical gym interaction",
+      "UI repetitions and anti-spam",
+      "menu pause and app suspension",
+      "paid/stolen meals",
+      "wanted save restoration",
+      "police visibility/occlusion/capture range",
+      "accelerated game-time escape and arrest",
+      "one-time challenge",
+      "durable v5 character stats"
+    ]
+  },
+  "android": {
+    "exportErrors": 0,
+    "exportBuildReportBytes": 1180931941,
+    "architecture": "ARM64 IL2CPP",
+    "versionCode": 2,
+    "minAPI": 28,
+    "targetAPI": 36,
+    "debuggable": true,
+    "signatureV2": true,
+    "sameSignerAsPrevious": true,
+    "phoneRuntimeVerified": false
+  },
+  "catalogs": {
+    "identityCards": 16,
+    "tradeableStrains": 8,
+    "candidateLocations": 18,
+    "physicalCoverageExpanded": false
+  },
+  "artifacts": [
+    {
+      "file": "VKT.apk",
+      "bytes": 52438255,
+      "sha256": "f042c7bde89a640e6f4b367a9a5fbac1c1818bcd858dfcd99888ea29737bb60b"
+    },
+    {
+      "file": "VKT-BlockLife-Windows-20261016.zip",
+      "bytes": 83002212,
+      "sha256": "4b22466909762186d4774a27ab06b8210cf59f0d96e67f9fc3e6f36cd527e302"
+    }
+  ],
+  "release": "https://github.com/YashimiNatuki/VKT-PozarevacCity/releases/tag/vkt-blocklife-20261016",
+  "limitations": [
+    "Physical Android installation/performance/touch ergonomics unverified",
+    "Foot pursuit uses local steering, not finished navigation or police vehicles",
+    "Escape/arrest timing accelerated in smoke checks; not an open-world chase playthrough",
+    "Flat terrain and stylized partial-city models",
+    "No new natural Serbian voice recordings"
+  ]
+}

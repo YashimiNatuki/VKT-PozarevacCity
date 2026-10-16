@@ -113,6 +113,7 @@ namespace Pozarevac.CityGame.Editor
             RenderPipelineAsset previousDefault = GraphicsSettings.defaultRenderPipeline;
             RenderPipelineAsset previousQuality = QualitySettings.renderPipeline;
             AndroidSdkVersions previousMin = PlayerSettings.Android.minSdkVersion;
+            int previousVersionCode = PlayerSettings.Android.bundleVersionCode;
             UIOrientation previousOrientation = PlayerSettings.defaultInterfaceOrientation;
             AndroidArchitecture previousArchitectures = PlayerSettings.Android.targetArchitectures;
             ScriptingImplementation previousBackend = PlayerSettings.GetScriptingBackend(NamedBuildTarget.Android);
@@ -122,6 +123,7 @@ namespace Pozarevac.CityGame.Editor
             GraphicsDeviceType[] previousGraphics = PlayerSettings.GetGraphicsAPIs(BuildTarget.StandaloneWindows64);
             try
             {
+                if (android) PlayerSettings.Android.bundleVersionCode = 2;
                 if (windowsRootTrust)
                 {
                     if (Application.platform != RuntimePlatform.WindowsEditor) throw new InvalidOperationException("Windows root trust requires Windows.");
@@ -163,6 +165,7 @@ namespace Pozarevac.CityGame.Editor
                 PlayerSettings.SetGraphicsAPIs(BuildTarget.StandaloneWindows64, previousGraphics);
                 GraphicsSettings.defaultRenderPipeline = previousDefault; QualitySettings.renderPipeline = previousQuality;
                 PlayerSettings.Android.minSdkVersion = previousMin; PlayerSettings.Android.targetArchitectures = previousArchitectures;
+                PlayerSettings.Android.bundleVersionCode = previousVersionCode;
                 PlayerSettings.SetScriptingBackend(NamedBuildTarget.Android, previousBackend);
                 PlayerSettings.SetApplicationIdentifier(NamedBuildTarget.Android, previousId);
                 PlayerSettings.defaultInterfaceOrientation = previousOrientation;

@@ -148,8 +148,10 @@ namespace Pozarevac.CityGame
         private void ResolveImpact(Collider target, Vector3 direction, CityAttack attack)
         {
             if (target == null) return;
+            CityPoliceOfficer patrol = target.GetComponentInParent<CityPoliceOfficer>();
+            if (patrol != null && patrol.ReceiveImpact(direction)) { hud.ShowNotification("Policajac uzmiče / potera pojačana.", 3); return; }
             CityHazard hazard = target.GetComponentInParent<CityHazard>();
-            if (hazard != null && hazard.ReceiveImpact(attack.Damage, direction))
+            if (hazard != null && hazard.ReceiveImpact(attack.Damage * (1 + game.Progression.Lifestyle.Strength * .08f), direction))
             { game.Session.AddHeat(4); hud.ShowNotification("Protivnik uzmiče / HEAT +4", 2); return; }
             CityBreakableWindow window = target.GetComponent<CityBreakableWindow>();
             if (window != null && window.ReceiveImpact(attack.Damage))

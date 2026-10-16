@@ -4,7 +4,21 @@ A modular Unity street-action prototype with missions, a cannabis-themed game ec
 
 This repository is the standalone Unity source milestone. The older [browser/Three.js project](https://github.com/YashimiNatuki/3D-gta-Pozarevac) remains separate. No browser source or history is replaced.
 
-## Three perspectives and Android access — 2026-10-16
+## Latest: Block Life development milestone - 2026-10-16
+
+**L / BLOK / LIK** opens character development. A physical street gym offers a 24-tap / 15-second workout; food, stamina, XP and strength affect the character. Buy a 35 DIN meal or steal it and trigger a foot pursuit. Two patrols use physics visibility and local steering, with escape, arrest, fines, a paused/muted procedural siren and one-time neighborhood challenge rewards.
+
+**Verified:** 121 tests passed, 0 failed, 1 optional skip. Final Windows build: 0 errors; two actual Windows player runs passed existing gameplay and the new gym/food/police/save checks. Profile v5 accepts v1-v4 saves. Android hardware runtime/performance is still unverified.
+
+[Android APK and Windows development release](https://github.com/YashimiNatuki/VKT-PozarevacCity/releases/tag/vkt-blocklife-20261016) | [Controls, rules and limitations](Docs/Block-Life-20261016.md) | [Verification receipt](Docs/Verification-BlockLife-20261016.json)
+
+The catalog has **16 identity cards / 8 tradeable strains**. **18 candidate city locations** are accessible in the new panel; street-job contacts use neighborhood names. Physical neighborhood coverage remains the bounded central map. This remains a stylized prototype with unfinished navigation, traffic/driving and natural spoken dialogue.
+
+![Actual Windows character development panel](Docs/Screenshots/blocklife-panel-windows-20261016.png)
+
+![Actual Windows street and touch controls](Docs/Screenshots/blocklife-street-windows-20261016.png)
+
+## Previous: three perspectives and Android access — 2026-10-16
 
 **C** on desktop / **KAMERA** on touch cycles first person, shoulder and chase. Third person shows the animated player character. Camera obstruction checks retract before walls; interactions and attacks keep eye-origin reach. V remains strain selection. Character height remains 1.8 m and the map stays in meters; city coverage is unchanged.
 
@@ -51,7 +65,7 @@ See [visual implementation](Docs/Visual-Upgrade-20261016.md), [current receipt](
 - A local mini music player with F6/mobile controls, local MP3/OGG/WAV and three optional official SomaFM presets. Radio decoding is experimental and bounded to ten-minute sessions; continuous 24/7 playback is not verified. Sixteen local audio files were counted through metadata only; personal music is not published.
 - Sixteen strain cards with attributed breeder histories; eight representative AI cannabis illustrations and stylized procedural plants. The phone shows the actual garden inventory; obsolete quick-economy buttons were removed. Illustrations are not authenticated cultivar photography.
 - A bounded offline Požarevac center using 600 selected OSM road segments, 100 building footprints and 22 green polygons, with original facade textures. Flat terrain, default widths and authored textures limit fidelity; this is not full-city photogrammetry.
-- Repeatable three-chapter side jobs after the campaign, with completed counts/chapters persisted in save v4 alongside cash/reputation. Unfinished routes and their cooldown reset on reload without paying rewards.
+- Repeatable three-chapter side jobs after the campaign, with completed counts/chapters introduced in save v4 and retained in v5 alongside cash/reputation. Unfinished routes and their cooldown reset on reload without paying rewards.
 
 **Previous geography/audio verification (before the visual upgrade):** 100 tests passed, zero failed and one optional ArcGIS test skipped (101 total). Final Windows build: zero errors, 227,927,900 bytes. Actual PC and PC touch-preview runs passed campaign, garden, saved progress, map/pause ownership, city geometry, physical combat and suspended audio loading/resume. Scene composition: 878 wall colliders, 12 benches, 24 trees. Captures were inspected. Android ARM64/IL2CPP development APK: 52,149,495 bytes, minimum API 28/target 36, APK v2 signature verified. Package hashes are recorded in the current receipt; no physical-phone runtime/performance or subjective voice listening is claimed. Use `Launch-VKT.cmd` for the verified startup path.
 

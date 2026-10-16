@@ -43,7 +43,7 @@ namespace Pozarevac.CityGame.Tests.Editor
             int cash = p.Session.Cash, reputation = p.Session.Reputation;
             string path = Path.Combine(folder, "profile.json"); new CitySaveStore(path).Save(p.Snapshot());
             Assert.That(new CitySaveStore(path).TryLoad(out CityProfileData loaded, out _), Is.True);
-            Assert.That(loaded.version, Is.EqualTo(4));
+            Assert.That(loaded.version, Is.EqualTo(CityProgression.CurrentProfileVersion));
             CityProgression restored = new CityProgression(CitySession.Restore(loaded), loaded);
             CityStreetJobs restarted = new CityStreetJobs(restored.Session); restored.BindStreetJobs(restarted);
             Assert.That(restarted.CompletedJobs, Is.EqualTo(3)); Assert.That(restarted.StoryChapter, Is.EqualTo(2));
@@ -52,7 +52,7 @@ namespace Pozarevac.CityGame.Tests.Editor
             Assert.That(restored.Session.Cash, Is.EqualTo(cash)); Assert.That(restored.Session.Reputation, Is.EqualTo(reputation));
             Assert.That(restored.Garden.Seeds(0), Is.EqualTo(1));
         }
-        [TestCase(1)] [TestCase(2)] [TestCase(3)]
+        [TestCase(1)] [TestCase(2)] [TestCase(3)] [TestCase(4)]
         public void OlderProfilesDefaultToZeroAndUpgradeWithoutLosingGarden(int version)
         {
             CityProfileData old = Campaign().Snapshot(); old.version = version;
@@ -62,7 +62,7 @@ namespace Pozarevac.CityGame.Tests.Editor
             CityProgression restored = new CityProgression(CitySession.Restore(loaded), loaded);
             CityStreetJobs jobs = new CityStreetJobs(restored.Session); restored.BindStreetJobs(jobs);
             Assert.That(jobs.CompletedJobs, Is.Zero); Assert.That(jobs.StoryChapter, Is.EqualTo(1));
-            Assert.That(restored.Snapshot().version, Is.EqualTo(4));
+            Assert.That(restored.Snapshot().version, Is.EqualTo(CityProgression.CurrentProfileVersion));
         }
         [Test]
         public void CashObserverSnapshotsAlreadyContainCompletedCountAndCompletionEventCanSaveImmediately()
@@ -90,7 +90,7 @@ namespace Pozarevac.CityGame.Tests.Editor
             CityProfileData invalid = Campaign().Snapshot(); invalid.completedContracts = 2; invalid.completedStreetJobs = 1;
             Assert.Throws<ArgumentException>(() => CityProgression.Validate(invalid));
             Directory.CreateDirectory(folder);
-            CityProfileData future = Campaign().Snapshot(); future.version = 5;
+            CityProfileData future = Campaign().Snapshot(); future.version = CityProgression.CurrentProfileVersion + 1;
             string payload = JsonUtility.ToJson(future);
             string hash;
             using (SHA256 sha = SHA256.Create()) hash = BitConverter.ToString(sha.ComputeHash(Encoding.UTF8.GetBytes(payload))).Replace("-", "").ToLowerInvariant();

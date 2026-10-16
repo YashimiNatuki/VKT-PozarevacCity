@@ -33,3 +33,5 @@ Desktop touch preview verifies that input path on PC; it does not replace Androi
 ## Procedural visual wave — 2026-10-16
 
 Rounded furniture/ceramic geometry, procedural asphalt/paving/grass surfaces and rounded UI sprites are first-party generated runtime content. They are not photographs or surveyed material/shape measurements. Reviewed Kenney CC0 character/skin/idle/run assets have separate creator/license provenance under Models/KenneyRetro/License.txt and THIRD_PARTY_NOTICES.md. The model is a generic fictional NPC, not the user's likeness. Authored pitched roofs and procedural sky/postprocessing remain artistic presentation, not a scanned city.
+
+Block Life (2026-10-16): the gym, kiosk, police caps, UI and procedural siren are first-party authored code/geometry/audio. Patrol humans reuse the reviewed Kenney CC0 subset; no new external assets or personal audio were imported.

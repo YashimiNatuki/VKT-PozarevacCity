@@ -51,6 +51,7 @@ namespace Pozarevac.CityGame
             Click("BOLNICA", new Vector2(.5f, 1), new Vector2(165, -35), respawn);
         }
         public void BindCamera(Action cycle) { if (overlay != null) Click("KAMERA", new Vector2(1, 0), new Vector2(-60, 250), cycle); }
+        public void BindLifestyle(Action open) { if (overlay != null) { Click("BLOK / LIK", new Vector2(1, 0), new Vector2(-170, 250), open); overlay.GetComponent<CityUiSkin>()?.ApplyTree(); } }
         public void BindCombat(Action attack, Action cycle)
         {
             if (overlay == null) return;

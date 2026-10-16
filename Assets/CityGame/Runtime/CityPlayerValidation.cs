@@ -11,6 +11,7 @@ namespace Pozarevac.CityGame
     // Explicit development-player verification. Batch profiles are isolated from personal saves.
     public sealed class CityPlayerValidation : MonoBehaviour
     {
+        private bool lifestyleVerified;
         [Serializable] private sealed class Report { public bool passed; public string details; public string product; }
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         private static void Install()
@@ -108,6 +109,12 @@ namespace Pozarevac.CityGame
             cameraBody.enabled = false; game.Player.position = savedPlayerPosition; cameraBody.enabled = true;
             yield return new WaitForEndOfFrame();
             details += " Three camera modes, imported player avatar, bounded orbit, obstruction retraction and first-person restoration passed.";
+            if (Array.Exists(Environment.GetCommandLineArgs(), arg => arg == "-vktLifeSmoke"))
+            {
+                yield return VerifyLifestyle(game);
+                if (!lifestyleVerified) yield break;
+                details += " Block life: physical gym and kiosk interaction, UI repetitions and anti-spam, pause ownership, paid/stolen food, wanted save restoration, police line-of-sight/occlusion and capture range, accelerated escape/arrest, one-time challenge and durable v5 character stats passed.";
+            }
             if (Array.Exists(Environment.GetCommandLineArgs(), arg => arg == "-vktPerspectiveCapture"))
             {
                 game.GetComponent<CityProgressionController>().ClosePanel();
@@ -163,6 +170,8 @@ namespace Pozarevac.CityGame
                 game.Player.GetComponentInChildren<Camera>().transform.LookAt(actor.transform.position+Vector3.up*1.1f);
                 yield return null;
             }
+            if (Array.Exists(Environment.GetCommandLineArgs(), arg => arg == "-vktLifeCapture"))
+            { game.GetComponent<CityProgressionController>().ClosePanel(); game.GetComponent<CityLifestyleRuntime>().OpenMenu(); yield return null; }
             string screenshot = Argument("-vktScreenshot", "");
             if (!string.IsNullOrEmpty(screenshot))
             {
@@ -171,6 +180,73 @@ namespace Pozarevac.CityGame
                 if (!File.Exists(screenshot) || !ContainsRenderedPixels(screenshot)) { Finish(false, "Player screenshot is missing or blank; visual validation did not pass."); yield break; }
             }
             Finish(true, details);
+        }
+
+        private IEnumerator VerifyLifestyle(CityGameBootstrap game)
+        {
+            CityLifestyleRuntime runtime=game.GetComponent<CityLifestyleRuntime>();
+            CityProgressionController controller=game.GetComponent<CityProgressionController>();
+            controller.ClosePanel();game.GetComponent<CityMusicPanel>()?.Close();
+            if(runtime==null){Finish(false,"Block-life runtime absent.");yield break;}
+            if(game.Hideout.IsInside)game.Hideout.Travel(false);
+            CityLifestyle life=runtime.Life;
+            CharacterController body=game.Player.GetComponent<CharacterController>();
+            body.enabled=false;game.Player.position=runtime.Gym.position+Vector3.back*2;body.enabled=true;
+            Camera view=game.Player.GetComponentInChildren<Camera>();view.transform.LookAt(runtime.Gym.position+Vector3.up);
+            Physics.SyncTransforms();
+            if(!game.Player.GetComponent<CityPlayerInteraction>().TryInteract()||!runtime.IsMenuOpen||!game.Director.IsPaused)
+            {Finish(false,"Physical gym interaction did not open its paused menu.");yield break;}
+            float nutrition=life.Nutrition;yield return new WaitForSecondsRealtime(.2f);
+            if(Mathf.Abs(life.Nutrition-nutrition)>.001f){Finish(false,"Nutrition changed while menu paused gameplay.");yield break;}
+            runtime.CloseMenu();
+            if(!runtime.StartWorkout()){Finish(false,"Physical gym workout could not start.");yield break;}
+            yield return new WaitForSeconds(.2f);
+            UnityEngine.UI.Button tap=Array.Find(FindObjectsByType<UnityEngine.UI.Button>(FindObjectsSortMode.None),b=>b.name=="TAP / F: PONAVLJANJE");
+            if(tap==null){Finish(false,"Workout touch button absent.");yield break;}
+            for(int i=0;i<CityLifestyle.RequiredReps;i++)
+            {
+                tap.onClick.Invoke();int repetitions=life.Reps;tap.onClick.Invoke();
+                if(repetitions!=i+1||life.Reps!=repetitions){Finish(false,"UI repetition count or anti-spam failed.");yield break;}
+                yield return new WaitForSeconds(.2f);
+            }
+            if(life.Workouts!=1||life.IsTraining||life.Experience!=40){Finish(false,"Workout reward/state failed.");yield break;}
+            body.enabled=false;game.Player.position=runtime.Food.position+Vector3.back*2;body.enabled=true;Physics.SyncTransforms();
+            int cash=game.Session.Cash;
+            if(!runtime.Eat(false)||game.Session.Cash!=cash-CityLifestyle.MealPrice){Finish(false,"Paid kiosk meal failed.");yield break;}
+            life.Tick(210,false);
+            if(!runtime.Eat(true)||!life.Wanted){Finish(false,"Stolen kiosk meal did not trigger wanted state.");yield break;}
+            CitySaveStore reader=new CitySaveStore(controller.SavePath);
+            if(!reader.TryLoad(out CityProfileData wanted,out _)||wanted.lifestyle==null||!wanted.lifestyle.wanted)
+            {Finish(false,"Wanted state was not durable.");yield break;}
+            yield return new WaitForSeconds(.2f);
+            runtime.OpenMenu();yield return new WaitForSecondsRealtime(.2f);
+            if(runtime.SirenPlaying){Finish(false,"Patrol siren played while menu paused gameplay.");yield break;}
+            runtime.CloseMenu();
+            runtime.SendMessage("OnApplicationPause",true);nutrition=life.Nutrition;yield return new WaitForSecondsRealtime(.2f);
+            if(runtime.SirenPlaying||Mathf.Abs(life.Nutrition-nutrition)>.001f){Finish(false,"Block-life audio or nutrition continued during app suspension.");yield break;}
+            runtime.SendMessage("OnApplicationPause",false);
+            CityPoliceOfficer[] patrol=FindObjectsByType<CityPoliceOfficer>(FindObjectsSortMode.None);
+            CityPoliceOfficer visible=null;
+            foreach(CityPoliceOfficer officer in patrol){officer.Step(.01f,true);if(officer.SeesPlayer)visible=officer;}
+            if(visible==null){Finish(false,"Dispatched patrol did not see the visible kiosk player.");yield break;}
+            GameObject wall=GameObject.CreatePrimitive(PrimitiveType.Cube);wall.name="PatrolOcclusionValidation";
+            Vector3 between=game.Player.position-visible.transform.position;between.y=0;
+            wall.transform.position=(game.Player.position+visible.transform.position)*.5f+Vector3.up*1.5f;
+            wall.transform.rotation=Quaternion.LookRotation(between);wall.transform.localScale=new Vector3(12,4,.4f);Physics.SyncTransforms();visible.Step(.01f,true);
+            bool blocked=!visible.SeesPlayer&&!visible.CanCapture;Destroy(wall);yield return null;
+            if(!blocked){Finish(false,"Patrol saw or captured through a wall.");yield break;}
+            life.TickPolice(CityLifestyle.EscapeDuration+.1,false,false);yield return null;
+            if(life.Wanted||life.Escapes!=1||!life.ChallengeClaimed){Finish(false,"Escape/challenge terminal state failed.");yield break;}
+            cash=game.Session.Cash;
+            body.enabled=false;game.Player.position=visible.transform.position+visible.transform.forward*1.2f;body.enabled=true;Physics.SyncTransforms();
+            life.ReportCrime();visible.Step(.01f,true);
+            if(!visible.CanCapture){Finish(false,"Patrol close-contact capture range failed.");yield break;}
+            life.TickPolice(CityLifestyle.ArrestDuration+.1,true,true);yield return new WaitForSeconds(.2f);
+            if(life.Wanted||life.Arrests!=1||game.Session.Cash!=Math.Max(0,cash-120)){Finish(false,"Arrest fine or release failed.");yield break;}
+            controller.SaveNow();
+            if(!new CitySaveStore(controller.SavePath).TryLoad(out CityProfileData saved,out _)||saved.version!=5||saved.lifestyle.workouts!=1||saved.lifestyle.meals!=2||saved.lifestyle.escapes!=1||saved.lifestyle.arrests!=1||!saved.lifestyle.challengeClaimed)
+            {Finish(false,"Development stats/challenge did not survive save restore.");yield break;}
+            lifestyleVerified=true;
         }
 
         private static bool VerifyEnhanced(CityGameBootstrap game, out string details)

@@ -116,6 +116,9 @@ namespace Pozarevac.CityGame
             string story = chapter == 1 ? "PRVI BLOK / Danju sređuješ bicikle i kvariš san bagovima u kodu. Mila traži pouzdanog čoveka: preuzmi paket, završi dogovor, vrati potvrdu. Reč vredi više od prečice."
                 : chapter == 2 ? "REPUTACIJA / Vuk te uvodi u novu ekipu. Posao raste, pritisak takođe. Poveži kontakte i vrati potvrdu; brzina bez pouzdanosti ne gradi ime."
                 : "SVOJA MREŽA / Luka ti poverava raspored gradske ekipe. Više nisi samo trkač: održavaš dogovore i brineš da se svako vrati. Tvoj blok pamti rezultate.";
+            string[] neighborhoods = { "Centar", "Burjan", "Radna mala", "Tulba", "Busije", "Meminac" };
+            string neighborhood = neighborhoods[(CompletedJobs + type) % neighborhoods.Length];
+            story += " Kontakt dolazi iz dela grada: " + neighborhood + ". Primopredaja je u trenutnoj centralnoj igrivoj zoni, ne u još neizgrađenom naselju.";
             Offer = new CityStreetJobOffer("Poglavlje " + chapter + " / " + title,
                 story + " Obiđi markere " + (route[0] + 1) + " → " + (route[1] + 1) + " → " + (route[2] + 1) + ".",
                 120 + chapter * 40 + type * 15, 2 + chapter, 90 + type * 15, route);

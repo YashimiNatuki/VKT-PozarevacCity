@@ -23,6 +23,7 @@ namespace Pozarevac.CityGame
         {
             game = owner; hud = cityHud; store = saveStore; SaveStatus = status;
             game.Session.Changed += MarkDirty;
+            Progression.Lifestyle.Changed += MarkDirty;
             panel = new GameObject("VKTPhone").AddComponent<CityPhonePanel>();
             panel.transform.SetParent(transform, false);
             panel.Initialize(this);
@@ -107,6 +108,7 @@ namespace Pozarevac.CityGame
         public void OpenPanel()
         {
             if (director == null) return;
+            game.GetComponent<CityLifestyleRuntime>()?.CloseMenu();
             game.GetComponent<CityMusicPanel>()?.Close();
             director.SetOverlayOpen(true);
             panel.Open();
@@ -140,6 +142,7 @@ namespace Pozarevac.CityGame
         {
             if (game == null) return;
             game.Session.Changed += MarkDirty;
+            Progression.Lifestyle.Changed += MarkDirty;
             if (director != null) { director.ContractCompleted += OnContractCompleted; director.Jobs.Completed += OnStreetJobCompleted; }
         }
         private void OnDisable()
@@ -147,6 +150,7 @@ namespace Pozarevac.CityGame
             if (game == null) return;
             SaveNow();
             game.Session.Changed -= MarkDirty;
+            Progression.Lifestyle.Changed -= MarkDirty;
             if (director != null) { director.ContractCompleted -= OnContractCompleted; director.Jobs.Completed -= OnStreetJobCompleted; director.SetOverlayOpen(false); }
             if (panel != null) panel.Close();
         }
@@ -154,6 +158,7 @@ namespace Pozarevac.CityGame
         {
             SaveNow();
             if (game != null && game.Session != null) game.Session.Changed -= MarkDirty;
+            if (game != null && game.Progression != null) Progression.Lifestyle.Changed -= MarkDirty;
             if (director != null) { director.ContractCompleted -= OnContractCompleted; director.Jobs.Completed -= OnStreetJobCompleted; }
             if (panel != null) Destroy(panel.gameObject);
         }
