@@ -4,7 +4,21 @@ A modular Unity street-action prototype with missions, a cannabis-themed game ec
 
 This repository is the standalone Unity source milestone. The older [browser/Three.js project](https://github.com/YashimiNatuki/3D-gta-Pozarevac) remains separate. No browser source or history is replaced.
 
-## Latest: character body, clothes and wardrobe - 2026-10-16
+## Latest: local Ollama contacts and state-aware objectives - 2026-10-17
+
+**L / BLOK / LIK > KONTAKTI / OLLAMA** opens Mila, Vuk and Luka. Authored offline text works immediately. Optional local Ollama generates a short sentence; the UI labels generated, cached and authored responses separately. Unity chooses the next objective from pursuit, food, stamina, campaign and current jobs. AI cannot change rewards, cash or progress.
+
+The free local companion uses FastAPI/Pydantic, a bounded SQLite WAL cache, one generation worker, request limits, timeouts and a failure circuit. No paid API, model download, credentials or save transfer is required. The ZIP includes the optional backend source/start script; Python and an installed local Ollama model are separate prerequisites.
+
+**Verified:** 141 Unity tests passed, zero failed, one optional ArcGIS skip; 12 backend tests passed. Windows build completed with zero errors. Two actual Windows player runs passed live Ollama and server-offline fallback, UI pause/cancellation/close, unchanged economy/mission state and previous gameplay regression.
+
+[Download Windows development ZIP](https://github.com/YashimiNatuki/VKT-PozarevacCity/releases/download/vkt-localai-20261017/VKT-LocalAI-Windows-20261017.zip) | [Setup, architecture and limitations](Docs/Local-AI-20261017.md) | [Verification receipt](Docs/Verification-LocalAI-20261017.json)
+
+This is an optional text narrative layer. Small-model Serbian still needs editorial work; cold generation may take tens of seconds. No new Android APK, natural voices or multiplayer service is delivered in this wave.
+
+![Actual Windows local contact screen](Docs/Screenshots/contacts-localai-windows-20261017.png)
+
+## Previous: character body, clothes and wardrobe - 2026-10-16
 
 Adult body proportions, smaller head/hands, stable 1.8 m base height, strength-dependent chest/arm/leg shaping and a curved cap update the existing player. Three free outfits use a custom URP clothing shader. **L / BLOK / LIK > ODEĆA / 3D GARDEROBER** opens the paused full-body turntable. Outfits persist in profile v6; v1–v5 profiles migrate. The world player and bench use the same look. Walk/run clip timing and arm swing follow measured movement speed.
 

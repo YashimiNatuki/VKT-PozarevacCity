@@ -109,6 +109,7 @@ namespace Pozarevac.CityGame
         public void OpenPanel()
         {
             if (director == null) return;
+            game.GetComponent<CityLifestyleRuntime>()?.LocalStory?.Close();
             game.GetComponent<CityLifestyleRuntime>()?.Wardrobe?.Close();
             game.GetComponent<CityLifestyleRuntime>()?.CloseMenu();
             game.GetComponent<CityMusicPanel>()?.Close();

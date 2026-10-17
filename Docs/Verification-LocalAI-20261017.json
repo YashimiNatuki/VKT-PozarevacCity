@@ -1,0 +1,40 @@
+{
+  "milestone": "localai-20261017",
+  "tests": {
+    "total": 142,
+    "passed": 141,
+    "failed": 0,
+    "skipped": 1
+  },
+  "backendTests": {
+    "passed": 12,
+    "failed": 0,
+    "warning": "Starlette TestClient httpx compatibility deprecation; tests still pass"
+  },
+  "windowsBuildErrors": 0,
+  "windowsPlayerPassed": true,
+  "actualPlayerRuns": {
+    "live": "Generated Ollama response, cancellation/contact change, paused menu, unchanged cash/campaign, clean close and prior gameplay passed",
+    "offline": "Backend stopped; authored fallback, pause/cancel/close and prior gameplay passed"
+  },
+  "localModel": "llama3.2:3b, existing installed model; no download",
+  "measuredRequests": {
+    "generatedSecondsUnderBuildLoad": 27.42,
+    "cachedSeconds": 0.03,
+    "note": "Individual measurements, not latency guarantees"
+  },
+  "runtime": "Actual Windows player: terrain loaded, nine physics interactions, three contracts, growth/trade, crew, district campaign and durable save restore passed. Catalog seed purchases, hideout entry/exit, four physical plants, watering, garden save restoration, death and hospital respawn passed. Enhanced: 600 OSM segments, 100 building footprints, 22 green polygons, 878 wall colliders, 12 benches/24 trees, city map, 16 strain cards, music overlay, job journal, physical street-job payout and durable story progress passed. Local audio decoded while suspended, stayed silent and started on application resume. Physical stone/stick pickups, paused attack gating, swept stone/window impact, single glass break, stick hit/NPC reaction, wall occlusion, pool exhaustion/reuse, projectile pause and death cleanup passed. Three camera modes, imported player avatar, bounded orbit, obstruction retraction and first-person restoration passed. Block life: physical gym and kiosk interaction, UI repetitions and anti-spam, pause ownership, paid/stolen food, wanted save restoration, police line-of-sight/occlusion and capture range, accelerated escape/arrest, one-time challenge and durable v5 character stats passed.",
+  "artifact": {
+    "name": "VKT-LocalAI-Windows-20261017.zip",
+    "bytes": 79546742,
+    "sha256": "65edb8551bc298c365cb655110ba5f55fb9cee52e97125c4dc00d0b0396175db"
+  },
+  "android": "Authored offline contact path; no new APK or physical phone validation.",
+  "limits": [
+    "Optional local text companion, not an authoritative or multiplayer backend",
+    "Small model Serbian wording can be awkward; human language review remains needed",
+    "Cold loading and resource contention can take tens of seconds; bounded fallback remains available",
+    "No voice synthesis, new character geometry, traffic or expanded city coverage added in this wave",
+    "Existing player report uses legacy v5 label; actual profile assertion is CurrentProfileVersion (6)"
+  ]
+}

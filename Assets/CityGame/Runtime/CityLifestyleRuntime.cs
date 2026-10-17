@@ -26,6 +26,7 @@ namespace Pozarevac.CityGame
         private CityBenchVisual benchVisual;
         private CityBenchPress bench;
         public CityWardrobePanel Wardrobe { get; private set; }
+        public CityLocalStoryPanel LocalStory { get; private set; }
         public CityBenchPress Bench => bench;
         public CityBenchVisual BenchVisual => benchVisual;
         private int lastArrests, lastEscapes, lastWorkouts, locationIndex = -1;
@@ -54,7 +55,8 @@ namespace Pozarevac.CityGame
                 GameObject cop=new GameObject("VKT_Patrol_"+i);cop.transform.SetParent(world.transform,false);cop.transform.position=spawn+new Vector3(i==0?-16:16,0,-18);
                 officers[i]=cop.AddComponent<CityPoliceOfficer>();officers[i].Initialize(game,blue,metal);
             }
-            BuildUi();Wardrobe=gameObject.AddComponent<CityWardrobePanel>();Wardrobe.Initialize(game,this);game.Touch.BindLifestyle(ToggleMenu);
+            BuildUi();Wardrobe=gameObject.AddComponent<CityWardrobePanel>();Wardrobe.Initialize(game,this);
+            LocalStory=gameObject.AddComponent<CityLocalStoryPanel>();LocalStory.Initialize(game,this);game.Touch.BindLifestyle(ToggleMenu);
             game.Player.GetComponentInChildren<CityCameraRig>().ConfigureAppearance(game.Progression.Appearance);
             sirenClip=CreateSiren();siren=gameObject.AddComponent<AudioSource>();siren.clip=sirenClip;siren.playOnAwake=false;siren.loop=true;siren.volume=.055f;siren.spatialBlend=0;
             game.Vitals.Died+=OnDeath;
@@ -111,7 +113,8 @@ namespace Pozarevac.CityGame
             Button(menu.transform,"STREJN KATALOG",new Vector2(145,-125),()=>{CloseMenu();if(!game.Progression.PhoneUnlocked){hud.ShowNotification("Prvi ugovor otključava telefon i katalog.",5);return;}progress.OpenPanel();FindAnyObjectByType<CityPhonePanel>().OpenCatalog();});
             Button(menu.transform,"DELOVI GRADA",new Vector2(-145,-185),()=>{locationIndex=(locationIndex+1)%CityGeoRegistry.Count;RefreshUi();});
             Button(menu.transform,"NAZAD U IGRU",new Vector2(145,-185),CloseMenu);
-            Button(menu.transform,"ODEĆA / 3D GARDEROBER",new Vector2(0,-245),()=>{CloseMenu();Wardrobe.Open();});
+            Button(menu.transform,"ODEĆA / GARDEROBER",new Vector2(-145,-245),()=>{CloseMenu();Wardrobe.Open();});
+            Button(menu.transform,"KONTAKTI / OLLAMA",new Vector2(145,-245),()=>{CloseMenu();LocalStory.Open();});
             workout=Rect("Workout",canvas.transform,new Vector2(600,160),new Vector2(0,125),new Vector2(.5f,0)).gameObject;workout.AddComponent<Image>().color=new Color(.03f,.08f,.11f,.9f);
             workoutText=Text(Rect("WorkoutText",workout.transform,new Vector2(580,48),new Vector2(0,50),new Vector2(.5f,.5f)),"",20);
             Button(workout.transform,"TAP / F: PONAVLJANJE",new Vector2(0,-2),()=>Rep());

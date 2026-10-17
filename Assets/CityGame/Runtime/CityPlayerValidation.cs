@@ -282,6 +282,35 @@ namespace Pozarevac.CityGame
             controller.SaveNow();
             if(!new CitySaveStore(controller.SavePath).TryLoad(out CityProfileData saved,out _)||saved.version!=CityProgression.CurrentProfileVersion||saved.lifestyle.workouts!=1||saved.lifestyle.meals!=2||saved.lifestyle.escapes!=1||saved.lifestyle.arrests!=1||!saved.lifestyle.challengeClaimed)
             {Finish(false,"Development stats/challenge did not survive save restore.");yield break;}
+            if(Array.IndexOf(Environment.GetCommandLineArgs(),"-vktLocalAiSmoke")>=0)
+            {
+                int cashBefore=game.Session.Cash, contractsBefore=game.Progression.CompletedContracts;
+                CityLocalStoryPanel contacts=runtime.LocalStory;
+                if(contacts==null||!contacts.Open()||!game.Director.IsPaused||contacts.Source!="offline")
+                {Finish(false,"Local contacts failed to open with authored offline text and pause ownership.");yield break;}
+                contacts.RefreshRemote();contacts.Select(1);yield return null;
+                if(contacts.IsLoading||contacts.Source!="offline")
+                {Finish(false,"Contact switch did not cancel the previous request.");yield break;}
+                var refreshButton=Array.Find(FindObjectsByType<UnityEngine.UI.Button>(FindObjectsSortMode.None),b=>b.name=="OSVEŽI / OLLAMA");
+                if(refreshButton==null){Finish(false,"Local contacts refresh button absent.");yield break;}
+                refreshButton.onClick.Invoke();
+                float deadline=Time.realtimeSinceStartup+43;
+                while(contacts.IsLoading&&Time.realtimeSinceStartup<deadline)yield return null;
+                if(contacts.IsLoading||string.IsNullOrWhiteSpace(contacts.CurrentLine)||!game.Director.IsPaused)
+                {Finish(false,"Local contact response timed out or lost its paused panel.");yield break;}
+                bool required=Array.IndexOf(Environment.GetCommandLineArgs(),"-vktLocalAiRequired")>=0;
+                if(required&&contacts.Source!="ollama"&&contacts.Source!="cache")
+                {Finish(false,"Live local AI was required but the panel returned authored offline text.");yield break;}
+                string aiCapture=Argument("-vktLocalAiScreenshot","");
+                if(!string.IsNullOrEmpty(aiCapture)&&!CaptureRenderedFrame(game,aiCapture,out string aiError))
+                {Finish(false,aiError);yield break;}
+                if(game.Session.Cash!=cashBefore||game.Progression.CompletedContracts!=contractsBefore)
+                {Finish(false,"Narrative contacts modified authoritative economy or mission progress.");yield break;}
+                Debug.Log("VKT_LOCAL_AI_VERIFIED source="+contacts.Source+" line="+contacts.CurrentLine);
+                contacts.Close();yield return null;
+                if(game.Director.IsPaused||contacts.IsOpen||contacts.IsLoading)
+                {Finish(false,"Local contacts left gameplay paused or a request alive after close.");yield break;}
+            }
             lifestyleVerified=true;
         }
 
