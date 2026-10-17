@@ -4,6 +4,12 @@ A modular Unity street-action prototype with missions, a cannabis-themed game ec
 
 This repository is the standalone Unity source milestone. The older [browser/Three.js project](https://github.com/YashimiNatuki/3D-gta-Pozarevac) remains separate. No browser source or history is replaced.
 
+## Development tools installed - 2026-10-17
+
+Game Development Studio 1.5.1, a dedicated Node 24 LTS, Blender 4.5.9 LTS, FFmpeg/FFprobe 9.0.2 and an isolated Hugging Face/GIS/mesh Python environment are installed on the development PC. Five local Game Development Studio skills and user-shell launchers are configured. Native model import/export, asset inspection, audio metadata, synthetic capture comparison and GIS/GLB checks passed. These are development capabilities; the playable Windows release below is unchanged.
+
+[Setup, versions and next use](Docs/Toolchain-20261017.md) | [Verification receipt](Docs/Verification-Toolchain-20261017.json). Check the installed environment with `vkt-python.cmd Tools/Toolchain/verify.py`.
+
 ## Latest: local AI availability and recovery - 2026-10-17
 
 Contacts now verify the local companion before sending game facts and explain missing service, missing model, warmup, busy generation, rate limiting, cooldown and timeout in Serbian. Cached conversations remain usable when their model is unavailable. Authored dialogue and authoritative local objectives remain available without any AI service. `Tools/LocalAI/doctor.py` performs read-only diagnostics using standard Python.

@@ -1,5 +1,7 @@
 # Local AI reliability and next world interactions
 
+Update after this AI-release snapshot: the user authorized installing the missing development tools. Game Development Studio, Blender, FFmpeg and the isolated Python/GIS stack are now installed and verified; see [the toolchain record](Toolchain-20261017.md). The availability notes below describe the earlier AI-release work.
+
 ## Delivered
 
 The existing Unity contacts panel now checks the companion identity before posting game facts. A four-second health request precedes the existing bounded conversation request. Closing, switching contact, application suspension and destruction cancel either stage. Gameplay goals, money and save data remain authoritative in Unity.

@@ -1,0 +1,122 @@
+{
+  "milestone": "toolchain-20261017",
+  "gameRuntimeChanged": false,
+  "sourceBaseline": "55a33041b0aa1f70a752cfa236bfde3a031f7057",
+  "tools": {
+    "gameDev": {
+      "version": "1.5.1",
+      "release": "https://github.com/theisegoria/game-development-studio/releases/tag/v1.5.1",
+      "tarballSha256": "9f641ed65f47059936169cb5b9ecdae8ddab7df38f1f51e6124f0d720388ee43"
+    },
+    "node": {
+      "version": "v24.22.0",
+      "archiveSha256": "f9683a19877e12a9b167305c8db71040d812876359de21f0d2e97c3f321f80c3"
+    },
+    "blender": {
+      "version": "4.5.9",
+      "source": "https://download.blender.org/release/Blender4.5/blender-4.5.9-windows-x64.zip",
+      "archiveSha256": "41da973b9bf95bb312cbeff4d1982feb13259b43c821686b9bafea4dfe5477cf"
+    },
+    "ffmpeg": {
+      "version": "9.0.2",
+      "source": "https://github.com/GyanD/codexffmpeg/releases/tag/9.0.2",
+      "archiveSha256": "60f467265b1e312373dbcd92200c2618a74850f98d3d078e94296bb3fa2047ba"
+    }
+  },
+  "pythonPackages": {
+    "affine": "3.0.1",
+    "anyio": "4.15.1",
+    "attrs": "26.1.0",
+    "certifi": "2026.7.22",
+    "click": "8.5.0",
+    "colorama": "0.4.6",
+    "filelock": "4.2.1",
+    "fsspec": "2026.9.0",
+    "h11": "0.16.0",
+    "hf-xet": "1.7.0",
+    "httpcore2": "2.13.1",
+    "httpx2": "2.13.1",
+    "huggingface_hub": "2.2.0",
+    "idna": "3.20",
+    "numpy": "2.5.4",
+    "packaging": "26.3",
+    "pillow": "13.0.0",
+    "pyparsing": "3.3.3",
+    "pyproj": "3.8.0",
+    "PyYAML": "6.0.3",
+    "rasterio": "1.5.2",
+    "shapely": "2.2.0",
+    "tqdm": "4.70.1",
+    "trimesh": "5.1.1",
+    "truststore": "0.10.5",
+    "typing_extensions": "4.16.0"
+  },
+  "checks": {
+    "gameDevVersion": "1.5.1",
+    "workflows": {
+      "generic-capture": true,
+      "asset-inspect": true,
+      "asset-package": true,
+      "blender-normalize": true
+    },
+    "pythonDependencies": "No broken requirements found.",
+    "geoAndMeshSmoke": {
+      "syntheticFixtures": true,
+      "crsRoundtrip": true,
+      "geoTiffRoundtrip": true,
+      "corridorGeometry": true,
+      "glbRoundtrip": true,
+      "realTerrainImported": false,
+      "gameAssetsModified": false
+    },
+    "gameAssetsModified": false,
+    "paidProviderInvoked": false
+  },
+  "functionalEvidence": {
+    "existingPlayerImportExport": {
+      "source": "Kenney characterMedium.fbx (existing VKT CC0 source)",
+      "meshes": 1,
+      "armatures": 1,
+      "triangles": 1604,
+      "glbBytes": 95616,
+      "operation": "Blender FBX import and GLB export; no Unity asset modified"
+    },
+    "assetInspectionPassed": true,
+    "sourceFbxUnchanged": true,
+    "audio": {
+      "programs": [],
+      "stream_groups": [],
+      "streams": [
+        {
+          "sample_rate": "48000",
+          "channels": 1
+        }
+      ],
+      "format": {
+        "duration": "1.000000"
+      }
+    },
+    "syntheticCaptures": {
+      "sealedRunsVerified": true,
+      "comparisonVerdict": "identical",
+      "changedPixelRatio": 0,
+      "gameGpuEvidence": false
+    }
+  },
+  "localSkills": {
+    "bundleVersion": "1.5.1",
+    "installed": 5
+  },
+  "userPathAppended": true,
+  "systemNodeReplaced": false,
+  "providerCredentialsConfigured": false,
+  "paidJobsStarted": 0,
+  "modelWeightsDownloaded": false,
+  "newAndroidApk": false,
+  "limits": [
+    "Development tool verification does not certify VKT FPS, graphics or device performance",
+    "No game model or scene was replaced; diagnostic GLB stays outside the Unity project",
+    "Optional Basis/CoACD/Metal workflows were not installed or certified",
+    "CLI and skills are callable locally; no new MCP server registration claimed"
+  ]
+}
