@@ -25,5 +25,19 @@ namespace Pozarevac.CityGame.Tests
             reply.action="jobs";reply.line="<b>Claim a reward</b>";Assert.That(CityContactStory.Valid(reply,"jobs"),Is.False);
             reply.line=new string('x',261);Assert.That(CityContactStory.Valid(reply,"jobs"),Is.False);
         }
+        [Test] public void AnotherLocalServiceIsNotMistakenForVkt()
+        {
+            Assert.That(CityContactStory.ValidHealth(null),Is.False);
+            Assert.That(CityContactStory.ValidHealth(new CityStoryHealth{service="other",status="ready"}),Is.False);
+            Assert.That(CityContactStory.ValidHealth(new CityStoryHealth{service="vkt-local-story",status="ready",available=false}),Is.True);
+        }
+        [Test] public void UnavailableReasonsHaveDifferentActionableMessages()
+        {
+            Assert.That(CityContactStory.Status("model_missing"),Does.Contain("instaliran"));
+            Assert.That(CityContactStory.Status("ollama_unavailable"),Does.Contain("Pokreni Ollama"));
+            Assert.That(CityContactStory.Status("backend_unavailable"),Does.Contain("Start-LocalAI.ps1"));
+            Assert.That(CityContactStory.Status("phone_offline"),Does.Contain("Telefon"));
+            Assert.That(CityContactStory.Status("loading"),Is.Not.EqualTo(CityContactStory.Status("busy")));
+        }
     }
 }

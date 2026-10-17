@@ -1,0 +1,50 @@
+{
+  "milestone": "ai-status-20261017",
+  "tests": {
+    "total": 149,
+    "passed": 148,
+    "failed": 0,
+    "skipped": 1
+  },
+  "backendTests": {
+    "passed": 16,
+    "failed": 0,
+    "warnings": [
+      "Existing Starlette TestClient httpx deprecation"
+    ]
+  },
+  "windowsBuildErrors": 0,
+  "windowsPlayerPassed": true,
+  "playerRuns": {
+    "live": {
+      "passed": true,
+      "runtime": "Actual Windows player: terrain loaded, nine physics interactions, three contracts, growth/trade, crew, district campaign and durable save restore passed. Catalog seed purchases, hideout entry/exit, four physical plants, watering, garden save restoration, death and hospital respawn passed. Spatial audio: six mono 3D emitters, one listener, clear/blocked/removed-wall rays, mute, suspension, interior fan and desk journal pause passed. Additive player breathing advanced. Enhanced: 600 OSM segments, 100 building footprints, 22 green polygons, 878 wall colliders, 12 benches/24 trees, city map, 16 strain cards, music overlay, job journal, physical street-job payout and durable story progress passed. Local audio decoded while suspended, stayed silent and started on application resume. Map upgrade: connected road/sidewalk topology, authored junction surfaces and street placards composed; renderer-distance budget retained all colliders and restored the camera view. Physical stone/stick pickups, paused attack gating, swept stone/window impact, single glass break, stick hit/NPC reaction, wall occlusion, pool exhaustion/reuse, projectile pause and death cleanup passed. Three camera modes, imported player avatar, bounded orbit, obstruction retraction and first-person restoration passed. Block life: physical gym and kiosk interaction, UI repetitions and anti-spam, pause ownership, paid/stolen food, wanted save restoration, police line-of-sight/occlusion and capture range, accelerated escape/arrest, one-time challenge and durable v5 character stats passed.",
+      "aiEvidence": [
+        "VKT_LOCAL_AI_VERIFIED source=ollama line=Proveri dnevnik za posao u bloku i pronađi neka greška ili nepotpunost.",
+        "VKT_AI_STATUS_VERIFIED OLLAMA / lokalno generisana priča"
+      ]
+    },
+    "offline": {
+      "passed": true,
+      "runtime": "Actual Windows player: terrain loaded, nine physics interactions, three contracts, growth/trade, crew, district campaign and durable save restore passed. Catalog seed purchases, hideout entry/exit, four physical plants, watering, garden save restoration, death and hospital respawn passed. Spatial audio: six mono 3D emitters, one listener, clear/blocked/removed-wall rays, mute, suspension, interior fan and desk journal pause passed. Additive player breathing advanced. Enhanced: 600 OSM segments, 100 building footprints, 22 green polygons, 878 wall colliders, 12 benches/24 trees, city map, 16 strain cards, music overlay, job journal, physical street-job payout and durable story progress passed. Local audio decoded while suspended, stayed silent and started on application resume. Map upgrade: connected road/sidewalk topology, authored junction surfaces and street placards composed; renderer-distance budget retained all colliders and restored the camera view. Physical stone/stick pickups, paused attack gating, swept stone/window impact, single glass break, stick hit/NPC reaction, wall occlusion, pool exhaustion/reuse, projectile pause and death cleanup passed. Three camera modes, imported player avatar, bounded orbit, obstruction retraction and first-person restoration passed. Block life: physical gym and kiosk interaction, UI repetitions and anti-spam, pause ownership, paid/stolen food, wanted save restoration, police line-of-sight/occlusion and capture range, accelerated escape/arrest, one-time challenge and durable v5 character stats passed.",
+      "aiEvidence": [
+        "VKT_LOCAL_AI_VERIFIED source=offline line=Reč se drži, brate. Proveri stanje lika i cilj u dnevniku. Blok pamti pouzdane ljude.",
+        "VKT_AI_STATUS_VERIFIED AUTORSKA REPLIKA / VKT AI servis nije dostupan. Pokreni Start-LocalAI.ps1 na računaru."
+      ]
+    }
+  },
+  "earlierAttempt": "First strict live-provider player attempt used authored fallback and failed the generation-required assertion; the repeated live run and separately required offline run are recorded above. This is not a claim that every generation succeeds.",
+  "originalIntroSha256": "46737d77d43de985fccfc24e7cf32dff61beba2c429e08a7ba49e040ec2dc80c",
+  "artifact": {
+    "name": "VKT-AI-Status-Windows-20261017.zip",
+    "bytes": 203866419,
+    "sha256": "c3d0d68479da40f7e19938234585f336c12e43588c706fee30c102ac87041ddc"
+  },
+  "limits": [
+    "Small local model Serbian fluency varies; authored captions remain the reliable fallback",
+    "Sampled health is not proof of future valid generation",
+    "PC loopback only; no remote AI or BYOK provider shipped",
+    "Optimistic bench remains a documented design idea",
+    "No new terrain, satellite data, new Android APK or physical phone test"
+  ]
+}

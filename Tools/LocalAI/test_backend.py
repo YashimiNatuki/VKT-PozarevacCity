@@ -135,3 +135,58 @@ def test_total_deadline_releases_worker_and_returns_offline(tmp_path, monkeypatc
         result = api.post("/v1/contact", json=FACTS).json()
         assert result["reason"] == "deadline"
         assert api.get("/health").json()["busy"] is False
+
+
+def test_health_distinguishes_running_service_from_missing_model(tmp_path):
+    calls = []
+    def absent(request):
+        calls.append(request.url.path)
+        return httpx.Response(200, json={"models": []})
+    with client(tmp_path/"cache.db", httpx.MockTransport(absent)) as api:
+        for _ in range(2):
+            health = api.get("/health").json()
+            assert health["status"] == "ready"
+            assert health["available"] is False
+            assert health["reason"] == "model_missing"
+        assert calls == ["/api/tags"]
+
+
+def test_health_reports_unreachable_ollama_without_generation(tmp_path):
+    def disconnected(request):
+        raise httpx.ConnectError("Connection refused", request=request)
+    with client(tmp_path/"cache.db", httpx.MockTransport(disconnected)) as api:
+        health = api.get("/health").json()
+        assert health["reason"] == "ollama_unavailable"
+        assert health["available"] is False
+        assert health["metrics"]["requests"] == 0
+        assert api.post("/v1/contact", json=FACTS).json()["reason"] == "ollama_unavailable"
+
+
+def test_health_and_reply_report_warmup_and_circuit_retry(tmp_path):
+    async def scenario():
+        service = StoryService(tmp_path/"cache.db", transport([]))
+        try:
+            service.warm_status = "loading"
+            async with service.lock:
+                health = await service.health()
+                assert health["reason"] == "loading"
+                reply = await service.reply(ContactRequest(**FACTS))
+                assert reply.reason == "loading" and reply.retry_after == 5
+            service.warm_status = "ready"
+            service.open_until = __import__("time").monotonic()+30
+            health = await service.health()
+            assert health["reason"] == "circuit_open" and 1 <= health["retry_after"] <= 30
+            reply = await service.reply(ContactRequest(**FACTS))
+            assert reply.reason == "circuit_open" and 1 <= reply.retry_after <= 30
+        finally:
+            await service.close()
+    asyncio.run(scenario())
+
+
+def test_cached_dialogue_survives_missing_model(tmp_path):
+    path = tmp_path/"cache.db"
+    with client(path, transport([])) as api:
+        assert api.post("/v1/contact", json=FACTS).json()["source"] == "ollama"
+    with client(path, httpx.MockTransport(lambda _: httpx.Response(200, json={"models": []}))) as api:
+        assert api.get("/health").json()["reason"] == "model_missing"
+        assert api.post("/v1/contact", json=FACTS).json()["source"] == "cache"

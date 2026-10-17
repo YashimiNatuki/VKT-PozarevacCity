@@ -52,6 +52,7 @@ class ContactResponse(StoryText):
     action: Action
     reason: str
     model: str
+    retry_after: int = Field(default=0, ge=0, le=60)
 
 class GeneratedLine(BaseModel):
     """Only dialogue is generative; headings and objectives remain authored."""
@@ -147,6 +148,31 @@ class StoryService:
         self.started = time.monotonic()
         self.metrics = dict(requests=0, generated=0, cache_hits=0, fallbacks=0, busy=0, rate_limited=0)
         self.warm_status = "not_started"
+        self.probe_lock = asyncio.Lock()
+        self.probe_at = -10.0
+        self.probe_reason = "not_checked"
+
+    async def health(self) -> dict:
+        # Availability is sampled without loading a model or occupying generation.
+        async with self.probe_lock:
+            if time.monotonic()-self.probe_at >= 5:
+                try:
+                    tags = await self.client.get("/api/tags", timeout=2)
+                    tags.raise_for_status()
+                    names = {m["name"] for m in tags.json()["models"]}
+                    self.probe_reason = "" if self.model in names else "model_missing"
+                except (httpx.HTTPError, ValueError, KeyError, TypeError):
+                    self.probe_reason = "ollama_unavailable"
+                self.probe_at = time.monotonic()
+        retry = min(60, max(0, int(self.open_until-time.monotonic()+.999)))
+        reason = self.probe_reason
+        if not reason:
+            reason = "circuit_open" if retry else "loading" if self.warm_status == "loading" else "busy" if self.lock.locked() else ""
+        return {"service": "vkt-local-story", "status": "ready", "model": self.model,
+                "available": not reason, "reason": reason, "retry_after": retry,
+                "busy": self.lock.locked(), "warm_status": self.warm_status,
+                "cache_degraded": self.cache.degraded,
+                "uptime_seconds": int(time.monotonic()-self.started), "metrics": dict(self.metrics)}
 
     async def warm(self):
         self.warm_status = "loading"
@@ -172,7 +198,12 @@ class StoryService:
 
     def offline(self, facts, reason):
         self.metrics["fallbacks"] += 1
-        return fallback(facts, reason, self.model)
+        result = fallback(facts, reason, self.model)
+        result.retry_after = (min(60, max(1, int(self.open_until-time.monotonic()+.999)))
+                              if reason == "circuit_open" else 5 if reason in {"busy", "loading"} else 0)
+        if reason == "rate_limited" and self.requests:
+            result.retry_after = min(60, max(1, int(self.requests[0]+60-time.monotonic()+.999)))
+        return result
 
     async def reply(self, facts: ContactRequest) -> ContactResponse:
         self.metrics["requests"] += 1
@@ -196,7 +227,7 @@ class StoryService:
             return self.offline(facts, "circuit_open")
         if self.lock.locked():
             self.metrics["busy"] += 1
-            return self.offline(facts, "busy")
+            return self.offline(facts, "loading" if self.warm_status == "loading" else "busy")
         async with self.lock:
             try:
                 tags = await self.client.get("/api/tags", timeout=2)
@@ -231,11 +262,13 @@ class StoryService:
                 self.failures = 0
                 self.metrics["generated"] += 1
                 return ContactResponse(**story.model_dump(), source="ollama", action=action, reason="", model=self.model)
-            except (httpx.HTTPError, ValueError, KeyError, TypeError, sqlite3.Error):
+            except (httpx.HTTPError, ValueError, KeyError, TypeError, sqlite3.Error) as error:
                 self.failures += 1
                 if self.failures >= 3:
                     self.open_until = time.monotonic()+60
-                return self.offline(facts, "generation_unavailable")
+                reason = ("ollama_unavailable" if isinstance(error, (httpx.ConnectError, httpx.ConnectTimeout)) else
+                          "deadline" if isinstance(error, httpx.TimeoutException) else "generation_unavailable")
+                return self.offline(facts, reason)
 
 def create_app(cache_path: Path | None = None, ollama_transport=None) -> FastAPI:
     path = cache_path or Path(os.environ.get("LOCALAPPDATA", str(Path.home()/".cache")))/"VKTLocalAI"/"story.sqlite3"
@@ -272,9 +305,7 @@ def create_app(cache_path: Path | None = None, ollama_transport=None) -> FastAPI
     @app.get("/health")
     async def health():
         service = app.state.service
-        return {"service": "vkt-local-story", "status": "ready", "model": service.model,
-                "busy": service.lock.locked(), "warm_status": service.warm_status, "cache_degraded": service.cache.degraded,
-                "uptime_seconds": int(time.monotonic()-service.started), "metrics": service.metrics}
+        return await service.health()
 
     @app.post("/v1/contact", response_model=ContactResponse)
     async def contact(facts: ContactRequest):

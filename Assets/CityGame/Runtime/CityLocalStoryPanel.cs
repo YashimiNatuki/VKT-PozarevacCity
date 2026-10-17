@@ -11,6 +11,7 @@ namespace Pozarevac.CityGame
     public sealed class CityLocalStoryPanel : MonoBehaviour
     {
         public const string Endpoint="http://127.0.0.1:18741/v1/contact";
+        public const string HealthEndpoint="http://127.0.0.1:18741/health";
         private CityGameBootstrap game;
         private CityLifestyleRuntime lifestyle;
         private GameObject canvas,panel;
@@ -26,6 +27,7 @@ namespace Pozarevac.CityGame
         public bool IsLoading=>pending!=null;
         public string Source=>reply!=null?reply.source:"";
         public string CurrentLine=>reply!=null?reply.line:"";
+        public string StatusText=>state!=null?state.text:"";
 
         public void Initialize(CityGameBootstrap owner,CityLifestyleRuntime runtime)
         {
@@ -39,7 +41,7 @@ namespace Pozarevac.CityGame
             for(int i=0;i<3;i++){int contact=i;Button(new[]{"MILA / dogovor","VUK / ekipa","LUKA / mreža"}[i],new Vector2(-310+i*310,130),()=>Select(contact));}
             body=Label("Story",new Vector2(0,20),new Vector2(940,150),25);
             goal=Label("NextGoal",new Vector2(0,-90),new Vector2(940,60),20);
-            state=Label("Source",new Vector2(0,-150),new Vector2(940,40),17);
+            state=Label("Source",new Vector2(0,-150),new Vector2(940,64),16);
             refresh=Button("OSVEŽI / OLLAMA",new Vector2(-310,-210),()=>RefreshRemote());
             Button("SAVET ZA LIKA",new Vector2(0,-210),()=>{if(IsLoading)return;intent="advice";RefreshRemote();});
             Button("PRATI CILJ",new Vector2(310,-210),Follow);
@@ -93,7 +95,23 @@ namespace Pozarevac.CityGame
         }
         private IEnumerator Fetch(CityContactFacts facts,int generation)
         {
-            state.text="VEZA SA KONTAKTOM… možeš da zatvoriš ekran.";refresh.interactable=false;
+            state.text="PROVERA AI VEZE… možeš da zatvoriš ekran.";refresh.interactable=false;
+            request=UnityWebRequest.Get(HealthEndpoint);request.timeout=4;
+            yield return request.SendWebRequest();
+            CityStoryHealth health=null;
+            bool connected=request.result==UnityWebRequest.Result.Success&&request.downloadedBytes<=32768;
+            if(connected)
+            {
+                try{health=JsonUtility.FromJson<CityStoryHealth>(request.downloadHandler.text);}catch(ArgumentException){ }
+            }
+            request.Dispose();request=null;
+            if(!CityContactStory.ValidHealth(health))
+            {
+                if(generation==serial&&IsOpen)Present(CityContactStory.Offline(facts,connected?"wrong_service":"backend_unavailable"));
+                refresh.interactable=true;pending=null;yield break;
+            }
+            // Even an unavailable model may have a matching cached conversation.
+            state.text=health.available?"LOKALNI AI PIŠE… možeš da zatvoriš ekran.":CityContactStory.Status(health.reason);
             request=new UnityWebRequest(Endpoint,"POST"){uploadHandler=new UploadHandlerRaw(Encoding.UTF8.GetBytes(JsonUtility.ToJson(facts))),downloadHandler=new DownloadHandlerBuffer(),timeout=40};
             request.SetRequestHeader("Content-Type","application/json");
             yield return request.SendWebRequest();
@@ -113,7 +131,8 @@ namespace Pozarevac.CityGame
             // The actionable objective always comes from current, authoritative game facts.
             goal.text="SLEDEĆI KORAK / "+CityContactStory.Tip(CityContactStory.Action(Facts()));
             state.text=value.source=="ollama"?"OLLAMA / lokalno generisana priča":value.source=="cache"?"KEŠ / prethodno generisana lokalna priča":
-                value.reason=="not_requested"?"OFFLINE PRIČA / OSVEŽI povezuje lokalni AI":value.reason=="phone_offline"?"OFFLINE PRIČA / ovaj telefon nema lokalni PC servis":"OFFLINE PRIČA / lokalni AI trenutno nije dostupan";
+                "AUTORSKA REPLIKA / "+CityContactStory.Status(value.reason);
+            if(value.source=="offline"&&value.retry_after>0&&value.retry_after<=60)state.text+="\nPokušaj ponovo za oko "+value.retry_after+" s.";
         }
         private void Follow()
         {

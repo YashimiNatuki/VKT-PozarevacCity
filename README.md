@@ -4,7 +4,19 @@ A modular Unity street-action prototype with missions, a cannabis-themed game ec
 
 This repository is the standalone Unity source milestone. The older [browser/Three.js project](https://github.com/YashimiNatuki/3D-gta-Pozarevac) remains separate. No browser source or history is replaced.
 
-## Latest: connected streets and map visibility - 2026-10-17
+## Latest: local AI availability and recovery - 2026-10-17
+
+Contacts now verify the local companion before sending game facts and explain missing service, missing model, warmup, busy generation, rate limiting, cooldown and timeout in Serbian. Cached conversations remain usable when their model is unavailable. Authored dialogue and authoritative local objectives remain available without any AI service. `Tools/LocalAI/doctor.py` performs read-only diagnostics using standard Python.
+
+**Verified:** 148 Unity tests passed, zero failed, one optional skip; 16 backend tests passed. Windows build completed with zero errors. Actual Windows player runs passed with required live AI/cache and, separately, with the companion stopped and an explicit recovery message. The first strict live attempt fell back to authored text; local generation is not guaranteed on every attempt. Existing intro, city/collision, audio, character, gym, mission, garden and save checks also ran.
+
+[Download Windows development ZIP](https://github.com/YashimiNatuki/VKT-PozarevacCity/releases/download/vkt-ai-status-20261017/VKT-AI-Status-Windows-20261017.zip) | [Setup, boundaries and bench roadmap](Docs/AI-Reliability-20261017.md) | [Verification receipt](Docs/Verification-AI-Status-20261017.json)
+
+No new login or API key is needed for the local Ollama path. Remote Android AI, BYOK and the animated talking bench are future work. This release adds no terrain/elevation or Android APK.
+
+![Actual Windows player with companion stopped](Docs/Screenshots/contacts-status-offline-windows-20261017.png)
+
+## Previous: connected streets and map visibility - 2026-10-17
 
 The existing OSM map now composes shared road/sidewalk edges through a bounded endpoint graph, authored asphalt junction surfaces and sidewalk pullbacks. Compact double-sided street placards replace oversized floating names. Building/sign renderers use distance hysteresis while all existing wall/ground colliders and mission simulation stay active.
 
