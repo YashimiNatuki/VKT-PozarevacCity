@@ -19,6 +19,10 @@ namespace Pozarevac.CityGame
         private CityPoliceOfficer[] officers;
         private AudioSource siren;
         private AudioClip sirenClip;
+        private AudioLowPassFilter sirenFilter;
+        private Transform ears;
+        private CitySpatialSoundscape acoustics;
+        private float sirenProbe;
         private Vector3 previous;
         private float uiCountdown;
         private bool menuOwnedPause, lastWanted;
@@ -58,7 +62,11 @@ namespace Pozarevac.CityGame
             BuildUi();Wardrobe=gameObject.AddComponent<CityWardrobePanel>();Wardrobe.Initialize(game,this);
             LocalStory=gameObject.AddComponent<CityLocalStoryPanel>();LocalStory.Initialize(game,this);game.Touch.BindLifestyle(ToggleMenu);
             game.Player.GetComponentInChildren<CityCameraRig>().ConfigureAppearance(game.Progression.Appearance);
-            sirenClip=CreateSiren();siren=gameObject.AddComponent<AudioSource>();siren.clip=sirenClip;siren.playOnAwake=false;siren.loop=true;siren.volume=.055f;siren.spatialBlend=0;
+            GameObject sirenNode=new GameObject("VKT_PositionalPatrolSiren");sirenNode.transform.SetParent(world.transform,false);
+            sirenClip=CreateSiren();siren=sirenNode.AddComponent<AudioSource>();siren.clip=sirenClip;siren.playOnAwake=false;siren.loop=true;siren.volume=.12f;siren.spatialBlend=1;
+            siren.minDistance=5;siren.maxDistance=100;siren.rolloffMode=AudioRolloffMode.Logarithmic;siren.dopplerLevel=0;siren.priority=50;
+            sirenFilter=sirenNode.AddComponent<AudioLowPassFilter>();sirenFilter.cutoffFrequency=22000;
+            ears=game.Player.GetComponentInChildren<Camera>().transform;
             game.Vitals.Died+=OnDeath;
         }
         private static Material MakeMaterial(Material template,Color color){Material m=new Material(template);m.color=color;return m;}
@@ -169,7 +177,18 @@ namespace Pozarevac.CityGame
             benchVisual.Pose(Life.IsTraining,bench!=null?bench.Extension:1);
             if(Life.Wanted&&!lastWanted){hud.ShowNotification("POTERA: zaklon prekida vidljivost. Policija mora da priđe za privođenje.",6);progress.SaveNow();}
             lastWanted=Life.Wanted;
-            if(simulate&&Life.Wanted&&!game.Audio.Muted){if(!siren.isPlaying){if(siren.timeSamples>0)siren.UnPause();else siren.Play();}}
+            if(simulate&&Life.Wanted&&!game.Audio.Muted)
+            {
+                CityPoliceOfficer nearest=officers[0];
+                foreach(CityPoliceOfficer officer in officers)if((officer.transform.position-game.Player.position).sqrMagnitude<(nearest.transform.position-game.Player.position).sqrMagnitude)nearest=officer;
+                siren.transform.position=nearest.transform.position+Vector3.up*1.6f;
+                if(Time.unscaledTime>=sirenProbe)
+                {
+                    sirenProbe=Time.unscaledTime+.25f;if(acoustics==null)acoustics=GetComponent<CitySpatialSoundscape>();
+                    sirenFilter.cutoffFrequency=acoustics!=null&&acoustics.IsBlocked(siren.transform.position,ears.position)?1200:22000;
+                }
+                if(!siren.isPlaying){if(siren.timeSamples>0)siren.UnPause();else siren.Play();}
+            }
             else if(siren.isPlaying)siren.Pause();
             uiCountdown-=Time.unscaledDeltaTime;if(uiCountdown<=0){uiCountdown=.15f;RefreshUi();}
         }

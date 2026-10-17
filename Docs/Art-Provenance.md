@@ -46,3 +46,7 @@ The bench screenshot is an actual render from the Windows standalone player, not
 ## Character wardrobe - 2026-10-16
 
 The body remains the reviewed CC0 Kenney Retro skin/atlas. First-party bind-space deformation changes body proportions without replacing the source geometry or texture. The UV-region clothing shader, geometric print, curved cap mesh and wardrobe UI are original code. Model readability is enabled for owned CPU mesh copies. No new downloaded assets, provider-generated images, personal photographs or facial likeness claims are introduced. New wardrobe/street captures are actual Windows player renders.
+
+## Atmosphere and intro - 2026-10-17
+
+The wristwatch, room furniture/fan, rounded pots and synthetic mono ambience/footstep/landing waveforms are first-party procedural work. The existing reviewed Kenney skin and animation assets are reused. No new third-party audio pack or Steam Audio native plugin is imported. The exact original user-supplied project intro movie is restored to release binaries as a separate media input; it remains outside the MIT source export. Runtime captures document actual Windows rendering rather than generated concept art. See Atmosphere-Intro-20261017.md and the release verification receipt.

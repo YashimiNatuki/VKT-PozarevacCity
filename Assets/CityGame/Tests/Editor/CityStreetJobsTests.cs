@@ -97,5 +97,19 @@ namespace Pozarevac.CityGame.Tests.Editor
             Assert.Throws<ArgumentOutOfRangeException>(() => jobs.Tick(-1));
             Assert.That(jobs.RemainingSeconds, Is.EqualTo(time));
         }
+        [Test]
+        public void QuietContactsBlockHotAcceptanceAndHandoverWithoutPaying()
+        {
+            CitySession session=new CitySession(1000);CityStreetJobs jobs=null;
+            for(uint seed=1;seed<200;seed++){var candidate=new CityStreetJobs(session,seed);if(candidate.Offer.MaximumHeat==30){jobs=candidate;break;}}
+            Assert.That(jobs,Is.Not.Null);session.AddHeat(31);
+            Assert.That(jobs.TryAccept(),Is.False);Assert.That(jobs.IsActive,Is.False);
+            session.CoolDown(1);Assert.That(jobs.TryAccept(),Is.True);
+            int station=jobs.Offer.StationAt(0);session.AddHeat(1);double remaining=jobs.RemainingSeconds;
+            Assert.That(jobs.TryVisit(station),Is.False);jobs.Tick(2);
+            Assert.That(jobs.ObjectiveIndex,Is.Zero);Assert.That(jobs.RemainingSeconds,Is.EqualTo(remaining-2));
+            Assert.That(session.Cash,Is.EqualTo(1000));session.CoolDown(1);
+            Assert.That(jobs.TryVisit(station),Is.True);Assert.That(jobs.ObjectiveIndex,Is.EqualTo(1));
+        }
     }
 }

@@ -27,3 +27,7 @@ The user approved Git Credential Manager authorization for YashimiNatuki. Initia
 For this explicitly authorized new standalone repository, publish the reviewed milestone on `main`. Generate/build/test the offline fixture, inspect the staged diff and secret scan, commit, then push normally. For future changes to an established shared repository, use its normal feature-branch/review workflow. Do not force-push. Final handoff must identify the commit and remote branch or state the exact access blocker.
 
 Reviewed third-party exception (2026-10-16): only characterMedium.fbx, idle.fbx, run.fbx, humanMaleA.png, License.txt and their metadata directly inside Assets/CityGame/Resources/Models/KenneyRetro. The creator's page and archive license state CC0. The exporter uses an exact directory/filename allowlist, not a broad model/vendor exception. PNG/FBX binary files use reviewed provenance; text and metadata retain the credential-signature guard. See Visual-Upgrade-20261016.md and THIRD_PARTY_NOTICES.md.
+
+## Intro release media exception - 2026-10-17
+
+Source exports continue excluding private audio/video. Windows release builds now accept one explicit -vktIntroSource MP4 input and copy it unchanged into the binary StreamingAssets directory. The original project movie is included in the atmosphere release ZIP, not the Git source. Its identity/hash and actual playback verification are recorded separately; MIT code licensing does not replace media rights. Three new atmosphere runtime captures are explicitly allowlisted.

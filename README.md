@@ -4,7 +4,23 @@ A modular Unity street-action prototype with missions, a cannabis-themed game ec
 
 This repository is the standalone Unity source milestone. The older [browser/Three.js project](https://github.com/YashimiNatuki/3D-gta-Pozarevac) remains separate. No browser source or history is replaced.
 
-## Latest: local Ollama contacts and state-aware objectives - 2026-10-17
+## Latest: original intro, spatial audio and hideout - 2026-10-17
+
+The original 43.5-second project intro is back in the Windows ZIP; previous portable builds excluded its video. **PRESKOČI UVOD**, Space or Esc skips it. Missing media now has an explicit short title card. Six mono positional ambience sources, wall low-pass/attenuation, a world-space patrol siren, indoor fan/reverb and movement sound fallbacks improve the audio composition. These effects are synthetic; no authentic city recordings or binaural HRTF is claimed.
+
+The existing character gains additive breathing, torso/turn motion, head glance and a wardrobe-colored wristwatch. The hideout gains rounded pots, furniture, a fan and **E / PLAN BLOKA** desk opening the existing journal. Two new job types add heat-limited contact acceptance and handover while the deadline continues.
+
+**Verified:** 142 Unity tests passed, zero failed, one optional skip. Windows build completed with zero errors. Actual player regression passed original video decoding/touch skip, six spatial sources, one listener, wall insertion/removal, mute/suspend, indoor source selection, journal pause, breathing and prior gameplay. Separate player runs passed natural movie completion and missing-media fallback. The packaged movie hash matches the original.
+
+[Download Windows development ZIP](https://github.com/YashimiNatuki/VKT-PozarevacCity/releases/download/vkt-atmosphere-20261017/VKT-Atmosphere-Windows-20261017.zip) | [Changes, free library research and limitations](Docs/Atmosphere-Intro-20261017.md) | [Verification receipt](Docs/Verification-Atmosphere-20261017.json)
+
+Headphone listening, natural Serbian voice casting, recorded ambience and Steam Audio integration remain future validation/work. No new Android APK in this wave.
+
+![Original project intro in the Windows player](Docs/Screenshots/intro-original-windows-20261017.png)
+
+![Furnished hideout in the Windows player](Docs/Screenshots/hideout-atmosphere-windows-20261017.png)
+
+## Previous: local Ollama contacts and state-aware objectives - 2026-10-17
 
 **L / BLOK / LIK > KONTAKTI / OLLAMA** opens Mila, Vuk and Luka. Authored offline text works immediately. Optional local Ollama generates a short sentence; the UI labels generated, cached and authored responses separately. Unity chooses the next objective from pursuit, food, stamina, campaign and current jobs. AI cannot change rewards, cash or progress.
 

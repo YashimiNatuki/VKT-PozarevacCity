@@ -8,6 +8,13 @@ namespace Pozarevac.CityGame
     {
         private AudioSource effects, dialogue;
         private AudioClip footstep, landing;
+        private AudioClip generatedFootstep, generatedLanding;
+        private bool suspended;
+        public bool HasMovementClips => footstep != null && landing != null;
+        public void SetMuted(bool value)
+        {
+            Muted=value;if(effects!=null)effects.mute=value;if(dialogue!=null)dialogue.mute=value;
+        }
         private CityProgressionController ui;
         private CharacterController body;
         private Vector3 lastPosition;
@@ -27,6 +34,8 @@ namespace Pozarevac.CityGame
             effects = player.gameObject.AddComponent<AudioSource>(); effects.playOnAwake = false; effects.volume = 0.25f;
             dialogue = player.gameObject.AddComponent<AudioSource>(); dialogue.playOnAwake = false; dialogue.volume = 0.85f;
             footstep = Resources.Load<AudioClip>("Audio/Footstep"); landing = Resources.Load<AudioClip>("Audio/Land");
+            if(footstep==null)footstep=generatedFootstep=CreateContact(false);
+            if(landing==null)landing=generatedLanding=CreateContact(true);
             voices = new[] { Resources.Load<AudioClip>("Audio/Voices/mila_enter"), Resources.Load<AudioClip>("Audio/Voices/vuk_exit"), Resources.Load<AudioClip>("Audio/Voices/luka_complete") };
             foreach (AudioClip clip in voices) if (clip != null) LoadedVoiceClips++;
             effects.priority = 100; dialogue.priority = 20;
@@ -44,19 +53,21 @@ namespace Pozarevac.CityGame
                 _ => "Luka: Posao je završen. Proveri telefon i sledeći ugovor."
             };
             ui.Notify(text);
-            if (!Muted && voices[index] != null) { dialogue.clip = voices[index]; dialogue.Play(); if (Time.timeScale <= 0f) dialogue.Pause(); }
+            if (!Muted && voices[index] != null) { dialogue.clip = voices[index]; dialogue.Play(); if (suspended || Time.timeScale <= 0f) dialogue.Pause(); }
         }
         private void OnDisable() { if (effects != null) effects.Stop(); if (dialogue != null) dialogue.Stop(); }
         private void OnDestroy()
         {
             if (effects != null) Destroy(effects);
             if (dialogue != null) Destroy(dialogue);
+            if(generatedFootstep!=null)Destroy(generatedFootstep);
+            if(generatedLanding!=null)Destroy(generatedLanding);
             // Resources clips are shared assets and must not be destroyed by this owner.
         }
         private void Update()
         {
             if (body == null) return;
-            bool shouldPause = Time.timeScale <= 0f;
+            bool shouldPause = suspended || Time.timeScale <= 0f;
             if (shouldPause != gameplayPaused)
             {
                 gameplayPaused = shouldPause;
@@ -64,7 +75,7 @@ namespace Pozarevac.CityGame
                 else { effects.UnPause(); dialogue.UnPause(); }
             }
             if (!gameplayPaused && Cursor.lockState == CursorLockMode.Locked && Keyboard.current != null && Keyboard.current.mKey.wasPressedThisFrame)
-            { Muted = !Muted; effects.mute = dialogue.mute = Muted; ui.Notify(Muted ? "Zvuk isključen / M" : "Zvuk uključen / M"); }
+            { SetMuted(!Muted); ui.Notify(Muted ? "Zvuk isključen / M" : "Zvuk uključen / M"); }
             Vector3 delta = body.transform.position - lastPosition; lastPosition = body.transform.position;
             bool grounded = body.enabled && body.isGrounded;
             if (delta.sqrMagnitude > 9 || Time.deltaTime <= 0) { walked = 0; wasGrounded = grounded; return; }
@@ -75,6 +86,19 @@ namespace Pozarevac.CityGame
                 if (walked >= 1.6f) { walked %= 1.6f; if (footstep != null) effects.PlayOneShot(footstep); }
             }
             wasGrounded = grounded;
+        }
+        private void OnApplicationPause(bool value){suspended=value;if(value&&initialized){gameplayPaused=true;effects.Pause();dialogue.Pause();}}
+        private static AudioClip CreateContact(bool heavy)
+        {
+            const int rate=22050;int count=(int)(rate*(heavy?.24f:.13f));float[] data=new float[count];uint random=0x6172a1u;float low=0;
+            for(int i=0;i<count;i++)
+            {
+                random^=random<<13;random^=random>>17;random^=random<<5;
+                float t=(float)i/rate;low+=.18f*((random&65535)/32767.5f-1-low);
+                float envelope=Mathf.Min(1,t/.004f)*Mathf.Exp(-t*(heavy?22:35));
+                data[i]=envelope*(low*.5f+Mathf.Sin(2*Mathf.PI*(heavy?72:115)*t)*.22f);
+            }
+            AudioClip clip=AudioClip.Create(heavy?"VKT_AuthoredLanding":"VKT_AuthoredFootstep",count,1,rate,false);clip.SetData(data,0);return clip;
         }
     }
 }

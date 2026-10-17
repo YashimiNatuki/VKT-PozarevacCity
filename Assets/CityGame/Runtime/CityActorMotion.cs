@@ -6,6 +6,12 @@ namespace Pozarevac.CityGame
         private Transform actor;private Animation animationPlayer;private Vector3 previous;private bool running;private float phase;
         private Transform leftArm,leftElbow,rightArm,rightElbow;
         private float speed,leftSide=-1,rightSide=1;
+        private Transform chest,head,view;
+        private Quaternion chestBase,headBase;
+        private bool posed;
+        private float breath,turn,previousYaw;
+        public float ObservedSpeed=>speed;
+        public float BreathingPhase=>breath;
         public void Initialize(Transform owner,Animation player)
         {
             actor=owner;animationPlayer=player;previous=owner.position;
@@ -14,11 +20,20 @@ namespace Pozarevac.CityGame
             rightArm=player.transform.Find(upper+"RightShoulder/RightArm");rightElbow=rightArm!=null?rightArm.Find("RightForeArm"):null;
             if(leftArm!=null)leftSide=Mathf.Sign(transform.InverseTransformPoint(leftArm.position).x);
             if(rightArm!=null)rightSide=Mathf.Sign(transform.InverseTransformPoint(rightArm.position).x);
+            chest=player.transform.Find("HipsCtrl/Hips/Spine/Chest/UpperChest");
+            if(chest!=null)head=chest.Find("Neck/Head");
+            view=Camera.main!=null?Camera.main.transform:null;previousYaw=transform.eulerAngles.y;
+        }
+        private void Update()
+        {
+            // Remove only last frame's additive pose before the legacy animation samples again.
+            if(!posed)return;if(chest!=null)chest.localRotation=chestBase;if(head!=null)head.localRotation=headBase;posed=false;
         }
         private void LateUpdate()
         {
             if(actor==null||animationPlayer==null)return;
             Vector3 delta=actor.position-previous;previous=actor.position;
+            if(Time.deltaTime<=0)return;
             if(Time.deltaTime>0)
             {
                 delta.y=0;
@@ -35,6 +50,19 @@ namespace Pozarevac.CityGame
             }
             float swing=running?Mathf.Sin(phase)*Mathf.Lerp(.2f,.48f,Mathf.Clamp01(speed/8)):0;
             RelaxArm(leftArm,leftElbow,transform,leftSide,swing);RelaxArm(rightArm,rightElbow,transform,rightSide,-swing);
+            breath+=Time.deltaTime*Mathf.Lerp(1.8f,3.8f,Mathf.Clamp01(speed/8));
+            float yaw=transform.eulerAngles.y;
+            float yawRate=delta.magnitude>5?0:Mathf.DeltaAngle(previousYaw,yaw)/Mathf.Max(.001f,Time.deltaTime);previousYaw=yaw;
+            turn=Mathf.Lerp(turn,Mathf.Clamp(yawRate*.035f,-7,7),1-Mathf.Exp(-7*Time.deltaTime));
+            if(chest!=null){chestBase=chest.localRotation;chest.localRotation*=Quaternion.Euler(Mathf.Sin(breath)*.8f+Mathf.Clamp01(speed/8)*6,0,-turn);}
+            if(head!=null)
+            {
+                headBase=head.localRotation;
+                Vector3 gaze=view!=null?transform.InverseTransformDirection(view.forward):Vector3.forward;
+                float glance=Mathf.Clamp(Mathf.Atan2(gaze.x,gaze.z)*Mathf.Rad2Deg,-28,28);
+                head.localRotation*=Quaternion.Euler(Mathf.Sin(breath*.5f)*1.4f,glance*.45f,turn*.35f);
+            }
+            posed=true;
         }
         public static void RelaxArm(Transform arm,Transform elbow,Transform model,float side,float swing)
         {

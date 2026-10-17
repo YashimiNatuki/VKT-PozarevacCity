@@ -13,6 +13,7 @@ namespace Pozarevac.CityGame
         private AudioSource daySource, nightSource;
         private AudioClip generatedDay, generatedNight;
         private bool initialized;
+        private bool suspended;
         private CityGameAudio dialogue;
         public bool IsUsingSyntheticFallback { get; private set; }
 
@@ -50,7 +51,7 @@ namespace Pozarevac.CityGame
         private void Update()
         {
             if (!initialized || clock == null) return;
-            if (Time.timeScale <= 0f || isMuted())
+            if (suspended || Time.timeScale <= 0f || isMuted())
             {
                 daySource.volume = 0f;
                 nightSource.volume = 0f;
@@ -103,6 +104,12 @@ namespace Pozarevac.CityGame
         {
             if (!initialized) return;
             daySource.UnPause(); nightSource.UnPause();
+        }
+        private void OnApplicationPause(bool value)
+        {
+            suspended=value;
+            if(value&&initialized){daySource.volume=nightSource.volume=0;daySource.Pause();nightSource.Pause();}
+            else if(initialized){daySource.UnPause();nightSource.UnPause();}
         }
         private void OnDisable()
         {

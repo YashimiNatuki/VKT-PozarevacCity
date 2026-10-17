@@ -26,6 +26,38 @@ namespace Pozarevac.CityGame
         {
             float deadline = Time.realtimeSinceStartup + 90;
             CityGameBootstrap game = null;
+            bool introFallback=Array.IndexOf(Environment.GetCommandLineArgs(),"-vktIntroFallbackSmoke")>=0;
+            if(Array.IndexOf(Environment.GetCommandLineArgs(),"-vktIntroSmoke")>=0||introFallback)
+            {
+                float introDeadline=Time.realtimeSinceStartup+30;
+                while(Time.realtimeSinceStartup<introDeadline)
+                {
+                    game=FindAnyObjectByType<CityGameBootstrap>();
+                    if(game!=null&&game.WorldReady&&game.Intro!=null&&game.Intro.IsActive&&(introFallback||game.Intro.HasStarted&&game.Intro.DecodedFrame>=30))break;
+                    yield return null;
+                }
+                if(game==null||!game.WorldReady||game.Intro==null||!game.Intro.IsActive||(!introFallback&&game.Intro.DecodedFrame<30)||!game.Director.IsPaused)
+                {Finish(false,"Original intro did not decode frames with gameplay paused.");yield break;}
+                string introCapture=Argument("-vktIntroScreenshot","");
+                if(!string.IsNullOrEmpty(introCapture)&&!CaptureRenderedFrame(game,introCapture,out string introError))
+                {Finish(false,introError);yield break;}
+                Debug.Log("VKT_INTRO_VERIFIED frame="+game.Intro.DecodedFrame+" size="+game.Intro.Width+"x"+game.Intro.Height+" seconds="+game.Intro.Length+" audioTracks="+game.Intro.AudioTracks);
+                bool natural=Array.IndexOf(Environment.GetCommandLineArgs(),"-vktIntroNaturalSmoke")>=0;
+                if(natural)
+                {
+                    float end=Time.realtimeSinceStartup+65;
+                    while(game.Intro!=null&&game.Intro.IsActive&&Time.realtimeSinceStartup<end)yield return null;
+                    if(game.Intro!=null&&game.Intro.IsActive){Finish(false,"Original intro did not complete naturally.");yield break;}
+                }
+                else
+                {
+                    var skip=Array.Find(FindObjectsByType<UnityEngine.UI.Button>(FindObjectsSortMode.None),b=>b.name=="PRESKOČI UVOD");
+                    if(skip==null){Finish(false,"Intro touch skip button absent.");yield break;}
+                    skip.onClick.Invoke();yield return null;
+                }
+                if(game.Director.IsPaused){Finish(false,"Intro skip did not restore gameplay.");yield break;}
+                if(natural||introFallback){Finish(true,natural?"Original intro decoded, played to natural completion and resumed gameplay.":"Missing-video title card and touch skip restored gameplay.");yield break;}
+            }
             while (Time.realtimeSinceStartup < deadline)
             {
                 game = FindAnyObjectByType<CityGameBootstrap>();
@@ -35,6 +67,49 @@ namespace Pozarevac.CityGame
             if (game == null || !game.WorldReady) { Finish(false, "City terrain did not become ready."); yield break; }
             yield return new WaitForSecondsRealtime(1);
             if (!Verify(game, out string details)) { Finish(false, details); yield break; }
+            if(Array.IndexOf(Environment.GetCommandLineArgs(),"-vktAcousticsSmoke")>=0)
+            {
+                game.GetComponent<CityProgressionController>().ClosePanel();
+                if(game.Hideout.IsInside)game.Hideout.Travel(false);
+                CitySpatialSoundscape sound=game.GetComponent<CitySpatialSoundscape>();
+                int listeners=0;foreach(AudioListener ear in FindObjectsByType<AudioListener>(FindObjectsSortMode.None))if(ear.enabled)listeners++;
+                if(sound==null||sound.EmitterCount!=6||listeners!=1||!game.Audio.HasMovementClips)
+                {Finish(false,"Spatial source composition, single listener or movement clips missing.");yield break;}
+                yield return new WaitForSecondsRealtime(.3f);
+                if(sound.PlayingSources==0){Finish(false,"Outdoor positional sources did not play.");yield break;}
+                Vector3 source=game.Player.position+Vector3.up*100,earPoint=source+Vector3.right*8;
+                if(sound.IsBlocked(source,earPoint)){Finish(false,"Clear acoustic ray was incorrectly blocked.");yield break;}
+                GameObject barrier=GameObject.CreatePrimitive(PrimitiveType.Cube);barrier.transform.position=source+Vector3.right*4;barrier.transform.localScale=new Vector3(.3f,3,3);Physics.SyncTransforms();
+                bool blocked=sound.IsBlocked(source,earPoint);Destroy(barrier);yield return null;
+                if(!blocked||sound.IsBlocked(source,earPoint)){Finish(false,"Acoustic wall occlusion or removal failed.");yield break;}
+                game.Audio.SetMuted(true);yield return null;
+                if(sound.PlayingSources!=0){Finish(false,"Spatial ambience ignored global mute.");yield break;}
+                game.Audio.SetMuted(false);yield return null;
+                sound.SendMessage("OnApplicationPause",true);
+                if(sound.PlayingSources!=0){Finish(false,"Spatial ambience played during suspension.");yield break;}
+                sound.SendMessage("OnApplicationPause",false);yield return null;
+                if(!game.Hideout.Travel(true)){Finish(false,"Could not enter furnished hideout.");yield break;}
+                yield return new WaitForSecondsRealtime(.2f);
+                if(sound.PlayingSources!=1||game.Hideout.WorkDesk==null||!game.Hideout.WorkDesk.GetComponent<CityHideoutDesk>().TryInteract(game.Session)||!game.Director.IsPaused)
+                {Finish(false,"Interior fan/desk journal/pause integration failed.");yield break;}
+                yield return null;
+                if(sound.PlayingSources!=0){Finish(false,"Interior sound ignored paused journal.");yield break;}
+                game.GetComponent<CityProgressionController>().ClosePanel();
+                string hideoutCapture=Argument("-vktHideoutScreenshot","");
+                if(!string.IsNullOrEmpty(hideoutCapture)&&!CaptureRenderedFrame(game,hideoutCapture,out string hideoutError))
+                {Finish(false,hideoutError);yield break;}
+                if(!game.Hideout.Travel(false)){Finish(false,"Furnished hideout exit failed.");yield break;}
+                yield return null;
+                CityCameraRig poseCamera=game.Player.GetComponentInChildren<CityCameraRig>();CityCameraMode priorMode=poseCamera.Mode;
+                poseCamera.SetMode(CityCameraMode.Chase);yield return null;
+                var motion=game.Player.GetComponentInChildren<CityActorMotion>();
+                if(motion==null){Finish(false,"Animated player motion absent.");yield break;}
+                float phase=motion.BreathingPhase;yield return new WaitForSeconds(.25f);
+                if(motion.BreathingPhase<=phase){Finish(false,"Player breathing pose did not advance.");yield break;}
+                poseCamera.SetMode(priorMode);
+                details+=" Spatial audio: six mono 3D emitters, one listener, clear/blocked/removed-wall rays, mute, suspension, interior fan and desk journal pause passed. Additive player breathing advanced.";
+                Debug.Log("VKT_ACOUSTICS_VERIFIED emitters=6 listeners=1 probes="+sound.ProbeCount);
+            }
             if (Array.Exists(Environment.GetCommandLineArgs(), arg => arg == "-vktEnhanced"))
             {
                 if (!VerifyEnhanced(game, out string extra)) { Finish(false, extra); yield break; }

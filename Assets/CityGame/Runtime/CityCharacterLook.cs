@@ -11,6 +11,8 @@ namespace Pozarevac.CityGame
         private readonly Material cloth, hatMaterial;
         private readonly GameObject hat;
         private readonly Mesh cap;
+        private readonly GameObject watch;
+        private readonly Material watchMaterial;
         private int selected=-1;
         public CityOutfit Outfit => (CityOutfit)Mathf.Max(0,selected);
         public void SetStudioFill(float value){cloth.SetFloat("_PreviewFill",Mathf.Clamp01(value));}
@@ -39,6 +41,22 @@ namespace Pozarevac.CityGame
                 hat.transform.localScale=new Vector3(.16f,.10f,.18f);
                 hat.transform.SetParent(body.Head,true);
             }
+            Transform forearm=null,hand=null;
+            foreach(Transform bone in model.GetComponentsInChildren<Transform>())
+            {if(bone.name=="LeftForeArm")forearm=bone;if(bone.name=="LeftHand")hand=bone;}
+            if(forearm!=null&&hand!=null)
+            {
+                watchMaterial=new Material(Resources.Load<Material>("CityMissionMarker"));watchMaterial.color=new Color(.25f,.29f,.32f);
+                watch=new GameObject("VKT_WristWatch");watch.transform.position=Vector3.Lerp(forearm.position,hand.position,.82f);watch.transform.rotation=model.transform.rotation;
+                GameObject band=GameObject.CreatePrimitive(PrimitiveType.Cylinder);band.name="WatchBand";band.transform.SetParent(watch.transform,false);
+                band.transform.localScale=new Vector3(.075f,.012f,.075f);
+                band.transform.rotation=Quaternion.FromToRotation(Vector3.up,(hand.position-forearm.position).normalized);
+                band.GetComponent<Renderer>().sharedMaterial=watchMaterial;Release(band.GetComponent<Collider>());
+                GameObject face=GameObject.CreatePrimitive(PrimitiveType.Cylinder);face.name="WatchFace";face.transform.SetParent(watch.transform,false);
+                face.transform.localPosition=new Vector3(0,0,.036f);face.transform.localScale=new Vector3(.045f,.006f,.045f);face.transform.localRotation=Quaternion.Euler(90,0,0);
+                face.GetComponent<Renderer>().sharedMaterial=watchMaterial;Release(face.GetComponent<Collider>());
+                watch.transform.SetParent(forearm,true);
+            }
             Apply(CityOutfit.Korzo,0);
         }
         public void Apply(CityOutfit outfit,int strength)
@@ -57,6 +75,7 @@ namespace Pozarevac.CityGame
                     shirt=new Color(.07f,.39f,.42f);pants=new Color(.13f,.15f,.18f);shoes=new Color(.9f,.9f,.84f);accent=new Color(.65f,.91f,.85f);break;
             }
             cloth.SetColor("_Shirt",shirt);cloth.SetColor("_Pants",pants);cloth.SetColor("_Shoes",shoes);cloth.SetColor("_Accent",accent);
+            if(watchMaterial!=null)watchMaterial.color=Color.Lerp(accent,new Color(.18f,.2f,.22f),.65f);
             if(hat!=null){hat.SetActive(outfit!=CityOutfit.Midnight);hatMaterial.color=outfit==CityOutfit.Busije?new Color(.13f,.12f,.14f):new Color(.07f,.16f,.18f);}
         }
         private static Mesh CreateCap()
@@ -76,7 +95,7 @@ namespace Pozarevac.CityGame
             for(int j=0;j<segments;j++){triangles.Add(center);triangles.Add(center+j+2);triangles.Add(center+j+1);}
             var mesh=new Mesh{name="VKT_OriginalCurvedStreetCap"};mesh.SetVertices(vertices);mesh.SetTriangles(triangles,0);mesh.RecalculateNormals();mesh.RecalculateBounds();return mesh;
         }
-        public void Dispose(){Release(hat);Release(cap);Release(hatMaterial);Release(cloth);physique.Dispose();}
+        public void Dispose(){Release(watch);Release(watchMaterial);Release(hat);Release(cap);Release(hatMaterial);Release(cloth);physique.Dispose();}
         private static void Release(UnityEngine.Object value){if(value==null)return;if(Application.isPlaying)UnityEngine.Object.Destroy(value);else UnityEngine.Object.DestroyImmediate(value);}
     }
 }

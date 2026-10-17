@@ -25,6 +25,9 @@ namespace Pozarevac.CityGame
         private readonly int[] visualVarieties = { -1, -1, -1, -1 };
         private Material[] budMaterials;
         private Mesh plantMesh;
+        private Mesh furnitureMesh;
+        public Transform WorkDesk { get; private set; }
+        public Vector3 InteriorSoundPosition => room.transform.TransformPoint(new Vector3(-4.4f,2.4f,3));
         private readonly TextMesh[] labels = new TextMesh[CityGarden.PlotCount];
         private float refreshCountdown;
         private Transform view;
@@ -49,6 +52,7 @@ namespace Pozarevac.CityGame
             potMaterial = Material(template, new Color(0.38f, 0.22f, 0.12f));
             leafMaterial = Material(template, new Color(0.12f, 0.42f, 0.17f));
             plantMesh = CreatePlantSilhouette();
+            furnitureMesh = CityVisualMeshes.RoundedBox();
             // Artistic palette identifiers, not claims of authenticated strain phenotypes.
             Color[] budColors = { new Color(.42f,.55f,.23f), new Color(.28f,.40f,.16f), new Color(.66f,.66f,.49f),
                 new Color(.46f,.20f,.53f), new Color(.45f,.43f,.20f), new Color(.73f,.79f,.62f),
@@ -80,6 +84,7 @@ namespace Pozarevac.CityGame
             {
                 Vector3 at = new Vector3(i % 2 == 0 ? -2 : 2, 0.6f, i < 2 ? 0 : 3);
                 GameObject pot = Box("Saksija_" + (i + 1), room.transform, at, new Vector3(1.2f, 0.9f, 1.2f), potMaterial, true);
+                pot.GetComponent<MeshFilter>().sharedMesh=furnitureMesh;
                 pot.AddComponent<CityGardenPlot>().Configure(this, i);
                 GameObject stem = Box("Biljka", pot.transform, new Vector3(0, 1, 0), new Vector3(0.3f, 1.2f, 0.3f), leafMaterial, true);
                 plants[i] = stem.transform;
@@ -110,7 +115,30 @@ namespace Pozarevac.CityGame
             Text(marketCounter.transform, "OTKUP / [E] Prodaj izabrano\n[B] kupac / [J] lokacija", new Vector3(0, 1.1f, 0));
             catalogBoard = Text(room.transform, "", new Vector3(0, 2.6f, 5.6f));
             catalogBoard.characterSize = 0.022f;
+            WorkDesk=Box("RadniSto",room.transform,new Vector3(-4.05f,.85f,-.9f),new Vector3(1.4f,1.5f,2),floorMaterial,true).transform;
+            WorkDesk.GetComponent<MeshFilter>().sharedMesh=furnitureMesh;
+            WorkDesk.gameObject.AddComponent<CityHideoutDesk>().Initialize(this);
+            Text(WorkDesk,"PLAN BLOKA / [E]\nDnevnik i poslovi",new Vector3(0,1.4f,0));
+            Box("TablaPlaniranja",room.transform,new Vector3(-4.78f,2.2f,-.9f),new Vector3(.06f,1.1f,2.2f),potMaterial,true);
+            for(int crate=0;crate<3;crate++)
+            {
+                GameObject storage=Box("Sanduk_"+crate,room.transform,new Vector3(4.1f,.5f+crate*.75f,4.6f),new Vector3(1.3f,.7f,1.2f),potMaterial,true);
+                storage.GetComponent<MeshFilter>().sharedMesh=furnitureMesh;
+            }
+            Transform rotor=new GameObject("Ventilator").transform;rotor.SetParent(room.transform,false);rotor.localPosition=new Vector3(-4.5f,2.4f,3);
+            rotor.gameObject.AddComponent<CityHideoutFan>();
+            for(int blade=0;blade<4;blade++)
+            {
+                GameObject wing=Box("Lopatica",rotor,Vector3.zero,new Vector3(.08f,.55f,.1f),floorMaterial,true);
+                wing.transform.localRotation=Quaternion.Euler(blade*90,0,0);wing.transform.localPosition=Quaternion.Euler(blade*90,0,0)*new Vector3(0,.25f,0);
+                Destroy(wing.GetComponent<Collider>());
+            }
             room.SetActive(false);
+        }
+        public bool OpenWorkJournal(CitySession session)
+        {
+            if(!IsInside||game.Director.IsPaused||!ReferenceEquals(session,game.Session)||!Progression.PhoneUnlocked)return false;
+            progression.OpenPanel();FindAnyObjectByType<CityPhonePanel>().OpenJobs();return true;
         }
 
         public void SelectVariety(int index)
@@ -292,6 +320,18 @@ namespace Pozarevac.CityGame
             foreach (Material m in new[] { wallMaterial, floorMaterial, potMaterial, leafMaterial }) if (m != null) Destroy(m);
             if (budMaterials != null) foreach (Material m in budMaterials) if (m != null) Destroy(m);
             if (plantMesh != null) Destroy(plantMesh);
+            if (furnitureMesh != null) Destroy(furnitureMesh);
         }
+    }
+    public sealed class CityHideoutDesk : CityInteractable
+    {
+        private CityHideout owner;
+        public void Initialize(CityHideout value){owner=value;}
+        public override string Prompt=>"[E] Plan bloka / dnevnik poslova";
+        public override bool TryInteract(CitySession session)=>owner.OpenWorkJournal(session);
+    }
+    public sealed class CityHideoutFan : MonoBehaviour
+    {
+        private void Update(){transform.Rotate(Vector3.right,180*Time.deltaTime,Space.Self);}
     }
 }

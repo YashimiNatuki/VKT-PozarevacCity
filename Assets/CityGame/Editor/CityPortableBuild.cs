@@ -156,6 +156,17 @@ namespace Pozarevac.CityGame.Editor
                 });
                 Debug.Log($"VKT_PORTABLE_BUILD {report.summary.result}; android={android}; errors={report.summary.totalErrors}; bytes={report.summary.totalSize}");
                 if (report.summary.result != BuildResult.Succeeded) throw new InvalidOperationException("Portable build failed; inspect its log.");
+                // Release media is an explicit local input, never copied into the public source tree.
+                string introSource = Argument("-vktIntroSource", "");
+                if (!android && !string.IsNullOrWhiteSpace(introSource))
+                {
+                    if (!File.Exists(introSource) || !introSource.EndsWith(".mp4", StringComparison.OrdinalIgnoreCase))
+                        throw new InvalidOperationException("The explicitly selected intro MP4 is missing.");
+                    string media = Path.Combine(Path.GetDirectoryName(Path.GetFullPath(output)), Path.GetFileNameWithoutExtension(output) + "_Data", "StreamingAssets");
+                    Directory.CreateDirectory(media);
+                    File.Copy(introSource, Path.Combine(media, "GameIntro_Pozarevac_ThugLife.mp4"), true);
+                    Debug.Log("VKT_INTRO_PACKAGED bytes=" + new FileInfo(introSource).Length);
+                }
             }
             finally
             {

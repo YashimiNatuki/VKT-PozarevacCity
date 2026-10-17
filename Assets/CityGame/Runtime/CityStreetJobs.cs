@@ -9,9 +9,11 @@ namespace Pozarevac.CityGame
         public int CashReward { get; }
         public int ReputationReward { get; }
         public double TimeLimit { get; }
+        public int MaximumHeat { get; }
         private readonly int[] stations;
-        internal CityStreetJobOffer(string title, string briefing, int cash, int reputation, double seconds, int[] route)
-        { Title = title; Briefing = briefing; CashReward = cash; ReputationReward = reputation; TimeLimit = seconds; stations = (int[])route.Clone(); }
+        private readonly string[] objectives;
+        internal CityStreetJobOffer(string title, string briefing, int cash, int reputation, double seconds, int[] route,int maximumHeat=100,string[] objectiveNames=null)
+        { Title = title; Briefing = briefing; CashReward = cash; ReputationReward = reputation; TimeLimit = seconds; stations = (int[])route.Clone(); MaximumHeat=maximumHeat;objectives=objectiveNames!=null?(string[])objectiveNames.Clone():new[]{"Preuzmi paket","Predaj porudžbinu","Vrati potvrdu kontaktu"}; }
         public int StationAt(int objective)
         {
             if (objective < 0 || objective >= 3) throw new ArgumentOutOfRangeException(nameof(objective));
@@ -20,7 +22,7 @@ namespace Pozarevac.CityGame
         public string ObjectiveTitle(int objective)
         {
             StationAt(objective);
-            return objective == 0 ? "Preuzmi paket" : objective == 1 ? "Predaj porudžbinu" : "Vrati potvrdu kontaktu";
+            return objectives[objective];
         }
     }
 
@@ -63,6 +65,7 @@ namespace Pozarevac.CityGame
         public bool TryAccept()
         {
             if (IsActive || CooldownSeconds > 0) return false;
+            if(session.Heat>Offer.MaximumHeat){Message="Kontakt čeka da se smiri blok. HEAT mora biti najviše "+Offer.MaximumHeat+".";return false;}
             IsActive = true; ObjectiveIndex = 0; RemainingSeconds = Offer.TimeLimit;
             Message = Offer.Briefing;
             return true;
@@ -71,6 +74,7 @@ namespace Pozarevac.CityGame
         {
             if (station < 0 || station > 2) throw new ArgumentOutOfRangeException(nameof(station));
             if (!IsActive || station != Offer.StationAt(ObjectiveIndex)) return false;
+            if(session.Heat>Offer.MaximumHeat){Message="Primopredaja čeka: smanji HEAT na "+Offer.MaximumHeat+". Rok i dalje teče.";return false;}
             ObjectiveIndex++;
             if (ObjectiveIndex < 3)
             {
@@ -111,17 +115,21 @@ namespace Pozarevac.CityGame
         {
             int[] route = { 0, 1, 2 };
             for (int i = 2; i > 0; i--) { int selected = (int)(Next() % (uint)(i + 1)); int swap = route[i]; route[i] = route[selected]; route[selected] = swap; }
-            int type = (int)(Next() % 4u), chapter = StoryChapter;
-            string title = type switch { 0 => "Porudžbina iz šteka", 1 => "Izgubljena torba", 2 => "Delovi za bicikl", _ => "Kasna dostava" };
+            int type = (int)(Next() % 6u), chapter = StoryChapter;
+            string title = type switch { 0 => "Porudžbina iz šteka", 1 => "Izgubljena torba", 2 => "Delovi za bicikl", 3 => "Kasna dostava",4=>"Tihi dogovor",_=>"Inventar ekipe" };
             string story = chapter == 1 ? "PRVI BLOK / Danju sređuješ bicikle i kvariš san bagovima u kodu. Mila traži pouzdanog čoveka: preuzmi paket, završi dogovor, vrati potvrdu. Reč vredi više od prečice."
                 : chapter == 2 ? "REPUTACIJA / Vuk te uvodi u novu ekipu. Posao raste, pritisak takođe. Poveži kontakte i vrati potvrdu; brzina bez pouzdanosti ne gradi ime."
                 : "SVOJA MREŽA / Luka ti poverava raspored gradske ekipe. Više nisi samo trkač: održavaš dogovore i brineš da se svako vrati. Tvoj blok pamti rezultate.";
             string[] neighborhoods = { "Centar", "Burjan", "Radna mala", "Tulba", "Busije", "Meminac" };
             string neighborhood = neighborhoods[(CompletedJobs + type) % neighborhoods.Length];
             story += " Kontakt dolazi iz dela grada: " + neighborhood + ". Primopredaja je u trenutnoj centralnoj igrivoj zoni, ne u još neizgrađenom naselju.";
+            int maximumHeat=type==4?30:type==5?45:100;
+            string[] objectives=type==4?new[]{"Preuzmi poruku ekipe","Dogovori tihu primopredaju","Potvrdi dogovor kontaktu"}:
+                type==5?new[]{"Preuzmi spisak zaliha","Proveri inventar kod kontakta","Vrati potpisani spisak"}:null;
+            if(maximumHeat<100)story+=" Kontakt odbija preuzimanje i predaju dok je HEAT iznad "+maximumHeat+". Skloni se iz potere; rok teče tokom aktivne igre.";
             Offer = new CityStreetJobOffer("Poglavlje " + chapter + " / " + title,
                 story + " Obiđi markere " + (route[0] + 1) + " → " + (route[1] + 1) + " → " + (route[2] + 1) + ".",
-                120 + chapter * 40 + type * 15, 2 + chapter, 90 + type * 15, route);
+                120 + chapter * 40 + type * 15, 2 + chapter, 90 + type * 15, route,maximumHeat,objectives);
             Message = "Novi poziv: " + Offer.Title;
         }
     }
