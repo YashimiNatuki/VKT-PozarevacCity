@@ -4,16 +4,26 @@ using UnityEngine.InputSystem;
 namespace Pozarevac.CityGame
 {
     public enum CityVoice { Mila, Vuk, Luka }
+    public enum CityAudioCue { Checkpoint, Success, Failure }
     public sealed class CityGameAudio : MonoBehaviour
     {
-        private AudioSource effects, dialogue;
+        private AudioSource effects, dialogue, feedback;
+        private AudioClip[] cues;
+        private float nextCue;
+        public bool CuePlaying=>feedback!=null&&feedback.isPlaying;
+        public bool PlayCue(CityAudioCue cue)
+        {
+            if((int)cue<0||(int)cue>2)throw new System.ArgumentOutOfRangeException(nameof(cue));
+            if(!initialized||Muted||suspended||Time.timeScale<=0||Time.unscaledTime<nextCue)return false;
+            nextCue=Time.unscaledTime+.15f;feedback.clip=cues[(int)cue];feedback.Play();return true;
+        }
         private AudioClip footstep, landing;
         private AudioClip generatedFootstep, generatedLanding;
         private bool suspended;
         public bool HasMovementClips => footstep != null && landing != null;
         public void SetMuted(bool value)
         {
-            Muted=value;if(effects!=null)effects.mute=value;if(dialogue!=null)dialogue.mute=value;
+            Muted=value;if(effects!=null)effects.mute=value;if(dialogue!=null)dialogue.mute=value;if(feedback!=null)feedback.mute=value;
         }
         private CityProgressionController ui;
         private CharacterController body;
@@ -33,6 +43,8 @@ namespace Pozarevac.CityGame
             ui = controller; body = player.GetComponent<CharacterController>(); lastPosition = player.position;
             effects = player.gameObject.AddComponent<AudioSource>(); effects.playOnAwake = false; effects.volume = 0.25f;
             dialogue = player.gameObject.AddComponent<AudioSource>(); dialogue.playOnAwake = false; dialogue.volume = 0.85f;
+            feedback=player.gameObject.AddComponent<AudioSource>();feedback.playOnAwake=false;feedback.volume=.24f;feedback.priority=70;
+            cues=new[]{CreateFeedbackClip(CityAudioCue.Checkpoint),CreateFeedbackClip(CityAudioCue.Success),CreateFeedbackClip(CityAudioCue.Failure)};
             footstep = Resources.Load<AudioClip>("Audio/Footstep"); landing = Resources.Load<AudioClip>("Audio/Land");
             if(footstep==null)footstep=generatedFootstep=CreateContact(false);
             if(landing==null)landing=generatedLanding=CreateContact(true);
@@ -55,11 +67,13 @@ namespace Pozarevac.CityGame
             ui.Notify(text);
             if (!Muted && voices[index] != null) { dialogue.clip = voices[index]; dialogue.Play(); if (suspended || Time.timeScale <= 0f) dialogue.Pause(); }
         }
-        private void OnDisable() { if (effects != null) effects.Stop(); if (dialogue != null) dialogue.Stop(); }
+        private void OnDisable() { if (effects != null) effects.Stop(); if (dialogue != null) dialogue.Stop();if(feedback!=null)feedback.Stop(); }
         private void OnDestroy()
         {
             if (effects != null) Destroy(effects);
             if (dialogue != null) Destroy(dialogue);
+            if(feedback!=null)Destroy(feedback);
+            if(cues!=null)foreach(AudioClip cue in cues)if(cue!=null)Destroy(cue);
             if(generatedFootstep!=null)Destroy(generatedFootstep);
             if(generatedLanding!=null)Destroy(generatedLanding);
             // Resources clips are shared assets and must not be destroyed by this owner.
@@ -71,14 +85,14 @@ namespace Pozarevac.CityGame
             if (shouldPause != gameplayPaused)
             {
                 gameplayPaused = shouldPause;
-                if (shouldPause) { effects.Pause(); dialogue.Pause(); }
+                if (shouldPause) { effects.Pause(); dialogue.Pause();feedback.Stop(); }
                 else { effects.UnPause(); dialogue.UnPause(); }
             }
             if (!gameplayPaused && Cursor.lockState == CursorLockMode.Locked && Keyboard.current != null && Keyboard.current.mKey.wasPressedThisFrame)
             { SetMuted(!Muted); ui.Notify(Muted ? "Zvuk isključen / M" : "Zvuk uključen / M"); }
             Vector3 delta = body.transform.position - lastPosition; lastPosition = body.transform.position;
             bool grounded = body.enabled && body.isGrounded;
-            if (delta.sqrMagnitude > 9 || Time.deltaTime <= 0) { walked = 0; wasGrounded = grounded; return; }
+            if (shouldPause || delta.sqrMagnitude > 9 || Time.deltaTime <= 0) { walked = 0; wasGrounded = grounded; return; }
             if (grounded)
             {
                 if (!wasGrounded && landing != null && delta.y < -0.01f) effects.PlayOneShot(landing);
@@ -87,7 +101,23 @@ namespace Pozarevac.CityGame
             }
             wasGrounded = grounded;
         }
-        private void OnApplicationPause(bool value){suspended=value;if(value&&initialized){gameplayPaused=true;effects.Pause();dialogue.Pause();}}
+        private void OnApplicationPause(bool value){suspended=value;if(value&&initialized){gameplayPaused=true;effects.Pause();dialogue.Pause();feedback.Stop();}}
+        // Original synthesized cues; callers own and must destroy returned clips.
+        public static AudioClip CreateFeedbackClip(CityAudioCue cue)
+        {
+            if((int)cue<0||(int)cue>2)throw new System.ArgumentOutOfRangeException(nameof(cue));
+            const int rate=22050;int count=(int)(rate*(cue==CityAudioCue.Success?.34f:.24f));float[] samples=new float[count];
+            for(int i=0;i<count;i++)
+            {
+                float t=(float)i/rate,p=(float)i/(count-1),envelope=Mathf.Pow(Mathf.Sin(Mathf.PI*p),2);
+                // Integrate the chirp phase, rather than multiplying a changing frequency by time.
+                float start=cue==CityAudioCue.Failure?360:cue==CityAudioCue.Success?520:660;
+                float slope=cue==CityAudioCue.Failure?-140:cue==CityAudioCue.Success?360:0;
+                float phase=2*Mathf.PI*(start*t+.5f*slope*t*p);
+                samples[i]=.2f*envelope*Mathf.Sin(phase);
+            }
+            AudioClip clip=AudioClip.Create("VKT_Feedback_"+cue,count,1,rate,false);clip.SetData(samples,0);return clip;
+        }
         private static AudioClip CreateContact(bool heavy)
         {
             const int rate=22050;int count=(int)(rate*(heavy?.24f:.13f));float[] data=new float[count];uint random=0x6172a1u;float low=0;

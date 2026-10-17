@@ -96,6 +96,7 @@ def test_action_priority_is_deterministic():
     assert action(stamina=0) == "rest"
     assert action(campaign=1) == "campaign"
     assert action(job_active=True) == "delivery"
+    assert action(wanted=True, heat=0) == "evade"
 
 def test_generation_is_single_worker_and_rate_is_bounded(tmp_path):
     async def scenario():

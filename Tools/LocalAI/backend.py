@@ -32,6 +32,7 @@ class ContactRequest(BaseModel):
     nutrition: int = Field(ge=0, le=100)
     stamina: int = Field(ge=0, le=100)
     job_active: bool
+    wanted: bool = False
 
 class StoryText(BaseModel):
     model_config = ConfigDict(extra="forbid")
@@ -70,7 +71,7 @@ class GeneratedLine(BaseModel):
         return value
 
 def next_action(facts: ContactRequest) -> Action:
-    if facts.heat >= 30:
+    if facts.wanted or facts.heat >= 30:
         return "evade"
     if facts.nutrition < 20:
         return "meal"

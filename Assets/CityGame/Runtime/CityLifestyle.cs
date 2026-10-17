@@ -33,6 +33,7 @@ namespace Pozarevac.CityGame
         public bool Wanted => data.wanted;
         public bool ChallengeClaimed => data.challengeClaimed;
         public bool IsTraining { get; private set; }
+        public bool IsConditioning { get; private set; }
         public int Reps { get; private set; }
         public double TrainingRemaining { get; private set; }
         public double WorkoutCooldown => data.workoutCooldown;
@@ -67,7 +68,7 @@ namespace Pozarevac.CityGame
         public CityLifestyleData Snapshot() => Copy(data);
         public bool TryStartWorkout()
         {
-            if (IsTraining || Wanted || Nutrition < 15 || Stamina < 30 || data.workoutCooldown > 0) return false;
+            if (IsTraining || IsConditioning || Wanted || Nutrition < 15 || Stamina < 30 || data.workoutCooldown > 0) return false;
             IsTraining=true; Reps=0; TrainingRemaining=WorkoutDuration; tapCooldown=0; Notify(); return true;
         }
         public bool TryRep()
@@ -88,7 +89,7 @@ namespace Pozarevac.CityGame
         }
         public bool TryEat(bool steal)
         {
-            if (IsTraining || Wanted || Nutrition > 90 || data.mealCooldown > 0 || (!steal && session.Cash < MealPrice)) return false;
+            if (IsTraining || IsConditioning || Wanted || Nutrition > 90 || data.mealCooldown > 0 || (!steal && session.Cash < MealPrice)) return false;
             // Commit the meal before cash/heat observers can snapshot the transaction.
             data.nutrition=Math.Min(100,Nutrition+35);data.stamina=Math.Min(100,Stamina+20);
             if(Stamina>=20)sprintExhausted=false;
@@ -103,8 +104,21 @@ namespace Pozarevac.CityGame
         }
         private void BeginPursuit()
         {
-            data.wanted=true;EscapeSeconds=0;CaptureSeconds=0;CancelWorkout();
+            data.wanted=true;EscapeSeconds=0;CaptureSeconds=0;CancelWorkout();CancelConditioning();
         }
+        public bool TryStartConditioning()
+        {
+            if(IsTraining||IsConditioning||Wanted||Nutrition<20||Stamina<40||WorkoutCooldown>0)return false;
+            // Shared, durable rest starts before the run: cancelling/reloading cannot bypass it.
+            IsConditioning=true;data.workoutCooldown=90;Notify();return true;
+        }
+        internal bool CompleteConditioning()
+        {
+            if(!IsConditioning||Wanted)return false;
+            IsConditioning=false;data.nutrition=Math.Max(0,Nutrition-4);data.stamina=Math.Max(0,Stamina-10);
+            GainExperience(20);Notify();return true;
+        }
+        public void CancelConditioning(){if(IsConditioning){IsConditioning=false;Notify();}}
         public void Tick(double seconds, bool sprinting)
         {
             CheckSeconds(seconds);if(seconds==0)return;
@@ -132,7 +146,7 @@ namespace Pozarevac.CityGame
                 GainExperience(30);session.CoolDown(Math.Max(0,session.Heat-15));TryChallenge();Notify();
             }
         }
-        public void OnDeath(){CancelWorkout();CaptureSeconds=EscapeSeconds=0;}
+        public void OnDeath(){CancelWorkout();CancelConditioning();CaptureSeconds=EscapeSeconds=0;}
         private void TryChallenge()
         {
             if(data.challengeClaimed||Workouts<1||Meals<1||Escapes<1)return;

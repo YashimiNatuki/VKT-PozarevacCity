@@ -25,7 +25,17 @@ namespace Pozarevac.CityGame
         private bool overlayOpen;
         private bool overlayPreviousPause;
         private CityPlayerVitals vitals;
-        private bool CanAct => vitals == null || vitals.CanAct;
+        private CityLifestyle lifestyle;
+        private CityGameAudio audioFeedback;
+        private bool applicationSuspended;
+        private bool CanAct => !applicationSuspended&&(vitals == null || vitals.CanAct);
+        public string ContactBlockReason=>lifestyle!=null&&lifestyle.Wanted?"POTERA / prvo izgubi policiju.":
+            lifestyle!=null&&(lifestyle.IsTraining||lifestyle.IsConditioning)?"TRENING / završi ili prekini seriju pre misije.":"";
+        public void BindLifestyle(CityLifestyle state,CityGameAudio audio)
+        {
+            if(lifestyle!=null&&lifestyle!=state)throw new InvalidOperationException("Lifestyle already bound.");
+            lifestyle=state??throw new ArgumentNullException(nameof(state));audioFeedback=audio;Jobs.BindLifestyle(state);
+        }
         public void BindVitals(CityPlayerVitals value) { vitals = value; }
         public void FailCurrent(string reason) { Jobs?.Cancel(reason); if (run != null) { run.Abort(reason); RefreshPresentation(); } }
         public event Action<int> ContractCompleted;
@@ -37,6 +47,8 @@ namespace Pozarevac.CityGame
         public int ContractNumber => contractIndex + 1;
         public int ContractCount => contracts?.Length ?? 0;
         public bool IsPaused { get; private set; }
+        public bool PauseChangedThisFrame=>pauseChangedFrame==Time.frameCount;
+        public void SuppressPauseThisFrame(){pauseChangedFrame=Time.frameCount;}
 
         public CityMission StationAt(int index)
         {
@@ -67,7 +79,7 @@ namespace Pozarevac.CityGame
             RefreshPresentation();
         }
 
-        public bool IsStationAvailable(int index) => CanAct && !IsPaused && run != null && (Jobs.IsActive ? index == Jobs.Offer.StationAt(Jobs.ObjectiveIndex) : run.CanVisit(index));
+        public bool IsStationAvailable(int index) => CanAct && !IsPaused && ContactBlockReason.Length==0 && run != null && (Jobs.IsActive ? Jobs.BlockReason.Length==0&&index == Jobs.Offer.StationAt(Jobs.ObjectiveIndex) : run.CanVisit(index));
         public bool IsStationComplete(int index)
         {
             if (Jobs != null && Jobs.IsActive)
@@ -81,8 +93,10 @@ namespace Pozarevac.CityGame
 
         public bool TryAcceptStreetJob()
         {
-            if (!CanAct || IsPaused || !StreetJobsUnlocked || !Jobs.TryAccept()) return false;
+            if (!CanAct || IsPaused || !StreetJobsUnlocked) return false;
+            if(!Jobs.TryAccept()){hud.ShowNotification(Jobs.Message,5);audioFeedback?.PlayCue(CityAudioCue.Failure);return false;}
             hud.ShowNotification(Jobs.Message, 6f);
+            audioFeedback?.PlayCue(CityAudioCue.Checkpoint);
             RefreshPresentation();
             return true;
         }
@@ -91,8 +105,12 @@ namespace Pozarevac.CityGame
         {
             if (run == null) return "City terrain is loading";
             if (IsPaused) return "Paused - Esc to resume";
+            if(ContactBlockReason.Length>0)return ContactBlockReason;
             if (Jobs.IsActive)
+            {
+                if(Jobs.BlockReason.Length>0)return Jobs.BlockReason;
                 return index == Jobs.Offer.StationAt(Jobs.ObjectiveIndex) ? "[E] " + Jobs.Offer.ObjectiveTitle(Jobs.ObjectiveIndex) : "Sporedni posao: prati plavi marker";
+            }
             if (run.State == CityMissionState.Failed) return run.Message;
             if (run.State == CityMissionState.Completed)
                 return contractIndex + 1 < contracts.Length ? "Contract complete - N for next contract" : "Kampanja završena / telefon: SPOR. POSAO";
@@ -105,16 +123,20 @@ namespace Pozarevac.CityGame
 
         public bool TryInteract(int index)
         {
+            if(!CanAct||IsPaused)return false;
+            if(ContactBlockReason.Length>0){hud.ShowNotification(ContactBlockReason,4);audioFeedback?.PlayCue(CityAudioCue.Failure);return false;}
             if (Jobs != null && Jobs.IsActive)
             {
-                if (!CanAct || IsPaused || !Jobs.TryVisit(index)) return false;
+                if (!Jobs.TryVisit(index)){if(Jobs.BlockReason.Length>0)hud.ShowNotification(Jobs.BlockReason+" Rok i dalje teče.",4);return false;}
                 hud.ShowNotification(Jobs.Message, 5f);
+                audioFeedback?.PlayCue(Jobs.IsActive?CityAudioCue.Checkpoint:CityAudioCue.Success);
                 RefreshPresentation();
                 return true;
             }
             if (!CanAct || IsPaused || run == null || !run.TryVisit(index))
                 return false;
             hud.ShowNotification(run.Message, 4f);
+            audioFeedback?.PlayCue(run.State==CityMissionState.Completed?CityAudioCue.Success:CityAudioCue.Checkpoint);
             if (run.State == CityMissionState.Completed) ContractCompleted?.Invoke(contractIndex + 1);
             RefreshPresentation();
             return true;
@@ -174,9 +196,10 @@ namespace Pozarevac.CityGame
 
         private void Update()
         {
-            if (run == null || overlayOpen) return;
+            if (run == null || overlayOpen || applicationSuspended) return;
             Keyboard keyboard = Keyboard.current;
-            if (keyboard != null && keyboard.escapeKey.wasPressedThisFrame && pauseChangedFrame != Time.frameCount) SetPaused(!IsPaused);
+            if (keyboard != null && keyboard.escapeKey.wasPressedThisFrame && pauseChangedFrame != Time.frameCount &&
+                (lifestyle==null||(!lifestyle.IsTraining&&!lifestyle.IsConditioning))) SetPaused(!IsPaused);
             if (IsPaused) return;
             if (keyboard != null && keyboard.digit1Key.wasPressedThisFrame) TrySelectChallenge(CityMissionChallenge.Standard);
             if (keyboard != null && keyboard.digit2Key.wasPressedThisFrame) TrySelectChallenge(CityMissionChallenge.Express);
@@ -186,7 +209,7 @@ namespace Pozarevac.CityGame
 
             bool streetJobWasActive = Jobs.IsActive;
             Jobs.Tick(Time.deltaTime);
-            if (streetJobWasActive && !Jobs.IsActive) { hud.ShowNotification(Jobs.Message, 5f); RefreshPresentation(); }
+            if (streetJobWasActive && !Jobs.IsActive) { hud.ShowNotification(Jobs.Message, 5f);audioFeedback?.PlayCue(CityAudioCue.Failure); RefreshPresentation(); }
             run.Tick(Time.deltaTime);
             // Cool down while waiting or recovering, once per game second.
             coolingCountdown += Time.deltaTime;
@@ -244,7 +267,8 @@ namespace Pozarevac.CityGame
                 int station = Jobs.Offer.StationAt(Jobs.ObjectiveIndex);
                 Vector3 streetDelta = stations[station].transform.position - player.position;
                 float meters = new Vector2(streetDelta.x, streetDelta.z).magnitude;
-                hud.SetMissionText($"SPOREDNI POSAO / {Jobs.Offer.Title}\n{Jobs.ObjectiveIndex + 1}/3 {Jobs.Offer.ObjectiveTitle(Jobs.ObjectiveIndex)} / marker {station + 1} / {meters:0}m {NavigationHint(player, streetDelta)}\nRok {Math.Ceiling(Jobs.RemainingSeconds)}s / nagrada {Jobs.Offer.CashReward} cash + {Jobs.Offer.ReputationReward} REP\nE: interakcija / P: telefon");
+                string next=Jobs.BlockReason.Length>0?Jobs.BlockReason+" Rok i dalje teče.":"E: interakcija / P: telefon";
+                hud.SetMissionText($"SPOREDNI POSAO / {Jobs.Offer.Title}\n{Jobs.ObjectiveIndex + 1}/3 {Jobs.Offer.ObjectiveTitle(Jobs.ObjectiveIndex)} / marker {station + 1} / {meters:0}m {NavigationHint(player, streetDelta)}\nRok {Math.Ceiling(Jobs.RemainingSeconds)}s / nagrada {Jobs.Offer.CashReward} cash + {Jobs.Offer.ReputationReward} REP\n{next}");
                 return;
             }
             if (run.State == CityMissionState.Completed)
@@ -267,6 +291,7 @@ namespace Pozarevac.CityGame
             string controls = run.State == CityMissionState.Ready
                 ? "Before pickup: 1 Standard | 2 Express +50% | 3 Ghost +25%"
                 : "WASD move - Shift sprint - E interact - Esc pause";
+            if(ContactBlockReason.Length>0)controls=ContactBlockReason;
             hud.SetMissionText($"{heading}\n{run.ObjectiveIndex + 1}/3  {run.Contract.ObjectiveTitle(run.ObjectiveIndex)}  |  {distance:0}m {direction}\n" +
                 $"{timer}  |  Heat {Session.Heat:0}/{run.EffectiveHeatLimit:0}  |  Cargo {run.Cargo}/1  |  Reward {run.EffectiveCashReward} cash\n{controls}");
         }
@@ -344,6 +369,7 @@ namespace Pozarevac.CityGame
         {
             if (run != null && !IsPaused) SetCursor(true);
         }
+        private void OnApplicationPause(bool paused){applicationSuspended=paused;}
 
         private void OnDestroy()
         {

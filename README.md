@@ -10,7 +10,21 @@ Game Development Studio 1.5.1, a dedicated Node 24 LTS, Blender 4.5.9 LTS, FFmpe
 
 [Setup, versions and next use](Docs/Toolchain-20261017.md) | [Verification receipt](Docs/Verification-Toolchain-20261017.json). Check the installed environment with `vkt-python.cmd Tools/Toolchain/verify.py`.
 
-## Latest: local AI availability and recovery - 2026-10-17
+## Latest: connected mission routine, conditioning and audio - 2026-10-17
+
+Mission contacts now honor actual wanted/training state, including wanted at zero HEAT. Jobs expose pickup/cargo/delivery-receipt phases and pay once at final confirmation. The director freezes timers on application suspension; pursuit alone does not freeze a delivery deadline. The journal now scrolls on touch or mouse wheel.
+
+At the physical gym, **KONDICIJA / 3 stanice** adds a 75-second walking/sprinting course: hold three blue checkpoints for 1.2 seconds each, earn 20 XP once, and share durable rest with bench training. No bench-strength award is invented. New original checkpoint/success/failure cues honor mute, pause and application suspension; suspended movement cannot start footsteps.
+
+**Verified:** 159 Unity tests passed, zero failed, one optional skip; 16 backend tests passed. Windows build has zero errors. Actual Windows player checks passed wanted contact blocking, staged settlement, pause/suspension timing, journal scrolling, conditioning touch-start/dwell/XP/save/cancellation and feedback audio. Prior intro, spatial occlusion, character, gym, mission, garden, combat and save checks also passed. Screenshots were reviewed and a clipped conditioning panel was repaired and retested.
+
+[Download Windows development ZIP](https://github.com/YashimiNatuki/VKT-PozarevacCity/releases/download/vkt-routine-20261017/VKT-Routine-Windows-20261017.zip) | [Design, before/after and prioritized next improvements](Docs/Routine-Missions-Audio-20261017.md) | [Verification receipt](Docs/Verification-Routine-20261017.json)
+
+Profile v6 is retained. Conditioning progress is transient; XP/rest persist. Existing active-job reload behavior is unchanged. No new Android APK/device test, terrain, districts or natural voice bank is claimed.
+
+![Actual Windows conditioning course](Docs/Screenshots/routine-course-windows-20261017.png)
+
+## Previous: local AI availability and recovery - 2026-10-17
 
 Contacts now verify the local companion before sending game facts and explain missing service, missing model, warmup, busy generation, rate limiting, cooldown and timeout in Serbian. Cached conversations remain usable when their model is unavailable. Authored dialogue and authoritative local objectives remain available without any AI service. `Tools/LocalAI/doctor.py` performs read-only diagnostics using standard Python.
 

@@ -37,6 +37,7 @@ namespace Pozarevac.CityGame
         private GameObject journal;
         private Text jobDetails;
         private Button acceptJob, cancelJob;
+        private ScrollRect jobScroll;
         public bool IsOpen => (map != null && map.activeSelf) || (content != null && content.activeSelf) || (catalog != null && catalog.activeSelf) || (encyclopedia != null && encyclopedia.activeSelf) || (journal != null && journal.activeSelf);
 
         public void Initialize(CityProgressionController controller)
@@ -146,7 +147,7 @@ namespace Pozarevac.CityGame
             if (!owner.Progression.PhoneUnlocked) return;
             map.SetActive(false);
             content.SetActive(false); catalog.SetActive(false); encyclopedia.SetActive(false);
-            journal.SetActive(true); RefreshJobs();
+            journal.SetActive(true); RefreshJobs();Canvas.ForceUpdateCanvases();jobScroll.verticalNormalizedPosition=1;
         }
         private void BuildJobs()
         {
@@ -155,6 +156,13 @@ namespace Pozarevac.CityGame
             Label("JobsTitle", journal.transform, "DNEVNIK / ULIČNI POSLOVI", 28, 25, 50);
             jobDetails = Label("JobDetails", journal.transform, "", 20, 100, 560);
             jobDetails.alignment = TextAnchor.UpperLeft; jobDetails.supportRichText = false;
+            RectTransform viewport=(RectTransform)jobDetails.transform.parent;
+            viewport.gameObject.AddComponent<Image>().color=Color.clear;viewport.gameObject.AddComponent<RectMask2D>();
+            jobScroll=viewport.gameObject.AddComponent<ScrollRect>();jobScroll.viewport=viewport;jobScroll.content=jobDetails.rectTransform;
+            jobScroll.horizontal=false;jobScroll.vertical=true;jobScroll.inertia=false;jobScroll.movementType=ScrollRect.MovementType.Clamped;jobScroll.scrollSensitivity=24;
+            RectTransform detail=jobDetails.rectTransform;detail.anchorMin=new Vector2(0,1);detail.anchorMax=Vector2.one;detail.pivot=new Vector2(.5f,1);detail.sizeDelta=new Vector2(-20,0);detail.anchoredPosition=Vector2.zero;
+            jobDetails.verticalOverflow=VerticalWrapMode.Overflow;detail.gameObject.AddComponent<ContentSizeFitter>().verticalFit=ContentSizeFitter.FitMode.PreferredSize;
+            Label("JobsScrollHint",journal.transform,"Prevuci tekst / točkić miša: ceo brifing.",16,660,24);
             acceptJob = Button("AcceptJob", journal.transform, "PRIHVATI POSAO", new Vector2(-160, -280), () =>
             {
                 CityMissionDirector director = owner.GetComponent<CityMissionDirector>();
@@ -188,8 +196,9 @@ namespace Pozarevac.CityGame
                 ? $"Aktivno / preostalo {Math.Ceiling(jobs.RemainingSeconds)} sekundi igre"
                 : jobs.CooldownSeconds > 0 ? $"Novi poziv za {Math.Ceiling(jobs.CooldownSeconds)} sekundi igre" : "Ponuda je spremna za prihvatanje.";
             if (Time.unscaledTime < feedbackUntil) availability = feedback;
-            jobDetails.text = $"Glavni ugovori: {owner.Progression.CompletedContracts}/3\nZavršeni poslovi: {jobs.CompletedJobs} / poglavlje {jobs.StoryChapter}/3\n\n{jobs.Offer.Title}\n{jobs.Offer.Briefing}\n\n{route}\nNagrada: {jobs.Offer.CashReward} cash + {jobs.Offer.ReputationReward} REP\nRok ponude: {jobs.Offer.TimeLimit:0}s\n\n{availability}\nTelefon pauzira rok; zatvori ga za nastavak.";
-            acceptJob.interactable = unlocked && !jobs.IsActive && jobs.CooldownSeconds <= 0;
+            else if(unlocked&&jobs.BlockReason.Length>0)availability=jobs.BlockReason+(jobs.IsActive?" Rok nastavlja kada zatvoriš telefon.":"");
+            jobDetails.text = $"Glavni ugovori: {owner.Progression.CompletedContracts}/3\nZavršeni poslovi: {jobs.CompletedJobs} / poglavlje {jobs.StoryChapter}/3\n{jobs.PhaseSummary}\n\n{jobs.Offer.Title}\n{jobs.Offer.Briefing}\n\n{route}\nNagrada: {jobs.Offer.CashReward} cash + {jobs.Offer.ReputationReward} REP\nRok ponude: {jobs.Offer.TimeLimit:0}s\n\n{availability}\nTelefon pauzira rok; zatvori ga za nastavak.";
+            acceptJob.interactable = unlocked && !jobs.IsActive && jobs.CooldownSeconds <= 0 && jobs.BlockReason.Length==0;
             cancelJob.interactable = jobs.IsActive;
         }
         private void BuildCatalog()

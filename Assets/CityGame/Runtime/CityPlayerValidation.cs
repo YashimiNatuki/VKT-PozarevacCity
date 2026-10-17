@@ -12,6 +12,7 @@ namespace Pozarevac.CityGame
     public sealed class CityPlayerValidation : MonoBehaviour
     {
         private bool lifestyleVerified;
+        private bool routineVerified;
         [Serializable] private sealed class Report { public bool passed; public string details; public string product; }
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         private static void Install()
@@ -214,6 +215,12 @@ namespace Pozarevac.CityGame
                 yield return VerifyLifestyle(game);
                 if (!lifestyleVerified) yield break;
                 details += " Block life: physical gym and kiosk interaction, UI repetitions and anti-spam, pause ownership, paid/stolen food, wanted save restoration, police line-of-sight/occlusion and capture range, accelerated escape/arrest, one-time challenge and durable v5 character stats passed.";
+                if(Array.IndexOf(Environment.GetCommandLineArgs(),"-vktRoutineSmoke")>=0)
+                {
+                    yield return VerifyRoutine(game);
+                    if(!routineVerified)yield break;
+                    details+=" Routine: authoritative wanted/training contact gates, staged cargo/receipt settlement, mission pause/suspension, scrollable journal, conditioning course/XP/save/cancellation, and bounded feedback audio pause/mute/suspension passed.";
+                }
             }
             if (Array.Exists(Environment.GetCommandLineArgs(), arg => arg == "-vktPerspectiveCapture"))
             {
@@ -418,6 +425,106 @@ namespace Pozarevac.CityGame
                 {Finish(false,"Local contacts left gameplay paused or a request alive after close.");yield break;}
             }
             lifestyleVerified=true;
+        }
+
+        private IEnumerator VerifyRoutine(CityGameBootstrap game)
+        {
+            CityLifestyleRuntime runtime=game.GetComponent<CityLifestyleRuntime>();CityLifestyle life=runtime.Life;
+            var controller=game.GetComponent<CityProgressionController>();var body=game.Player.GetComponent<CharacterController>();
+            var jobs=game.Director.Jobs;
+            if(jobs.IsActive)jobs.Cancel();jobs.Tick(31);
+            life.ReportCrime();game.Session.CoolDown(game.Session.Heat);
+            if(game.Director.TryAcceptStreetJob()||jobs.IsActive){Finish(false,"Zero-heat wanted state allowed job acceptance.");yield break;}
+            life.TickPolice(CityLifestyle.EscapeDuration+.1,false,false);
+            if(!game.Director.TryAcceptStreetJob()){Finish(false,"Calm contact did not accept a job.");yield break;}
+            int first=jobs.Offer.StationAt(0),second=jobs.Offer.StationAt(1),third=jobs.Offer.StationAt(2),reward=jobs.Offer.CashReward,cash=game.Session.Cash,completed=jobs.CompletedJobs;
+            if(!game.Director.TryInteract(first)||!jobs.HasCargo){Finish(false,"Pickup did not establish carried cargo.");yield break;}
+            double remaining=jobs.RemainingSeconds;game.Director.SetPaused(true);yield return new WaitForSecondsRealtime(.2f);
+            if(jobs.RemainingSeconds!=remaining){Finish(false,"Menu pause advanced job time.");yield break;}
+            game.Director.SetPaused(false);game.Director.SendMessage("OnApplicationPause",true);remaining=jobs.RemainingSeconds;yield return new WaitForSecondsRealtime(.2f);
+            if(jobs.RemainingSeconds!=remaining){Finish(false,"Application suspension advanced job time.");yield break;}
+            game.Director.SendMessage("OnApplicationPause",false);life.ReportCrime();game.Session.CoolDown(game.Session.Heat);
+            if(game.Director.TryInteract(second)||jobs.ObjectiveIndex!=1||game.Session.Cash!=cash){Finish(false,"Wanted handover advanced or paid a job.");yield break;}
+            remaining=jobs.RemainingSeconds;yield return new WaitForSeconds(.2f);
+            if(jobs.RemainingSeconds>=remaining){Finish(false,"Wanted state incorrectly froze active job time.");yield break;}
+            life.TickPolice(CityLifestyle.EscapeDuration+.1,false,false);
+            if(!game.Director.TryInteract(second)||!jobs.HasReceipt||!game.Director.TryInteract(third)||jobs.CompletedJobs!=completed+1||game.Session.Cash!=cash+reward)
+            {Finish(false,"Delivery/receipt did not settle exactly one completed job.");yield break;}
+            controller.OpenPanel();var phone=FindAnyObjectByType<CityPhonePanel>();phone.OpenJobs();Canvas.ForceUpdateCanvases();
+            var scroll=Array.Find(FindObjectsByType<UnityEngine.UI.ScrollRect>(FindObjectsSortMode.None),s=>s.name=="JobDetails");
+            if(scroll==null||scroll.horizontal||!scroll.vertical){Finish(false,"Scrollable job briefing is absent.");yield break;}
+            if(!TextJournalFixture(scroll)){Finish(false,"Job journal could not scroll to its end.");yield break;}
+            string journalCapture=Argument("-vktRoutineJournalScreenshot","");
+            if(!string.IsNullOrEmpty(journalCapture)&&!CaptureRenderedFrame(game,journalCapture,out string journalError)){Finish(false,journalError);yield break;}
+            controller.ClosePanel();life.Tick(91,false);
+            body.enabled=false;game.Player.position=runtime.Gym.position+Vector3.back*3;body.enabled=true;Physics.SyncTransforms();
+            int xp=life.Experience,workouts=life.Workouts;
+            runtime.OpenMenu();var cardio=Array.Find(FindObjectsByType<UnityEngine.UI.Button>(FindObjectsSortMode.None),b=>b.name=="KONDICIJA / 3 stanice");
+            string menuCapture=Argument("-vktRoutineMenuScreenshot","");
+            if(!string.IsNullOrEmpty(menuCapture)&&!CaptureRenderedFrame(game,menuCapture,out string menuError)){Finish(false,menuError);yield break;}
+            if(cardio==null){Finish(false,"Conditioning touch button absent.");yield break;}cardio.onClick.Invoke();
+            if(!life.IsConditioning||game.Director.IsPaused||life.IsTraining||game.Director.TryAcceptStreetJob())
+            {Finish(false,"Conditioning failed to start or allowed a job/bench overlap.");yield break;}
+            remaining=runtime.Conditioning.Remaining;float nutrition=life.Nutrition;runtime.OpenMenu();yield return new WaitForSecondsRealtime(.2f);
+            if(runtime.Conditioning.Remaining!=remaining||life.Nutrition!=nutrition){Finish(false,"Paused conditioning advanced course or nutrition.");yield break;}
+            yield return SendRoutineEscape();
+            if(runtime.IsMenuOpen||game.Director.IsPaused||!life.IsConditioning){Finish(false,"Closing the conditioning menu also cancelled training or left pause active.");yield break;}
+            game.Player.GetComponentInChildren<CityCameraRig>().SetMode(CityCameraMode.Chase);
+            for(int stop=0;stop<3;stop++)
+            {
+                body.enabled=false;game.Player.position=runtime.ConditioningTarget+Vector3.up*.1f;body.enabled=true;Physics.SyncTransforms();
+                yield return new WaitForSeconds(.45f);
+                if(stop==1)
+                {
+                    string capture=Argument("-vktRoutineScreenshot","");
+                    if(!string.IsNullOrEmpty(capture)&&!CaptureRenderedFrame(game,capture,out string captureError)){Finish(false,captureError);yield break;}
+                }
+                float end=Time.realtimeSinceStartup+4;
+                while(runtime.Conditioning.Checkpoint<=stop&&Time.realtimeSinceStartup<end)yield return null;
+                if(runtime.Conditioning.Checkpoint!=stop+1){Finish(false,"Conditioning checkpoint did not register continuous physical dwell.");yield break;}
+            }
+            if(life.IsConditioning||life.Experience!=xp+20||life.Workouts!=workouts||runtime.Conditioning.TryClaim(life)||runtime.StartConditioning())
+            {Finish(false,"Conditioning reward, bench separation or rest gating failed.");yield break;}
+            controller.SaveNow();
+            if(!new CitySaveStore(controller.SavePath).TryLoad(out CityProfileData saved,out _)||saved.lifestyle.experience!=life.Experience||saved.lifestyle.workoutCooldown<=0)
+            {Finish(false,"Conditioning XP/rest did not survive save.");yield break;}
+            life.Tick(91,false);if(!runtime.StartConditioning()){Finish(false,"Rested conditioning restart failed.");yield break;}
+            xp=life.Experience;life.ReportCrime();yield return new WaitForSeconds(.1f);
+            if(life.IsConditioning||runtime.Conditioning.State!=CityConditioningState.Cancelled||life.Experience!=xp){Finish(false,"Crime did not cancel conditioning without rewards.");yield break;}
+            life.TickPolice(CityLifestyle.EscapeDuration+.1,false,false);
+            life.Tick(91,false);xp=life.Experience;
+            if(!runtime.StartConditioning()){Finish(false,"Escape-cancel exercise could not start.");yield break;}
+            yield return SendRoutineEscape();
+            if(life.IsConditioning||game.Director.IsPaused||life.Experience!=xp){Finish(false,"Exercise ESC did not cancel without toggling pause or awarding XP.");yield break;}
+            game.Audio.SetMuted(false);yield return new WaitForSecondsRealtime(.2f);
+            if(!game.Audio.PlayCue(CityAudioCue.Checkpoint)){Finish(false,"Feedback cue did not start.");yield break;}
+            yield return new WaitForSecondsRealtime(.03f);if(!game.Audio.CuePlaying){Finish(false,"Feedback source did not play.");yield break;}
+            game.Director.SetPaused(true);yield return new WaitForSecondsRealtime(.05f);
+            if(game.Audio.CuePlaying||game.Audio.PlayCue(CityAudioCue.Success)){Finish(false,"Feedback cue survived pause.");yield break;}
+            game.Director.SetPaused(false);game.Audio.SetMuted(true);yield return new WaitForSecondsRealtime(.2f);
+            if(game.Audio.PlayCue(CityAudioCue.Success)){Finish(false,"Muted feedback accepted a cue.");yield break;}
+            game.Audio.SetMuted(false);game.Audio.PlayCue(CityAudioCue.Success);game.Audio.SendMessage("OnApplicationPause",true);yield return new WaitForSecondsRealtime(.03f);
+            if(game.Audio.CuePlaying||game.Audio.PlayCue(CityAudioCue.Checkpoint)){Finish(false,"Suspended feedback accepted a cue.");yield break;}
+            game.Audio.SendMessage("OnApplicationPause",false);controller.SaveNow();
+            Debug.Log("VKT_ROUTINE_VERIFIED checkpoints=3 rewardXP=20 originalProfileVersion="+CityProgression.CurrentProfileVersion+" wantedContactGate=true audioPauseMuteSuspend=true");
+            routineVerified=true;
+        }
+        private static IEnumerator SendRoutineEscape()
+        {
+            var device=UnityEngine.InputSystem.InputSystem.AddDevice<UnityEngine.InputSystem.Keyboard>();
+            UnityEngine.InputSystem.InputSystem.QueueStateEvent(device,new UnityEngine.InputSystem.LowLevel.KeyboardState(UnityEngine.InputSystem.Key.Escape));
+            yield return null;
+            UnityEngine.InputSystem.InputSystem.QueueStateEvent(device,new UnityEngine.InputSystem.LowLevel.KeyboardState());
+            yield return null;
+            UnityEngine.InputSystem.InputSystem.RemoveDevice(device);
+        }
+        private static bool TextJournalFixture(UnityEngine.UI.ScrollRect scroll)
+        {
+            var text=scroll.content.GetComponent<UnityEngine.UI.Text>();string original=text.text;
+            text.text=original+new string('\n',50)+"KRAJ PROVERE";Canvas.ForceUpdateCanvases();scroll.verticalNormalizedPosition=0;
+            bool correct=scroll.content.rect.height>scroll.viewport.rect.height&&Mathf.Abs(scroll.verticalNormalizedPosition)<=.01f;
+            text.text=original;Canvas.ForceUpdateCanvases();scroll.verticalNormalizedPosition=1;
+            return correct;
         }
 
         private static bool VerifyEnhanced(CityGameBootstrap game, out string details)

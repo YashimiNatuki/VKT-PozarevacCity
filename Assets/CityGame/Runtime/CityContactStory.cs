@@ -6,7 +6,7 @@ namespace Pozarevac.CityGame
     {
         public string contact,intent;
         public int chapter,campaign,heat,nutrition,stamina;
-        public bool job_active;
+        public bool job_active,wanted;
     }
     [Serializable] public sealed class CityContactReply
     {
@@ -42,7 +42,7 @@ namespace Pozarevac.CityGame
         }
         public static string Action(CityContactFacts facts)
         {
-            if(facts.heat>=30)return "evade";
+            if(facts.wanted||facts.heat>=30)return "evade";
             if(facts.nutrition<20)return "meal";
             if(facts.stamina<30)return "rest";
             if(facts.campaign<3)return "campaign";

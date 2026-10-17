@@ -33,6 +33,16 @@ namespace Pozarevac.CityGame
         public const int MaximumCompletedJobs = 1000000;
         public event Action<int> Completed;
         private readonly CitySession session;
+        private CityLifestyle lifestyle;
+        public void BindLifestyle(CityLifestyle value)
+        {
+            if(value==null)throw new ArgumentNullException(nameof(value));
+            if(lifestyle!=null&&lifestyle!=value)throw new InvalidOperationException("Lifestyle already bound.");
+            lifestyle=value;
+        }
+        public string BlockReason=>lifestyle!=null&&lifestyle.Wanted?"Potera je aktivna. Izgubi policiju pre kontakta.":
+            lifestyle!=null&&(lifestyle.IsTraining||lifestyle.IsConditioning)?"Završi ili prekini trening pre kontakta.":
+            session.Heat>Offer.MaximumHeat?"Smanji HEAT na "+Offer.MaximumHeat+" za ovaj kontakt.":"";
         private uint random;
         public CityStreetJobOffer Offer { get; private set; }
         public bool IsActive { get; private set; }
@@ -41,6 +51,10 @@ namespace Pozarevac.CityGame
         public double RemainingSeconds { get; private set; }
         public double CooldownSeconds { get; private set; }
         public string Message { get; private set; }
+        public bool HasCargo=>IsActive&&ObjectiveIndex==1;
+        public bool HasReceipt=>IsActive&&ObjectiveIndex==2;
+        public string PhaseSummary=>!IsActive?(CooldownSeconds>0?"ODMOR KONTAKTA":"PONUDA / bez preuzetog tereta"):
+            ObjectiveIndex==0?"PREUZIMANJE / priđi prvom kontaktu":ObjectiveIndex==1?"ISPORUKA / paket je kod tebe":"POTVRDA / isporučeno, vrati potvrdu za isplatu";
         public int StoryChapter => Math.Min(3, CompletedJobs / 3 + 1);
 
         public CityStreetJobs(CitySession citySession, uint seed = 0x56b23d91u, int completedJobs = 0)
@@ -65,7 +79,7 @@ namespace Pozarevac.CityGame
         public bool TryAccept()
         {
             if (IsActive || CooldownSeconds > 0) return false;
-            if(session.Heat>Offer.MaximumHeat){Message="Kontakt čeka da se smiri blok. HEAT mora biti najviše "+Offer.MaximumHeat+".";return false;}
+            if(BlockReason.Length>0){Message=BlockReason;return false;}
             IsActive = true; ObjectiveIndex = 0; RemainingSeconds = Offer.TimeLimit;
             Message = Offer.Briefing;
             return true;
@@ -74,7 +88,7 @@ namespace Pozarevac.CityGame
         {
             if (station < 0 || station > 2) throw new ArgumentOutOfRangeException(nameof(station));
             if (!IsActive || station != Offer.StationAt(ObjectiveIndex)) return false;
-            if(session.Heat>Offer.MaximumHeat){Message="Primopredaja čeka: smanji HEAT na "+Offer.MaximumHeat+". Rok i dalje teče.";return false;}
+            if(BlockReason.Length>0){Message=BlockReason+" Rok i dalje teče.";return false;}
             ObjectiveIndex++;
             if (ObjectiveIndex < 3)
             {
@@ -96,7 +110,7 @@ namespace Pozarevac.CityGame
             if (double.IsNaN(seconds) || double.IsInfinity(seconds) || seconds < 0) throw new ArgumentOutOfRangeException(nameof(seconds));
             if (!IsActive) { CooldownSeconds = Math.Max(0, CooldownSeconds - seconds); return; }
             RemainingSeconds = Math.Max(0, RemainingSeconds - seconds);
-            if (RemainingSeconds <= 0) Cancel("Istekao je rok. Paket je vraćen; nema isplate.");
+            if (RemainingSeconds <= 0) Cancel(HasReceipt?"Rok je istekao bez završne potvrde. Posao zatvoren; nema isplate.":"Istekao je rok. Prevoz paketa je prekinut; nema isplate.");
         }
         public bool Cancel(string reason = "Posao otkazan; nema isplate.")
         {

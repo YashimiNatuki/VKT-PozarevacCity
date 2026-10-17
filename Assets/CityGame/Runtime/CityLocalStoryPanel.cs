@@ -72,7 +72,7 @@ namespace Pozarevac.CityGame
             chapter=game.Director.Jobs.StoryChapter,campaign=game.Progression.CompletedContracts,
             heat=Mathf.Clamp(Mathf.RoundToInt(game.Session.Heat),0,100),
             nutrition=Mathf.Clamp(Mathf.RoundToInt(lifestyle.Life.Nutrition),0,100),
-            stamina=Mathf.Clamp(Mathf.RoundToInt(lifestyle.Life.Stamina),0,100),job_active=game.Director.Jobs.IsActive};
+            stamina=Mathf.Clamp(Mathf.RoundToInt(lifestyle.Life.Stamina),0,100),job_active=game.Director.Jobs.IsActive,wanted=lifestyle.Life.Wanted};
         public bool Open()
         {
             if(IsOpen||!lifestyle.CanSimulate||lifestyle.Life.IsTraining)return false;
