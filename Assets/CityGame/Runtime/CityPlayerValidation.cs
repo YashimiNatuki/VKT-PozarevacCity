@@ -127,6 +127,31 @@ namespace Pozarevac.CityGame
                     music.TogglePause(); details += " Local audio decoded while suspended, stayed silent and started on application resume.";
                 }
             }
+            if(Array.IndexOf(Environment.GetCommandLineArgs(),"-vktMapUpgradeSmoke")>=0)
+            {
+                game.GetComponent<CityProgressionController>().ClosePanel();
+                if(game.Hideout.IsInside)game.Hideout.Travel(false);
+                yield return null;
+                var streets=game.GetComponent<CityOsmStreets>();
+                if(streets==null||streets.JunctionCount<10||streets.Visibility==null||streets.Visibility.Registered<100)
+                {Finish(false,"Connected road junctions and map visibility were not composed.");yield break;}
+                int colliders=0;foreach(Collider c in streets.Visibility.GetComponentsInChildren<Collider>())if(c.enabled)colliders++;
+                streets.Visibility.ApplyAt(streets.GroundAnchor+Vector3.up*1000);
+                int after=0;foreach(Collider c in streets.Visibility.GetComponentsInChildren<Collider>())if(c.enabled)after++;
+                if(streets.Visibility.VisibleCount!=0||colliders!=after||after<streets.WallColliderCount)
+                {Finish(false,"Distant map visibility disabled physics or retained distant renderers.");yield break;}
+                Camera mapCamera=game.Player.GetComponentInChildren<Camera>();var mapRig=mapCamera.GetComponent<CityCameraRig>();
+                Vector3 savedPosition=mapCamera.transform.position;Quaternion savedRotation=mapCamera.transform.rotation;
+                mapRig.enabled=false;mapCamera.transform.position=streets.GroundAnchor+new Vector3(0,100,-95);mapCamera.transform.LookAt(streets.GroundAnchor+Vector3.forward*20);
+                streets.Visibility.ApplyAt(mapCamera.transform.position);yield return new WaitForEndOfFrame();
+                string roadCapture=Argument("-vktRoadScreenshot","");
+                if(!string.IsNullOrEmpty(roadCapture)&&!CaptureRenderedFrame(game,roadCapture,out string roadError))
+                {Finish(false,roadError);yield break;}
+                mapCamera.transform.SetPositionAndRotation(savedPosition,savedRotation);mapRig.enabled=true;streets.Visibility.ApplyAt(savedPosition);
+                if(streets.Visibility.VisibleCount==0){Finish(false,"Map rendering did not return after camera restoration.");yield break;}
+                details+=" Map upgrade: connected road/sidewalk topology, authored junction surfaces and street placards composed; renderer-distance budget retained all colliders and restored the camera view.";
+                Debug.Log("VKT_STREETS_VERIFIED segments="+streets.SegmentCount+" junctions="+streets.JunctionCount+" budgetEntries="+streets.Visibility.Registered+" activeColliders="+after);
+            }
             if (Array.Exists(Environment.GetCommandLineArgs(), arg => arg == "-vktCombatSmoke"))
             {
                 if (!BeginCombatCheck(game, out string combatError)) { Finish(false, combatError); yield break; }

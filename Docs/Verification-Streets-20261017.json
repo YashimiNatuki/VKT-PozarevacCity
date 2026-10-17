@@ -1,0 +1,28 @@
+{
+  "milestone": "streets-20261017",
+  "tests": {
+    "total": 147,
+    "passed": 146,
+    "failed": 0,
+    "skipped": 1
+  },
+  "windowsBuildErrors": 0,
+  "windowsPlayerPassed": true,
+  "mapRuntimeEvidence": [
+    "VKT_STREETS_VERIFIED segments=600 junctions=51 budgetEntries=356 activeColliders=879"
+  ],
+  "runtime": "Actual Windows player: terrain loaded, nine physics interactions, three contracts, growth/trade, crew, district campaign and durable save restore passed. Catalog seed purchases, hideout entry/exit, four physical plants, watering, garden save restoration, death and hospital respawn passed. Spatial audio: six mono 3D emitters, one listener, clear/blocked/removed-wall rays, mute, suspension, interior fan and desk journal pause passed. Additive player breathing advanced. Enhanced: 600 OSM segments, 100 building footprints, 22 green polygons, 878 wall colliders, 12 benches/24 trees, city map, 16 strain cards, music overlay, job journal, physical street-job payout and durable story progress passed. Local audio decoded while suspended, stayed silent and started on application resume. Map upgrade: connected road/sidewalk topology, authored junction surfaces and street placards composed; renderer-distance budget retained all colliders and restored the camera view. Physical stone/stick pickups, paused attack gating, swept stone/window impact, single glass break, stick hit/NPC reaction, wall occlusion, pool exhaustion/reuse, projectile pause and death cleanup passed. Three camera modes, imported player avatar, bounded orbit, obstruction retraction and first-person restoration passed. Block life: physical gym and kiosk interaction, UI repetitions and anti-spam, pause ownership, paid/stolen food, wanted save restoration, police line-of-sight/occlusion and capture range, accelerated escape/arrest, one-time challenge and durable v5 character stats passed.",
+  "originalIntroSha256": "46737d77d43de985fccfc24e7cf32dff61beba2c429e08a7ba49e040ec2dc80c",
+  "artifact": {
+    "name": "VKT-Streets-Windows-20261017.zip",
+    "bytes": 203865329,
+    "sha256": "9cb4358f3c8bc0c84b8e337463c88b12b61f0c545e9696cfe1c135ec365d10c7"
+  },
+  "limits": [
+    "Same bounded OSM snapshot and flat collision ground; no real elevation raster imported",
+    "Widths, sidewalk/junction treatments and physical signs are authored",
+    "Renderer-distance policy is not scene streaming or a measured FPS improvement",
+    "Aerial screenshot is a development camera, not satellite imagery",
+    "No new Android APK or physical phone performance check"
+  ]
+}

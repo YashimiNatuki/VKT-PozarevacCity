@@ -4,7 +4,19 @@ A modular Unity street-action prototype with missions, a cannabis-themed game ec
 
 This repository is the standalone Unity source milestone. The older [browser/Three.js project](https://github.com/YashimiNatuki/3D-gta-Pozarevac) remains separate. No browser source or history is replaced.
 
-## Latest: original intro, spatial audio and hideout - 2026-10-17
+## Latest: connected streets and map visibility - 2026-10-17
+
+The existing OSM map now composes shared road/sidewalk edges through a bounded endpoint graph, authored asphalt junction surfaces and sidewalk pullbacks. Compact double-sided street placards replace oversized floating names. Building/sign renderers use distance hysteresis while all existing wall/ground colliders and mission simulation stay active.
+
+**Verified:** 146 Unity tests passed, zero failed, one optional skip. Windows build completed with zero errors. Actual player checks passed map composition, hiding/restoring the map with 879 active colliders retained, and prior intro/audio/character/mission/garden/combat/save regression. The original intro remains included unchanged.
+
+[Download Windows development ZIP](https://github.com/YashimiNatuki/VKT-PozarevacCity/releases/download/vkt-streets-20261017/VKT-Streets-Windows-20261017.zip) | [Map/terrain research and implementation](Docs/Map-Streets-20261017.md) | [Verification receipt](Docs/Verification-Streets-20261017.json)
+
+Terrain remains flat and coverage is unchanged. This release does not claim imported DEM/satellite terrain, realistic elevation, new neighborhoods, traffic simulation, measured FPS gains or a new Android APK. The next terrain step needs a reviewed height raster and road/building/mission height integration.
+
+![Actual development-player aerial view](Docs/Screenshots/streets-connected-windows-20261017.png)
+
+## Previous: original intro, spatial audio and hideout - 2026-10-17
 
 The original 43.5-second project intro is back in the Windows ZIP; previous portable builds excluded its video. **PRESKOČI UVOD**, Space or Esc skips it. Missing media now has an explicit short title card. Six mono positional ambience sources, wall low-pass/attenuation, a world-space patrol siren, indoor fan/reverb and movement sound fallbacks improve the audio composition. These effects are synthetic; no authentic city recordings or binaural HRTF is claimed.
 
