@@ -33,7 +33,8 @@ namespace Pozarevac.CityGame
             Button(panel.transform, "TIŠE", new Vector2(15, -155), () => player.Volume -= 0.1f);
             Button(panel.transform, "GLASNIJE", new Vector2(150, -155), () => player.Volume += 0.1f);
             Button(panel.transform, "MUTE", new Vector2(285, -155), () => player.Muted = !player.Muted);
-            Button(overlay.transform, "MUZIKA / F6", new Vector2(-144, 68), Toggle, true);
+            bool touchLayout=Application.isMobilePlatform||Array.IndexOf(Environment.GetCommandLineArgs(),"-vktTouchPreview")>=0;
+            Button(overlay.transform, touchLayout?"MUZIKA":"MUZIKA / F6", LauncherPosition(touchLayout), Toggle, true);
             Button(panel.transform, "OSVEŽI", new Vector2(15, -210), () => player.Refresh());
             Button(panel.transform, "RADIO", new Vector2(150, -210), () => player.Radio());
             Button(panel.transform, "ZATVORI", new Vector2(285, -210), Close);
@@ -45,6 +46,7 @@ namespace Pozarevac.CityGame
             if (panel == null || (gamePaused != null && gamePaused())) return;
             panel.SetActive(true); setOverlay?.Invoke(true);
         }
+        public static Vector2 LauncherPosition(bool touchLayout) => new Vector2(-144,touchLayout?420:68);
         public void Close()
         {
             if (!IsOpen) return;

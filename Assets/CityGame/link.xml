@@ -1,0 +1,7 @@
+<linker>
+  <!-- CreatePrimitive requests these native physics types without a managed generic reference. -->
+  <assembly fullname="UnityEngine.PhysicsModule">
+    <type fullname="UnityEngine.SphereCollider" preserve="all" />
+    <type fullname="UnityEngine.CapsuleCollider" preserve="all" />
+  </assembly>
+</linker>

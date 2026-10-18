@@ -126,7 +126,9 @@ namespace Pozarevac.CityGame.Editor
             {
                 if (android)
                 {
-                    PlayerSettings.Android.bundleVersionCode = 3;
+                    if(!int.TryParse(Argument("-vktAndroidVersionCode","6"),out int versionCode)||versionCode<1)
+                        throw new InvalidOperationException("Android version code must be a positive integer.");
+                    PlayerSettings.Android.bundleVersionCode = versionCode;
                     string source=Argument("-vktIntroSource", "");
                     if(!string.IsNullOrWhiteSpace(source))
                     {

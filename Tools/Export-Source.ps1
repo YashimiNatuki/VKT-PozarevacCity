@@ -15,6 +15,7 @@ $files = [Collections.Generic.List[IO.FileInfo]]::new()
 Get-ChildItem -LiteralPath "$sourceRoot/Assets/CityGame" -Recurse -File | Where-Object {
     ($_.DirectoryName -eq "$sourceRoot\Assets\CityGame\Resources\Models\KenneyRetro" -and $_.Name -in @('characterMedium.fbx','characterMedium.fbx.meta','idle.fbx','idle.fbx.meta','run.fbx','run.fbx.meta','humanMaleA.png','humanMaleA.png.meta','License.txt','License.txt.meta')) -or
     $_.Extension -eq '.cs' -or
+    $_.FullName -in @("$sourceRoot\Assets\CityGame\link.xml", "$sourceRoot\Assets\CityGame\link.xml.meta") -or
     $_.FullName -in @("$sourceRoot\Assets\CityGame\Resources\StreetCharacter.shader", "$sourceRoot\Assets\CityGame\Resources\StreetCharacter.shader.meta") -or
     ($_.Name.EndsWith('.cs.meta')) -or
     $_.Name -in @('CityMissionMarker.mat', 'CityMissionMarker.mat.meta') -or

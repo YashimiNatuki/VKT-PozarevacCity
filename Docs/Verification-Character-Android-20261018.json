@@ -1,0 +1,73 @@
+{
+  "name": "VKT-Character-Android-20261018.apk",
+  "size": 176907294,
+  "sha256": "9eefddd1af61562461faa0d5881bb26f36e7bb680f705905dee43decdb7c5d31",
+  "introIncluded": true,
+  "arm64": true,
+  "buildErrors": 0,
+  "versionCode": 6,
+  "package": "com.yashimi.vkt",
+  "signatureVerified": true,
+  "certificateSha256": "73e4417407e1b053081da46117c15babed99544f94b18361340ad6120ce9f98b",
+  "physicalDeviceTested": true,
+  "nativeLibraryCount": 7,
+  "device": {
+    "model": "2409BRN2CY",
+    "androidApi": 36,
+    "width": 1640,
+    "height": 720,
+    "gpu": "Mali-G52 MC2",
+    "serialRecorded": false
+  },
+  "tests": {
+    "total": 182,
+    "passed": 181,
+    "failed": 0,
+    "skipped": 1
+  },
+  "metrics": {
+    "platform": "Android",
+    "utc": "2026-10-18T03:19:58.1259260Z",
+    "width": 1640,
+    "height": 720,
+    "frames": 1800,
+    "touchPresses": 5,
+    "audioSampleRate": 24000,
+    "observedFps": 36.73521561147938,
+    "p95FrameMilliseconds": 33.36428451538086,
+    "physicalTouchReviewed": false,
+    "humanAudioReviewed": false
+  },
+  "voiceClipsBundled": 0,
+  "manualReview": {
+    "introAudible": true,
+    "walkingAndWardrobe": true,
+    "scope": "User confirmed these during the v4/v5 intake. The same original intro bytes and character feature set are in v6; v6 UI was additionally exercised through ADB."
+  },
+  "deviceChecks": {
+    "installedVersionCode": 6,
+    "upgradePreservedProfile": true,
+    "externalSaveBackupVerified": true,
+    "cityReady": true,
+    "blockingRuntimeErrors": [],
+    "wardrobePortrait": true,
+    "musicOpenClose": true,
+    "cameraSwitchAndMovement": true,
+    "backgroundResume": true,
+    "automatedInput": "Foreground VKT only; 250ms held touchscreen presses. Zero-duration ADB taps were unreliable."
+  },
+  "startupMessages": [
+    {
+      "component": "com.google.android.play.core.assetpacks.AssetPackManager",
+      "count": 1,
+      "status": "Observed non-blocking startup ClassNotFoundException. City and tested flows continue. Cause and Play Asset Delivery/AAB behavior remain unverified."
+    }
+  ],
+  "limits": [
+    "Short USB-connected development-build sample; not a sustained thermal/full-city or stable 60 FPS certificate",
+    "Device metrics review flags remain false by design; separate manual-review fields record actual user feedback",
+    "No NPC spoken recordings or phoneme lip sync; intro audio was heard by the user",
+    "One non-blocking AssetPackManager startup message remains documented; no universal zero-runtime-error claim"
+  ],
+  "sourceFingerprint": "adbba08e83c759d64781401288a665aae628c59ac828e26115af174eed07d26a"
+}
