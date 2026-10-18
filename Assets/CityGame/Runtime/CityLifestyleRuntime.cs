@@ -138,8 +138,8 @@ namespace Pozarevac.CityGame
             CanvasScaler scaler=canvas.GetComponent<CanvasScaler>();scaler.uiScaleMode=CanvasScaler.ScaleMode.ScaleWithScreenSize;scaler.referenceResolution=new Vector2(1280,720);scaler.matchWidthOrHeight=.5f;
             RectTransform dim=Rect("BlockBackdrop",canvas.transform,Vector2.zero,Vector2.zero,new Vector2(.5f,.5f));dim.anchorMin=Vector2.zero;dim.anchorMax=Vector2.one;dim.offsetMin=dim.offsetMax=Vector2.zero;
             shade=dim.gameObject;shade.AddComponent<Image>().color=new Color(0,0,0,.5f);shade.SetActive(false);
-            RectTransform badge=Rect("LifeStatus",canvas.transform,new Vector2(460,62),new Vector2(0,-205),new Vector2(0,1));badge.pivot=new Vector2(0,1);
-            badge.gameObject.AddComponent<Image>().color=new Color(.025f,.06f,.08f,.85f);banner=Text(badge,"",17);banner.alignment=TextAnchor.MiddleCenter;
+            RectTransform badge=Rect("LifeStatus",canvas.transform,new Vector2(400,48),new Vector2(16,-194),new Vector2(0,1));badge.pivot=new Vector2(0,1);
+            badge.gameObject.AddComponent<Image>().color=new Color(.025f,.06f,.08f,.85f);banner=Text(badge,"",14);banner.alignment=TextAnchor.MiddleCenter;
             badge.GetComponent<Image>().raycastTarget=false;
             RectTransform alert=Rect("PoliceAlert",canvas.transform,new Vector2(420,44),new Vector2(0,-100),new Vector2(.5f,1));policeBanner=alert.gameObject.AddComponent<Image>();policeBanner.color=Color.clear;
             Text alertText=Text(alert,"POTERA / prekini kontakt 18 s",17);alertText.name="PoliceText";
@@ -294,9 +294,10 @@ namespace Pozarevac.CityGame
         }
         private void RefreshUi()
         {
+            hud.SetTrainingPresentation(Life.IsTraining||Life.IsBoxing||Life.IsConditioning);
             boxingPanel.SetActive(Life.IsBoxing);
             boxingText.text=$"BOKS {Math.Min(8,boxing.Round+1)}/8 / TAČNO {boxing.Successes}/8 / IZDRŽLJIVOST {Life.Endurance}/5\n"+(boxing.Responded?"Odgovor zabeležen / sačekaj":boxing.WindowOpen?(boxing.Expected==CityBoxingAction.Jab?"SAD: UDARAC / J":"SAD: GARD / K"):"PRIPREMI SE / ne pritiskaj prerano");
-            shade.SetActive(IsMenuOpen);banner.transform.parent.gameObject.SetActive(!IsMenuOpen);
+            shade.SetActive(IsMenuOpen);banner.transform.parent.gameObject.SetActive(!IsMenuOpen&&!Life.IsTraining&&!Life.IsBoxing);
             banner.text=$"LVL {Life.Level} / XP {Life.Experience} / SNAGA {Life.Strength}\nHRANA {Life.Nutrition:0}% / ENERGIJA {Life.Stamina:0}% / L: BLOK";
             policeBanner.gameObject.SetActive(Life.Wanted&&!IsMenuOpen);policeBanner.color=Mathf.Sin(Time.unscaledTime*5)>0?new Color(.4f,.08f,.08f,.9f):new Color(.05f,.15f,.45f,.9f);
             workout.SetActive(Life.IsTraining||Life.IsConditioning);repButton.SetActive(!Life.IsConditioning);

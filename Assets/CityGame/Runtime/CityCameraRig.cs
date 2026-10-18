@@ -12,6 +12,7 @@ namespace Pozarevac.CityGame
         private Transform owner, view;
         private GameObject avatar;
         private CityCharacterLook look;
+        private CityActorMotion actorMotion;
         public CityOutfit CurrentOutfit => look!=null?look.Outfit:CityOutfit.Korzo;
         private readonly RaycastHit[] hits = new RaycastHit[24];
         private readonly RaycastHit[] aimHits = new RaycastHit[24];
@@ -50,7 +51,7 @@ namespace Pozarevac.CityGame
                         Animation motion = root.GetComponent<Animation>(); if (motion == null) motion = root.AddComponent<Animation>();
                         motion.enabled = true; motion.cullingType = AnimationCullingType.AlwaysAnimate;
                         motion.AddClip(idle, "VKT_Idle"); motion.AddClip(run, "VKT_Run"); motion.wrapMode = WrapMode.Loop; motion.Play("VKT_Idle");
-                        wrapper.gameObject.AddComponent<CityActorMotion>().Initialize(owner, motion);
+                        actorMotion=wrapper.gameObject.AddComponent<CityActorMotion>();actorMotion.Initialize(owner, motion);
                     }
                 }
             }
@@ -101,6 +102,7 @@ namespace Pozarevac.CityGame
             bool training=lifestyle!=null&&lifestyle.IsTraining&&bench!=null;
             bool boxing=lifestyle!=null&&lifestyle.IsBoxing;
             if(look!=null)look.Apply(appearance!=null?appearance.Outfit:CityOutfit.Korzo,lifestyle!=null?lifestyle.Strength:0);
+            if(look!=null)look.Face.SetEffort(boxing?.8f:actorMotion!=null?Mathf.Clamp01(actorMotion.ObservedSpeed/8):0);
             if(avatar!=null)avatar.SetActive(!training&&(boxing||Mode!=CityCameraMode.FirstPerson));
             if(training||boxing)
             {

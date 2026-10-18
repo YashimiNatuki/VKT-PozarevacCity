@@ -100,6 +100,7 @@ namespace Pozarevac.CityGame
         }
         public void Pose(bool active, float extension)
         {
+            if(look!=null)look.Face.SetEffort(active?Mathf.Lerp(.9f,.4f,Mathf.Clamp01(extension)):0);
             if (bar == null) return;
             if (athlete != null) athlete.gameObject.SetActive(active);
             bar.localPosition = new Vector3(0, Mathf.Lerp(lowerHeight, upperHeight, extension), barZ);

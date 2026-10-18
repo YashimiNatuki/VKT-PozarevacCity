@@ -1,0 +1,24 @@
+{
+  "milestone": "character-ui-20261018",
+  "sourceFingerprint": "b6a676837125db558e91a83ed0f85f02c4e8b4032c2a06e20f79bc3f5c90c7d1",
+  "tests": {
+    "total": 181,
+    "passed": 180,
+    "failed": 0,
+    "skipped": 1
+  },
+  "windowsBuildErrors": 0,
+  "windowsPlayerPassed": true,
+  "portraitBlinkDuringPause": true,
+  "artifact": {
+    "name": "VKT-Character-Windows-20261018.zip",
+    "bytes": 203891814,
+    "sha256": "69557490346f272dad7acd8f56b91c9841535b2683dc408780042cd1487ac728"
+  },
+  "runtime": "Actual Windows player: terrain loaded, nine physics interactions, three contracts, growth/trade, crew, district campaign and durable save restore passed. Catalog seed purchases, hideout entry/exit, four physical plants, watering, garden save restoration, death and hospital respawn passed. Spatial audio: six mono 3D emitters, one listener, clear/blocked/removed-wall rays, mute, suspension, interior fan and desk journal pause passed. Additive player breathing advanced. Enhanced: 600 OSM segments, 100 building footprints, 22 green polygons, 878 wall colliders, 12 benches/24 trees, city map, 16 strain cards, music overlay, job journal, physical street-job payout and durable story progress passed. Local audio decoded while suspended, stayed silent and started on application resume. Map upgrade: connected road/sidewalk topology, authored junction surfaces and street placards composed; renderer-distance budget retained all colliders and restored the camera view. Physical stone/stick pickups, paused attack gating, swept stone/window impact, single glass break, stick hit/NPC reaction, wall occlusion, pool exhaustion/reuse, projectile pause and death cleanup passed. Three camera modes, imported player avatar, bounded orbit, obstruction retraction and first-person restoration passed. Block life: physical gym and kiosk interaction, UI repetitions and anti-spam, pause ownership, paid/stolen food, wanted save restoration, police line-of-sight/occlusion and capture range, accelerated escape/arrest, one-time challenge and durable v5 character stats passed. Routine: authoritative wanted/training contact gates, staged cargo/receipt settlement, mission pause/suspension, scrollable journal, conditioning course/XP/save/cancellation, and bounded feedback audio pause/mute/suspension passed. Active street-job disk resume, single settlement, boxing UI/reaction/guard/reward/pause and durable rest passed.",
+  "limits": [
+    "Stylized low-poly face and 256px atlas; no facial rig or phoneme lip sync",
+    "Windows only; previous Android APK is unchanged",
+    "Physical Android touch/audio/FPS remains unverified"
+  ]
+}

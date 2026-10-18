@@ -11,6 +11,7 @@ Shader "VKT/StreetCharacter"
   _Cull("Cull",Float)=2
   _Cutoff("Cutoff",Float)=.5
   _PreviewFill("Studio fill",Range(0,1))=0
+  _Face("Blink, effort, smile, gaze",Vector)=(0,0,0,0)
  }
  SubShader
  {
@@ -29,7 +30,7 @@ Shader "VKT/StreetCharacter"
    #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
    TEXTURE2D(_BaseMap); SAMPLER(sampler_BaseMap);
    CBUFFER_START(UnityPerMaterial)
-    float4 _BaseMap_ST, _BaseColor, _Shirt, _Pants, _Shoes, _Accent;
+    float4 _BaseMap_ST, _BaseColor, _Shirt, _Pants, _Shoes, _Accent, _Face;
     float _PreviewFill;
    CBUFFER_END
    struct Input{float4 positionOS:POSITION;float3 normalOS:NORMAL;float2 uv:TEXCOORD0;};
@@ -42,7 +43,22 @@ Shader "VKT/StreetCharacter"
    }
    half4 Frag(Output i):SV_Target
    {
-    half3 source=SAMPLE_TEXTURE2D(_BaseMap,sampler_BaseMap,i.uv).rgb;
+    float2 faceUv=i.uv;
+    // Restrict all motion to the reviewed face islands; clothing and ears retain their UVs.
+    float eyeX=faceUv.x<.315?.274:.354;
+    float2 eye=float2((faceUv.x-eyeX)/.017,(faceUv.y-.785)/.012);
+    float eyeMask=1-smoothstep(.65,1.15,length(eye));
+    float browMask=(1-smoothstep(.009,.018,abs(faceUv.x-eyeX)))*(1-smoothstep(.004,.010,abs(faceUv.y-.806)));
+    faceUv.x-=_Face.w*.003*eyeMask;
+    faceUv.y+=_Face.y*.003*browMask;
+    float mouthMask=(1-smoothstep(.016,.030,abs(faceUv.x-.314)))*(1-smoothstep(.006,.016,abs(faceUv.y-.733)));
+    faceUv.y-=mouthMask*_Face.z*.004*abs((faceUv.x-.314)/.025);
+    half3 source=SAMPLE_TEXTURE2D(_BaseMap,sampler_BaseMap,faceUv).rgb;
+    half3 lid=SAMPLE_TEXTURE2D(_BaseMap,sampler_BaseMap,float2(eyeX,.815)).rgb;
+    float closure=saturate(_Face.x)*eyeMask;
+    source=lerp(source,lid,closure);
+    float lash=(1-smoothstep(.08,.22,abs(eye.y+.08)))*(1-smoothstep(.65,1,abs(eye.x)));
+    source=lerp(source,lid*.45,lash*closure*.65);
     float shirt=step(i.uv.x,.59)*step(i.uv.y,.515);
     float pants=step(.59,i.uv.x)*step(i.uv.y,.255);
     float shoes=step(.63,i.uv.x)*step(i.uv.x,.81)*step(.50,i.uv.y)*step(i.uv.y,.87);

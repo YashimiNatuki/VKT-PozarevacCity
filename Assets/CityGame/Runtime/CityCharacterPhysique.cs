@@ -29,9 +29,11 @@ namespace Pozarevac.CityGame
             {
                 if(bones[i]==null)continue;
                 Vector3 factor=Vector3.one;
-                if(i==0)factor=Vector3.one*.74f;
-                else if(i==8||i==9)factor=Vector3.one*.9f;
-                else if(i>=14)factor=new Vector3(.94f,1,.94f);
+                // Shorten the reviewed rig's long neck, compensating the child's length axis.
+                if(i==0)factor=new Vector3(.48f,.48f/.78f,.48f);
+                else if(i==2)factor=new Vector3(1,.78f,1);
+                else if(i==8||i==9)factor=Vector3.one*.82f;
+                else if(i>=14)factor=new Vector3(.88f,1,.88f);
                 bones[i].localScale=Vector3.Scale(original[i],factor);
             }
             foreach(var skin in skins)skin.Apply((int)level);

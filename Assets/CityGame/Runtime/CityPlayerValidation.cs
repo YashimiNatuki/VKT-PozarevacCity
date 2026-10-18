@@ -387,6 +387,25 @@ namespace Pozarevac.CityGame
                 if(!string.IsNullOrEmpty(wardrobeCapture)&&!CaptureRenderedFrame(game,wardrobeCapture,out string wardrobeError))
                 {Finish(false,wardrobeError);yield break;}
                 runtime.Wardrobe.Rotate(45);yield return new WaitForSecondsRealtime(.1f);
+                string portraitCapture=Argument("-vktPortraitScreenshot","");
+                if(!string.IsNullOrEmpty(portraitCapture))
+                {
+                    runtime.Wardrobe.Rotate(-45);runtime.Wardrobe.TogglePortrait();
+                    yield return new WaitForSecondsRealtime(.25f);
+                    if(!runtime.Wardrobe.Portrait||!CaptureRenderedFrame(game,portraitCapture,out string portraitError))
+                    {Finish(false,"Portrait capture failed.");yield break;}
+                    CityFaceExpression previewFace=null;
+                    foreach(var face in FindObjectsByType<CityFaceExpression>(FindObjectsSortMode.None))if(face.Preview){previewFace=face;break;}
+                    if(previewFace==null){Finish(false,"Preview expression driver absent.");yield break;}
+                    float timeout=Time.realtimeSinceStartup+5;bool blinked=false;
+                    while(Time.realtimeSinceStartup<timeout)
+                    {
+                        if(previewFace.State.x>.85f){blinked=true;break;}yield return null;
+                    }
+                    if(!blinked){Finish(false,"Wardrobe face did not blink during its owned pause.");yield break;}
+                    Debug.Log("VKT_CHARACTER_UI_VERIFIED portrait=true previewBlinkDuringPause=true");
+                    runtime.Wardrobe.TogglePortrait();
+                }
                 runtime.Wardrobe.Close();yield return null;
                 var wardrobeStore=new CitySaveStore(controller.SavePath);
                 if(!wardrobeStore.TryLoad(out CityProfileData wardrobeSaved,out _)||wardrobeSaved.appearance==null||wardrobeSaved.appearance.outfit!=2||

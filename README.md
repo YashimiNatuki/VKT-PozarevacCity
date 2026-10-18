@@ -1,3 +1,5 @@
+> Latest character/HUD Windows preview: [download ZIP](https://github.com/YashimiNatuki/VKT-PozarevacCity/releases/download/vkt-character-ui-20261018/VKT-Character-Windows-20261018.zip). Smaller head/neck/extremities, fitted cap, atlas blink/effort, wardrobe portrait view and less obstructive training HUD. [Changes, verification and next priorities](Docs/Character-UI-20261018.md). The existing face remains stylized; no facial rig or lip sync yet. Android remains on the previous release until rebuilt and physically tested.
+
 # VKT / Velika Krađa Točkova — Požarevac City
 
 ## Latest: mission resume, boxing and Android - 2026-10-18

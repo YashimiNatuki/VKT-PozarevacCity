@@ -16,6 +16,7 @@ namespace Pozarevac.CityGame
         private CityCharacterPhysique physique;
         private Text title;
         private bool ownsPause;
+        public bool Portrait { get; private set; }
         public bool IsOpen=>panel!=null&&panel.activeSelf;
         public CityOutfit PreviewOutfit=>look!=null?look.Outfit:CityOutfit.Korzo;
         public void Initialize(CityGameBootstrap owner,CityLifestyleRuntime runtime)
@@ -31,6 +32,7 @@ namespace Pozarevac.CityGame
             if(!CityCharacterModel.Normalize(wrapper,model,pose,physique))throw new System.InvalidOperationException("Wardrobe character normalization failed.");
             look=new CityCharacterLook(model,physique);
             look.SetStudioFill(.75f);
+            look.Face.Preview=true;
             Transform rig=CityCharacterModel.AnimationRoot(model).transform;
             const string chest="HipsCtrl/Hips/Spine/Chest/UpperChest/";
             Transform left=rig.Find(chest+"LeftShoulder/LeftArm"),right=rig.Find(chest+"RightShoulder/RightArm");
@@ -42,7 +44,7 @@ namespace Pozarevac.CityGame
             preview.clearFlags=CameraClearFlags.SolidColor;preview.backgroundColor=new Color(.035f,.055f,.075f);
             preview.cullingMask=1<<30;preview.nearClipPlane=.1f;preview.farClipPlane=6;preview.fieldOfView=36;preview.allowHDR=false;
             preview.gameObject.AddComponent<UnityEngine.Rendering.Universal.UniversalAdditionalCameraData>().renderShadows=false;
-            image=new RenderTexture(384,512,24){name="VKT_WardrobePreview",antiAliasing=2};image.Create();preview.targetTexture=image;
+            image=new RenderTexture(768,1024,24){name="VKT_WardrobePreview",antiAliasing=2};image.Create();preview.targetTexture=image;
             BuildUi();stage.SetActive(false);panel.SetActive(false);
             game.Vitals.Died+=Close;
         }
@@ -61,6 +63,7 @@ namespace Pozarevac.CityGame
             for(int i=0;i<3;i++){int choice=i;Button(CityAppearance.Name((CityOutfit)i),new Vector2(210,10-i*65),()=>Select((CityOutfit)choice));}
             Button("← OKRENI",new Vector2(-355,-250),()=>Rotate(-45));
             Button("OKRENI →",new Vector2(-165,-250),()=>Rotate(45));
+            Button("LICE / CEO LIK",new Vector2(-260,280),TogglePortrait);
             Button("NAZAD U GRAD / ESC",new Vector2(210,-225),Close);
             canvas.AddComponent<CityUiSkin>().ApplyTree();
         }
@@ -85,6 +88,13 @@ namespace Pozarevac.CityGame
             if(IsOpen||!lifestyle.CanSimulate||lifestyle.Life.IsTraining||lifestyle.Life.IsBoxing)return false;
             ownsPause=true;game.Director.SetOverlayOpen(true);panel.SetActive(true);stage.SetActive(true);
             pivot.localRotation=Quaternion.Euler(0,-15,0);Refresh();return true;
+        }
+        public void TogglePortrait()
+        {
+            if(!IsOpen)return;
+            Portrait=!Portrait;
+            preview.transform.localPosition=Portrait?new Vector3(0,1.59f,1.25f):new Vector3(0,1.05f,3.25f);
+            preview.transform.LookAt(stage.transform.position+Vector3.up*(Portrait?1.57f:.96f));
         }
         public bool Select(CityOutfit outfit)
         {

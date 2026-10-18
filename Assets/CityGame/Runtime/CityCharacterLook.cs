@@ -14,6 +14,7 @@ namespace Pozarevac.CityGame
         private readonly GameObject watch;
         private readonly Material watchMaterial;
         private int selected=-1;
+        public CityFaceExpression Face { get; }
         public CityOutfit Outfit => (CityOutfit)Mathf.Max(0,selected);
         public void SetStudioFill(float value){cloth.SetFloat("_PreviewFill",Mathf.Clamp01(value));}
         public CityCharacterLook(GameObject model, CityCharacterPhysique body)
@@ -23,6 +24,7 @@ namespace Pozarevac.CityGame
             if(shader==null)throw new InvalidOperationException("Street character shader missing.");
             cloth=new Material(shader);
             cloth.SetTexture("_BaseMap",Resources.Load<Texture2D>("Models/KenneyRetro/humanMaleA"));
+            Face=model.AddComponent<CityFaceExpression>();Face.Initialize(cloth);
             foreach(Renderer renderer in model.GetComponentsInChildren<Renderer>())
             {
                 Material[] slots=new Material[Mathf.Max(1,renderer.sharedMaterials.Length)];
@@ -36,9 +38,9 @@ namespace Pozarevac.CityGame
                 hatMaterial=new Material(Resources.Load<Material>("CityMissionMarker"));
                 hat=new GameObject("VKT_StreetCap",typeof(MeshFilter),typeof(MeshRenderer));
                 hat.GetComponent<MeshFilter>().sharedMesh=cap;hat.GetComponent<MeshRenderer>().sharedMaterial=hatMaterial;
-                hat.transform.position=new Vector3(bounds.center.x,bounds.max.y-.025f,bounds.center.z);
+                hat.transform.position=new Vector3(bounds.center.x,bounds.max.y-.055f,bounds.center.z);
                 hat.transform.rotation=model.transform.rotation;
-                hat.transform.localScale=new Vector3(.16f,.10f,.18f);
+                hat.transform.localScale=new Vector3(.12f,.075f,.135f);
                 hat.transform.SetParent(body.Head,true);
             }
             Transform forearm=null,hand=null;
@@ -95,7 +97,7 @@ namespace Pozarevac.CityGame
             for(int j=0;j<segments;j++){triangles.Add(center);triangles.Add(center+j+2);triangles.Add(center+j+1);}
             var mesh=new Mesh{name="VKT_OriginalCurvedStreetCap"};mesh.SetVertices(vertices);mesh.SetTriangles(triangles,0);mesh.RecalculateNormals();mesh.RecalculateBounds();return mesh;
         }
-        public void Dispose(){Release(watch);Release(watchMaterial);Release(hat);Release(cap);Release(hatMaterial);Release(cloth);physique.Dispose();}
+        public void Dispose(){if(Face!=null){Face.enabled=false;Release(Face);}Release(watch);Release(watchMaterial);Release(hat);Release(cap);Release(hatMaterial);Release(cloth);physique.Dispose();}
         private static void Release(UnityEngine.Object value){if(value==null)return;if(Application.isPlaying)UnityEngine.Object.Destroy(value);else UnityEngine.Object.DestroyImmediate(value);}
     }
 }
