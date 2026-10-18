@@ -35,10 +35,15 @@ namespace Pozarevac.CityGame
         public void BindDirector()
         {
             director = game.Director;
+            director.RestoreMission(Progression.SavedMission);
+            Progression.BindMissionSnapshot(director.CaptureMission);
             director.ContractCompleted += OnContractCompleted;
             Progression.BindStreetJobs(director.Jobs);
             director.Jobs.Completed += OnStreetJobCompleted;
+            director.ProgressChanged += OnMissionCheckpoint;
+            director.Jobs.Changed += OnMissionCheckpoint;
         }
+        private void OnMissionCheckpoint(){dirty=true;SaveNow();}
 
         private void OnContractCompleted(int count)
         {
@@ -132,6 +137,9 @@ namespace Pozarevac.CityGame
 
         public void SaveNow()
         {
+            // Mission clocks and transitions have no balance event of their own.
+            // Capture them on periodic saves, suspend and quit, including a clean wallet.
+            if(director!=null && Progression.IsCreated) dirty=true;
             if (!dirty || !store.CanWrite || !Progression.IsCreated) return;
             try { store.Save(Progression.Snapshot()); dirty = false; SaveStatus = "Saved locally"; }
             catch (Exception error) when (error is IOException || error is UnauthorizedAccessException || error is ArgumentException || error is InvalidOperationException)
@@ -147,7 +155,7 @@ namespace Pozarevac.CityGame
             game.Session.Changed += MarkDirty;
             Progression.Lifestyle.Changed += MarkDirty;
             Progression.Appearance.Changed += MarkDirty;
-            if (director != null) { director.ContractCompleted += OnContractCompleted; director.Jobs.Completed += OnStreetJobCompleted; }
+            if (director != null) { director.ContractCompleted += OnContractCompleted; director.Jobs.Completed += OnStreetJobCompleted; director.ProgressChanged += OnMissionCheckpoint; director.Jobs.Changed += OnMissionCheckpoint; }
         }
         private void OnDisable()
         {
@@ -155,8 +163,8 @@ namespace Pozarevac.CityGame
             SaveNow();
             game.Session.Changed -= MarkDirty;
             Progression.Lifestyle.Changed -= MarkDirty;
-            Progression.Appearance.Changed -= MarkDirty;
-            if (director != null) { director.ContractCompleted -= OnContractCompleted; director.Jobs.Completed -= OnStreetJobCompleted; director.SetOverlayOpen(false); }
+            if(game != null && game.Progression != null) Progression.Appearance.Changed -= MarkDirty;
+            if (director != null) { director.ContractCompleted -= OnContractCompleted; director.Jobs.Completed -= OnStreetJobCompleted; director.ProgressChanged -= OnMissionCheckpoint; director.Jobs.Changed -= OnMissionCheckpoint; director.SetOverlayOpen(false); }
             if (panel != null) panel.Close();
         }
         private void OnDestroy()
@@ -164,8 +172,8 @@ namespace Pozarevac.CityGame
             SaveNow();
             if (game != null && game.Session != null) game.Session.Changed -= MarkDirty;
             if (game != null && game.Progression != null) Progression.Lifestyle.Changed -= MarkDirty;
-            Progression.Appearance.Changed -= MarkDirty;
-            if (director != null) { director.ContractCompleted -= OnContractCompleted; director.Jobs.Completed -= OnStreetJobCompleted; }
+            if(game != null && game.Progression != null) Progression.Appearance.Changed -= MarkDirty;
+            if (director != null) { director.ContractCompleted -= OnContractCompleted; director.Jobs.Completed -= OnStreetJobCompleted; director.ProgressChanged -= OnMissionCheckpoint; director.Jobs.Changed -= OnMissionCheckpoint; }
             if (panel != null) Destroy(panel.gameObject);
         }
     }

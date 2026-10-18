@@ -13,6 +13,7 @@ namespace Pozarevac.CityGame
     {
         private bool lifestyleVerified;
         private bool routineVerified;
+        private bool resumeBoxingVerified;
         [Serializable] private sealed class Report { public bool passed; public string details; public string product; }
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         private static void Install()
@@ -222,6 +223,12 @@ namespace Pozarevac.CityGame
                     details+=" Routine: authoritative wanted/training contact gates, staged cargo/receipt settlement, mission pause/suspension, scrollable journal, conditioning course/XP/save/cancellation, and bounded feedback audio pause/mute/suspension passed.";
                 }
             }
+            if(Array.IndexOf(Environment.GetCommandLineArgs(),"-vktResumeBoxingSmoke")>=0)
+            {
+                yield return VerifyResumeBoxing(game);
+                if(!resumeBoxingVerified)yield break;
+                details+=" Active street-job disk resume, single settlement, boxing UI/reaction/guard/reward/pause and durable rest passed.";
+            }
             if (Array.Exists(Environment.GetCommandLineArgs(), arg => arg == "-vktPerspectiveCapture"))
             {
                 game.GetComponent<CityProgressionController>().ClosePanel();
@@ -287,6 +294,64 @@ namespace Pozarevac.CityGame
                 if (!File.Exists(screenshot) || !ContainsRenderedPixels(screenshot)) { Finish(false, "Player screenshot is missing or blank; visual validation did not pass."); yield break; }
             }
             Finish(true, details);
+        }
+
+        private IEnumerator VerifyResumeBoxing(CityGameBootstrap game)
+        {
+            var runtime=game.GetComponent<CityLifestyleRuntime>();var life=runtime.Life;
+            var controller=game.GetComponent<CityProgressionController>();controller.ClosePanel();runtime.CloseMenu();
+            if(game.Hideout.IsInside)game.Hideout.Travel(false);
+            life.TickPolice(19,false,false);life.Tick(91,false);game.Session.CoolDown(game.Session.Heat);
+            var body=game.Player.GetComponent<CharacterController>();body.enabled=false;game.Player.position=runtime.Gym.position+Vector3.back*2;body.enabled=true;Physics.SyncTransforms();
+            if(life.Nutrition<30)life.TryEat(false);
+            var boxingCamera=game.Player.GetComponentInChildren<CityCameraRig>();boxingCamera.SetMode(CityCameraMode.FirstPerson);
+            runtime.OpenMenu();yield return null;
+            var start=Array.Find(FindObjectsByType<UnityEngine.UI.Button>(FindObjectsSortMode.None),b=>b.name=="BOKS / reakcija i gard");
+            if(start==null){Finish(false,"Boxing menu button missing.");yield break;}
+            int xp=life.Experience,count=life.BoxingSessions,strength=life.Strength;start.onClick.Invoke();yield return null;
+            if(!life.IsBoxing||game.Combat.CanAct||game.Director.TryAcceptStreetJob()){Finish(false,"Boxing entry/contact/combat exclusivity failed.");yield break;}
+            yield return new WaitForSeconds(.2f);
+            Transform visual=game.Player.Find("VKT_PlayerVisual");
+            if(visual==null||!visual.gameObject.activeSelf||Cursor.lockState!=CursorLockMode.None){Finish(false,"First-person boxing did not reveal its avatar or release cursor for UI.");yield break;}
+            var boxer=visual.GetComponentInChildren<CityActorMotion>();
+            if(boxer==null||!boxer.BoxingPoseActive){Finish(false,"First-person boxing did not bind its previously hidden rig.");yield break;}
+            double clock=runtime.Boxing.RoundTime;game.Director.SetPaused(true);yield return new WaitForSecondsRealtime(.2f);
+            if(runtime.Boxing.RoundTime!=clock){Finish(false,"Pause advanced boxing clock.");yield break;}game.Director.SetPaused(false);
+            for(int round=0;round<8;round++)
+            {
+                float deadline=Time.realtimeSinceStartup+4;
+                while(runtime.Boxing.Round==round&&runtime.Boxing.RoundTime<.8&&Time.realtimeSinceStartup<deadline)yield return null;
+                if(runtime.Boxing.Round!=round||!runtime.Boxing.WindowOpen){Finish(false,"Boxing reaction window missed.");yield break;}
+                string name=runtime.Boxing.Expected==CityBoxingAction.Jab?"UDARAC / J":"GARD / K";
+                var response=Array.Find(FindObjectsByType<UnityEngine.UI.Button>(FindObjectsSortMode.None),b=>b.name==name);
+                if(response==null){Finish(false,"Boxing response button missing.");yield break;}response.onClick.Invoke();
+                if(round==2)
+                {
+                    yield return new WaitForSeconds(.15f);string capture=Argument("-vktBoxingScreenshot","");
+                    if(!string.IsNullOrEmpty(capture)&&!CaptureRenderedFrame(game,capture,out string error)){Finish(false,error);yield break;}
+                }
+                while(runtime.Boxing.Round==round&&Time.realtimeSinceStartup<deadline)yield return null;
+            }
+            if(life.IsBoxing||life.BoxingSessions!=count+1||life.Experience!=xp+30||life.Strength!=strength||runtime.Boxing.TryClaim(life)||runtime.StartBoxing())
+            {Finish(false,"Boxing payout, endurance/strength separation or rest failed.");yield break;}
+            yield return null;
+            if(boxingCamera.Mode!=CityCameraMode.FirstPerson||visual.gameObject.activeSelf){Finish(false,"Boxing did not restore the prior first-person presentation.");yield break;}
+            controller.SaveNow();
+            if(!new CitySaveStore(controller.SavePath).TryLoad(out CityProfileData boxed,out _)||boxed.lifestyle.boxingSessions!=count+1)
+            {Finish(false,"Boxing progress did not survive disk reload.");yield break;}
+            var jobs=game.Director.Jobs;if(jobs.IsActive)jobs.Cancel();jobs.Tick(31);
+            if(!game.Director.TryAcceptStreetJob()||!game.Director.TryInteract(jobs.Offer.StationAt(0))){Finish(false,"Checkpoint fixture could not pick up cargo.");yield break;}
+            // No manual SaveNow: pickup must synchronously request its own checkpoint.
+            if(!new CitySaveStore(controller.SavePath).TryLoad(out CityProfileData saved,out _)||saved.streetJob==null||!saved.streetJob.active||saved.streetJob.objectiveIndex!=1)
+            {Finish(false,"Active cargo checkpoint did not reach disk.");yield break;}
+            var restored=new CityProgression(CitySession.Restore(saved),saved);var resumed=new CityStreetJobs(restored.Session);restored.BindStreetJobs(resumed);
+            if(!resumed.HasCargo||resumed.Offer.Title!=jobs.Offer.Title||resumed.RemainingSeconds!=saved.streetJob.remainingSeconds)
+            {Finish(false,"Street checkpoint restored different cargo/offer/time.");yield break;}
+            int cash=restored.Session.Cash,reward=resumed.Offer.CashReward;
+            resumed.TryVisit(resumed.Offer.StationAt(1));resumed.TryVisit(resumed.Offer.StationAt(2));
+            if(restored.Session.Cash!=cash+reward||resumed.TryVisit(0)){Finish(false,"Restored mission replayed or missed its reward.");yield break;}
+            jobs.Cancel();controller.SaveNow();resumeBoxingVerified=true;
+            Debug.Log("VKT_RESUME_BOXING_VERIFIED profileVersion=7 diskCargoResume=true payoutOnce=true boxingRounds=8 separateEndurance=true pause=true");
         }
 
         private IEnumerator VerifyLifestyle(CityGameBootstrap game)

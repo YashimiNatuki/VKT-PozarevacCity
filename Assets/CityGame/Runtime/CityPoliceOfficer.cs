@@ -9,17 +9,23 @@ namespace Pozarevac.CityGame
     {
         private CityGameBootstrap game;
         private CharacterController body;
-        private Vector3 home,lastKnown;
+        private Vector3 home;
+        private readonly CityPoliceInvestigation investigation=new CityPoliceInvestigation();
+        private int patrolStop;
+        private static readonly Vector3[] PatrolOffsets={Vector3.forward*4,Vector3.right*4,Vector3.back*4,Vector3.left*4};
+        private float patrolWait;
+        public CityPolicePhase Phase=>investigation.Phase;
+        public Vector3 LastKnown=>investigation.LastKnown;
+        public void ReportIncident(Vector3 at){investigation.ReportIncident(at);}
         private readonly RaycastHit[] hits=new RaycastHit[24];
         private Material skin;
         private float vertical,stun;
-        private bool pursuing;
         public bool SeesPlayer {get;private set;}
         public bool CanCapture {get;private set;}
 
         public void Initialize(CityGameBootstrap owner,Material uniform,Material dark)
         {
-            game=owner;home=transform.position;lastKnown=home;body=GetComponent<CharacterController>();
+            game=owner;home=transform.position;body=GetComponent<CharacterController>();
             body.height=1.8f;body.radius=.32f;body.center=Vector3.up*.9f;body.stepOffset=.3f;
             GameObject asset=CityCharacterModel.LoadSource();
             if(asset!=null)
@@ -59,8 +65,6 @@ namespace Pozarevac.CityGame
             if(stun>0){stun=Mathf.Max(0,stun-seconds);return;}
             Vector3 eye=transform.position+Vector3.up*1.5f,target=game.Player.position+Vector3.up*1.3f;
             float distance=Vector3.Distance(eye,target);
-            if(wanted&&!pursuing)lastKnown=game.Player.position;
-            pursuing=wanted;
             if(wanted&&distance<=32)
             {
                 Vector3 direction=(target-eye).normalized;
@@ -68,10 +72,14 @@ namespace Pozarevac.CityGame
                 float nearest=float.PositiveInfinity;Collider collider=null;
                 if(count<hits.Length)for(int i=0;i<count;i++)if(hits[i].collider!=null&&!hits[i].transform.IsChildOf(transform)&&hits[i].distance<nearest){nearest=hits[i].distance;collider=hits[i].collider;}
                 SeesPlayer=collider!=null&&collider.transform.IsChildOf(game.Player);
-                if(SeesPlayer)lastKnown=game.Player.position;
             }
             CanCapture=SeesPlayer&&distance<2.2f;
-            Vector3 goal=wanted?lastKnown:home+new Vector3(Mathf.Sin(Time.time*.18f)*4,0,Mathf.Cos(Time.time*.18f)*4);
+            Vector3 patrolGoal=home+PatrolOffsets[patrolStop];
+            if(!wanted&&(patrolGoal-transform.position).sqrMagnitude<1.5f)
+            {
+                patrolWait+=seconds;if(patrolWait>=2.5f){patrolStop=(patrolStop+1)%4;patrolWait=0;}
+            }
+            Vector3 goal=investigation.Step(seconds,wanted,SeesPlayer,game.Player.position,transform.position,patrolGoal);
             Vector3 travel=goal-transform.position;travel.y=0;
             if(travel.magnitude>.8f&&!CanCapture)
             {

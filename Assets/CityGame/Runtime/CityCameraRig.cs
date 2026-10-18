@@ -63,7 +63,7 @@ namespace Pozarevac.CityGame
                 if (!clip.name.StartsWith("__preview__", System.StringComparison.Ordinal)) return clip;
             return null;
         }
-        public void Cycle() { if ((lifestyle==null||!lifestyle.IsTraining) && Time.timeScale > 0) SetMode((CityCameraMode)(((int)Mode + 1) % 3)); }
+        public void Cycle() { if ((lifestyle==null||(!lifestyle.IsTraining&&!lifestyle.IsBoxing)) && Time.timeScale > 0) SetMode((CityCameraMode)(((int)Mode + 1) % 3)); }
         public void SetMode(CityCameraMode mode)
         {
             if ((int)mode < 0 || (int)mode > 2) throw new System.ArgumentOutOfRangeException(nameof(mode));
@@ -99,15 +99,26 @@ namespace Pozarevac.CityGame
             if (owner == null || view == null) return;
             if(weapon==null)weapon=view.Find("VKT_HeldWeapon");
             bool training=lifestyle!=null&&lifestyle.IsTraining&&bench!=null;
+            bool boxing=lifestyle!=null&&lifestyle.IsBoxing;
             if(look!=null)look.Apply(appearance!=null?appearance.Outfit:CityOutfit.Korzo,lifestyle!=null?lifestyle.Strength:0);
-            if(avatar!=null)avatar.SetActive(!training&&Mode!=CityCameraMode.FirstPerson);
-            if(training)
+            if(avatar!=null)avatar.SetActive(!training&&(boxing||Mode!=CityCameraMode.FirstPerson));
+            if(training||boxing)
             {
                 if(!wasTraining){previousCursor=Cursor.lockState;previousCursorVisible=Cursor.visible;}
                 Cursor.lockState=CursorLockMode.None;Cursor.visible=!Application.isMobilePlatform;
                 float blend=1-Mathf.Exp(-8*Time.deltaTime);
-                view.position=Vector3.Lerp(view.position,bench.CameraPosition,blend);
-                view.rotation=Quaternion.Slerp(view.rotation,Quaternion.LookRotation(bench.CameraTarget-view.position,Vector3.up),blend);
+                Vector3 target=boxing?owner.position+Vector3.up*1.1f+owner.forward*.4f:bench.CameraTarget;
+                Vector3 position=boxing?owner.TransformPoint(new Vector3(3.2f,2.05f,-1.4f)):bench.CameraPosition;
+                if(boxing)
+                {
+                    Vector3 path=position-target;float length=path.magnitude;
+                    int count=Physics.SphereCastNonAlloc(target,.18f,path.normalized,hits,length,Physics.DefaultRaycastLayers,QueryTriggerInteraction.Ignore);
+                    float allowed=count==hits.Length?0:length;
+                    for(int i=0;i<count;i++)if(hits[i].collider!=null&&!hits[i].transform.IsChildOf(owner))allowed=Mathf.Min(allowed,Mathf.Max(0,hits[i].distance-.08f));
+                    if(length>.001f)position=target+path*(allowed/length);
+                }
+                view.position=Vector3.Lerp(view.position,position,blend);
+                if((target-view.position).sqrMagnitude>.001f)view.rotation=Quaternion.Slerp(view.rotation,Quaternion.LookRotation(target-view.position,Vector3.up),blend);
                 if(weapon!=null)weapon.gameObject.SetActive(false);
                 wasTraining=true;
                 return;

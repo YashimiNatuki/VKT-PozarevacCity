@@ -55,3 +55,6 @@ Assets/Resources/PerformanceTestRun*.json.meta
 ProjectSettings/*
 !ProjectSettings/ProjectSettings.asset
 !ProjectSettings/ProjectVersion.txt
+
+# Unity Android Gradle/CMake transient native cache
+/.utmp/

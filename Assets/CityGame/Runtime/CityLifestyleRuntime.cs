@@ -32,7 +32,10 @@ namespace Pozarevac.CityGame
         private readonly CityConditioningRun conditioning=new CityConditioningRun();
         private readonly Vector3[] conditioningPoints=new Vector3[3];
         private readonly GameObject[] conditioningMarkers=new GameObject[3];
-        private GameObject repButton;
+        private GameObject repButton, boxingPanel;
+        private Text boxingText;
+        private readonly CityBoxingRun boxing=new CityBoxingRun();
+        public CityBoxingRun Boxing=>boxing;
         private RectTransform cancelTrainingButton;
         public CityConditioningRun Conditioning=>conditioning;
         public Vector3 ConditioningTarget=>conditioningPoints[Math.Min(2,conditioning.Checkpoint)];
@@ -53,12 +56,17 @@ namespace Pozarevac.CityGame
             if(game!=null)throw new InvalidOperationException("Lifestyle is already initialized.");
             game=owner;hud=cityHud;progress=game.GetComponent<CityProgressionController>();movement=game.Player.GetComponent<CityPlayerController>();
             previous=game.Player.position;lastArrests=Life.Arrests;lastEscapes=Life.Escapes;lastWorkouts=Life.Workouts;
+            lastWanted=Life.Wanted;
             movement.ConfigureLifestyle(Life);
             rounded=CityVisualMeshes.RoundedBox();Material template=Resources.Load<Material>("CityMissionMarker");
             metal=MakeMaterial(template,new Color(.12f,.17f,.2f));wood=MakeMaterial(template,new Color(.55f,.3f,.12f));
             blue=MakeMaterial(template,new Color(.12f,.3f,.8f));red=MakeMaterial(template,new Color(.8f,.12f,.12f));
             world=new GameObject("VKT_BlockLife");world.transform.SetParent(game.Player.parent,false);
             Gym=Station("VKT_StreetGym",spawn+new Vector3(-10,0,12),false);
+            Shape("BoxingStand",Gym,new Vector3(1.8f,1.25f,1.5f),new Vector3(.12f,2.5f,.12f),metal,true);
+            Shape("BoxingArm",Gym,new Vector3(1.2f,2.45f,1.5f),new Vector3(1.3f,.12f,.12f),metal,false);
+            GameObject bag=GameObject.CreatePrimitive(PrimitiveType.Capsule);bag.name="VKT_BoxingBag";
+            bag.transform.SetParent(Gym,false);bag.transform.localPosition=new Vector3(.7f,1.55f,1.5f);bag.transform.localScale=new Vector3(.45f,.65f,.45f);bag.GetComponent<Renderer>().sharedMaterial=red;
             Food=Station("VKT_FoodKiosk",spawn+new Vector3(10,0,12),true);
             game.Director.BindLifestyle(Life,game.Audio);
             Vector3[] course={Food.position+new Vector3(-3,0,-3),spawn,Gym.position+Vector3.back*3};
@@ -144,9 +152,17 @@ namespace Pozarevac.CityGame
             Button(menu.transform,"UKRADI / POTERA",new Vector2(145,-75),()=>{CloseMenu();Eat(true);});
             Button(menu.transform,"STREJN KATALOG",new Vector2(-145,-135),()=>{CloseMenu();if(!game.Progression.PhoneUnlocked){hud.ShowNotification("Prvi ugovor otključava telefon i katalog.",5);return;}progress.OpenPanel();FindAnyObjectByType<CityPhonePanel>().OpenCatalog();});
             Button(menu.transform,"DELOVI GRADA",new Vector2(145,-135),()=>{locationIndex=(locationIndex+1)%CityGeoRegistry.Count;RefreshUi();});
-            Button(menu.transform,"NAZAD U IGRU",new Vector2(0,-255),CloseMenu);
+            Button(menu.transform,"NAZAD U IGRU",new Vector2(-145,-255),CloseMenu);
             Button(menu.transform,"ODEĆA / GARDEROBER",new Vector2(-145,-195),()=>{CloseMenu();Wardrobe.Open();});
             Button(menu.transform,"KONTAKTI / OLLAMA",new Vector2(145,-195),()=>{CloseMenu();LocalStory.Open();});
+            Button(menu.transform,"BOKS / reakcija i gard",new Vector2(145,-255),()=>{CloseMenu();if(!StartBoxing())hud.ShowNotification("Boks kod klupe: hrana 20%, energija 35%, odmor i bez misije/potere.",6);});
+            boxingPanel=Rect("Boxing",canvas.transform,new Vector2(600,160),new Vector2(0,110),new Vector2(.5f,0)).gameObject;
+            boxingPanel.AddComponent<Image>().color=new Color(.03f,.08f,.11f,.95f);
+            boxingText=Text(Rect("BoxingCue",boxingPanel.transform,new Vector2(580,55),new Vector2(0,48),new Vector2(.5f,.5f)),"",20);
+            Button(boxingPanel.transform,"UDARAC / J",new Vector2(-145,-5),()=>BoxingInput(CityBoxingAction.Jab));
+            Button(boxingPanel.transform,"GARD / K",new Vector2(145,-5),()=>BoxingInput(CityBoxingAction.Guard));
+            Button(boxingPanel.transform,"PREKINI BOKS",new Vector2(0,-58),CancelBoxing);
+            boxingPanel.SetActive(false);
             workout=Rect("Workout",canvas.transform,new Vector2(600,160),new Vector2(0,125),new Vector2(.5f,0)).gameObject;workout.AddComponent<Image>().color=new Color(.03f,.08f,.11f,.9f);
             workoutText=Text(Rect("WorkoutText",workout.transform,new Vector2(580,48),new Vector2(0,50),new Vector2(.5f,.5f)),"",20);
             repButton=Button(workout.transform,"TAP / F: PONAVLJANJE",new Vector2(0,-2),()=>Rep()).gameObject;
@@ -162,7 +178,7 @@ namespace Pozarevac.CityGame
         public void ToggleMenu(){if(IsMenuOpen)CloseMenu();else OpenMenu();}
         public void OpenMenu()
         {
-            if(!CanSimulate||Life.IsTraining)return;
+            if(!CanSimulate||Life.IsTraining||Life.IsBoxing)return;
             locationIndex=-1;menu.SetActive(true);menuOwnedPause=true;game.Director.SetOverlayOpen(true);RefreshUi();
         }
         public void CloseMenu(){if(menu!=null)menu.SetActive(false);if(menuOwnedPause){menuOwnedPause=false;game.Director.SetOverlayOpen(false);}}
@@ -196,6 +212,34 @@ namespace Pozarevac.CityGame
             }
             if(conditioning.State==CityConditioningState.Expired)CancelConditioning("Kondicija: istekao je rok / bez XP.");
         }
+        public bool StartBoxing()
+        {
+            if(!CanSimulate||!Near(Gym)||game.Director.Jobs.IsActive||game.Director.Run.State==CityMissionState.Active||!Life.TryStartBoxing())return false;
+            boxing.Start();progress.SaveNow();
+            foreach(CityActorMotion motion in game.Player.GetComponentsInChildren<CityActorMotion>(true))motion.ConfigureBoxing(Life,boxing);
+            hud.ShowNotification("BOKS: 8 reakcija, najmanje 6 tačnih. Sačekaj SAD, J/udarac ili K/gard. +30 XP i razvoj izdržljivosti. ESC: prekid.",8);return true;
+        }
+        public bool BoxingInput(CityBoxingAction action)
+        {
+            if(!CanSimulate||!Life.IsBoxing||!Near(Gym))return false;
+            bool success=boxing.Respond(action);game.Audio.PlayCue(success?CityAudioCue.Checkpoint:CityAudioCue.Failure);return success;
+        }
+        public void CancelBoxing(){boxing.Cancel();Life.CancelBoxing();}
+        private void StepBoxing()
+        {
+            if(boxing.State!=CityBoxingState.Active)return;
+            if(!Life.IsBoxing||!Near(Gym)||Life.Wanted||game.Hideout.IsInside){CancelBoxing();return;}
+            Keyboard keyboard=Keyboard.current;
+            if(keyboard!=null&&keyboard.escapeKey.wasPressedThisFrame&&!game.Director.PauseChangedThisFrame){game.Director.SuppressPauseThisFrame();CancelBoxing();return;}
+            boxing.Tick(Time.deltaTime);
+            if(keyboard!=null&&keyboard.jKey.wasPressedThisFrame)BoxingInput(CityBoxingAction.Jab);
+            if(keyboard!=null&&keyboard.kKey.wasPressedThisFrame)BoxingInput(CityBoxingAction.Guard);
+            if(boxing.State==CityBoxingState.Completed)
+            {
+                if(boxing.TryClaim(Life)){progress.SaveNow();game.Audio.PlayCue(CityAudioCue.Success);hud.ShowNotification("BOKS ZAVRŠEN / +30 XP. Svaka 3 treninga: +1 izdržljivost; snaga benča ostaje odvojena.",7);}
+            }
+            else if(boxing.State==CityBoxingState.Failed){Life.CancelBoxing();hud.ShowNotification("Boks: potrebno je 6/8 tačnih reakcija. Odmori, pa probaj ponovo; bez XP.",6);}
+        }
         public bool Rep()=>CanSimulate&&Life.IsTraining&&Near(Gym)&&bench!=null&&bench.Press();
         public bool Eat(bool steal)
         {
@@ -214,11 +258,13 @@ namespace Pozarevac.CityGame
                 if(Life.IsTraining&&!Near(Gym))Life.CancelWorkout();
                 Life.Tick(Time.deltaTime,delta.magnitude/Mathf.Max(.001f,Time.deltaTime)>6.1f);
                 StepConditioning();
+                StepBoxing();
                 if(Life.IsTraining&&Keyboard.current!=null&&Keyboard.current.escapeKey.wasPressedThisFrame){game.Director.SuppressPauseThisFrame();Life.CancelWorkout();}
                 if(Life.IsTraining&&Keyboard.current!=null&&Keyboard.current.fKey.wasPressedThisFrame)Rep();
                 if(Life.IsTraining&&bench!=null&&bench.Tick(Time.deltaTime))Life.TryRep();
                 if(game.Session.Heat>=45&&!Life.Wanted)Life.ReportCrime();
                 bool visible=false,close=false;
+                if(Life.Wanted&&!lastWanted)foreach(CityPoliceOfficer officer in officers)officer.ReportIncident(game.Player.position);
                 foreach(CityPoliceOfficer officer in officers){officer.Step(Time.deltaTime,Life.Wanted);visible|=officer.SeesPlayer;close|=officer.CanCapture;}
                 Life.TickPolice(Time.deltaTime,visible,close);
                 if(Life.Arrests!=lastArrests){lastArrests=Life.Arrests;game.Director.FailCurrent("Priveden si / kazna do 120 DIN. Nezavršen posao nema isplatu.");game.Vitals.ReturnToCheckpoint();game.Hideout.ResetAfterRespawn();hud.ShowNotification("Privođenje / kazna naplaćena. Vrati se poslu bez nagrade za neuspešnu rutu.",7);progress.SaveNow();}
@@ -235,6 +281,7 @@ namespace Pozarevac.CityGame
                 CityPoliceOfficer nearest=officers[0];
                 foreach(CityPoliceOfficer officer in officers)if((officer.transform.position-game.Player.position).sqrMagnitude<(nearest.transform.position-game.Player.position).sqrMagnitude)nearest=officer;
                 siren.transform.position=nearest.transform.position+Vector3.up*1.6f;
+                siren.volume=.12f*game.Audio.DialogueDuck;
                 if(Time.unscaledTime>=sirenProbe)
                 {
                     sirenProbe=Time.unscaledTime+.25f;if(acoustics==null)acoustics=GetComponent<CitySpatialSoundscape>();
@@ -247,6 +294,8 @@ namespace Pozarevac.CityGame
         }
         private void RefreshUi()
         {
+            boxingPanel.SetActive(Life.IsBoxing);
+            boxingText.text=$"BOKS {Math.Min(8,boxing.Round+1)}/8 / TAČNO {boxing.Successes}/8 / IZDRŽLJIVOST {Life.Endurance}/5\n"+(boxing.Responded?"Odgovor zabeležen / sačekaj":boxing.WindowOpen?(boxing.Expected==CityBoxingAction.Jab?"SAD: UDARAC / J":"SAD: GARD / K"):"PRIPREMI SE / ne pritiskaj prerano");
             shade.SetActive(IsMenuOpen);banner.transform.parent.gameObject.SetActive(!IsMenuOpen);
             banner.text=$"LVL {Life.Level} / XP {Life.Experience} / SNAGA {Life.Strength}\nHRANA {Life.Nutrition:0}% / ENERGIJA {Life.Stamina:0}% / L: BLOK";
             policeBanner.gameObject.SetActive(Life.Wanted&&!IsMenuOpen);policeBanner.color=Mathf.Sin(Time.unscaledTime*5)>0?new Color(.4f,.08f,.08f,.9f):new Color(.05f,.15f,.45f,.9f);
@@ -260,7 +309,7 @@ namespace Pozarevac.CityGame
             workoutText.text=Life.IsConditioning?$"KONDICIJA {conditioning.Checkpoint+1}/3 / {conditioning.Remaining:0}s / STANI {conditioning.Hold:0.0}/1.2 s\nCilj {Vector3.Distance(game.Player.position,ConditioningTarget):0} m / +20 XP":$"{Life.Reps}/{CityLifestyle.RequiredReps} / {Life.TrainingRemaining:0.0}s / "+BenchPrompt();
             if(!IsMenuOpen)return;
             if(locationIndex>=0){var p=CityGeoRegistry.At(locationIndex);stats.text=$"DELOVI GRADA / {locationIndex+1}/{CityGeoRegistry.Count}\n{p.Name}\n{p.Latitude:F6}, {p.Longitude:F6}\nKorisnički kandidat, nije izgrađena zona.\n"+(p.ConflictingPin?"Lokacija je sporna: potrebno proveriti.":"Misije trenutno koriste centralnu igrivu zonu.")+"\nDELOVI GRADA: sledeći zapis.";return;}
-            stats.text=$"RAZVOJ LIKA / LVL {Life.Level}\n"+(Life.Wanted?"STATUS: POTERA / igra je pauzirana\n":"STATUS: MIRNO\n")+$"Hrana {Life.Nutrition:0}% / energija {Life.Stamina:0}%\nTreninzi {Life.Workouts} / snaga {Life.Strength}/5\nObroci {Life.Meals} / bekstva {Life.Escapes} / privođenja {Life.Arrests}\nIZAZOV BLOKA: trening + obrok + bekstvo\n"+(Life.ChallengeClaimed?"ZAVRŠEN / 250 DIN + 10 REP + 60 XP":"Jednokratna nagrada: 250 DIN / 10 REP / 60 XP")+$"\nKlupa {Vector3.Distance(game.Player.position,Gym.position):0} m / kiosk {Vector3.Distance(game.Player.position,Food.position):0} m\nOdmor posle treninga {Life.WorkoutCooldown:0} s";
+            stats.text=$"RAZVOJ LIKA / LVL {Life.Level}\n"+(Life.Wanted?"STATUS: POTERA / igra je pauzirana\n":"STATUS: MIRNO\n")+$"Hrana {Life.Nutrition:0}% / energija {Life.Stamina:0}%\nTreninzi {Life.Workouts} / snaga {Life.Strength}/5 / boks {Life.BoxingSessions} / izdržljivost {Life.Endurance}/5\nObroci {Life.Meals} / bekstva {Life.Escapes} / privođenja {Life.Arrests}\nIZAZOV BLOKA: trening + obrok + bekstvo\n"+(Life.ChallengeClaimed?"ZAVRŠEN / 250 DIN + 10 REP + 60 XP":"Jednokratna nagrada: 250 DIN / 10 REP / 60 XP")+$"\nKlupa {Vector3.Distance(game.Player.position,Gym.position):0} m / kiosk {Vector3.Distance(game.Player.position,Food.position):0} m\nOdmor posle treninga {Life.WorkoutCooldown:0} s";
         }
         private string BenchPrompt()
         {
@@ -280,9 +329,9 @@ namespace Pozarevac.CityGame
             for(int i=0;i<samples.Length;i++){double t=(double)i/rate;phase+=2*Math.PI*(740+150*Math.Sin(t*Math.PI*2))/rate;samples[i]=(float)Math.Sin(phase)*.35f;}
             AudioClip clip=AudioClip.Create("VKT_OriginalPatrolSiren",samples.Length,1,rate,false);clip.SetData(samples,0);return clip;
         }
-        private void OnDeath(){Life.OnDeath();conditioning.Cancel();CloseMenu();progress.SaveNow();}
+        private void OnDeath(){Life.OnDeath();conditioning.Cancel();CancelBoxing();CloseMenu();progress.SaveNow();}
         private void OnApplicationPause(bool paused){applicationSuspended=paused;if(paused&&siren!=null)siren.Pause();}
-        private void OnDisable(){if(game!=null){Life.CancelWorkout();Life.CancelConditioning();conditioning.Cancel();CloseMenu();}if(benchVisual!=null)benchVisual.Pose(false,1);if(siren!=null)siren.Stop();}
+        private void OnDisable(){if(game!=null){Life.CancelWorkout();Life.CancelConditioning();conditioning.Cancel();CancelBoxing();CloseMenu();}if(benchVisual!=null)benchVisual.Pose(false,1);if(siren!=null)siren.Stop();}
         private void OnDestroy()
         {
             if(game!=null)game.Vitals.Died-=OnDeath;

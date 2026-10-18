@@ -10,6 +10,10 @@ namespace Pozarevac.CityGame
         private Quaternion chestBase,headBase;
         private bool posed;
         private float breath,turn,previousYaw;
+        private CityLifestyle boxingLife;
+        private CityBoxingRun boxing;
+        public bool BoxingPoseActive=>boxingLife!=null&&boxingLife.IsBoxing&&leftArm!=null&&leftElbow!=null&&rightArm!=null&&rightElbow!=null;
+        public void ConfigureBoxing(CityLifestyle life,CityBoxingRun run){boxingLife=life;boxing=run;}
         public float ObservedSpeed=>speed;
         public float BreathingPhase=>breath;
         public void Initialize(Transform owner,Animation player)
@@ -50,6 +54,11 @@ namespace Pozarevac.CityGame
             }
             float swing=running?Mathf.Sin(phase)*Mathf.Lerp(.2f,.48f,Mathf.Clamp01(speed/8)):0;
             RelaxArm(leftArm,leftElbow,transform,leftSide,swing);RelaxArm(rightArm,rightElbow,transform,rightSide,-swing);
+            if(boxingLife!=null&&boxingLife.IsBoxing)
+            {
+                BoxingArm(leftArm,leftElbow,transform,leftSide,boxing!=null?boxing.Punch:0);
+                BoxingArm(rightArm,rightElbow,transform,rightSide,0);
+            }
             breath+=Time.deltaTime*Mathf.Lerp(1.8f,3.8f,Mathf.Clamp01(speed/8));
             float yaw=transform.eulerAngles.y;
             float yawRate=delta.magnitude>5?0:Mathf.DeltaAngle(previousYaw,yaw)/Mathf.Max(.001f,Time.deltaTime);previousYaw=yaw;
@@ -77,6 +86,17 @@ namespace Pozarevac.CityGame
                 Vector3 bend=(-model.up*.85f+model.forward*(.15f+Mathf.Abs(swing)*1.5f)).normalized;
                 if(forearm.sqrMagnitude>.00001f)elbow.rotation=Quaternion.FromToRotation(forearm,bend)*elbow.rotation;
             }
+        }
+        private static void BoxingArm(Transform arm,Transform elbow,Transform model,float side,float punch)
+        {
+            if(arm==null||elbow==null)return;
+            Vector3 upper=elbow.position-arm.position;
+            Vector3 target=(model.forward*.55f+model.right*side*.24f-model.up*.12f).normalized;
+            if(upper.sqrMagnitude>.00001f)arm.rotation=Quaternion.FromToRotation(upper,target)*arm.rotation;
+            if(elbow.childCount==0)return;
+            Vector3 lower=elbow.GetChild(0).position-elbow.position;
+            Vector3 guard=Vector3.Lerp(model.up*.85f+model.forward*.3f,model.forward,punch).normalized;
+            if(lower.sqrMagnitude>.00001f)elbow.rotation=Quaternion.FromToRotation(lower,guard)*elbow.rotation;
         }
     }
     public sealed class CityWorldLabel : MonoBehaviour

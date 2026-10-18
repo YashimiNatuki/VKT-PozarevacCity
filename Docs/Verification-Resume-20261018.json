@@ -1,0 +1,68 @@
+{
+  "milestone": "resume-boxing-android-20261018",
+  "profileVersion": 7,
+  "codeFingerprint": "1de9a2aea739d3112eaafaccf02f73227389517d0ff6195733b35177b9f15bd6",
+  "tests": {
+    "total": 177,
+    "passed": 176,
+    "failed": 0,
+    "skipped": 1
+  },
+  "backendTests": {
+    "passed": 16,
+    "failed": 0,
+    "warning": "Existing Starlette/httpx TestClient deprecation"
+  },
+  "elevationToolTests": {
+    "passed": 2,
+    "failed": 0
+  },
+  "windowsBuildErrors": 0,
+  "windowsPlayerPassed": true,
+  "runtime": "Actual Windows player: terrain loaded, nine physics interactions, three contracts, growth/trade, crew, district campaign and durable save restore passed. Catalog seed purchases, hideout entry/exit, four physical plants, watering, garden save restoration, death and hospital respawn passed. Spatial audio: six mono 3D emitters, one listener, clear/blocked/removed-wall rays, mute, suspension, interior fan and desk journal pause passed. Additive player breathing advanced. Enhanced: 600 OSM segments, 100 building footprints, 22 green polygons, 878 wall colliders, 12 benches/24 trees, city map, 16 strain cards, music overlay, job journal, physical street-job payout and durable story progress passed. Local audio decoded while suspended, stayed silent and started on application resume. Map upgrade: connected road/sidewalk topology, authored junction surfaces and street placards composed; renderer-distance budget retained all colliders and restored the camera view. Physical stone/stick pickups, paused attack gating, swept stone/window impact, single glass break, stick hit/NPC reaction, wall occlusion, pool exhaustion/reuse, projectile pause and death cleanup passed. Three camera modes, imported player avatar, bounded orbit, obstruction retraction and first-person restoration passed. Block life: physical gym and kiosk interaction, UI repetitions and anti-spam, pause ownership, paid/stolen food, wanted save restoration, police line-of-sight/occlusion and capture range, accelerated escape/arrest, one-time challenge and durable v5 character stats passed. Routine: authoritative wanted/training contact gates, staged cargo/receipt settlement, mission pause/suspension, scrollable journal, conditioning course/XP/save/cancellation, and bounded feedback audio pause/mute/suspension passed. Active street-job disk resume, single settlement, boxing UI/reaction/guard/reward/pause and durable rest passed.",
+  "runtimeEvidence": [
+    "VKT_DEVICE_METRICS frames=85 fps=51.5 touchPresses=0",
+    "VKT_DEVICE_METRICS frames=116 fps=52.7 touchPresses=0",
+    "VKT_STREETS_VERIFIED segments=600 junctions=51 budgetEntries=372 activeColliders=879",
+    "VKT_DEVICE_METRICS frames=1418 fps=59.1 touchPresses=0",
+    "VKT_DEVICE_METRICS frames=1431 fps=59.1 touchPresses=0",
+    "VKT_DEVICE_METRICS frames=1691 fps=59.2 touchPresses=0",
+    "VKT_ROUTINE_VERIFIED checkpoints=3 rewardXP=20 originalProfileVersion=7 wantedContactGate=true audioPauseMuteSuspend=true",
+    "VKT_DEVICE_METRICS frames=1776 fps=59.2 touchPresses=0",
+    "VKT_RESUME_BOXING_VERIFIED profileVersion=7 diskCargoResume=true payoutOnce=true boxingRounds=8 separateEndurance=true pause=true",
+    "VKT_DEVICE_METRICS frames=1800 fps=59.8 touchPresses=0"
+  ],
+  "originalIntroSha256": "46737d77d43de985fccfc24e7cf32dff61beba2c429e08a7ba49e040ec2dc80c",
+  "windows": {
+    "name": "VKT-Resume-Windows-20261018.zip",
+    "bytes": 203888613,
+    "sha256": "2f24802802b7f22957dc85e5afee06b7f6fec90e61bd59fcdcccf1ae8972aa64"
+  },
+  "android": {
+    "name": "VKT-Resume-Android-20261018.apk",
+    "size": 193359664,
+    "sha256": "f878e9ed76899d9b126adcf4f4b08911884d344275093d19f049ca2985725f7f",
+    "introIncluded": true,
+    "arm64": true,
+    "buildErrors": 0,
+    "physicalDeviceTested": false,
+    "package": "com.yashimi.vkt",
+    "versionCode": 3,
+    "minSdk": 28,
+    "signatureVerified": true,
+    "certificateSha256": "73e4417407e1b053081da46117c15babed99544f94b18361340ad6120ce9f98b",
+    "nativeLibraryCount": 7
+  },
+  "limits": [
+    "No connected Android device; physical touch, audible output and thermal/FPS traversal pending",
+    "Original authored flat ground remains enabled; 8 real DSM samples are intake evidence, not surveyed street heights",
+    "16 building relief meshes are original trim, not a surveyed landmark reconstruction",
+    "Police use local wall-aware steering, not a complete city navigation graph or witness simulation",
+    "Procedural boxing drill, not motion-captured sparring/bag-contact physics",
+    "User rejected the synthesized voice candidate as robotic; no natural multi-actor bank bundled"
+  ],
+  "voiceCandidates": {
+    "piper": "Rejected by user as robotic; excluded",
+    "vits": "Local generation passed; user could not listen yet; excluded"
+  }
+}

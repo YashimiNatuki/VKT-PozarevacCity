@@ -15,7 +15,7 @@ namespace Pozarevac.CityGame.Tests
             var progression=new CityProgression(CitySession.Restore(data),data);
             Assert.That(progression.Appearance.Outfit,Is.EqualTo(CityOutfit.Korzo));
             Assert.That(progression.Session.Cash,Is.EqualTo(340));
-            Assert.That(progression.Snapshot().version,Is.EqualTo(6));
+            Assert.That(progression.Snapshot().version,Is.EqualTo(CityProgression.CurrentProfileVersion));
         }
         [Test] public void ChoiceNotifiesOnceAndSurvivesIndependentSnapshots()
         {

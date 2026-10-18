@@ -30,8 +30,28 @@ namespace Pozarevac.CityGame
         public int SegmentCount {get;private set;}
         public int WallColliderCount {get;private set;}
         public int ParkCount {get;private set;}
+        public int DetailedBuildingCount {get;private set;}
         public Vector3 GroundAnchor => layout != null ? layout.transform.position : Vector3.zero;
         public Data Source {get;private set;}
+        public CityFootstepKind SurfaceAtWorld(Vector3 world)
+        {
+            if(layout==null||Source==null)return CityFootstepKind.Pavement;
+            Vector3 local=layout.transform.InverseTransformPoint(world);Vector2 point=new Vector2(local.x,local.z);
+            // Roads win over green polygons where the OSM outlines overlap.
+            foreach(Road road in Source.roads)
+            {
+                if(road.points==null)continue;
+                float half=CityRoadGeometry.Width(road.kind)*.5f+1.5f;
+                for(int i=1;i<road.points.Length;i++)
+                {
+                    Vector2 a=new Vector2(road.points[i-1].x,road.points[i-1].z),b=new Vector2(road.points[i].x,road.points[i].z),d=b-a;
+                    float t=d.sqrMagnitude>.0001f?Mathf.Clamp01(Vector2.Dot(point-a,d)/d.sqrMagnitude):0;
+                    if((point-a-d*t).sqrMagnitude<=half*half)return CityFootstepKind.Pavement;
+                }
+            }
+            if(Source.parks!=null)foreach(Park park in Source.parks)if(CityParkDetails.IsInside(point,park.points))return CityFootstepKind.Grass;
+            return CityFootstepKind.Pavement;
+        }
         public static Data Load()
         {
             TextAsset asset=Resources.Load<TextAsset>("Maps/PozarevacStreets");
@@ -157,6 +177,13 @@ namespace Pozarevac.CityGame
                 GameObject block=new GameObject("OSM_Building_"+building.id);block.transform.SetParent(layout.transform,false);
                 block.AddComponent<MeshFilter>().sharedMesh=facade;var renderer=block.AddComponent<MeshRenderer>();renderer.sharedMaterials=new[]{facadeMaterials[tile],roofMaterial};visibility.Register(renderer,false);
                 BuildWallCollision(block.transform,building,height);count++;
+                if(DetailedBuildingCount<16 && facade.bounds.center.sqrMagnitude<300*300)
+                {
+                    Mesh relief=CityFacadeRelief.Create(building,entrance);buildingMeshes.Add(relief);
+                    GameObject details=new GameObject("AuthoredCurvedFacadeTrim",typeof(MeshFilter),typeof(MeshRenderer));details.transform.SetParent(block.transform,false);
+                    details.GetComponent<MeshFilter>().sharedMesh=relief;var trimRenderer=details.GetComponent<MeshRenderer>();trimRenderer.sharedMaterial=walkMaterial;
+                    visibility.Register(trimRenderer,false);DetailedBuildingCount++;
+                }
             }
         }        private static void AppendFacadeSpan(Vector3 a,Vector3 b,float bottom,float top,float height,float u,float v,List<Vector3> vertices,List<int> triangles,List<Vector2> uv)
         {

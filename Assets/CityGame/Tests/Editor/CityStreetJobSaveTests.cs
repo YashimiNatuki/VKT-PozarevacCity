@@ -47,8 +47,8 @@ namespace Pozarevac.CityGame.Tests.Editor
             CityProgression restored = new CityProgression(CitySession.Restore(loaded), loaded);
             CityStreetJobs restarted = new CityStreetJobs(restored.Session); restored.BindStreetJobs(restarted);
             Assert.That(restarted.CompletedJobs, Is.EqualTo(3)); Assert.That(restarted.StoryChapter, Is.EqualTo(2));
-            Assert.That(restarted.IsActive, Is.False); Assert.That(restarted.ObjectiveIndex, Is.Zero);
-            Assert.That(restarted.TryVisit(0), Is.False);
+            Assert.That(restarted.IsActive, Is.True); Assert.That(restarted.ObjectiveIndex, Is.EqualTo(1));
+            Assert.That(restarted.HasCargo,Is.True);
             Assert.That(restored.Session.Cash, Is.EqualTo(cash)); Assert.That(restored.Session.Reputation, Is.EqualTo(reputation));
             Assert.That(restored.Garden.Seeds(0), Is.EqualTo(1));
         }

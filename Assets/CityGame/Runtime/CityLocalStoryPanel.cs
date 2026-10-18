@@ -75,7 +75,7 @@ namespace Pozarevac.CityGame
             stamina=Mathf.Clamp(Mathf.RoundToInt(lifestyle.Life.Stamina),0,100),job_active=game.Director.Jobs.IsActive,wanted=lifestyle.Life.Wanted};
         public bool Open()
         {
-            if(IsOpen||!lifestyle.CanSimulate||lifestyle.Life.IsTraining)return false;
+            if(IsOpen||!lifestyle.CanSimulate||lifestyle.Life.IsTraining||lifestyle.Life.IsBoxing)return false;
             ownsPause=true;game.Director.SetOverlayOpen(true);panel.SetActive(true);intent="briefing";
             Present(CityContactStory.Offline(Facts(),"not_requested"));return true;
         }

@@ -82,7 +82,7 @@ namespace Pozarevac.CityGame
         }
         public bool Open()
         {
-            if(IsOpen||!lifestyle.CanSimulate||lifestyle.Life.IsTraining)return false;
+            if(IsOpen||!lifestyle.CanSimulate||lifestyle.Life.IsTraining||lifestyle.Life.IsBoxing)return false;
             ownsPause=true;game.Director.SetOverlayOpen(true);panel.SetActive(true);stage.SetActive(true);
             pivot.localRotation=Quaternion.Euler(0,-15,0);Refresh();return true;
         }

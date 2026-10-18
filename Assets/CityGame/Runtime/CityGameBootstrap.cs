@@ -88,7 +88,7 @@ namespace Pozarevac.CityGame
 
         private void Update()
         {
-            if (Touch != null && Director != null) Touch.SetOverlayBlocked(Director.IsPaused || Progression.Lifestyle.IsTraining);
+            if (Touch != null && Director != null) Touch.SetOverlayBlocked(Director.IsPaused || Progression.Lifestyle.IsTraining || Progression.Lifestyle.IsBoxing);
             if (Vitals != null)
             {
                 hud.SetHealth(Vitals.Health.Current, Vitals.Health.Maximum);
@@ -200,6 +200,7 @@ namespace Pozarevac.CityGame
                     {
                         CityOsmStreets streets=gameObject.AddComponent<CityOsmStreets>();
                         streets.Initialize(georeference.transform, new Vector3(spawn.x, spawn.y, spawn.z));
+                        Audio.ConfigureSurfaces(streets);
                         gameObject.AddComponent<CityParkDetails>().Initialize(georeference.transform,streets.GroundAnchor,streets.Source);
                     }
                     else if (offline || authored)
@@ -209,6 +210,10 @@ namespace Pozarevac.CityGame
                     gameObject.AddComponent<CitySpatialSoundscape>().Initialize(this, spawn);
                     if (Intro != null && Intro.IsActive) Director.SetPaused(true);
                     WorldReady = true;
+#if DEVELOPMENT_BUILD || UNITY_EDITOR
+                    if(Application.platform==RuntimePlatform.Android||Array.IndexOf(Environment.GetCommandLineArgs(),"-vktDeviceMetrics")>=0)
+                        gameObject.AddComponent<CityDeviceMetrics>().Initialize(this);
+#endif
                     Debug.Log("CITY_GAME_READY: grounded player, three mission contracts and one active audio listener.");
                     loadingTerrain = false;
                     hud.ShowNotification("City ready. Follow the cyan pickup marker and press E to begin.", 6f);

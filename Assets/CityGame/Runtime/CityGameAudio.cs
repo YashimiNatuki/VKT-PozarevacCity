@@ -19,6 +19,13 @@ namespace Pozarevac.CityGame
         }
         private AudioClip footstep, landing;
         private AudioClip generatedFootstep, generatedLanding;
+        private AudioClip grassStep,woodStep;
+        private CityOsmStreets streets;
+        private Transform playerRoot;
+        private readonly RaycastHit[] groundHits=new RaycastHit[16];
+        public CityFootstepKind CurrentSurface {get;private set;}
+        public float DialogueDuck=>IsDialoguePlaying?.55f:1f;
+        public void ConfigureSurfaces(CityOsmStreets map){streets=map;}
         private bool suspended;
         public bool HasMovementClips => footstep != null && landing != null;
         public void SetMuted(bool value)
@@ -41,6 +48,7 @@ namespace Pozarevac.CityGame
             if (player == null) throw new System.ArgumentNullException(nameof(player));
             if (controller == null) throw new System.ArgumentNullException(nameof(controller));
             ui = controller; body = player.GetComponent<CharacterController>(); lastPosition = player.position;
+            playerRoot=player;
             effects = player.gameObject.AddComponent<AudioSource>(); effects.playOnAwake = false; effects.volume = 0.25f;
             dialogue = player.gameObject.AddComponent<AudioSource>(); dialogue.playOnAwake = false; dialogue.volume = 0.85f;
             feedback=player.gameObject.AddComponent<AudioSource>();feedback.playOnAwake=false;feedback.volume=.24f;feedback.priority=70;
@@ -48,6 +56,7 @@ namespace Pozarevac.CityGame
             footstep = Resources.Load<AudioClip>("Audio/Footstep"); landing = Resources.Load<AudioClip>("Audio/Land");
             if(footstep==null)footstep=generatedFootstep=CreateContact(false);
             if(landing==null)landing=generatedLanding=CreateContact(true);
+            grassStep=CreateSurfaceContact(CityFootstepKind.Grass);woodStep=CreateSurfaceContact(CityFootstepKind.Wood);
             voices = new[] { Resources.Load<AudioClip>("Audio/Voices/mila_enter"), Resources.Load<AudioClip>("Audio/Voices/vuk_exit"), Resources.Load<AudioClip>("Audio/Voices/luka_complete") };
             foreach (AudioClip clip in voices) if (clip != null) LoadedVoiceClips++;
             effects.priority = 100; dialogue.priority = 20;
@@ -76,12 +85,14 @@ namespace Pozarevac.CityGame
             if(cues!=null)foreach(AudioClip cue in cues)if(cue!=null)Destroy(cue);
             if(generatedFootstep!=null)Destroy(generatedFootstep);
             if(generatedLanding!=null)Destroy(generatedLanding);
+            if(grassStep!=null)Destroy(grassStep);if(woodStep!=null)Destroy(woodStep);
             // Resources clips are shared assets and must not be destroyed by this owner.
         }
         private void Update()
         {
             if (body == null) return;
             bool shouldPause = suspended || Time.timeScale <= 0f;
+            effects.volume=Mathf.MoveTowards(effects.volume,.25f*DialogueDuck,Time.unscaledDeltaTime);
             if (shouldPause != gameplayPaused)
             {
                 gameplayPaused = shouldPause;
@@ -97,11 +108,42 @@ namespace Pozarevac.CityGame
             {
                 if (!wasGrounded && landing != null && delta.y < -0.01f) effects.PlayOneShot(landing);
                 walked += new Vector2(delta.x, delta.z).magnitude;
-                if (walked >= 1.6f) { walked %= 1.6f; if (footstep != null) effects.PlayOneShot(footstep); }
+                if (walked >= 1.6f)
+                {
+                    walked %= 1.6f;CurrentSurface=ProbeSurface();
+                    AudioClip step=CurrentSurface==CityFootstepKind.Grass?grassStep:CurrentSurface==CityFootstepKind.Wood?woodStep:footstep;
+                    if(step!=null)effects.PlayOneShot(step);
+                }
             }
             wasGrounded = grounded;
         }
         private void OnApplicationPause(bool value){suspended=value;if(value&&initialized){gameplayPaused=true;effects.Pause();dialogue.Pause();feedback.Stop();}}
+        private CityFootstepKind ProbeSurface()
+        {
+            int count=Physics.RaycastNonAlloc(playerRoot.position+Vector3.up*.4f,Vector3.down,groundHits,1.2f,Physics.DefaultRaycastLayers,QueryTriggerInteraction.Ignore);
+            Collider nearest=null;float distance=float.PositiveInfinity;
+            if(count==groundHits.Length)return CityFootstepKind.Pavement;
+            for(int i=0;i<count;i++)if(groundHits[i].collider!=null&&!groundHits[i].transform.IsChildOf(playerRoot)&&groundHits[i].distance<distance){nearest=groundHits[i].collider;distance=groundHits[i].distance;}
+            if(nearest!=null)
+            {
+                CityFootstepSurface surface=nearest.GetComponentInParent<CityFootstepSurface>();
+                if(surface!=null&&System.Enum.IsDefined(typeof(CityFootstepKind),surface.kind))return surface.kind;
+            }
+            return streets!=null?streets.SurfaceAtWorld(playerRoot.position):CityFootstepKind.Pavement;
+        }
+        public static AudioClip CreateSurfaceContact(CityFootstepKind kind)
+        {
+            if(!System.Enum.IsDefined(typeof(CityFootstepKind),kind))throw new System.ArgumentOutOfRangeException(nameof(kind));
+            const int rate=22050;float[] samples=new float[4410];uint noise=0x712abdU;float low=0;
+            for(int i=0;i<samples.Length;i++)
+            {
+                noise^=noise<<13;noise^=noise>>17;noise^=noise<<5;
+                float t=(float)i/rate;low+=.25f*((noise&65535)/32767.5f-1-low);
+                float envelope=Mathf.Sin(Mathf.PI*i/(samples.Length-1))*Mathf.Exp(-t*18);
+                samples[i]=envelope*(kind==CityFootstepKind.Grass?low*.65f:Mathf.Sin(2*Mathf.PI*(kind==CityFootstepKind.Wood?165:100)*t)*.2f+low*.2f);
+            }
+            AudioClip clip=AudioClip.Create("VKT_OriginalSurface_"+kind,samples.Length,1,rate,false);clip.SetData(samples,0);return clip;
+        }
         // Original synthesized cues; callers own and must destroy returned clips.
         public static AudioClip CreateFeedbackClip(CityAudioCue cue)
         {

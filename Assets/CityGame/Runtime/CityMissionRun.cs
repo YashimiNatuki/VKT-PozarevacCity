@@ -79,6 +79,28 @@ namespace Pozarevac.CityGame
 
         public bool CanVisit(int station) => HasTarget && station == ObjectiveIndex && session.Heat < EffectiveHeatLimit;
 
+        public CityMissionSaveData Snapshot(int contractNumber) => new CityMissionSaveData
+        {
+            contractNumber=contractNumber, state=State, challenge=Challenge,
+            objectiveIndex=ObjectiveIndex, attempt=Attempt, remainingSeconds=RemainingSeconds
+        };
+
+        public static CityMissionRun Restore(CityMissionContract contract, CitySession session, CityMissionSaveData saved)
+        {
+            if (saved == null) throw new ArgumentNullException(nameof(saved));
+            CityMissionSaveData.Validate(saved, saved.state == CityMissionState.Completed ? saved.contractNumber : saved.contractNumber - 1);
+            var run = new CityMissionRun(contract, session) { Challenge=saved.challenge };
+            if (saved.remainingSeconds > run.EffectiveTimeLimit)
+                throw new ArgumentException("Mission deadline exceeds its contract.");
+            run.State=saved.state; run.ObjectiveIndex=saved.objectiveIndex;
+            run.Attempt=saved.attempt; run.RemainingSeconds=saved.remainingSeconds;
+            run.Cargo=saved.state==CityMissionState.Active && saved.objectiveIndex==1 ? 1 : 0;
+            run.Message=saved.state==CityMissionState.Completed ? "Završena ruta učitana. Isplata je već zabeležena." :
+                saved.state==CityMissionState.Failed ? "Prekinuta ruta učitana. R za novi pokušaj." :
+                saved.state==CityMissionState.Active ? contract.ObjectiveTitle(saved.objectiveIndex) : contract.Briefing;
+            return run;
+        }
+
         public bool TrySelectChallenge(CityMissionChallenge challenge)
         {
             if (!Enum.IsDefined(typeof(CityMissionChallenge), challenge))
@@ -155,7 +177,7 @@ namespace Pozarevac.CityGame
             ObjectiveIndex = 0;
             Cargo = 0;
             RemainingSeconds = EffectiveTimeLimit;
-            Attempt++;
+            Attempt=Math.Min(int.MaxValue-1,Attempt)+1;
             Revision++;
             Message = Contract.Briefing;
             return true;

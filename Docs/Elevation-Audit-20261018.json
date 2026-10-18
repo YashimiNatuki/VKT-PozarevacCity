@@ -1,0 +1,92 @@
+{
+  "schema": 1,
+  "source": "https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_N44_00_E021_00_DEM/Copernicus_DSM_COG_10_N44_00_E021_00_DEM.tif",
+  "sha256": "6f5c32e9f763f40446810257aa2140697ed504f054ec3e846cfb302cd9a82314",
+  "raster": {
+    "crs": "EPSG:4326",
+    "width": 3600,
+    "height": 3600,
+    "spacing": [
+      0.0002777777777777778,
+      0.0002777777777777778
+    ],
+    "nodata": null
+  },
+  "verticalDatum": "EGM2008 orthometric meters (provider documented, not local survey)",
+  "runtimeEnabled": false,
+  "warning": "DSM includes buildings and vegetation. Candidate locations and street heights require review. Existing flat gameplay remains authoritative.",
+  "points": [
+    {
+      "name": "Centar - candidate municipality",
+      "latitude": 44.620835,
+      "longitude": 21.184205,
+      "surfaceHeightMeters": 86.866,
+      "neighborhoodRangeMeters": 8.414,
+      "locationVerified": false,
+      "streetHeightVerified": false
+    },
+    {
+      "name": "Centar za kulturu - candidate",
+      "latitude": 44.619056,
+      "longitude": 21.187722,
+      "surfaceHeightMeters": 81.598,
+      "neighborhoodRangeMeters": 3.85,
+      "locationVerified": false,
+      "streetHeightVerified": false
+    },
+    {
+      "name": "Narodni muzej - candidate",
+      "latitude": 44.62175,
+      "longitude": 21.186806,
+      "surfaceHeightMeters": 80.144,
+      "neighborhoodRangeMeters": 5.071,
+      "locationVerified": false,
+      "streetHeightVerified": false
+    },
+    {
+      "name": "Cacalica star - candidate",
+      "latitude": 44.613667,
+      "longitude": 21.203778,
+      "surfaceHeightMeters": 171.183,
+      "neighborhoodRangeMeters": 14.658,
+      "locationVerified": false,
+      "streetHeightVerified": false
+    },
+    {
+      "name": "Tulba - candidate",
+      "latitude": 44.6052,
+      "longitude": 21.1865,
+      "surfaceHeightMeters": 79.975,
+      "neighborhoodRangeMeters": 1.312,
+      "locationVerified": false,
+      "streetHeightVerified": false
+    },
+    {
+      "name": "Busije - candidate",
+      "latitude": 44.6153,
+      "longitude": 21.1712,
+      "surfaceHeightMeters": 77.525,
+      "neighborhoodRangeMeters": 1.301,
+      "locationVerified": false,
+      "streetHeightVerified": false
+    },
+    {
+      "name": "Burjan - candidate",
+      "latitude": 44.6144,
+      "longitude": 21.1802,
+      "surfaceHeightMeters": 84.094,
+      "neighborhoodRangeMeters": 5.582,
+      "locationVerified": false,
+      "streetHeightVerified": false
+    },
+    {
+      "name": "Kruska brdo - candidate",
+      "latitude": 44.6321,
+      "longitude": 21.1915,
+      "surfaceHeightMeters": 83.051,
+      "neighborhoodRangeMeters": 3.648,
+      "locationVerified": false,
+      "streetHeightVerified": false
+    }
+  ]
+}

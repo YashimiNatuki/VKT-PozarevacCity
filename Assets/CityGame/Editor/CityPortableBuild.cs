@@ -121,9 +121,22 @@ namespace Pozarevac.CityGame.Editor
             bool previousExport = EditorUserBuildSettings.exportAsGoogleAndroidProject;
             bool previousDefaultGraphics = PlayerSettings.GetUseDefaultGraphicsAPIs(BuildTarget.StandaloneWindows64);
             GraphicsDeviceType[] previousGraphics = PlayerSettings.GetGraphicsAPIs(BuildTarget.StandaloneWindows64);
+            string stagedIntro=null;
             try
             {
-                if (android) PlayerSettings.Android.bundleVersionCode = 2;
+                if (android)
+                {
+                    PlayerSettings.Android.bundleVersionCode = 3;
+                    string source=Argument("-vktIntroSource", "");
+                    if(!string.IsNullOrWhiteSpace(source))
+                    {
+                        if(!File.Exists(source)||!source.EndsWith(".mp4",StringComparison.OrdinalIgnoreCase))throw new InvalidOperationException("Explicit intro input is missing.");
+                        string destination=Path.Combine(Application.streamingAssetsPath,"GameIntro_Pozarevac_ThugLife.mp4");
+                        if(File.Exists(destination))throw new InvalidOperationException("Android media staging refuses to overwrite an existing intro.");
+                        Directory.CreateDirectory(Path.GetDirectoryName(destination));
+                        File.Copy(source,destination,false);stagedIntro=destination;AssetDatabase.Refresh();
+                    }
+                }
                 if (windowsRootTrust)
                 {
                     if (Application.platform != RuntimePlatform.WindowsEditor) throw new InvalidOperationException("Windows root trust requires Windows.");
@@ -170,6 +183,12 @@ namespace Pozarevac.CityGame.Editor
             }
             finally
             {
+                if(stagedIntro!=null)
+                {
+                    File.Delete(stagedIntro);
+                    if(File.Exists(stagedIntro+".meta"))File.Delete(stagedIntro+".meta");
+                    AssetDatabase.Refresh();
+                }
                 Environment.SetEnvironmentVariable("BEE_BUILD_THREADS", previousBuildThreads);
                 if (windowsRootTrust) Environment.SetEnvironmentVariable("JAVA_TOOL_OPTIONS", previousJavaOptions);
                 PlayerSettings.SetUseDefaultGraphicsAPIs(BuildTarget.StandaloneWindows64, previousDefaultGraphics);

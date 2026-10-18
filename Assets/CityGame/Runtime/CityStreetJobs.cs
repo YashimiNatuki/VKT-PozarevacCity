@@ -26,12 +26,13 @@ namespace Pozarevac.CityGame
         }
     }
 
-    // Completed counts persist; active routes are deliberately abandoned on reload.
+    // Offer seed and phase persist with balances in the same atomic profile.
     // No claims of geographically accurate addresses: routes reuse three authored local stations.
     public sealed class CityStreetJobs
     {
         public const int MaximumCompletedJobs = 1000000;
         public event Action<int> Completed;
+        public event Action Changed;
         private readonly CitySession session;
         private CityLifestyle lifestyle;
         public void BindLifestyle(CityLifestyle value)
@@ -41,9 +42,10 @@ namespace Pozarevac.CityGame
             lifestyle=value;
         }
         public string BlockReason=>lifestyle!=null&&lifestyle.Wanted?"Potera je aktivna. Izgubi policiju pre kontakta.":
-            lifestyle!=null&&(lifestyle.IsTraining||lifestyle.IsConditioning)?"Završi ili prekini trening pre kontakta.":
+            lifestyle!=null&&(lifestyle.IsTraining||lifestyle.IsConditioning||lifestyle.IsBoxing)?"Završi ili prekini trening pre kontakta.":
             session.Heat>Offer.MaximumHeat?"Smanji HEAT na "+Offer.MaximumHeat+" za ovaj kontakt.":"";
         private uint random;
+        private uint offerSeed;
         public CityStreetJobOffer Offer { get; private set; }
         public bool IsActive { get; private set; }
         public int ObjectiveIndex { get; private set; }
@@ -69,6 +71,13 @@ namespace Pozarevac.CityGame
         {
             if (count < 0 || count > MaximumCompletedJobs) throw new ArgumentOutOfRangeException(nameof(count));
         }
+        public static void ValidateCheckpoint(CityStreetJobSaveData saved,int count)
+        {
+            ValidateCompletedCount(count);CityStreetJobSaveData.Validate(saved);
+            if(saved==null||saved.offerSeed==0)return;
+            var expected=new CityStreetJobs(new CitySession(0),saved.offerSeed,count);
+            if(saved.remainingSeconds>expected.Offer.TimeLimit)throw new ArgumentException("Street deadline exceeds its deterministic offer.");
+        }
         internal void RestoreCompletedCount(int count)
         {
             ValidateCompletedCount(count);
@@ -76,12 +85,29 @@ namespace Pozarevac.CityGame
             CompletedJobs = count;
             GenerateOffer();
         }
+        public CityStreetJobSaveData Snapshot() => new CityStreetJobSaveData
+        {
+            offerSeed=offerSeed, active=IsActive, objectiveIndex=IsActive?ObjectiveIndex:0,
+            remainingSeconds=RemainingSeconds, cooldownSeconds=CooldownSeconds
+        };
+        internal void Restore(int count, CityStreetJobSaveData saved)
+        {
+            CityStreetJobSaveData.Validate(saved);
+            RestoreCompletedCount(count);
+            if (saved == null || saved.offerSeed==0) return;
+            random=saved.offerSeed; GenerateOffer();
+            if (saved.remainingSeconds > Offer.TimeLimit) throw new ArgumentException("Street deadline exceeds its offer.");
+            IsActive=saved.active; ObjectiveIndex=saved.objectiveIndex;
+            RemainingSeconds=saved.remainingSeconds; CooldownSeconds=saved.cooldownSeconds;
+            Message=IsActive ? "Posao nastavljen: " + Offer.ObjectiveTitle(ObjectiveIndex) : "Ponuda učitana; prethodna isplata je zabeležena.";
+        }
         public bool TryAccept()
         {
             if (IsActive || CooldownSeconds > 0) return false;
             if(BlockReason.Length>0){Message=BlockReason;return false;}
             IsActive = true; ObjectiveIndex = 0; RemainingSeconds = Offer.TimeLimit;
             Message = Offer.Briefing;
+            Changed?.Invoke();
             return true;
         }
         public bool TryVisit(int station)
@@ -93,6 +119,7 @@ namespace Pozarevac.CityGame
             if (ObjectiveIndex < 3)
             {
                 Message = Offer.ObjectiveTitle(ObjectiveIndex) + " / marker " + (Offer.StationAt(ObjectiveIndex) + 1);
+                Changed?.Invoke();
                 return true;
             }
             int cash = Offer.CashReward, reputation = Offer.ReputationReward;
@@ -103,6 +130,7 @@ namespace Pozarevac.CityGame
             Message = "Sporedni posao završen: +" + cash + " cash / +" + reputation + " REP. Novi poziv za 30 sekundi igre.";
             session.Earn(cash, reputation);
             Completed?.Invoke(CompletedJobs);
+            Changed?.Invoke();
             return true;
         }
         public void Tick(double seconds)
@@ -118,6 +146,7 @@ namespace Pozarevac.CityGame
             if (string.IsNullOrWhiteSpace(reason)) throw new ArgumentException("A cancellation reason is required.", nameof(reason));
             IsActive = false; ObjectiveIndex = 0; RemainingSeconds = 0; CooldownSeconds = 15;
             GenerateOffer(); Message = reason;
+            Changed?.Invoke();
             return true;
         }
         private uint Next()
@@ -127,6 +156,7 @@ namespace Pozarevac.CityGame
         }
         private void GenerateOffer()
         {
+            offerSeed=random;
             int[] route = { 0, 1, 2 };
             for (int i = 2; i > 0; i--) { int selected = (int)(Next() % (uint)(i + 1)); int swap = route[i]; route[i] = route[selected]; route[selected] = swap; }
             int type = (int)(Next() % 6u), chapter = StoryChapter;

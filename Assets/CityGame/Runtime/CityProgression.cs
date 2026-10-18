@@ -21,6 +21,8 @@ namespace Pozarevac.CityGame
         public CityGardenData garden;
         public CityLifestyleData lifestyle;
         public CityAppearanceData appearance;
+        public CityMissionSaveData mission;
+        public CityStreetJobSaveData streetJob;
     }
 
     // Fictional, game-time economy. No real-world cultivation or trafficking instructions.
@@ -31,7 +33,9 @@ namespace Pozarevac.CityGame
         public const double GrowDuration = 30;
         private readonly CityProfileData data;
         private CityStreetJobs streetJobs;
-        public const int CurrentProfileVersion = 6;
+        private Func<CityMissionSaveData> captureMission;
+        public CityMissionSaveData SavedMission => CityMissionSaveData.Copy(data.mission);
+        public const int CurrentProfileVersion = 7;
         public int CompletedStreetJobs => streetJobs != null ? streetJobs.CompletedJobs : data.completedStreetJobs;
         public CitySession Session { get; }
         public CityGarden Garden { get; }
@@ -66,6 +70,11 @@ namespace Pozarevac.CityGame
             CityLifestyle.Validate(value.lifestyle);
             CityAppearance.Validate(value.appearance);
             CityStreetJobs.ValidateCompletedCount(value.completedStreetJobs);
+            CityMissionSaveData.Validate(value.mission, value.completedContracts);
+            CityStreetJobs.ValidateCheckpoint(value.streetJob,value.completedStreetJobs);
+            if (value.mission != null && value.mission.contractNumber!=0 && string.IsNullOrEmpty(value.callsign)) throw new ArgumentException("Mission requires a character.");
+            if (value.streetJob != null && value.streetJob.active && value.completedContracts != 3)
+                throw new ArgumentException("Active street job requires the campaign.");
             if (value.completedStreetJobs > 0 && value.completedContracts != 3) throw new ArgumentException("Street progress requires the city campaign.");
             if (value.callsign == null || (value.callsign.Length > 0 && !ValidCallsign(value.callsign)))
                 throw new ArgumentException("Invalid callsign.");
@@ -165,8 +174,14 @@ namespace Pozarevac.CityGame
             if (jobs == null) throw new ArgumentNullException(nameof(jobs));
             if (ReferenceEquals(streetJobs, jobs)) return;
             if (streetJobs != null) throw new InvalidOperationException("Street jobs are already bound.");
-            jobs.RestoreCompletedCount(data.completedStreetJobs);
+            jobs.Restore(data.completedStreetJobs, data.streetJob);
             streetJobs = jobs;
+        }
+
+        public void BindMissionSnapshot(Func<CityMissionSaveData> capture)
+        {
+            if (captureMission != null) throw new InvalidOperationException("Mission snapshot owner already bound.");
+            captureMission=capture ?? throw new ArgumentNullException(nameof(capture));
         }
 
         public CityProfileData Snapshot()
@@ -177,6 +192,12 @@ namespace Pozarevac.CityGame
             snapshot.heat = Session.Heat;
             snapshot.version = CurrentProfileVersion;
             snapshot.completedStreetJobs = CompletedStreetJobs;
+            snapshot.mission = captureMission != null ? captureMission() : CityMissionSaveData.Copy(data.mission);
+            // Reward observers may save before the director publishes ContractCompleted.
+            // Terminal state and its balance must still enter one durable transaction.
+            if (snapshot.mission != null && snapshot.mission.state == CityMissionState.Completed)
+                snapshot.completedContracts=snapshot.mission.contractNumber;
+            snapshot.streetJob = streetJobs != null ? streetJobs.Snapshot() : CityStreetJobSaveData.Copy(data.streetJob);
             snapshot.garden = Garden.Snapshot();
             snapshot.lifestyle = Lifestyle.Snapshot();
             snapshot.appearance = Appearance.Snapshot();
@@ -187,7 +208,8 @@ namespace Pozarevac.CityGame
         {
             version = source.version, callsign = source.callsign, cash = source.cash, reputation = source.reputation, heat = source.heat,
             completedContracts = source.completedContracts, completedStreetJobs = source.completedStreetJobs, seeds = source.seeds, stock = source.stock, growSeconds = source.growSeconds,
-            harvestReady = source.harvestReady, crew = source.crew, territories = source.territories, garden = CityGarden.Copy(source.garden), lifestyle = CityLifestyle.Copy(source.lifestyle), appearance = CityAppearance.Copy(source.appearance)
+            harvestReady = source.harvestReady, crew = source.crew, territories = source.territories, garden = CityGarden.Copy(source.garden), lifestyle = CityLifestyle.Copy(source.lifestyle), appearance = CityAppearance.Copy(source.appearance),
+            mission=CityMissionSaveData.Copy(source.mission), streetJob=CityStreetJobSaveData.Copy(source.streetJob)
         };
     }
 }

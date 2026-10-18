@@ -1,5 +1,20 @@
 # VKT / Velika Krađa Točkova — Požarevac City
 
+## Latest: mission resume, boxing and Android - 2026-10-18
+
+Profile **v7** resumes active campaign and street routes with their challenge, cargo/receipt phase, remaining game time and deterministic offer. Balances and settled mission state share one atomic save, so loading does not replay a payout. Existing v1-v6 gardens, clothing and progression migrate. Checkpoints save at handovers, not only after a balance change.
+
+At the gym choose **L / BOKS**: eight timed jab/guard reactions using J/K or touch buttons, at least six correct to earn 30 XP once. Boxing develops endurance independently of bench strength. A standing guard/jab pose, bag and dedicated collision-aware camera work from first person too. Shared training rest persists; incomplete workouts do not resume or pay after loading.
+
+Patrols investigate reported incidents and the last visible position, search locally and reacquire by line of sight. They do not continuously know a hidden player's location. Pavement/grass footsteps and dialogue ducking extend the existing audio. Sixteen nearby footprints gain original curved cornices/door trim. The real Copernicus raster was sampled at eight candidate locations, with provenance and datum recorded; **street terrain remains flat pending review/correction**. A free local Serbian voice candidate was synthesized outside the game and rejected by the user as understandable but robotic; a second VITS candidate runs locally but awaits listening review. A natural multi-actor bank remains open work.
+
+[Windows ZIP](https://github.com/YashimiNatuki/VKT-PozarevacCity/releases/download/vkt-resume-20261018/VKT-Resume-Windows-20261018.zip) | [Android APK](https://github.com/YashimiNatuki/VKT-PozarevacCity/releases/download/vkt-resume-20261018/VKT-Resume-Android-20261018.apk) | [Design, limits and next priorities](Docs/Resume-Boxing-Android-20261018.md) | [Verification](Docs/Verification-Resume-20261018.json)
+
+The original intro is included in both builds. Extract the complete Windows ZIP and run Launch-VKT.cmd; Android uses ARM64, Android 9+, landscape, development signing and version code 3. Physical touch/audio/thermal-FPS checks remain pending until a device is connected. Android development players write local frame/touch/audio configuration diagnostics; these are not a substitute for listening and control checks. Review the machine-readable receipt for actual final tests, build outcomes and SHA256 hashes.
+
+![Actual Windows boxing preview](Docs/Screenshots/resume-boxing-windows-20261018.png)
+
+
 A modular Unity street-action prototype with missions, a cannabis-themed game economy, health, hazards and a configurable city clock. Source repository: [YashimiNatuki/VKT-PozarevacCity](https://github.com/YashimiNatuki/VKT-PozarevacCity). Growth and trading are abstract game mechanics; strain histories are attributed to breeder sources.
 
 This repository is the standalone Unity source milestone. The older [browser/Three.js project](https://github.com/YashimiNatuki/3D-gta-Pozarevac) remains separate. No browser source or history is replaced.
@@ -10,7 +25,7 @@ Game Development Studio 1.5.1, a dedicated Node 24 LTS, Blender 4.5.9 LTS, FFmpe
 
 [Setup, versions and next use](Docs/Toolchain-20261017.md) | [Verification receipt](Docs/Verification-Toolchain-20261017.json). Check the installed environment with `vkt-python.cmd Tools/Toolchain/verify.py`.
 
-## Latest: connected mission routine, conditioning and audio - 2026-10-17
+## Previous: connected mission routine, conditioning and audio - 2026-10-17
 
 Mission contacts now honor actual wanted/training state, including wanted at zero HEAT. Jobs expose pickup/cargo/delivery-receipt phases and pay once at final confirmation. The director freezes timers on application suspension; pursuit alone does not freeze a delivery deadline. The journal now scrolls on touch or mouse wheel.
 

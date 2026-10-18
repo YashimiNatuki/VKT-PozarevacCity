@@ -1,0 +1,91 @@
+{
+  "repo": "phantom9623/piper-serbian-tts",
+  "revision": "a71694f9ec3480f132dffaf7eb422d43aebd69e0",
+  "license": "MIT per model publisher; base voice dataset CC-BY-4.0",
+  "files": {
+    "sr_Marko_medium.onnx": {
+      "bytes": 63516051,
+      "sha256": "2d009fe6d43e25b9516b23f5e64f65af202e76f0e6940e452dfb45852a412a68"
+    },
+    "sr_Marko_medium.onnx.json": {
+      "bytes": 4855,
+      "sha256": "f3ce50b11c799b0134e678cccecfb8751a4990de32dd710625139c728a1714fb"
+    },
+    "MODEL_CARD": {
+      "bytes": 143,
+      "sha256": "b51c7e1dbaababc35cc098928ff4364e53e14628a01c72744f4f48e361dbb297"
+    },
+    "README.md": {
+      "bytes": 251,
+      "sha256": "280164cd94a3129cbfd2bfb8bef15506e98d3247f97dae46a31622af29cd8848"
+    }
+  },
+  "speakers": 1,
+  "review": "Candidate only: model card language description inconsistent; Serbian listening review required before game admission",
+  "runtime": {
+    "piper": "1.4.1",
+    "pathvalidate": "3.3.1",
+    "isolated": true
+  },
+  "candidate": {
+    "name": "VKT-Voice-Candidate-Luka.wav",
+    "sha256": "9d5c49aa242267e62318deee919f4c898e2219297987ca081f21c7850628c701",
+    "sampleRate": 22050,
+    "channels": 1,
+    "seconds": 3.8545124716553287,
+    "normalization": "FFmpeg loudnorm I=-20, TP=-3, LRA=7",
+    "shippedInGame": false,
+    "humanNaturalnessReviewed": true,
+    "acceptedForGame": false,
+    "humanVerdict": "Understandable, but sounds robotic; rejected for game admission"
+  },
+  "vitsCandidate": {
+    "repo": "daremc86/sr-cv-vits",
+    "revision": "83dc1e1b95d85b9f5602dc94909706fc83dfbc6c",
+    "license": "CC-BY-4.0 per publisher",
+    "files": {
+      "model.pth": {
+        "bytes": 346592643,
+        "sha256": "7b43231864dbac69901155ed397c1a30d0d06b066b03f0348fd39eed2ea1d4b0"
+      },
+      "config.json": {
+        "bytes": 8412,
+        "sha256": "a0a14385a21854b970cee364a853950aa6168e690beb8c7c35d1673ea042d5c8"
+      },
+      "language_ids.json": {
+        "bytes": 15,
+        "sha256": "d249880c338370db1ee4df26207f541512cd05c275f2c0aafedf27e20abeccf4"
+      },
+      "speaker_ids.json": {
+        "bytes": 20,
+        "sha256": "4d877c09f8dca306307c51a1d0070d5fc493615eed11fdadc7d55d2976f685c8"
+      },
+      "README.md": {
+        "bytes": 3007,
+        "sha256": "88e2d5754f43c424ef9e10a4b6d8433cfffdd8bddba6f56cab519e4817d5ffd9"
+      }
+    },
+    "shippedInGame": false,
+    "runtime": {
+      "coqui-tts": "0.27.5",
+      "torch": "2.8.0",
+      "torchaudio": "2.8.0",
+      "transformers": "4.57.6",
+      "weightsOnlyLoad": true,
+      "cpuThreads": 2,
+      "pipCheckPassed": true
+    },
+    "candidate": {
+      "sampleRate": 22050,
+      "channels": 1,
+      "seconds": 5.237551020408163,
+      "sha256": "06ff9347d1fc7656fc594869b41c18688ba0b677104a4b09194c56eab5248865",
+      "normalization": "FFmpeg loudnorm I=-20, TP=-3, LRA=7",
+      "humanNaturalnessReviewed": false,
+      "userStatus": "Cannot listen now",
+      "shippedInGame": false,
+      "publicGeneratorRunPassed": true
+    },
+    "checkpointProviderSha256Verified": true
+  }
+}

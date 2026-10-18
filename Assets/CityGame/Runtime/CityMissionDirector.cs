@@ -30,15 +30,16 @@ namespace Pozarevac.CityGame
         private bool applicationSuspended;
         private bool CanAct => !applicationSuspended&&(vitals == null || vitals.CanAct);
         public string ContactBlockReason=>lifestyle!=null&&lifestyle.Wanted?"POTERA / prvo izgubi policiju.":
-            lifestyle!=null&&(lifestyle.IsTraining||lifestyle.IsConditioning)?"TRENING / završi ili prekini seriju pre misije.":"";
+            lifestyle!=null&&(lifestyle.IsTraining||lifestyle.IsConditioning||lifestyle.IsBoxing)?"TRENING / završi ili prekini seriju pre misije.":"";
         public void BindLifestyle(CityLifestyle state,CityGameAudio audio)
         {
             if(lifestyle!=null&&lifestyle!=state)throw new InvalidOperationException("Lifestyle already bound.");
             lifestyle=state??throw new ArgumentNullException(nameof(state));audioFeedback=audio;Jobs.BindLifestyle(state);
         }
         public void BindVitals(CityPlayerVitals value) { vitals = value; }
-        public void FailCurrent(string reason) { Jobs?.Cancel(reason); if (run != null) { run.Abort(reason); RefreshPresentation(); } }
+        public void FailCurrent(string reason) { Jobs?.Cancel(reason); if (run != null) { run.Abort(reason); RefreshPresentation(); ProgressChanged?.Invoke(); } }
         public event Action<int> ContractCompleted;
+        public event Action ProgressChanged;
 
         public CitySession Session { get; private set; }
         public CityMissionRun Run => run;
@@ -46,6 +47,16 @@ namespace Pozarevac.CityGame
         public bool StreetJobsUnlocked => run != null && run.State == CityMissionState.Completed && contractIndex == contracts.Length - 1;
         public int ContractNumber => contractIndex + 1;
         public int ContractCount => contracts?.Length ?? 0;
+        public CityMissionSaveData CaptureMission() => run?.Snapshot(ContractNumber);
+        public void RestoreMission(CityMissionSaveData saved)
+        {
+            if(saved==null)return;
+            if(contracts==null)throw new InvalidOperationException("Initialize the director before restoring.");
+            contractIndex=saved.contractNumber-1;
+            if(contractIndex<0||contractIndex>=contracts.Length)throw new ArgumentException("Unknown saved contract.");
+            run=CityMissionRun.Restore(contracts[contractIndex],Session,saved);
+            displayedRevision=-1; RefreshPresentation();
+        }
         public bool IsPaused { get; private set; }
         public bool PauseChangedThisFrame=>pauseChangedFrame==Time.frameCount;
         public void SuppressPauseThisFrame(){pauseChangedFrame=Time.frameCount;}
@@ -138,6 +149,7 @@ namespace Pozarevac.CityGame
             hud.ShowNotification(run.Message, 4f);
             audioFeedback?.PlayCue(run.State==CityMissionState.Completed?CityAudioCue.Success:CityAudioCue.Checkpoint);
             if (run.State == CityMissionState.Completed) ContractCompleted?.Invoke(contractIndex + 1);
+            ProgressChanged?.Invoke();
             RefreshPresentation();
             return true;
         }
@@ -148,6 +160,7 @@ namespace Pozarevac.CityGame
                 return false;
             contractIndex++;
             run = new CityMissionRun(contracts[contractIndex], Session);
+            ProgressChanged?.Invoke();
             displayedRevision = -1;
             hud.ShowNotification(run.Contract.Briefing, 5f);
             RefreshPresentation();
@@ -157,6 +170,7 @@ namespace Pozarevac.CityGame
         public bool TryRetry()
         {
             if (!CanAct || IsPaused || run == null || !run.Retry()) return false;
+            ProgressChanged?.Invoke();
             hud.ShowNotification("New attempt. Return to the cyan pickup marker.", 4f);
             RefreshPresentation();
             return true;
@@ -165,6 +179,7 @@ namespace Pozarevac.CityGame
         public bool TrySelectChallenge(CityMissionChallenge challenge)
         {
             if (!CanAct || IsPaused || run == null || !run.TrySelectChallenge(challenge)) return false;
+            ProgressChanged?.Invoke();
             hud.ShowNotification(run.Message, 4f);
             RefreshPresentation();
             return true;
@@ -199,7 +214,7 @@ namespace Pozarevac.CityGame
             if (run == null || overlayOpen || applicationSuspended) return;
             Keyboard keyboard = Keyboard.current;
             if (keyboard != null && keyboard.escapeKey.wasPressedThisFrame && pauseChangedFrame != Time.frameCount &&
-                (lifestyle==null||(!lifestyle.IsTraining&&!lifestyle.IsConditioning))) SetPaused(!IsPaused);
+                (lifestyle==null||(!lifestyle.IsTraining&&!lifestyle.IsConditioning&&!lifestyle.IsBoxing))) SetPaused(!IsPaused);
             if (IsPaused) return;
             if (keyboard != null && keyboard.digit1Key.wasPressedThisFrame) TrySelectChallenge(CityMissionChallenge.Standard);
             if (keyboard != null && keyboard.digit2Key.wasPressedThisFrame) TrySelectChallenge(CityMissionChallenge.Express);
