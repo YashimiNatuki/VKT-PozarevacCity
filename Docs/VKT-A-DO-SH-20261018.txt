@@ -1,0 +1,258 @@
+VKT / VELIKA KRAĐA TOČKOVA — POŽAREVAC CITY
+PREGLED OD A DO Š / 18. OKTOBAR 2026.
+Autor projekta: Yashimi Natuki / github.com/YashimiNatuki
+Status: igrivi razvojni prototip; nije završena komercijalna igra.
+
+01. ŠTA PRAVIMO
+Urbana akciona igra iz Požarevca: istraživanje grada, ulični poslovi,
+kontakti, reputacija, policijska potera, lični razvoj, trening i štek.
+Ton je lokalni, duhovit i ulični. Glavni lik je autorski simbolični avatar;
+ne predstavlja potvrđenu realističnu rekonstrukciju autorovog lica.
+
+02. NOVI PRIORITET PLATFORMI
+Windows je sada glavna platforma razvoja i provere kvaliteta.
+Android ostaje podržan u zajedničkoj arhitekturi, ali se novi mobilni
+buildovi i fizičke provere grupišu posle nekoliko povezanih izmena.
+Ne pravimo zasebne, međusobno neusaglašene gameplay sisteme za telefon.
+
+03. GDE JE IZVORNI PROJEKAT
+Radni Unity original:
+C:\Users\jamal\Pozarevac Lejt Najt 3D Gta-ThugLife
+Javni izvor / izolovani build checkout:
+C:\Users\jamal\Documents\VKT-PozarevacCity
+GitHub: https://github.com/YashimiNatuki/VKT-PozarevacCity
+Gameplay se proširuje u Assets/CityGame. Stariji browser/Three.js projekat,
+Y!Appi i AiRodja ostaju odvojeni; njihovi privatni fajlovi nisu kopirani.
+
+04. ARHITEKTURA
+Unity 6000.6.5f1, C#, Universal Render Pipeline i Input System.
+CityGameBootstrap sastavlja postojeće module u jednu scenu.
+Logički modeli određuju zdravlje, napredak, misije, trening i inventar.
+MonoBehaviour komponente povezuju modele sa svetom, unosom, kamerama i UI.
+Prikaz i AI tekst nemaju ovlašćenje da sami isplaćuju nagrade.
+Postoji offline igriva putanja; cloud servis nije obavezan za pokretanje.
+
+05. KAKO SE POKREĆE NA WINDOWS-U
+Preuzmi Windows ZIP sa release stranice, raspakuj CEO arhiv u novi folder.
+Pokreni VKT.exe ili priloženi Launch-VKT.cmd ako postoji u tom paketu.
+Ne izdvajaj samo EXE: VKT_Data, UnityPlayer.dll i prateće biblioteke
+moraju ostati uz njega. Unity Editor nije potreban za igranje.
+Novo izdanje ne raspakuj preko jedine kopije starog izdanja/profila.
+Aktuelna Expression + Audio verzija:
+https://github.com/YashimiNatuki/VKT-PozarevacCity/releases/tag/vkt-expression-audio-20261018
+
+06. OSNOVNE KONTROLE
+WASD: kretanje. Miš: pogled. Levi Shift: sprint. Space: skok.
+E / KORISTI: interakcija kada je predmet ili osoba u dometu.
+C: ciklus kamera. L / BLOK / LIK: meni lika i aktivnosti.
+F6 / MUZIKA: muzički i audio meni. M: zvuk igre tokom gameplay-a.
+Q: promena dostupnog oružja u postojećem sistemu borbe.
+F: benč unos kada trening traži spuštanje/potisak.
+J: direkt u boksu. K: gard u boksu. ESC: zatvaranje/prekid prema kontekstu.
+Uvek prati ekranom prikazan cilj; isti taster nije dozvoljen u svim stanjima.
+Meni, smrt, trening i pozadina aplikacije ograničavaju unos po kontekstu.
+
+07. KAMERE I LIK
+Postoje tri perspektive, uključujući pogled iz prvog lica i praćenje lika.
+Kamera proverava prepreke i skraćuje udaljenost da ograniči prolazak kroz zid.
+Lik koristi uvezeni Kenney stilizovani skelet, idle/run klipove i dodatno
+proceduralno poziranje za trening. Garderoba se čuva u profilu.
+Veličina tela je normalizovana oko 1,8 m; glava, vrat, šake, stopala i kapa
+su korigovani u ranijoj doradi. To nije anatomska ni fotorealistična simulacija.
+
+08. NOVO: LOGIKA IZRAZA LICA
+MIRAN: osnovni izgled. FOKUS: upozorenje, potera ili povratni događaj.
+NAPOR: veće opterećenje/kretanje. USPEH: događaj uspeha misije.
+POVREDA: primljena šteta. Prioritet: povreda > napor > fokus > uspeh > miran.
+Privremeni izrazi ističu kroz vreme igre; pauza ih ne troši.
+Pretplate na događaje se oslobađaju pri isključivanju i ponovnom vezivanju.
+To je kozmetički sloj; ne menja HP, novac, zadatke ni save format.
+Garderober -> LICE / CEO LIK -> IZRAZ LICA omogućava pregled pet stanja.
+Treptaj i pregled rade i dok garderober drži igru pauziranom.
+Granica: sadašnja 256 px slikana tekstura i jednostavna geometrija glave.
+Nema facial blendshape rig-a, fonema, pokretne vilice ni pravog lip sync-a.
+
+09. GLAVNI GAMEPLAY TOK
+Istraži blok -> pročitaj cilj/dnevnik -> kontaktiraj dostupnu osobu ->
+preuzmi posao -> završi fizičke korake -> potvrdi predaju -> dobiješ nagradu ->
+obnovi hranu/izdržljivost -> trening ili štek -> otključaš naredni sadržaj.
+Potera i trening mogu zatvoriti kontakt ili prekinuti neodgovarajuću radnju.
+Sistemi dele autoritativno stanje; dekorativni UI ne preskače uslove.
+Potrebna je još bolja povezana dramaturgija i karakterizacija glavnog lika.
+
+10. MISIJE I NASTAVAK POSLE UČITAVANJA
+Postoje kampanja, ugovori/izazovi i etapni ulični poslovi.
+Etape obuhvataju preuzimanje, teret, predaju i potvrdu/račun.
+Profil čuva aktivnu etapu, preostalo vreme, ponudu, teret i isplatu.
+Novac i završeno stanje se upisuju zajedno: učitavanje ne ponavlja nagradu.
+Pauza/pozadina zaustavljaju rokove; sama policijska potera ih ne zamrzava.
+Delimična fizička serija treninga se namerno ne nastavlja posle učitavanja.
+Potrebne su duže ručne provere cele kampanje i svih putanja grada.
+
+11. PROFIL I PODACI
+Trenutni gameplay profil je v7; postoje migracije starijih v1-v6 podataka.
+Spoljašnji save envelope i unutrašnja verzija profila nisu ista stvar.
+Postoje atomski upis, rezervna putanja i zaštita od zastarelog pisca.
+Čuvaju se napredak, inventar, garderoba, razvoj, misije i stanje odmora.
+Ne brisati podatke aplikacije niti deinstalirati Android radi obične nadogradnje.
+Android Unity podaci: /sdcard/Android/data/com.yashimi.vkt/files
+Windows koristi Unity persistentDataPath; tačan SavePath je u runtime
+konfiguraciji/progression kontroleru, a privatni profil se ne šalje na GitHub.
+
+12. ŠTEK I BILJKE
+Postoje fizički ulazak/izlazak iz šteka, saksije, nega, apstraktan rast,
+berba/inventar i kupoprodaja prema pravilima igre.
+Osam stabilnih trgovačkih ID-jeva: Amnesia Haze, OG Kush, Wedding Cake,
+Purple Haze, AK-47, White Widow, Sour Diesel i Green Gelato.
+Prvih pet je početno dostupno; sledeći pragovi reputacije su 30/60/100.
+Još osam informativnih kartica: Chronic, White Russian, Bubble Gum,
+Kali Mist, Warlock, Serious Kush, Blueberry i Orange Bud.
+Ukupno 16 kartica NE znači 16 aktivnih trgovačkih inventara.
+Kartice imaju pripisane izvore porekla/istorije; ilustracije nisu potvrđene
+fotografije svakog fenotipa. Nejasni nazivi nisu izmišljeni kao nova genetika.
+Cene, prinosi i trajanja su fiktivni balans igre, ne realno tržište ili uzgoj.
+Praktična realna proizvodnja nije deo ove projektne dokumentacije.
+
+13. EKONOMIJA I NAPREDAK
+Kupovina semena, reputaciona otključavanja, zalihe, prodaja i kupci/zona
+čine postojeću ekonomsku petlju. Nagrada mora imati jedan završni uslov.
+Novac, reputacija, snaga i izdržljivost nisu međusobno zamenljive promenljive.
+Dalji balans traži merenje vremena, prihoda, troškova i ponovljivosti poslova.
+Dodavanje novih trgovačkih ID-jeva zahteva migraciju inventara i testove.
+
+14. ZDRAVLJE, HRANA I POLICIJA
+HP, šteta, smrt i povratak na bezbednu tačku/hospital putanju su povezani.
+Hrana i stamina utiču na rutinu. Kiosk ima plaćenu i ukradenu opciju.
+Incidenti pokreću wanted/policijske reakcije.
+Patrole koriste vidljivost, poslednju viđenu poziciju i ograničenu lokalnu
+pretragu. Sakriven igrač nije automatski poznat patroli svakog trenutka.
+Ovo nije potpuna gradska simulacija istrage niti kompletan NavMesh saobraćaj.
+
+15. BORBA I REAKCIJE
+Postoje fizički kamen/motka, preuzimanje, promena sredstva i reakcija mete.
+Projektil proverava putanju udara; staklo se lomi jednom, efekti se ponovo
+koriste preko ograničenog pool-a. Pauza/smrt čiste ili blokiraju napad.
+Pistolji, tenkovi, napredni ragdoll i velike destruktivne scene nisu time gotovi.
+Zabavne buduće scene ne smeju zaobići kolizije, misije i profil.
+
+16. BENČ TRENING
+Na fizičkoj stanici započni TRENING. F spušta šipku tokom 0,9 sekundi;
+na GURAJ potvrdi u roku 0,75 sekundi; potisak traje 0,8 sekundi.
+Oporavak između ponavljanja: 0,25 sekundi. Cilj: 8 punih ponavljanja za
+45 aktivnih sekundi. Rana/dupla potvrda ne povećava broj ponavljanja.
+Puno ponavljanje troši 3 stamina; kompletna serija daje postojećih 40 XP,
+trošak ishrane i odmor 90 s. Tri završene serije daju nivo snage, maksimum 5.
+Ruke prate šipku preko IK, noge imaju oslonac, kamera je posebna.
+To je proceduralno poziranje, ne snimljen profesionalni pokret ili simulacija mišića.
+Ulazak/izlazak sa klupe i dalje traže kvalitetnije animacione prelaze.
+
+17. BOKS I KONDICIJA
+Boks: 8 vremenskih reakcija direkt/gard; najmanje 6 tačnih daje 30 XP jednom.
+Izdržljivost se razvija odvojeno od benč snage; zajednički odmor se čuva.
+Kondicija: fizički kurs kroz 3 kontrolne tačke; cilj i tajmer vodi postojeći UI.
+Delimičan/neuspešan trening ne isplaćuje kompletan trening.
+Dalje: izbor opterećenja, kvalitet pokreta i odmor kao jasna rutina, bez
+uvođenja lažnog medicinskog savetnika ili obaveznog realnog fitnes naloga.
+
+18. POŽAREVAC I MAPA
+Postoje OSM putanje, natpisi, zgrade, parkovi, detalji i mapa grada.
+Poslednji provereni Windows uzorak: 600 segmenata, 100 footprint-a,
+22 zelena poligona, 51 raskrsnica, ograničen budžet renderovanja.
+Vidljivost renderera se smanjuje s udaljenošću; kolizije ostaju sačuvane.
+Imena delova grada i POI vode se kroz postojeći geo registar i misije.
+Važno: podaci iz ranijih korisničkih tabela nisu automatski potvrđene koordinate.
+Hipodrom i Ljubičevo nisu ista lokacija samo zato što su stavljeni u isti red.
+GeoProjector ideja je korisna za metre istok/sever; ne uvoditi drugi origin
+neusaglašen sa već postojećom georeferencijom i skalom scene.
+
+19. TEREN I REALISTIČNOST
+Uzorci Copernicus rastera za osam kandidata postoje kao intake sa poreklom.
+Ulični teren ostaje ravan dok se ne pregledaju visine i vertikalni datum.
+DSM može opisivati krov/krošnju, a ne prohodno tlo; nije dovoljno ubaciti
+satelitski raster i očekivati ispravne kolizije/visine ulica.
+Sledeća vidljiva dorada: prepoznatljive centralne fasade, realne proporcije,
+bolji trotoari, ivičnjaci, površine, obli krovovi i lokalni landmark objekti.
+Proširenja na druge gradove zahtevaju podatke, licence, budžet i posebne misije;
+autobus/voz kao prelaz ostaje buduća funkcionalnost, nije sada isporučena.
+
+20. AUDIO I ŠPICA
+Originalni video uvod je uključen, oko 43,5 s, sa audio trakom.
+Korisnik je potvrdio da se prethodna verzija uvoda čula na telefonu.
+Postoje koraci prema podlozi, efekti povratne informacije, 3D ambijentalni
+emiteri, provera zaklanjanja i smanjenje ambijenta tokom dijaloga.
+Windows smoke je proverio 6 emitera i jedan AudioListener.
+MUZIKA/F6 ima zaseban plejer; dostupnost lokalnih formata/radija nije
+garancija da svaka internet stanica radi ili da muzika ima licencu za distribuciju.
+Privatna muzika sa računara se ne objavljuje automatski u javnom release-u.
+
+21. NOVO: KAKO PROVERITI ZVUK I GDE SU GLASOVI
+Otvori MUZIKA / F6 -> PROBA ZVUKA: pušta kratak generisani ton.
+ZVUK IGRE je odvojen od muzičkog MUTE dugmeta.
+Proba radi u pauziranom meniju i prekida se pri mute/zatvaranju/pozadini.
+GLASOVI prikazuje broj stvarno učitanih klipova. Trenutno je 0/3.
+Mila, Vuk i Luka zato prikazuju srpske titlove; nema njihovih govornih snimaka.
+Ton nije NPC glas. Raniji Piper uzorak je odbijen kao robotski; VITS kandidat
+ostaje van APK-a dok se ne presluša i odobri kvalitet i licenca.
+
+22. LOKALNI AI / OLLAMA
+Opcioni Windows lokalni backend koristi FastAPI/Pydantic i Ollama tekst model.
+Unity šalje ograničene činjenice; AI može predložiti kratku repliku, ne komandu.
+127.0.0.1:18741 je companion; 127.0.0.1:11434 je Ollama.
+Postoje rok, jedna generacija u trenutku, keš i authored offline fallback.
+UI označava OLLAMA / KEŠ / OFFLINE PRIČA. Bez servisa igra ostaje funkcionalna.
+Start: Tools/LocalAI/Start-LocalAI.ps1; prvi Prepare koristi izdvojeno okruženje.
+Detalji: Docs/Local-AI-20261017.md i Docs/AI-Reliability-20261017.md.
+Modeli se ne preuzimaju sami. Nema tajnog API ključa u igri.
+Android loopback nije Windows računar; telefon trenutno koristi offline kontakt.
+Zahtevni AI ne treba da blokira glavni Unity thread niti odlučuje o isplati.
+
+23. ALATI I HEVY
+Postoje lokalne putanje za Unity, Blender, FFmpeg i izdvojeni Python alatni sloj.
+Dokument Docs/Toolchain-20261017.md beleži prethodnu proveru njihovih verzija;
+to ne znači da je svaka moguća biblioteka aktivirana u svakom izdanju.
+Hevy konektor nije dostupan kroz izložene alate ove sesije. Zvanični API
+trenutno zahteva Hevy Pro i API ključ: https://api.hevyapp.com/docs/
+Zato nije ubačena plaćena zavisnost niti su čitani/menjani lični treninzi.
+VKT trening modeli ostaju lokalni. Eventualni kasniji adapter treba da bude
+opcioni i da ne postane uslov za gameplay ili čuvanje podataka.
+
+24. ŠTA JE STVARNO PROVERENO U OVOM IZDANJU
+Unity EditMode: 186 prošlo, 0 palo, 1 opcioni ArcGIS preskočen.
+Windows build: uspešan, 0 build grešaka. Stvarna pokrenuta Windows igra:
+pet izraza u pauzi; treptaj; proba tona/mute/zatvaranje; postojeći save,
+misije, boks, štek, kolizije, kamere, intro i prostorni zvuk — prošli smoke.
+Android v7: ARM64 IL2CPP, Android 9+, target SDK 36, kompatibilan potpis,
+originalni uvod istih bajtova; update instaliran i pokrenut uz save backup.
+Telefon je potom nestao sa ADB veze. NOVA v7 touch/audio/FPS provera je
+NEDOVRŠENA. Ranija v6 merenja ~36,7 FPS nisu nova v7 merenja ni stabilnih 60.
+Raniji AssetPackManager startup zapis ostaje otvoren problem, ne prikriva se.
+Automatski testovi ne potvrđuju kvalitet srpskog izgovora ili celu igru bez bagova.
+Mašinski dokaz: Docs/Verification-Expression-Audio-20261018.json.
+
+25. RADNI PROTOKOL DALJE
+Prvo slaba karika i reprodukcija -> mali povezani zahvat -> test modela ->
+Unity kompilacija -> Windows stvarni playtest/screenshot -> poređenje izvora ->
+README i dokaz -> commit/push/release. Android kasnije u grupisanoj doradi.
+Originalne scene, privatni mediji, profil, ključevi i podešavanja se čuvaju.
+Public sinhronizacija se radi samo kada original odgovara poznatoj osnovi;
+nezavisna promena originala mora biti razrešena pre kopiranja.
+Ne dodavati servise samo zbog velikog spiska: svaki mora imati konkretnu ulogu.
+
+26. PRIORITETI SLEDEĆEG WINDOWS CIKLUSA
+1. Glava/licе: licenciran kvalitetniji rig, kapci/vilica, proporcije, materijali,
+   expressions i LOD; isti izgled u hodu, garderoberu, benču i kamerama.
+2. Centar Požarevca: reprezentativan mali blok sa prepoznatljivim objektima,
+   proverenom skalom, podlogama i pešačkim prolazima, pa širenje tog kvaliteta.
+3. Prirodni srpski dijalozi: odobren besplatan/licenciran glasovni bank,
+   zvučni miks, titlovi, govor/animacija i prostorne scene slušanja.
+4. Misijska priča: povezan uvod u lik, motivacija, kontakti, posledice izbora,
+   policijska eskalacija i kontrolisani dinamični događaji.
+5. Trening rutina: ulazak/izlazak sa klupe, opterećenje, povratna informacija,
+   boks reakcije i izdržljivost bez spamovanja i duplih nagrada.
+6. Windows UX: dosledni meniji, fokus tastature, podešavanja, objašnjenje
+   statusa AI/audio servisa i čitljivost na više rezolucija.
+7. Performanse i pouzdanost: duže rute, profiler, memorija, asset lifecycle,
+   saobraćaj i kolizije; tek zatim grupisana Android optimizacija i test telefona.
+
+Ovo je stanje i plan u trenutku izrade dokumenta, ne obećanje da su budući
+rigovi, gradovi, prirodni glasovi i sve misije već implementirani.

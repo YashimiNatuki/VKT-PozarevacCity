@@ -14,7 +14,8 @@ namespace Pozarevac.CityGame
         private RenderTexture image;
         private CityCharacterLook look;
         private CityCharacterPhysique physique;
-        private Text title;
+        private Text title, expressionLabel;
+        public CityFaceMood PreviewMood=>look!=null?look.Face.PreviewMood:CityFaceMood.Calm;
         private bool ownsPause;
         public bool Portrait { get; private set; }
         public bool IsOpen=>panel!=null&&panel.activeSelf;
@@ -64,6 +65,8 @@ namespace Pozarevac.CityGame
             Button("← OKRENI",new Vector2(-355,-250),()=>Rotate(-45));
             Button("OKRENI →",new Vector2(-165,-250),()=>Rotate(45));
             Button("LICE / CEO LIK",new Vector2(-260,280),TogglePortrait);
+            expressionLabel=Button("IZRAZ LICA",new Vector2(-60,280),CycleExpression).GetComponentInChildren<Text>();
+            expressionLabel.text="IZRAZ / MIRAN";
             Button("NAZAD U GRAD / ESC",new Vector2(210,-225),Close);
             canvas.AddComponent<CityUiSkin>().ApplyTree();
         }
@@ -77,17 +80,23 @@ namespace Pozarevac.CityGame
             Text text=parent.gameObject.AddComponent<Text>();text.text=value;text.font=Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
             text.fontSize=size;text.color=Color.white;text.alignment=TextAnchor.MiddleCenter;text.raycastTarget=false;return text;
         }
-        private void Button(string caption,Vector2 at,UnityEngine.Events.UnityAction action)
+        private Button Button(string caption,Vector2 at,UnityEngine.Events.UnityAction action)
         {
             var rect=Rect(caption,panel.transform,new Vector2(at.x<0?175:420,48),at);Image background=rect.gameObject.AddComponent<Image>();background.color=new Color(.055f,.2f,.24f);
             var button=rect.gameObject.AddComponent<Button>();button.targetGraphic=background;button.onClick.AddListener(action);
-            Label(Rect("Label",rect,new Vector2(at.x<0?170:410,44),Vector2.zero),caption,18);
+            Label(Rect("Label",rect,new Vector2(at.x<0?170:410,44),Vector2.zero),caption,18);return button;
         }
         public bool Open()
         {
             if(IsOpen||!lifestyle.CanSimulate||lifestyle.Life.IsTraining||lifestyle.Life.IsBoxing)return false;
             ownsPause=true;game.Director.SetOverlayOpen(true);panel.SetActive(true);stage.SetActive(true);
             pivot.localRotation=Quaternion.Euler(0,-15,0);Refresh();return true;
+        }
+        public void CycleExpression()
+        {
+            if(!IsOpen)return;
+            look.Face.PreviewMood=(CityFaceMood)(((int)look.Face.PreviewMood+1)%5);
+            expressionLabel.text="IZRAZ / "+CityFaceState.Name(look.Face.PreviewMood);
         }
         public void TogglePortrait()
         {

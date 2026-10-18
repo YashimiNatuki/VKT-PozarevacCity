@@ -14,6 +14,7 @@ namespace Pozarevac.CityGame
         private CityCharacterLook look;
         private CityActorMotion actorMotion;
         public CityOutfit CurrentOutfit => look!=null?look.Outfit:CityOutfit.Korzo;
+        public void ConfigureFeedback(CityGameAudio audio){if(look!=null)look.Face.BindFeedback(owner.GetComponent<CityPlayerVitals>(),audio);}
         private readonly RaycastHit[] hits = new RaycastHit[24];
         private readonly RaycastHit[] aimHits = new RaycastHit[24];
         private Transform weapon;
@@ -103,6 +104,7 @@ namespace Pozarevac.CityGame
             bool boxing=lifestyle!=null&&lifestyle.IsBoxing;
             if(look!=null)look.Apply(appearance!=null?appearance.Outfit:CityOutfit.Korzo,lifestyle!=null?lifestyle.Strength:0);
             if(look!=null)look.Face.SetEffort(boxing?.8f:actorMotion!=null?Mathf.Clamp01(actorMotion.ObservedSpeed/8):0);
+            if(look!=null)look.Face.SetAlert(lifestyle!=null&&lifestyle.Wanted);
             if(avatar!=null)avatar.SetActive(!training&&(boxing||Mode!=CityCameraMode.FirstPerson));
             if(training||boxing)
             {

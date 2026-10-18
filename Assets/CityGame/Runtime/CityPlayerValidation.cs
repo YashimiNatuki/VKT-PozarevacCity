@@ -403,6 +403,15 @@ namespace Pozarevac.CityGame
                         if(previewFace.State.x>.85f){blinked=true;break;}yield return null;
                     }
                     if(!blinked){Finish(false,"Wardrobe face did not blink during its owned pause.");yield break;}
+                    for(int mood=1;mood<=5;mood++)
+                    {
+                        runtime.Wardrobe.CycleExpression();yield return new WaitForSecondsRealtime(.35f);
+                        if(previewFace.Mood!=(CityFaceMood)(mood%5)||!game.Director.IsPaused)
+                        {Finish(false,"Expression preview changed pause ownership or selected the wrong mood.");yield break;}
+                        if(mood==3&&!CaptureRenderedFrame(game,portraitCapture.Replace(".png","-success.png"),out _))
+                        {Finish(false,"Success expression capture failed.");yield break;}
+                    }
+                    Debug.Log("VKT_FACE_STATES_VERIFIED count=5 previewWhilePaused=true");
                     Debug.Log("VKT_CHARACTER_UI_VERIFIED portrait=true previewBlinkDuringPause=true");
                     runtime.Wardrobe.TogglePortrait();
                 }
@@ -590,6 +599,18 @@ namespace Pozarevac.CityGame
             game.Audio.SetMuted(false);game.Audio.PlayCue(CityAudioCue.Success);game.Audio.SendMessage("OnApplicationPause",true);yield return new WaitForSecondsRealtime(.03f);
             if(game.Audio.CuePlaying||game.Audio.PlayCue(CityAudioCue.Checkpoint)){Finish(false,"Suspended feedback accepted a cue.");yield break;}
             game.Audio.SendMessage("OnApplicationPause",false);controller.SaveNow();
+            var audioPanel=game.GetComponent<CityMusicPanel>();audioPanel.Toggle();yield return null;
+            if(!audioPanel.IsOpen||!game.Director.IsPaused||!game.Audio.TryPlayDiagnostic())
+            {Finish(false,"Paused menu audio probe was unavailable.");yield break;}
+            yield return new WaitForSecondsRealtime(.03f);
+            if(!game.Audio.DiagnosticPlaying){Finish(false,"Menu audio probe did not play.");yield break;}
+            game.Audio.SetMuted(true);
+            if(game.Audio.DiagnosticPlaying||game.Audio.TryPlayDiagnostic())
+            {Finish(false,"Muted menu audio probe kept playing.");yield break;}
+            game.Audio.SetMuted(false);game.Audio.TryPlayDiagnostic();audioPanel.Close();
+            if(game.Audio.DiagnosticPlaying||game.Director.IsPaused)
+            {Finish(false,"Closing audio menu leaked probe playback or pause.");yield break;}
+            Debug.Log("VKT_AUDIO_PROBE_VERIFIED pausedPlayback=true muteStops=true closeStops=true voices="+game.Audio.LoadedVoiceClips);
             Debug.Log("VKT_ROUTINE_VERIFIED checkpoints=3 rewardXP=20 originalProfileVersion="+CityProgression.CurrentProfileVersion+" wantedContactGate=true audioPauseMuteSuspend=true");
             routineVerified=true;
         }

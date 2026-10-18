@@ -184,6 +184,7 @@ namespace Pozarevac.CityGame
                     movement.ConfigureTouch(Touch);
                     CityCameraRig cameraRig = playerCamera.gameObject.AddComponent<CityCameraRig>();
                     cameraRig.Initialize(Player, playerCamera.transform);
+                    cameraRig.ConfigureFeedback(Audio);
                     Touch.BindCamera(cameraRig.Cycle);
                     Combat = gameObject.AddComponent<CityCombatRuntime>();
                     Combat.Initialize(this, hud, georeference.transform, Player.position);
@@ -193,7 +194,7 @@ namespace Pozarevac.CityGame
                     ambience.Initialize(Atmosphere, () => Hideout != null && Hideout.IsInside, () => Audio.Muted);
                     CityMusicPlayer music = gameObject.AddComponent<CityMusicPlayer>();
                     music.Initialize();
-                    gameObject.AddComponent<CityMusicPanel>().Initialize(music, () => Director.IsPaused, open => Director.SetOverlayOpen(open));
+                    gameObject.AddComponent<CityMusicPanel>().Initialize(music, () => Director.IsPaused, open => Director.SetOverlayOpen(open),Audio);
                     bool offline = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name == "VKTOffline";
                     bool authored = Array.Exists(Environment.GetCommandLineArgs(), arg => arg == "-vktAuthoredCenter");
                     if (offline && !authored && CityOsmStreets.Load() != null)

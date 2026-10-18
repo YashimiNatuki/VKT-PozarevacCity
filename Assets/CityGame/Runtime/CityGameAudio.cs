@@ -8,13 +8,24 @@ namespace Pozarevac.CityGame
     public sealed class CityGameAudio : MonoBehaviour
     {
         private AudioSource effects, dialogue, feedback;
+        private AudioSource diagnostics;
+        public event System.Action<CityAudioCue> CueRequested;
+        public bool DiagnosticPlaying=>diagnostics!=null&&diagnostics.isPlaying;
+        public void StopDiagnostic(){if(diagnostics!=null)diagnostics.Stop();}
+        public bool TryPlayDiagnostic()
+        {
+            if(!initialized||Muted||suspended||!isActiveAndEnabled)return false;
+            diagnostics.clip=cues[0];diagnostics.Play();return true;
+        }
         private AudioClip[] cues;
         private float nextCue;
         public bool CuePlaying=>feedback!=null&&feedback.isPlaying;
         public bool PlayCue(CityAudioCue cue)
         {
             if((int)cue<0||(int)cue>2)throw new System.ArgumentOutOfRangeException(nameof(cue));
-            if(!initialized||Muted||suspended||Time.timeScale<=0||Time.unscaledTime<nextCue)return false;
+            if(!initialized||suspended||Time.timeScale<=0)return false;
+            CueRequested?.Invoke(cue);
+            if(Muted||Time.unscaledTime<nextCue)return false;
             nextCue=Time.unscaledTime+.15f;feedback.clip=cues[(int)cue];feedback.Play();return true;
         }
         private AudioClip footstep, landing;
@@ -31,6 +42,7 @@ namespace Pozarevac.CityGame
         public void SetMuted(bool value)
         {
             Muted=value;if(effects!=null)effects.mute=value;if(dialogue!=null)dialogue.mute=value;if(feedback!=null)feedback.mute=value;
+            if(diagnostics!=null){diagnostics.mute=value;if(value)diagnostics.Stop();}
         }
         private CityProgressionController ui;
         private CharacterController body;
@@ -52,6 +64,7 @@ namespace Pozarevac.CityGame
             effects = player.gameObject.AddComponent<AudioSource>(); effects.playOnAwake = false; effects.volume = 0.25f;
             dialogue = player.gameObject.AddComponent<AudioSource>(); dialogue.playOnAwake = false; dialogue.volume = 0.85f;
             feedback=player.gameObject.AddComponent<AudioSource>();feedback.playOnAwake=false;feedback.volume=.24f;feedback.priority=70;
+            diagnostics=player.gameObject.AddComponent<AudioSource>();diagnostics.playOnAwake=false;diagnostics.volume=.18f;diagnostics.priority=20;diagnostics.spatialBlend=0;
             cues=new[]{CreateFeedbackClip(CityAudioCue.Checkpoint),CreateFeedbackClip(CityAudioCue.Success),CreateFeedbackClip(CityAudioCue.Failure)};
             footstep = Resources.Load<AudioClip>("Audio/Footstep"); landing = Resources.Load<AudioClip>("Audio/Land");
             if(footstep==null)footstep=generatedFootstep=CreateContact(false);
@@ -76,12 +89,13 @@ namespace Pozarevac.CityGame
             ui.Notify(text);
             if (!Muted && voices[index] != null) { dialogue.clip = voices[index]; dialogue.Play(); if (suspended || Time.timeScale <= 0f) dialogue.Pause(); }
         }
-        private void OnDisable() { if (effects != null) effects.Stop(); if (dialogue != null) dialogue.Stop();if(feedback!=null)feedback.Stop(); }
+        private void OnDisable() { if (effects != null) effects.Stop(); if (dialogue != null) dialogue.Stop();if(feedback!=null)feedback.Stop();if(diagnostics!=null)diagnostics.Stop(); }
         private void OnDestroy()
         {
             if (effects != null) Destroy(effects);
             if (dialogue != null) Destroy(dialogue);
             if(feedback!=null)Destroy(feedback);
+            if(diagnostics!=null)Destroy(diagnostics);
             if(cues!=null)foreach(AudioClip cue in cues)if(cue!=null)Destroy(cue);
             if(generatedFootstep!=null)Destroy(generatedFootstep);
             if(generatedLanding!=null)Destroy(generatedLanding);
@@ -117,7 +131,7 @@ namespace Pozarevac.CityGame
             }
             wasGrounded = grounded;
         }
-        private void OnApplicationPause(bool value){suspended=value;if(value&&initialized){gameplayPaused=true;effects.Pause();dialogue.Pause();feedback.Stop();}}
+        private void OnApplicationPause(bool value){suspended=value;if(value&&initialized){gameplayPaused=true;effects.Pause();dialogue.Pause();feedback.Stop();diagnostics.Stop();}}
         private CityFootstepKind ProbeSurface()
         {
             int count=Physics.RaycastNonAlloc(playerRoot.position+Vector3.up*.4f,Vector3.down,groundHits,1.2f,Physics.DefaultRaycastLayers,QueryTriggerInteraction.Ignore);

@@ -1,0 +1,47 @@
+{
+  "name": "VKT-Expression-Android-20261018.apk",
+  "size": 176906554,
+  "sha256": "e914e90343e370e15f12d28070a6a8f83b2d2da01dbc2d366ee58e87cada86cf",
+  "introIncluded": true,
+  "arm64": true,
+  "buildErrors": 0,
+  "versionCode": 7,
+  "package": "com.yashimi.vkt",
+  "signatureVerified": true,
+  "certificateSha256": "73e4417407e1b053081da46117c15babed99544f94b18361340ad6120ce9f98b",
+  "physicalDeviceTested": false,
+  "androidInstalled": true,
+  "tests": {
+    "total": 187,
+    "passed": 186,
+    "failed": 0,
+    "skipped": 1
+  },
+  "windowsPlayerPassed": true,
+  "previewExpressionStates": 5,
+  "audioProbeRuntimeVerified": true,
+  "voiceClipsBundled": 0,
+  "device": {
+    "model": "2409BRN2CY",
+    "androidApi": 36,
+    "serialRecorded": false
+  },
+  "metrics": null,
+  "windows": {
+    "name": "VKT-Expression-Windows-20261018.zip",
+    "size": 207327737,
+    "sha256": "c772bab02c24e5e95c6eafb82418506e0d7b0a23c6a26fbdc129d2bf55e0b133"
+  },
+  "limits": [
+    "Existing low-poly painted head, not facial bones/blendshapes or photorealism",
+    "NPC speech clips absent; sound test is a short generated tone, not a voice",
+    "AssetPackManager native startup message observed in v6 remains open; v7 logs unavailable after disconnect",
+    "Short device checks do not prove sustained thermals or stable 60 FPS",
+    "No new subjective listening approval or natural Serbian voice claim"
+  ],
+  "currentAndroidRuntimeChecks": "Pending: USB disconnected after successful update installation and launch. No current v7 UI/audio/FPS evidence.",
+  "sourceFingerprint": "2ec807d655f5827241a3e9619711c1b575fe934330448274f1e7a4990126282b",
+  "upgradeMode": "adb install -r -t; external save backup before update; post-update save read pending after USB disconnect",
+  "primaryDevelopmentPlatform": "Windows",
+  "androidStrategy": "Shared gameplay source retained; future device validation in grouped adaptation waves"
+}

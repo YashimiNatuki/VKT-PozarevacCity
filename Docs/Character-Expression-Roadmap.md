@@ -9,4 +9,4 @@ For VKT, transfer the design in two stages:
 
 Keep blink and gaze independent of expression transitions; use phoneme or reviewed speech-envelope animation only after the voice bank is approved. Update nearby facial animation at a bounded rate, reduce work at distance and stop hidden/background presentation. Provide a static neutral pose for reduced motion. Validate the same face from front, side, wardrobe and training cameras on the actual Android device.
 
-Current status: existing VKT atlas blink, subtle gaze and training effort remain implemented. The new expression atlas, emotional state controller and facial blendshape rig are planned, not bundled in the Android v6 build.
+Current status: Android v7 / Expression Audio preview implements gameplay-driven calm/focus/effort/success/hurt and the paused wardrobe selector using the existing VKT atlas. A replacement expression atlas and true facial blendshape rig remain planned. See Expression-Audio-20261018.md for current evidence and limits.
