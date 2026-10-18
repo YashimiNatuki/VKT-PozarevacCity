@@ -1,0 +1,29 @@
+{
+  "schema": "vkt.studio-verification.v1",
+  "pluginId": "yashimi-vkt-studio@yashimi-vkt-local",
+  "version": "0.1.2",
+  "skills": [
+    "vkt-thuglife-engineer",
+    "vkt-world-asset-review",
+    "vkt-release-verifier"
+  ],
+  "pluginTestsPassed": 10,
+  "artifactCheckerTestsPassed": 7,
+  "failed": 0,
+  "skillValidatorsPassed": 3,
+  "installed": true,
+  "enabled": true,
+  "package": {
+    "name": "VKT-Thug-Life-Studio-0.1.2.zip",
+    "size": 11225,
+    "sha256": "c6a05e16f816e9a9ae764de3702e77248bcf5e6fd731851e1988c15d2f703bfe"
+  },
+  "newGameBinary": false,
+  "unityRuntimeChanged": false,
+  "legacyWindowsEvidenceChecked": true,
+  "legacyFingerprintScope": "127 selected CityGame assets, not complete build inputs",
+  "legacyTestXmlIdentityBound": false,
+  "androidHardwareRetested": false,
+  "privateAccountInventoryPublished": false,
+  "paidProviderExecuted": false
+}

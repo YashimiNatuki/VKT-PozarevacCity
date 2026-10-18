@@ -1,5 +1,7 @@
 # Serbian voice intake — 2026-10-18
 
+> **Later security action, 2026-10-18:** the historical Coqui/VITS generation path below is retired with the user's approval. Its vulnerable installation manifest was removed; `generate_vits_candidate.py` now refuses synthesis and supports only `--check-model` (four reviewed size/SHA256 checks, no model runtime imports or writes). Models and existing candidate WAVs are preserved outside Unity. The old runtime/version evidence below is historical, not a supported installation recommendation. A compatible maintained replacement is pending. Piper and reviewed recording admission remain separate; no natural voice has been newly approved. See `VKT-STUDIO-I-DODATNI-ZAHTEVI-20261018.txt`.
+
 The running game retains authored Serbian captions and its existing optional dialogue slots. No newly synthesized voice is certified or shipped as several natural actors in this milestone.
 
 ## Human listening result

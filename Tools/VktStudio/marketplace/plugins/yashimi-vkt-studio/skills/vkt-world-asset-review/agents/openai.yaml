@@ -1,0 +1,4 @@
+interface:
+  display_name: "VKT World Asset Review"
+  short_description: "Provereni modeli, teren, geolokacija i audio"
+  default_prompt: "Use $vkt-world-asset-review for the current VKT Unity project and report verified results."

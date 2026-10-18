@@ -1,0 +1,4 @@
+interface:
+  display_name: "VKT Release Verifier"
+  short_description: "Windows dokazi, source fingerprint i paketi"
+  default_prompt: "Use $vkt-release-verifier for the current VKT Unity project and report verified results."

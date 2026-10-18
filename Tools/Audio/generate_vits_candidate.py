@@ -1,65 +1,54 @@
-"""Generate one local Serbian VITS candidate; no download or Unity admission.
+"""Retired VITS generation entrypoint; read-only reviewed-artifact checks remain.
 
-Use an isolated environment with requirements-vits.txt and the reviewed pinned
-daremc86/sr-cv-vits model files. Run from any directory. Human pronunciation and
-naturalness review remains required; successful synthesis is not that review.
+The historical Coqui stack has eight dependency advisories and no verified
+compatible patched replacement. --check-model hashes local files without
+importing a model runtime. Existing models and WAVs are never changed.
 """
 import argparse
 import hashlib
 import json
-import os
 from pathlib import Path
-import tempfile
-import wave
 
-MODEL_SHA256 = "7b43231864dbac69901155ed397c1a30d0d06b066b03f0348fd39eed2ea1d4b0"
+MODEL_FILES = {
+    "model.pth": (346592643, "7b43231864dbac69901155ed397c1a30d0d06b066b03f0348fd39eed2ea1d4b0"),
+    "config.json": (8412, "a0a14385a21854b970cee364a853950aa6168e690beb8c7c35d1673ea042d5c8"),
+    "speaker_ids.json": (20, "4d877c09f8dca306307c51a1d0070d5fc493615eed11fdadc7d55d2976f685c8"),
+    "language_ids.json": (15, "d249880c338370db1ee4df26207f541512cd05c275f2c0aafedf27e20abeccf4"),
+}
+
+
+def validate_model_directory(model):
+    """Check the reviewed artifacts without parsing or loading the checkpoint.
+
+    These are previously reviewed public intake hashes, not a configurable trust
+    list. No later inference reopens these paths; generation is disabled.
+    """
+    for name, (size, expected) in MODEL_FILES.items():
+        path = model / name
+        if path.is_symlink() or not path.is_file() or path.stat().st_size != size:
+            raise ValueError("Reviewed model artifact is missing or has an unexpected size: " + name)
+        digest = hashlib.sha256()
+        with path.open("rb") as stream:
+            for block in iter(lambda: stream.read(1024 * 1024), b""):
+                digest.update(block)
+        if digest.hexdigest() != expected:
+            raise ValueError("Artifact does not match the reviewed pinned model: " + name)
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--model-dir", type=Path, required=True)
-    parser.add_argument("--output", type=Path, required=True)
-    parser.add_argument("--text", default="Добро дошао у штек. Провери телефон и следећи уговор.")
+    parser.add_argument("--check-model", action="store_true", help="Read-only size/SHA256 check; no synthesis, imports or writes")
+    parser.add_argument("--output", type=Path, help="Retired generation option; always refused")
+    parser.add_argument("--text", help=argparse.SUPPRESS)
     args = parser.parse_args()
+    if not args.check_model or args.output is not None or args.text is not None:
+        parser.error("VITS synthesis is disabled pending a compatible maintained runtime. Existing audio is preserved. Use --check-model without --output/--text for a read-only check; see Docs/Voice-Review-20261018.md.")
     model = args.model_dir.resolve(strict=True)
-    output = args.output.resolve()
-    if output.exists():
-        raise FileExistsError("Candidate output already exists; choose a new filename")
-    if not args.text.strip() or len(args.text) > 500:
-        raise ValueError("Use a non-empty reviewed line of at most 500 characters")
-    digest = hashlib.sha256()
-    with (model/"model.pth").open("rb") as stream:
-        for block in iter(lambda: stream.read(1024*1024), b""):
-            digest.update(block)
-    if digest.hexdigest() != MODEL_SHA256:
-        raise ValueError("Checkpoint does not match the reviewed pinned model")
-    config = json.loads((model/"config.json").read_text(encoding="utf-8"))
-    if config.get("model") != "vits" or config.get("phoneme_language") != "sr" or config.get("characters", {}).get("characters_class") != "TTS.tts.models.vits.VitsCharacters":
-        raise ValueError("Expected the reviewed Serbian VITS configuration")
-    for name in ["speaker_ids.json", "language_ids.json"]:
-        json.loads((model/name).read_text(encoding="utf-8"))
-    os.environ["TORCH_FORCE_WEIGHTS_ONLY_LOAD"] = "1"
-    os.environ["OMP_NUM_THREADS"] = "2"
-    import torch
-    from TTS.api import TTS
-    torch.set_num_threads(2)
-    previous = Path.cwd()
-    output.parent.mkdir(parents=True, exist_ok=True)
-    try:
-        os.chdir(model)  # The publisher configuration references relative ID files.
-        engine = TTS(model_path=str(model/"model.pth"), config_path=str(model/"config.json"), progress_bar=False).to("cpu")
-        with tempfile.TemporaryDirectory(prefix="vkt-vits-") as directory:
-            candidate = Path(directory)/"candidate.wav"
-            engine.tts_to_file(text=args.text, file_path=str(candidate))
-            with wave.open(str(candidate), "rb") as audio:
-                if audio.getnchannels() != 1 or audio.getframerate() != 22050 or not 0 < audio.getnframes()/22050 <= 60:
-                    raise ValueError("Generated candidate has invalid format or duration")
-            # Exclusive creation also preserves an output created by another process.
-            with output.open("xb") as destination:
-                destination.write(candidate.read_bytes())
-    finally:
-        os.chdir(previous)
-    print("Generated local candidate; no Unity assets or voices were replaced")
+    validate_model_directory(model)
+    print(json.dumps({"verifiedArtifacts": len(MODEL_FILES), "synthesisEnabled": False,
+                      "dependenciesImported": False, "writes": False,
+                      "evidenceLimit": "Artifact identity only; not model safety, inference or naturalness approval."}))
 
 
 if __name__ == "__main__":

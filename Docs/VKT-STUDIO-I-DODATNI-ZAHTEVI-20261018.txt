@@ -1,0 +1,81 @@
+VKT — DODATNI ZAHTEVI I STATUS / 18.10.2026.
+
+BEZBEDNOSNI CIKLUS
+Svih osam početnih Dependabot upozorenja je iz opcionog VITS development
+manifest-a: Transformers 4.57.6 i Torch 2.8.0; 4 high, 2 moderate, 2 low.
+Ove biblioteke nisu ugrađene u Windows EXE ili Android APK.
+Coqui 0.27.5 ima nekompatibilne eager XTTS importe sa novijim Transformers
+paketom. Brisanje direktnog pin-a ne uklanja transitive dependency.
+Blind upgrade ili forsiranje neusklađenih Torch/Torchaudio binarnih paketa
+nije profesionalna ispravka.
+
+Uz korisnikovu saglasnost povučen je aktivni VITS installation manifest i
+Coqui/Torch izvršavanje iz javnog generatora. Legacy komanda odbija sintezu
+pre importa model runtime-a i pre kreiranja WAV izlaza. --check-model ostaje
+read-only provera četiri ranije pregledana fajla preko veličine i SHA256.
+To nije zakrpa starih biblioteka niti tvrdnja da je model bezbedan ili prirodan.
+Modeli, svi postojeći WAV-ovi i Git istorija su očuvani. Staro lokalno okruženje
+ostaje izdvojeno za kontrolisano istraživanje; nije globalno deinstalirano.
+Piper i uvoz pregledanih snimaka ostaju dostupni. Nijedan novi glas nije odobren.
+GitHub status se proverava posle push-a, bez dismiss-a ili suppress-a upozorenja.
+
+VKT THUG LIFE STUDIO — LOKALNI PLUGIN 0.1.2
+ID: yashimi-vkt-studio@yashimi-vkt-local
+Tri skilla i lokalni Python helperi; nema novog servera, remote privilegija,
+plaćenog modela ili Unity runtime modula.
+
+$vkt-thuglife-engineer
+Povezani CityGame gameplay, misije, policija, trening, save i UX. Čuva
+payout-once i ownership pauze/inputa/audio resursa. Windows je prvi cilj.
+
+$vkt-world-asset-review
+Pregled glave/skeleta/mimike, modela, kolizija, terena, koordinata, visina,
+licenci i zvuka pre Unity uvoza. Ne zamenjuje fizičku/humanu vizuelnu proveru.
+
+$vkt-release-verifier
+Poredi XML rezultate, bajtove paketa i deklarisani fingerprint. Stari VKT
+fingerprint pokriva samo izabrane CityGame ekstenzije, ne sve build ulaze.
+Helper izričito vraća completeBuildInputBinding=false i releaseApprovalReady=false.
+XML identitet je potvrđen samo ako receipt ima testsSha256; isti broj testova
+nije dokaz istog run-a. Novi produkcioni gate traži potpun build input manifest.
+
+Izvor: Tools/VktStudio/marketplace/plugins/yashimi-vkt-studio
+Registry: Tools/VktStudio/marketplace/.agents/plugins/marketplace.json
+Paket: VKT-Thug-Life-Studio-0.1.2.zip — jedan plugin u root-u ZIP-a.
+Plugin je lokalno instaliran/uključen; nova Codex sesija možda treba da otkrije
+skill chip-ove. Nisu izmišljeni MCP alati niti cloud aktivacija.
+Helperi ne čitaju save/token fajlove i ne pokreću/objavljuju igru.
+
+GITHUB IDENTITET I PROJEKTI — ZASEBNO I PRIVATNO
+YashimiNatuki je nalog, ime profila Y!appi. Vidljivo je 28 repozitorijuma.
+Yashimmi je organizacija (member); ConglomeratPreduzeceInc je druga (admin).
+Yashimmi/Yashimmi je AutoGPT-derived repo, a YashimiNatuki/Yashimmi njegov fork.
+Isti trenutni glavni commit nije isti ceo repo: grane i PR tokovi se razlikuju.
+Yappinator ima cli/client/server/shared; Yappinattor README/licencu.
+AiChatBrat varijante imaju različit sadržaj. Veliki README bez aplikacionog
+izvora nije dokaz pokrenutog enterprise sistema.
+Nijedan repo, organizacija ili profil nije obrisan ili izmenjen ovim pregledom.
+Privatni GitHub-Ko-Je-Sta-20261018.html/.txt sadrži svih 28 kartica sa markerima,
+URL-ovima, root dokazima i granicama pristupa. Ne objavljuje se u javnoj igri.
+Prazan GitHub social_accounts ne otkriva sve povezane OAuth naloge.
+
+ALATI I DOKAZI
+Game Development Studio CLI 1.5.1 i doctor za lokalni capture setup rade.
+To nije nova GPU/Blender/FPS potvrda. Tripo/Leonardo nisu konfigurisani;
+nema trošenja kredita. Nije potrebno uključiti sve konektore da bi Unity radio.
+Claude import-memory nije izvršen: ovde nema njegovih memory_write/append alata.
+Browser Game Studio smernice ne menjaju postojeći Unity engine.
+Novi testovi: 10 plugin/helper testova i 7 artifact checker testova.
+Stvarni lokalni model: četiri fajla odgovaraju istorijskim hash-evima.
+Postojeći Windows Expression ZIP i raniji testovi provereni su kroz novi helper;
+to je statička provera dokaza, ne novo pokretanje gameplay testa.
+
+PREOSTALI GAMEPLAY ZAHTEVI
+U ovom security/tooling ciklusu nije menjan Unity runtime i nije napravljen
+novi EXE/APK. Zato nova glava, novi centar, novi glasovi i misije nisu označeni
+kao isporučeni. Windows ostaje prioritet, Android v7 touch/audio/FPS je pending.
+Sledeće: (1) kvalitetniji facial rig sa kapcima/vilicom/LOD, (2) prepoznatljiv
+centralni blok Požarevca i visine, (3) održavan kompatibilan srpski glasovni
+backend i preslušavanje, (4) povezana priča/misije/policijske posledice,
+(5) bench ulazak/izlazak i boks animacije, (6) Windows UX i duže profilisanje,
+(7) potpun manifest build ulaza i digest test XML-a.
