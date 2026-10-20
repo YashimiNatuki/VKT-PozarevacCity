@@ -18,6 +18,7 @@ namespace Pozarevac.CityGame
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         private static void Install()
         {
+            if (Array.IndexOf(Environment.GetCommandLineArgs(), "-vktInputFlow") >= 0) return;
             if (!Array.Exists(Environment.GetCommandLineArgs(), arg => arg == "-vktSmoke")) return;
             Application.runInBackground = true;
             Application.targetFrameRate = 30;
@@ -293,6 +294,22 @@ namespace Pozarevac.CityGame
                 if (!CaptureRenderedFrame(game, screenshot, out string captureError)) { Finish(false, captureError); yield break; }
                 if (!File.Exists(screenshot) || !ContainsRenderedPixels(screenshot)) { Finish(false, "Player screenshot is missing or blank; visual validation did not pass."); yield break; }
             }
+            if(float.TryParse(Argument("-vktSoakSeconds","0"),System.Globalization.NumberStyles.Float,System.Globalization.CultureInfo.InvariantCulture,out float soak)&&float.IsFinite(soak)&&soak>0)
+            {
+                soak=Mathf.Clamp(soak,10,600);
+                game.GetComponent<CityProgressionController>().ClosePanel();
+                if(game.Hideout.IsInside)game.Hideout.Travel(false);
+                float started=Time.realtimeSinceStartup;int frames=0;
+                while(Time.realtimeSinceStartup-started<soak)
+                {
+                    if(!game.WorldReady||game.Director.IsPaused||!game.Vitals.IsAlive)
+                    {Finish(false,"Extended city observation lost ready/alive/unpaused state.");yield break;}
+                    game.Player.rotation=Quaternion.Euler(0,145+(Time.realtimeSinceStartup-started)*3,0);
+                    frames++;yield return null;
+                }
+                Debug.Log("VKT_SOAK_VERIFIED seconds="+soak+" frames="+frames+" stationaryPlayer=true cameraOrbit=true");
+                details+=" Extended stationary city observation with camera orbit passed; not a full-city traversal or thermal benchmark.";
+            }
             Finish(true, details);
         }
 
@@ -408,6 +425,16 @@ namespace Pozarevac.CityGame
                         runtime.Wardrobe.CycleExpression();yield return new WaitForSecondsRealtime(.35f);
                         if(previewFace.Mood!=(CityFaceMood)(mood%5)||!game.Director.IsPaused)
                         {Finish(false,"Expression preview changed pause ownership or selected the wrong mood.");yield break;}
+                        if(mood==2)
+                        {
+                            var faceSkin=previewFace.GetComponentInChildren<SkinnedMeshRenderer>();
+                            int shape=faceSkin==null?-1:faceSkin.sharedMesh.GetBlendShapeIndex(CityFaceMorph.JawShape);
+                            if(shape<0||faceSkin.GetBlendShapeWeight(shape)<10)
+                            {Finish(false,"Effort preview did not drive the owned jaw morph during pause.");yield break;}
+                            if(!CaptureRenderedFrame(game,portraitCapture.Replace(".png","-effort.png"),out _))
+                            {Finish(false,"Effort jaw capture failed.");yield break;}
+                            Debug.Log("VKT_JAW_VERIFIED ownedBlendShape=true pausedEffort=true");
+                        }
                         if(mood==3&&!CaptureRenderedFrame(game,portraitCapture.Replace(".png","-success.png"),out _))
                         {Finish(false,"Success expression capture failed.");yield break;}
                     }
@@ -561,7 +588,7 @@ namespace Pozarevac.CityGame
             remaining=runtime.Conditioning.Remaining;float nutrition=life.Nutrition;runtime.OpenMenu();yield return new WaitForSecondsRealtime(.2f);
             if(runtime.Conditioning.Remaining!=remaining||life.Nutrition!=nutrition){Finish(false,"Paused conditioning advanced course or nutrition.");yield break;}
             yield return SendRoutineEscape();
-            if(runtime.IsMenuOpen||game.Director.IsPaused||!life.IsConditioning){Finish(false,"Closing the conditioning menu also cancelled training or left pause active.");yield break;}
+            if(runtime.IsMenuOpen||game.Director.IsPaused||!life.IsConditioning){Finish(false,$"Closing conditioning menu: menu={runtime.IsMenuOpen}, paused={game.Director.IsPaused}, conditioning={life.IsConditioning}, state={runtime.Conditioning.State}, pauseChanged={game.Director.PauseChangedThisFrame}.");yield break;}
             game.Player.GetComponentInChildren<CityCameraRig>().SetMode(CityCameraMode.Chase);
             for(int stop=0;stop<3;stop++)
             {
@@ -600,8 +627,8 @@ namespace Pozarevac.CityGame
             if(game.Audio.CuePlaying||game.Audio.PlayCue(CityAudioCue.Checkpoint)){Finish(false,"Suspended feedback accepted a cue.");yield break;}
             game.Audio.SendMessage("OnApplicationPause",false);controller.SaveNow();
             var audioPanel=game.GetComponent<CityMusicPanel>();audioPanel.Toggle();yield return null;
-            if(!audioPanel.IsOpen||!game.Director.IsPaused||!game.Audio.TryPlayDiagnostic())
-            {Finish(false,"Paused menu audio probe was unavailable.");yield break;}
+            if(!audioPanel.IsOpen||game.Director.IsPaused||!game.Audio.TryPlayDiagnostic())
+            {Finish(false,"Non-modal music audio probe was unavailable or paused the world.");yield break;}
             yield return new WaitForSecondsRealtime(.03f);
             if(!game.Audio.DiagnosticPlaying){Finish(false,"Menu audio probe did not play.");yield break;}
             game.Audio.SetMuted(true);
@@ -610,17 +637,19 @@ namespace Pozarevac.CityGame
             game.Audio.SetMuted(false);game.Audio.TryPlayDiagnostic();audioPanel.Close();
             if(game.Audio.DiagnosticPlaying||game.Director.IsPaused)
             {Finish(false,"Closing audio menu leaked probe playback or pause.");yield break;}
-            Debug.Log("VKT_AUDIO_PROBE_VERIFIED pausedPlayback=true muteStops=true closeStops=true voices="+game.Audio.LoadedVoiceClips);
+            Debug.Log("VKT_AUDIO_PROBE_VERIFIED nonModalMusic=true muteStops=true closeStops=true voices="+game.Audio.LoadedVoiceClips);
             Debug.Log("VKT_ROUTINE_VERIFIED checkpoints=3 rewardXP=20 originalProfileVersion="+CityProgression.CurrentProfileVersion+" wantedContactGate=true audioPauseMuteSuspend=true");
             routineVerified=true;
         }
         private static IEnumerator SendRoutineEscape()
         {
-            var device=UnityEngine.InputSystem.InputSystem.AddDevice<UnityEngine.InputSystem.Keyboard>();
+            var device=CityInputFlowValidation.CreateValidationKeyboard();
             UnityEngine.InputSystem.InputSystem.QueueStateEvent(device,new UnityEngine.InputSystem.LowLevel.KeyboardState(UnityEngine.InputSystem.Key.Escape));
             yield return null;
+            yield return new WaitForEndOfFrame();
             UnityEngine.InputSystem.InputSystem.QueueStateEvent(device,new UnityEngine.InputSystem.LowLevel.KeyboardState());
             yield return null;
+            yield return new WaitForEndOfFrame();
             UnityEngine.InputSystem.InputSystem.RemoveDevice(device);
         }
         private static bool TextJournalFixture(UnityEngine.UI.ScrollRect scroll)
@@ -640,7 +669,7 @@ namespace Pozarevac.CityGame
                 Ensure(music != null && music.Count >= 3, "Music presets were not initialized.");
                 CityMusicPanel musicPanel = game.GetComponent<CityMusicPanel>();
                 game.GetComponent<CityProgressionController>().ClosePanel();
-                musicPanel.Toggle(); Ensure(musicPanel.IsOpen && game.Director.IsPaused, "Music overlay did not pause input.");
+                musicPanel.Toggle(); Ensure(musicPanel.IsOpen && !game.Director.IsPaused && Time.timeScale > 0, "Music mini player interrupted gameplay.");
                 musicPanel.Close(); Ensure(!game.Director.IsPaused, "Music overlay left the game paused.");
                 Ensure(Resources.Load<Texture2D>("Art/CityFacades") != null, "City facade atlas is missing.");
                 Ensure(CityPlantEncyclopedia.Count == 16 && Resources.Load<Texture2D>("Art/BotanicalAtlas") != null, "Botanical cards or atlas are missing.");

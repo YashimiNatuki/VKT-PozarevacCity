@@ -56,7 +56,7 @@ namespace Pozarevac.CityGame
             bool restored = store.TryLoad(out CityProfileData profile, out string saveStatus);
             Session = restored ? CitySession.Restore(profile) : new CitySession(startingCash);
             Progression = new CityProgression(Session, restored ? profile : null);
-            if (isolatedValidation) Progression.CreateCharacter("Validation");
+            if (isolatedValidation && !Array.Exists(Environment.GetCommandLineArgs(),arg=>arg=="-vktOnboardingFlow")) Progression.CreateCharacter("Validation");
             else if (!store.CanWrite) Progression.CreateCharacter("Guest");
             CityWorldAtmosphere atmosphere = new GameObject("CityWorldAtmosphere").AddComponent<CityWorldAtmosphere>();
             Atmosphere = atmosphere;
@@ -194,7 +194,7 @@ namespace Pozarevac.CityGame
                     ambience.Initialize(Atmosphere, () => Hideout != null && Hideout.IsInside, () => Audio.Muted);
                     CityMusicPlayer music = gameObject.AddComponent<CityMusicPlayer>();
                     music.Initialize();
-                    gameObject.AddComponent<CityMusicPanel>().Initialize(music, () => Director.IsPaused, open => Director.SetOverlayOpen(open),Audio);
+                    gameObject.AddComponent<CityMusicPanel>().Initialize(music, () => Director.IsPaused, () => Director.SuppressPauseThisFrame(),Audio);
                     bool offline = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name == "VKTOffline";
                     bool authored = Array.Exists(Environment.GetCommandLineArgs(), arg => arg == "-vktAuthoredCenter");
                     if (offline && !authored && CityOsmStreets.Load() != null)
@@ -211,6 +211,7 @@ namespace Pozarevac.CityGame
                     gameObject.AddComponent<CitySpatialSoundscape>().Initialize(this, spawn);
                     if (Intro != null && Intro.IsActive) Director.SetPaused(true);
                     WorldReady = true;
+                    gameObject.AddComponent<CityControlsDock>().Initialize(this);
 #if DEVELOPMENT_BUILD || UNITY_EDITOR
                     if(Application.platform==RuntimePlatform.Android||Array.IndexOf(Environment.GetCommandLineArgs(),"-vktDeviceMetrics")>=0)
                         gameObject.AddComponent<CityDeviceMetrics>().Initialize(this);

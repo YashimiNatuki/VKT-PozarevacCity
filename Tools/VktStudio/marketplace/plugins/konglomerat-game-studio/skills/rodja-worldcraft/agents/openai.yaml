@@ -1,0 +1,4 @@
+interface:
+  display_name: "Rodja Worldcraft"
+  short_description: "Provereni modeli, teren, geolokacija i audio"
+  default_prompt: "Use $rodja-worldcraft for the current Unity game project and report verified results."

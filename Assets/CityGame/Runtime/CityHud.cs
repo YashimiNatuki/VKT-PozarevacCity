@@ -107,6 +107,7 @@ namespace Pozarevac.CityGame
             RectTransform track=bar.GetComponent<RectTransform>();track.anchorMin=track.anchorMax=Vector2.one;track.pivot=Vector2.one;track.anchoredPosition=new Vector2(-30,-116);track.sizeDelta=new Vector2(232,5);
             bar.GetComponent<Image>().color=new Color(.18f,.25f,.28f);bar.GetComponent<Image>().raycastTarget=false;
             GameObject fill=new GameObject("HealthFill",typeof(RectTransform),typeof(Image));fill.transform.SetParent(track,false);healthFill=fill.GetComponent<RectTransform>();healthFill.anchorMin=Vector2.zero;healthFill.anchorMax=Vector2.one;healthFill.offsetMin=healthFill.offsetMax=Vector2.zero;fill.GetComponent<Image>().color=new Color(.25f,.84f,.68f);fill.GetComponent<Image>().raycastTarget=false;
+            skin.ApplyTypography();
         }
 
         private GameObject Card(string name,Vector2 anchor,Vector2 at,Vector2 size)

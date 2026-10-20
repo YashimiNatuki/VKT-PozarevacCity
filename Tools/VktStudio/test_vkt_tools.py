@@ -4,7 +4,7 @@ import sys
 import tempfile
 import unittest
 
-TOOLS = Path(__file__).parent / "marketplace/plugins/yashimi-vkt-studio/scripts"
+TOOLS = Path(__file__).parent / "marketplace/plugins/konglomerat-game-studio/scripts"
 sys.path.insert(0, str(TOOLS))
 from project_snapshot import digest, project_root, source_fingerprint
 from verify_release import verify

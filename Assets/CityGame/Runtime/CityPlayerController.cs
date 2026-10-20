@@ -52,7 +52,7 @@ namespace Pozarevac.CityGame
                 if (touch != null) touch.ResetInput();
                 return;
             }
-            bool desktopInput = Cursor.lockState == CursorLockMode.Locked && Keyboard.current != null;
+            bool desktopInput = Keyboard.current != null && (Cursor.lockState == CursorLockMode.Locked || (touchActive && !Application.isMobilePlatform));
             if (!desktopInput && !touchActive) return;
             Keyboard keyboard = Keyboard.current;
             Vector2 moveInput = desktopInput ? new Vector2(

@@ -1,0 +1,13 @@
+{
+  "name": "konglomerat-game-studio",
+  "version": "0.2.1",
+  "description": "Rodja workflows for local Unity gameplay, character and city assets, and evidence-based Windows releases.",
+  "author": {
+    "name": "Yashimi Natuki"
+  },
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Konglomerat / Rodja Game Studio",
+    "shortDescription": "Kod, svet, dokaz. Rodja stil."
+  }
+}

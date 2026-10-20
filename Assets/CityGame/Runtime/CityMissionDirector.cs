@@ -203,6 +203,7 @@ namespace Pozarevac.CityGame
         public void SetOverlayOpen(bool open)
         {
             if (overlayOpen == open) return;
+            SuppressPauseThisFrame();
             if (hud != null) hud.SetOverlayVisible(open);
             foreach (TextMesh label in stationLabels) if (label != null) label.gameObject.SetActive(!open);
             if (open) { overlayPreviousPause = IsPaused; overlayOpen = true; SetPaused(true); }

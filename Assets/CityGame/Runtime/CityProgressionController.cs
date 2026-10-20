@@ -52,7 +52,7 @@ namespace Pozarevac.CityGame
             SaveNow(); // Reward and completed count are now committed together.
             RefreshIdentity();
             game.Audio.Speak(CityVoice.Luka);
-            if (count == 1) hud.ShowNotification("Telefon otključan: P. Strejn katalog, seme, štek i trgovina.", 7);
+            if (count == 1) hud.ShowNotification("Katalog otključan: P > KATALOG. Seme, štek i trgovina. M: mapa.", 7);
             else if (count == 2) hud.ShowNotification("Crew unlocked at REP 30. Open P for recruitment.", 7);
             else hud.ShowNotification("City route complete. Recruit two crew members to claim three districts.", 7);
         }
@@ -76,11 +76,12 @@ namespace Pozarevac.CityGame
             }
             if (!Progression.IsCreated && !Application.isBatchMode && !panel.IsOpen) OpenPanel();
             Keyboard keyboard = Keyboard.current;
-            if (keyboard != null && keyboard.pKey.wasPressedThisFrame && Progression.PhoneUnlocked)
+            if (keyboard != null && keyboard.pKey.wasPressedThisFrame && Progression.IsCreated)
             {
                 if (panel.IsOpen) ClosePanel(); else OpenPanel();
             }
             if (panel.IsOpen && keyboard != null && keyboard.escapeKey.wasPressedThisFrame) ClosePanel();
+            if (keyboard != null && keyboard.mKey.wasPressedThisFrame && Progression.IsCreated) OpenMap();
             if (director != null && !director.IsPaused)
             {
                 if (Progression.IsGrowing) dirty = true;
@@ -97,7 +98,8 @@ namespace Pozarevac.CityGame
             SaveNow();
             RefreshIdentity();
             ClosePanel();
-            hud.ShowNotification("Follow the cyan marker. E accepts pickup; finish delivery and contact to unlock P.", 8);
+            hud.ShowNotification("P: telefon / M: mapa / L: lik i trening / F1: pomoć. Prati plavi marker i pritisni E.", 10);
+            game.GetComponent<CityControlsDock>()?.ShowHelp();
             return true;
         }
 
@@ -114,6 +116,7 @@ namespace Pozarevac.CityGame
         public void OpenPanel()
         {
             if (director == null) return;
+            game.GetComponent<CityControlsDock>()?.CloseHelp();
             game.GetComponent<CityLifestyleRuntime>()?.LocalStory?.Close();
             game.GetComponent<CityLifestyleRuntime>()?.Wardrobe?.Close();
             game.GetComponent<CityLifestyleRuntime>()?.CloseMenu();
@@ -124,7 +127,7 @@ namespace Pozarevac.CityGame
 
         public void TogglePanel()
         {
-            if (!Progression.PhoneUnlocked || (game.Vitals != null && !game.Vitals.CanAct)) return;
+            if (!Progression.IsCreated || (game.Vitals != null && !game.Vitals.CanAct)) return;
             if (panel.IsOpen) ClosePanel(); else OpenPanel();
         }
 
@@ -133,6 +136,11 @@ namespace Pozarevac.CityGame
             if (!Progression.IsCreated) return;
             panel.Close();
             director?.SetOverlayOpen(false);
+        }
+        public void OpenMap()
+        {
+            if(!Progression.IsCreated||(game.Vitals!=null&&!game.Vitals.CanAct))return;
+            OpenPanel();panel.OpenMap();
         }
 
         public void SaveNow()
@@ -146,7 +154,7 @@ namespace Pozarevac.CityGame
             { SaveStatus = "Save failed; progress remains in this session. Existing files preserved."; Debug.LogWarning("VKT profile save failed: " + error.GetType().Name); }
         }
 
-        private void RefreshIdentity() => hud.SetIdentity(Progression.Callsign, Progression.PhoneUnlocked);
+        private void RefreshIdentity() => hud.SetIdentity(Progression.Callsign, Progression.IsCreated);
         private void OnApplicationPause(bool paused) { if (paused) SaveNow(); }
         private void OnApplicationQuit() => SaveNow();
         private void OnEnable()

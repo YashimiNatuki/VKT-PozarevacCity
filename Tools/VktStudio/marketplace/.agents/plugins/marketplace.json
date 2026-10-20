@@ -1,10 +1,20 @@
 {
-  "name": "yashimi-vkt-local",
-  "interface": {"displayName": "Yashimi VKT Local"},
-  "plugins": [{
-    "name": "yashimi-vkt-studio",
-    "source": {"source": "local", "path": "./plugins/yashimi-vkt-studio"},
-    "policy": {"installation": "AVAILABLE", "authentication": "ON_INSTALL"},
-    "category": "Developer tools"
-  }]
+  "name": "konglomerat-local",
+  "interface": {
+    "displayName": "Konglomerat Local"
+  },
+  "plugins": [
+    {
+      "name": "konglomerat-game-studio",
+      "source": {
+        "source": "local",
+        "path": "./plugins/konglomerat-game-studio"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Developer tools"
+    }
+  ]
 }

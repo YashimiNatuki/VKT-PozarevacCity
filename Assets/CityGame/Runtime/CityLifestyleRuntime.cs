@@ -146,16 +146,16 @@ namespace Pozarevac.CityGame
             policeBanner.raycastTarget=false;
             menu=Rect("BlockPanel",canvas.transform,new Vector2(620,650),Vector2.zero,new Vector2(.5f,.5f)).gameObject;menu.AddComponent<Image>().color=new Color(.025f,.055f,.075f,.98f);
             RectTransform info=Rect("Info",menu.transform,new Vector2(560,270),new Vector2(0,170),new Vector2(.5f,.5f));stats=Text(info,"",19);stats.alignment=TextAnchor.UpperLeft;stats.supportRichText=false;
-            Button(menu.transform,"TRENING / kod klupe",new Vector2(-145,-15),()=>{CloseMenu();if(!StartWorkout())hud.ShowNotification("Priđi klupi. Hrana, 30 energije i odmor su potrebni; potera i aktivan posao blokiraju trening.",5);});
+            Button(menu.transform,"TRENING / kod klupe",new Vector2(-145,-15),()=>{CloseMenu();if(!StartWorkout())hud.ShowNotification(TrainingBlockReason(15,30),8);});
             Button(menu.transform,"KONDICIJA / 3 stanice",new Vector2(145,-15),()=>{CloseMenu();if(!StartConditioning())hud.ShowNotification("Kreni kod klupe: hrana 20%, energija 40%, odmor i bez aktivne misije/potere.",6);});
             Button(menu.transform,"OBROK / 35 DIN",new Vector2(-145,-75),()=>{CloseMenu();Eat(false);});
             Button(menu.transform,"UKRADI / POTERA",new Vector2(145,-75),()=>{CloseMenu();Eat(true);});
-            Button(menu.transform,"STREJN KATALOG",new Vector2(-145,-135),()=>{CloseMenu();if(!game.Progression.PhoneUnlocked){hud.ShowNotification("Prvi ugovor otključava telefon i katalog.",5);return;}progress.OpenPanel();FindAnyObjectByType<CityPhonePanel>().OpenCatalog();});
+            Button(menu.transform,"STREJN KATALOG",new Vector2(-145,-135),()=>{CloseMenu();if(!game.Progression.PhoneUnlocked){hud.ShowNotification("Prvi ugovor otključava katalog. Telefon i mapa su već dostupni.",5);return;}progress.OpenPanel();FindAnyObjectByType<CityPhonePanel>().OpenCatalog();});
             Button(menu.transform,"DELOVI GRADA",new Vector2(145,-135),()=>{locationIndex=(locationIndex+1)%CityGeoRegistry.Count;RefreshUi();});
             Button(menu.transform,"NAZAD U IGRU",new Vector2(-145,-255),CloseMenu);
             Button(menu.transform,"ODEĆA / GARDEROBER",new Vector2(-145,-195),()=>{CloseMenu();Wardrobe.Open();});
             Button(menu.transform,"KONTAKTI / OLLAMA",new Vector2(145,-195),()=>{CloseMenu();LocalStory.Open();});
-            Button(menu.transform,"BOKS / reakcija i gard",new Vector2(145,-255),()=>{CloseMenu();if(!StartBoxing())hud.ShowNotification("Boks kod klupe: hrana 20%, energija 35%, odmor i bez misije/potere.",6);});
+            Button(menu.transform,"BOKS / reakcija i gard",new Vector2(145,-255),()=>{CloseMenu();if(!StartBoxing())hud.ShowNotification(TrainingBlockReason(20,35),8);});
             boxingPanel=Rect("Boxing",canvas.transform,new Vector2(600,160),new Vector2(0,110),new Vector2(.5f,0)).gameObject;
             boxingPanel.AddComponent<Image>().color=new Color(.03f,.08f,.11f,.95f);
             boxingText=Text(Rect("BoxingCue",boxingPanel.transform,new Vector2(580,55),new Vector2(0,48),new Vector2(.5f,.5f)),"",20);
@@ -183,6 +183,18 @@ namespace Pozarevac.CityGame
         }
         public void CloseMenu(){if(menu!=null)menu.SetActive(false);if(menuOwnedPause){menuOwnedPause=false;game.Director.SetOverlayOpen(false);}}
         public bool Near(Transform station)=>station!=null&&Vector3.Distance(game.Player.position,station.position)<3.5f;
+        private string TrainingBlockReason(float food,float energy)
+        {
+            if(!Near(Gym))return $"KLUPA JE {Vector3.Distance(game.Player.position,Gym.position):0} m OD TEBE / priđi na manje od 3,5 m.";
+            if(Life.Wanted)return "POTERA / izgubi policiju pre treninga.";
+            if(game.Director.Jobs.IsActive)return "AKTIVNA DOSTAVA / završi je ili otkaži u telefonu: P > DNEVNIK.";
+            if(game.Director.Run.State==CityMissionState.Active)return "AKTIVAN UGOVOR / prvo završi dostavu, pa se vrati na klupu.";
+            if(Life.WorkoutCooldown>0)return $"ODMOR / sačekaj još {Math.Ceiling(Life.WorkoutCooldown)} s posle prethodnog treninga.";
+            if(Life.Nutrition<food)return $"HRANA / potrebno je {food:0}% hrane. Priđi kiosku i kupi obrok.";
+            if(Life.Stamina<energy)return $"ENERGIJA / potrebno je {energy:0}%. Odmori ili pojedi obrok.";
+            if(Life.IsTraining||Life.IsBoxing||Life.IsConditioning)return "TRENING JE VEĆ AKTIVAN / završi ga ili pritisni PREKINI.";
+            return "TRENING NIJE DOSTUPAN / proveri lik, pauzu i položaj kod klupe.";
+        }
         public bool StartWorkout()
         {if(!CanSimulate||!Near(Gym)||game.Director.Jobs.IsActive||game.Director.Run.State==CityMissionState.Active||benchVisual==null||!benchVisual.RigReady||!benchVisual.FeetReady||!Life.TryStartWorkout())return false;bench=new CityBenchPress();progress.SaveNow();hud.ShowNotification("BENČ: 8 celih ponavljanja za 45 s. F/TAP: spusti, pa pritisni kad piše GURAJ. ESC: prekid.",5);return true;}
         public bool StartConditioning()

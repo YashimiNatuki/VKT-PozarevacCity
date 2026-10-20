@@ -1,0 +1,27 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "konglomerat-game-studio",
+  "version": "0.2.1",
+  "description": "Rodja workflows for local Unity gameplay, character and city assets, and evidence-based Windows releases.",
+  "author": {
+    "name": "Yashimi Natuki"
+  },
+  "license": "MIT",
+  "extensions": {
+    "com.openai": {
+      "interface": {
+        "displayName": "Konglomerat / Rodja Game Studio",
+        "shortDescription": "Kod, svet, dokaz. Rodja stil.",
+        "longDescription": "A free local toolkit with three connected skills: Rodja Game Engineer, Rodja Worldcraft and Rodja Release Ops. Builds on the existing Unity game workflow, with read-only evidence tools and explicit acceptance gates. No cloud server, paid service or account access is included.",
+        "developerName": "Yashimi Natuki",
+        "category": "Developer tools",
+        "capabilities": [],
+        "defaultPrompt": [
+          "Rodjo, unapredi jednu povezanu gameplay celinu od koda do Windows provere.",
+          "Pregledaj geometriju lika ili gradski teren i sacuvaj postojece animacije i kolizije.",
+          "Proveri testove i Windows paket; prijavi dokaz, ogranicenja i sledecih pet poteza."
+        ]
+      }
+    }
+  }
+}

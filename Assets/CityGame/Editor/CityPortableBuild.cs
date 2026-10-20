@@ -122,10 +122,16 @@ namespace Pozarevac.CityGame.Editor
             bool previousDefaultGraphics = PlayerSettings.GetUseDefaultGraphicsAPIs(BuildTarget.StandaloneWindows64);
             GraphicsDeviceType[] previousGraphics = PlayerSettings.GetGraphicsAPIs(BuildTarget.StandaloneWindows64);
             string stagedIntro=null;
+            string stagedNotice=null;
             try
             {
                 if (android)
                 {
+                    string notice=Path.GetFullPath("THIRD_PARTY_NOTICES.md");
+                    if(!File.Exists(notice))throw new InvalidOperationException("Distribution notices are missing.");
+                    string noticeDestination=Path.Combine(Application.streamingAssetsPath,"VKT-THIRD-PARTY-NOTICES.md");
+                    if(File.Exists(noticeDestination))throw new InvalidOperationException("Notice staging refuses to overwrite an existing file.");
+                    Directory.CreateDirectory(Application.streamingAssetsPath);File.Copy(notice,noticeDestination,false);stagedNotice=noticeDestination;
                     if(!int.TryParse(Argument("-vktAndroidVersionCode","6"),out int versionCode)||versionCode<1)
                         throw new InvalidOperationException("Android version code must be a positive integer.");
                     PlayerSettings.Android.bundleVersionCode = versionCode;
@@ -171,6 +177,7 @@ namespace Pozarevac.CityGame.Editor
                 });
                 Debug.Log($"VKT_PORTABLE_BUILD {report.summary.result}; android={android}; errors={report.summary.totalErrors}; bytes={report.summary.totalSize}");
                 if (report.summary.result != BuildResult.Succeeded) throw new InvalidOperationException("Portable build failed; inspect its log.");
+                if(!android)File.Copy("THIRD_PARTY_NOTICES.md",Path.Combine(Path.GetDirectoryName(Path.GetFullPath(output)),"THIRD_PARTY_NOTICES.md"),true);
                 // Release media is an explicit local input, never copied into the public source tree.
                 string introSource = Argument("-vktIntroSource", "");
                 if (!android && !string.IsNullOrWhiteSpace(introSource))
@@ -185,6 +192,10 @@ namespace Pozarevac.CityGame.Editor
             }
             finally
             {
+                if(stagedNotice!=null)
+                {
+                    File.Delete(stagedNotice);if(File.Exists(stagedNotice+".meta"))File.Delete(stagedNotice+".meta");AssetDatabase.Refresh();
+                }
                 if(stagedIntro!=null)
                 {
                     File.Delete(stagedIntro);

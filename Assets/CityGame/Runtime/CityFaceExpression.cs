@@ -7,6 +7,8 @@ namespace Pozarevac.CityGame
     {
         private static readonly int FaceId = Shader.PropertyToID("_Face");
         private Material surface;
+        private CityCharacterPhysique physique;
+        private float jaw;
         private float elapsed, effort, targetEffort;
         private readonly CityFaceState expression=new CityFaceState();
         private CityPlayerVitals vitals;
@@ -16,7 +18,7 @@ namespace Pozarevac.CityGame
         public CityFaceMood PreviewMood { get; set; }
         public CityFaceMood Mood=>Preview?PreviewMood:expression.Resolve(targetEffort,alert);
         public Vector4 State { get; private set; }
-        public void Initialize(Material material) { surface = material; }
+        public void Initialize(Material material, CityCharacterPhysique body = null) { surface = material; physique = body; }
         public void SetEffort(float value) { targetEffort = float.IsNaN(value) ? 0 : Mathf.Clamp01(value); }
         public void SetAlert(bool value) { alert=value; }
         public void BindFeedback(CityPlayerVitals health,CityGameAudio feedback)
@@ -63,11 +65,15 @@ namespace Pozarevac.CityGame
             Vector4 smooth=Vector4.Lerp(State,pose,1-Mathf.Exp(-9*dt));
             State=new Vector4(pose.x,smooth.y,smooth.z,smooth.w);
             surface.SetVector(FaceId, State);
+            float targetJaw=CityFaceMorph.JawWeight(Mood,Preview&&PreviewMood==CityFaceMood.Effort?1:effort,elapsed);
+            jaw=Mathf.Lerp(jaw,targetJaw,1-Mathf.Exp(-9*dt));
+            physique?.SetJaw(jaw);
         }
         private void OnDisable()
         {
             Unsubscribe();expression.Clear();effort=targetEffort=0;alert=false;
             State = Vector4.zero;
+            jaw=0;physique?.SetJaw(0);
             if (surface != null) surface.SetVector(FaceId, State);
         }
     }

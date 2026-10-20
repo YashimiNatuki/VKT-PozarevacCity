@@ -11,9 +11,12 @@ namespace Pozarevac.CityGame
         private readonly BoneWeight[] weights;
         private readonly Matrix4x4[] bind,inverse,changes;
         private readonly string[] names;
+        private readonly SkinnedMeshRenderer renderer;
+        private readonly int jaw;
         private int last=-1;
         public CityCharacterGirth(SkinnedMeshRenderer renderer)
         {
+            this.renderer=renderer;
             Mesh source=renderer.sharedMesh;
             if(source==null||!source.isReadable)throw new InvalidOperationException("Player skin must be readable for bind-space body morphs.");
             original=source.vertices;modified=new Vector3[original.Length];weights=source.boneWeights;bind=source.bindposes;
@@ -22,6 +25,7 @@ namespace Pozarevac.CityGame
             mesh=UnityEngine.Object.Instantiate(source);mesh.name="VKT_OwnedBodyMorph";renderer.sharedMesh=mesh;
             inverse=new Matrix4x4[bind.Length];changes=new Matrix4x4[bind.Length];names=new string[bind.Length];
             for(int i=0;i<bind.Length;i++){inverse[i]=bind[i].inverse;names[i]=renderer.bones[i].name;}
+            jaw=source.name=="characterMedium"?CityFaceMorph.AddJaw(mesh,original,weights,Array.IndexOf(names,"Head")):-1;
             renderer.updateWhenOffscreen=true;
         }
         public void Apply(int strength)
@@ -43,6 +47,10 @@ namespace Pozarevac.CityGame
             mesh.vertices=modified;mesh.RecalculateNormals();mesh.RecalculateBounds();
         }
         private Vector3 Point(int bone,float weight,Vector3 point)=>weight<=0?Vector3.zero:changes[bone].MultiplyPoint3x4(point)*weight;
+        public void SetJaw(float value)
+        {
+            if(jaw>=0&&renderer!=null)renderer.SetBlendShapeWeight(jaw,Mathf.Clamp01(float.IsNaN(value)?0:value)*100);
+        }
         public void Dispose(){if(mesh!=null){if(Application.isPlaying)UnityEngine.Object.Destroy(mesh);else UnityEngine.Object.DestroyImmediate(mesh);}}
     }
 }

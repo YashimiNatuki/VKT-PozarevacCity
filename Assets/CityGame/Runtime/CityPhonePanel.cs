@@ -105,6 +105,7 @@ namespace Pozarevac.CityGame
         public void OpenMap()
         {
             if(gameObject==null||map==null)return;
+            if(!owner.Progression.IsCreated)return;
             if(!IsOpen)owner.OpenPanel();
             content.SetActive(false);catalog.SetActive(false);encyclopedia.SetActive(false);journal.SetActive(false);
             backdrop.SetActive(true);map.SetActive(true);mapView.Initialize();mapView.RefreshPosition();
@@ -137,14 +138,14 @@ namespace Pozarevac.CityGame
 
         public void OpenCatalog()
         {
-            if (!owner.Progression.PhoneUnlocked) return;
+            if (!owner.Progression.PhoneUnlocked) { ShowFeedback("Poslovni katalog se otključava posle prvog ugovora. MAPA je već dostupna.");return; }
             encyclopedia.SetActive(false);
             journal.SetActive(false);
             content.SetActive(false); catalog.SetActive(true); RefreshCatalog();
         }
         public void OpenJobs()
         {
-            if (!owner.Progression.PhoneUnlocked) return;
+            if (!owner.Progression.IsCreated) return;
             map.SetActive(false);
             content.SetActive(false); catalog.SetActive(false); encyclopedia.SetActive(false);
             journal.SetActive(true); RefreshJobs();Canvas.ForceUpdateCanvases();jobScroll.verticalNormalizedPosition=1;
@@ -186,6 +187,12 @@ namespace Pozarevac.CityGame
             CityStreetJobs jobs = director != null ? director.Jobs : null;
             if (jobs == null) { jobDetails.text = "Učitavanje dnevnika..."; acceptJob.interactable = cancelJob.interactable = false; return; }
             bool unlocked = director.StreetJobsUnlocked;
+            if(!unlocked)
+            {
+                var run=director.Run;
+                jobDetails.text=$"GLAVNI UGOVOR {director.ContractNumber}/{director.ContractCount}\n{run.Contract.Title}\n\n{run.Contract.Briefing}\n\nCilj {Math.Min(3,run.ObjectiveIndex+1)}/3 / {run.State}\n{run.Message}\n\nE: prihvati ili potvrdi cilj kod plavog markera.\nM: mapa ulica / P: telefon / ESC: povratak.\nN: sledeći ugovor posle završetka / R: novi pokušaj posle neuspeha.\n\nTrening je blokiran tokom aktivne dostave.\nSporedni poslovi dolaze posle sva 3 glavna ugovora.\nTelefon pauzira igru dok čitaš.";
+                acceptJob.interactable=cancelJob.interactable=false;return;
+            }
             string route = "";
             for (int i = 0; i < 3; i++)
             {

@@ -38,6 +38,7 @@ namespace Pozarevac.CityGame
             }
             foreach(var skin in skins)skin.Apply((int)level);
         }
+        public void SetJaw(float value){foreach(var skin in skins)skin.SetJaw(value);}
         public void Dispose(){foreach(var skin in skins)skin.Dispose();}
     }
 }

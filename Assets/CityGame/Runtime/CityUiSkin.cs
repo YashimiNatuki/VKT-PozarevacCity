@@ -30,7 +30,18 @@ namespace Pozarevac.CityGame
                 if(image.color.a<.01f||image.name.Contains("Backdrop"))continue;
                 image.sprite=Rounded;image.type=Image.Type.Sliced;
                 Button button=image.GetComponent<Button>();
-                if(button!=null){ColorBlock colors=button.colors;colors.normalColor=Color.white;colors.highlightedColor=new Color(.7f,.92f,.93f);colors.pressedColor=new Color(.4f,.75f,.78f);colors.fadeDuration=.12f;button.colors=colors;}
+                if(button!=null){ColorBlock colors=button.colors;colors.normalColor=Color.white;colors.highlightedColor=new Color(1,.84f,.48f);colors.pressedColor=new Color(.4f,.75f,.78f);colors.fadeDuration=.12f;button.colors=colors;}
+            }
+            ApplyTypography();
+        }
+        public void ApplyTypography()
+        {
+            Font regular=Resources.Load<Font>("UI/Fonts/NotoSans-Regular"),bold=Resources.Load<Font>("UI/Fonts/NotoSans-Bold");
+            foreach(Text text in GetComponentsInChildren<Text>(true))
+            {
+                bool strong=text.fontSize>=24||text.GetComponentInParent<Button>()!=null;
+                Font font=strong?bold:regular;if(font!=null){text.font=font;text.fontStyle=FontStyle.Normal;}
+                text.lineSpacing=1.08f;
             }
         }
         private void OnDestroy(){Release(sprite);Release(texture);}

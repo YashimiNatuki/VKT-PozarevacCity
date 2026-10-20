@@ -1,0 +1,85 @@
+VKT / POZAREVAC CITY - KONTROLE I RADNI TOK
+Windows je glavni razvojni cilj. Android koristi isti gameplay i profil v7.
+
+POCETAK
+1. Raspakuj ceo Windows ZIP; pokreni Launch-VKT.cmd ili VKT.exe.
+2. Preskoci uvod dugmetom, SPACE ili ESC ako zelis.
+3. Na novom profilu unesi ime i napravi lika. Otvara se pomoc u cetiri koraka.
+4. Procitaj pomoc, zatim KRENI U GRAD. Postojeci profil ostaje sacuvan;
+   pomoc otvaras preko F1 ili POMOC, bez pravljenja novog lika.
+5. Prati plavi marker i prihvati pocetni posao. Rok pocinje preuzimanjem.
+
+STA JE GDE
+Gore desno: novac u DIN, gradski sat i zivot.
+Levo: reputacija, HEAT, cilj i stanje misije.
+Ispod cilja: nivo, XP, snaga, hrana i energija.
+Windows dole levo / Android gore u sredini: TELEFON, MAPA, LIK, POMOC.
+Na mapi narandzasto oznacava igraca; sever je gore.
+
+WINDOWS
+WASD hod; mis pogled; SHIFT trcanje; SPACE skok; C perspektiva.
+E koristi bliski objekat. P telefon; M mapa; L lik; F1 pomoc.
+TAB oslobadja mis za UI, ponovni TAB vraca pogled.
+ESC zatvara otvoren meni. Kada nijedan meni nije otvoren, ESC pauzira svet.
+
+ANDROID
+Drzi strelice za hod, prevuci po slobodnoj desnoj strani za pogled.
+KAMERA menja perspektivu; KORISTI izvodi blisku interakciju.
+TRCI i SKOK su odvojene komande. Meniji se zatvaraju svojim NAZAD dugmetom.
+Instaliraj APK kao nadogradnju. Ne brisi podatke da bi dobio novu pomoc.
+
+MUZIKA
+F6 ili MUZIKA otvara kompaktan plejer. F7 pusta/pauzira; F8 sledeca numera.
+Na telefonu koristi dugmad PUSTI, <, > i X. Plejer je ispod gornje trake,
+da ne prekriva TRCI/SKOK. ZVUK otvara podesavanja ispod plejera.
+Plejer ne pauzira svet, misije ni kretanje. ESC prvo zatvara plejer.
+PROBA ZVUKA je kratak generisani ton, nije NPC glas.
+Prirodni srpski NPC glasovi nisu ukljuceni; dijalozi koriste titlove.
+Licna muzika i snimci sa racunara nisu objavljeni u ovom paketu.
+
+TELEFON I MISIJE
+Telefon i mapa dostupni su odmah posle kreiranja lika.
+Trgovacki katalog se otkljucava prvim ugovorom.
+Rani dnevnik prikazuje glavni ugovor i trenutni cilj; kasnije se otvaraju
+ulicni poslovi. Meni pauzira svet; muzicki plejer to ne radi.
+Aktivna ruta i njena isplata koriste postojeci sistem cuvanja profila.
+
+TRENING
+Pridji klupi na manje od 3,5 m. Otvori LIK ili upotrebi klupu.
+BENCH: F/TAP za spustanje, sacekaj GURAJ, pa F/TAP za potisak.
+Osam celih ponavljanja zavrsava seriju. Prerano pritiskanje ne daje poen.
+BOKS: sacekaj SAD pa J/UDARAC ili K/GARD prema zadatku.
+KONDICIJA: prodji tri oznacene stanice i zadrzi se u krugu.
+Aktivan posao, potera, glad, manjak energije i odmor blokiraju trening.
+Poruka sada objasnjava tacan razlog. Jedi kod kioska; ne resetuj profil.
+Prekinuta serija ne daje XP.
+
+STA JE PROMENJENO
+Povezani pocetak, cetiri stranice pomoci, vidljiva traka kontrola, odmah
+dostupni telefon i mapa, rani dnevnik, manji muzicki plejer bez pauze,
+ispravljen povratak kretanja u touch-preview rezimu, savijanje nogu,
+suprotan rad ruku i jasniji razlozi zasto trening nije dostupan.
+UI koristi slobodne Noto Sans fontove i citljivije naslove/dugmad.
+Vilica ima ogranicenu runtime deformaciju postojeceg stilizovanog modela.
+
+GRANICE
+Ovo je razvojni prototip; glava nije fotorealisticna i nema govorni lip-sync.
+Ulicna podloga je jos ravna; spisak naselja nije dokaz izgradjene zone.
+Novi skejt, trotinet, bicikl i transforming klupa jos nisu implementirani.
+Na Androidu se istrazuje stara AssetPackManager startup poruka.
+Automatski testovi ne zamenjuju ljudsko slusanje, dodir i duzi termalni test.
+Tacne rezultate i granice poslednje provere vidi u
+Docs/Gameplay-Recovery-20261020.md i Verification-Gameplay-Recovery-20261020.json.
+
+SLEDECI REDOSLED
+1. Interaktivna obuka i jedinstveni UI sa prilagodljivim kontrolama.
+2. Rig/lice/kapci, stabilniji korak, kontakti stopala i kamera treninga.
+3. Proverene visine centralnog bloka, putevi/objekti/misije na istoj podlozi.
+4. Prirodni odobreni srpski glasovi i miks po okruzenju.
+5. Dublje misije i policijske posledice; duzi testovi Windows/Android.
+6. Skejt i trotinet, zatim bicikl. Retka prica o optimisticnoj klupi kasnije.
+
+KONGLOMERAT / RODJA ALATI
+Odvojeni lokalni Codex paket sadrzi rodja-game-engineer, rodja-worldcraft
+i rodja-release-ops. Nije potreban za igranje i nije cloud servis.
+Tools/VktStudio/marketplace/README.md opisuje instalaciju i granice provera.

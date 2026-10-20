@@ -1,0 +1,4 @@
+interface:
+  display_name: "Rodja Release Ops"
+  short_description: "Windows dokazi, source fingerprint i paketi"
+  default_prompt: "Use $rodja-release-ops for the current Unity game project and report verified results."

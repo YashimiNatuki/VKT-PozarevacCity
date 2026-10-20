@@ -1,0 +1,190 @@
+{
+  "date": "2026-10-20",
+  "tests": {
+    "total": 198,
+    "passed": 197,
+    "failed": 0,
+    "skipped": 1
+  },
+  "testsSha256": "290a51945bf21f8880d5c228c18b447b8649c44623e78614788bb3ca1242c694",
+  "inputFlows": {
+    "ship-desktop": {
+      "passed": true,
+      "phoneBeforeContract": true,
+      "mapBeforeContract": true,
+      "musicNonModal": true,
+      "movementAfterMusic": true,
+      "legsAnimated": true,
+      "benchStarted": true,
+      "benchCompleted": true,
+      "dockVisible": true,
+      "helpReturnsControl": true,
+      "onboardingCreated": true,
+      "distanceAfterMusic": 2.500060558319092,
+      "leftLegDegrees": 32.11524963378906,
+      "rightLegDegrees": 33.138736724853516,
+      "peakObservedSpeed": 4.966315269470215,
+      "gaitReady": true,
+      "musicControlsClear": true,
+      "error": "",
+      "input": "Synthetic Unity Input System keyboard and EventSystem submit; not human input."
+    },
+    "ship-touch": {
+      "passed": true,
+      "phoneBeforeContract": true,
+      "mapBeforeContract": true,
+      "musicNonModal": true,
+      "movementAfterMusic": true,
+      "legsAnimated": true,
+      "benchStarted": true,
+      "benchCompleted": true,
+      "dockVisible": true,
+      "helpReturnsControl": true,
+      "onboardingCreated": true,
+      "distanceAfterMusic": 2.4999935626983643,
+      "leftLegDegrees": 32.11445999145508,
+      "rightLegDegrees": 33.13866424560547,
+      "peakObservedSpeed": 4.966310024261475,
+      "gaitReady": true,
+      "musicControlsClear": true,
+      "error": "",
+      "input": "Synthetic Unity Input System keyboard and EventSystem submit; not human input."
+    }
+  },
+  "windowsRegression": {
+    "passed": true,
+    "details": "Actual Windows player: terrain loaded, nine physics interactions, three contracts, growth/trade, crew, district campaign and durable save restore passed. Catalog seed purchases, hideout entry/exit, four physical plants, watering, garden save restoration, death and hospital respawn passed. Spatial audio: six mono 3D emitters, one listener, clear/blocked/removed-wall rays, mute, suspension, interior fan and desk journal pause passed. Additive player breathing advanced. Enhanced: 600 OSM segments, 100 building footprints, 22 green polygons, 878 wall colliders, 12 benches/24 trees, city map, 16 strain cards, music overlay, job journal, physical street-job payout and durable story progress passed. Local audio decoded while suspended, stayed silent and started on application resume. Map upgrade: connected road/sidewalk topology, authored junction surfaces and street placards composed; renderer-distance budget retained all colliders and restored the camera view. Physical stone/stick pickups, paused attack gating, swept stone/window impact, single glass break, stick hit/NPC reaction, wall occlusion, pool exhaustion/reuse, projectile pause and death cleanup passed. Three camera modes, imported player avatar, bounded orbit, obstruction retraction and first-person restoration passed. Block life: physical gym and kiosk interaction, UI repetitions and anti-spam, pause ownership, paid/stolen food, wanted save restoration, police line-of-sight/occlusion and capture range, accelerated escape/arrest, one-time challenge and durable v5 character stats passed. Routine: authoritative wanted/training contact gates, staged cargo/receipt settlement, mission pause/suspension, scrollable journal, conditioning course/XP/save/cancellation, and bounded feedback audio pause/mute/suspension passed. Active street-job disk resume, single settlement, boxing UI/reaction/guard/reward/pause and durable rest passed.",
+    "product": "VKT"
+  },
+  "android": {
+    "name": "VKT-Controls-Android-20261020.apk",
+    "size": 193180765,
+    "sha256": "4a35b6321a02691827d528a882c23699b411019fcf7a95986919c8de9284a1a0",
+    "introIncluded": true,
+    "arm64": true,
+    "buildErrors": 0,
+    "versionCode": 8,
+    "package": "com.yashimi.vkt",
+    "signatureVerified": true,
+    "certificateSha256": "73e4417407e1b053081da46117c15babed99544f94b18361340ad6120ce9f98b",
+    "physicalDeviceTested": true,
+    "physicalDeviceTestScope": "Limited final-APK hardware UI, held ADB touch, movement and frame sampling; no physical bench completion or new human audio review.",
+    "arm64Only": true
+  },
+  "device": {
+    "model": "2409BRN2CY",
+    "androidApi": 36,
+    "installedVersionCode": 8,
+    "installedApkSha256": "4a35b6321a02691827d528a882c23699b411019fcf7a95986919c8de9284a1a0",
+    "saveBackupCreated": true,
+    "personalDataCleared": false,
+    "serialRecorded": false,
+    "finalApkReview": [
+      "Compatible upgrade and startup",
+      "Compact music below top controls; TRCI/SKOK clear",
+      "Expanded audio settings fit below music",
+      "Closing music and holding movement changes world position / target distance",
+      "Help opens and closes music settings"
+    ],
+    "initialV8Review": [
+      "All four touch help pages fit",
+      "Phone/map navigation"
+    ],
+    "humanTouchConfirmed": true,
+    "humanTouchConfirmationScope": "User confirmed help/navigation on an earlier v8 candidate; final device checks use ADB held touch, not a second human approval.",
+    "humanAudioReviewed": false,
+    "deviceBenchCompletionTested": false,
+    "knownStartupMessages": [
+      "ClassNotFoundException: com.google.android.play.core.assetpacks.AssetPackManager"
+    ],
+    "otherUnityErrorsObserved": false,
+    "metrics": {
+      "platform": "Android",
+      "utc": "2026-10-20T17:12:14.1205330Z",
+      "cpu": "ARM64 FP ASIMD AES",
+      "gpu": "Mali-G52 MC2",
+      "scope": "Latest 1800 eligible frame deltas; lifetime excludes intro, owned pause, suspension and death. Unity allocated memory is not process RSS or a leak diagnosis.",
+      "width": 1640,
+      "height": 720,
+      "frames": 1800,
+      "touchPresses": 6,
+      "audioSampleRate": 24000,
+      "observedFps": 35.03240133670322,
+      "p95FrameMilliseconds": 33.35542231798172,
+      "totalEligibleFrames": 3157,
+      "allocatedBytes": 79329076,
+      "baselineAllocatedBytes": 78936772,
+      "eligibleSeconds": 90.07094316743314,
+      "windowSeconds": 51.381005335599184,
+      "medianFrameMilliseconds": 33.30018371343613,
+      "physicalTouchReviewed": false,
+      "humanAudioReviewed": false
+    },
+    "metricsLimit": "Short stationary/UI-heavy sample with two brief walks, not thermal or city traversal validation.",
+    "helpScreenshot": "Docs/Screenshots/controls-help-android-20261020.png",
+    "finalApkTouchInjectionHuman": false
+  },
+  "windows": {
+    "name": "VKT-Controls-Windows-20261020.zip",
+    "size": 204434384,
+    "sha256": "d45e603817824acae2840087c011b66c5e91ad2c64ae0ba9387befe0430fc651"
+  },
+  "sourceFingerprint": "88eb131454b83cffde04e6dde32560ae4126fc3a479da7716e3faaee38b30e2b",
+  "sourceFingerprintScope": "Selected CityGame source/model/image extensions only. Does not include all Unity build inputs or generated settings.",
+  "completeBuildInputBinding": false,
+  "fonts": {
+    "upstreamRevision": "ffebf8c1ee449e544955a7e813c54f9b73848eac",
+    "modified": false,
+    "files": [
+      {
+        "file": "Assets/CityGame/Resources/UI/Fonts/NotoSans-Regular.ttf",
+        "source": "https://raw.githubusercontent.com/notofonts/noto-fonts/ffebf8c1ee449e544955a7e813c54f9b73848eac/hinted/ttf/NotoSans/NotoSans-Regular.ttf",
+        "size": 569208,
+        "sha256": "b85c38ecea8a7cfb39c24e395a4007474fa5a4fc864f6ee33309eb4948d232d5",
+        "license": "OFL-1.1"
+      },
+      {
+        "file": "Assets/CityGame/Resources/UI/Fonts/NotoSans-Bold.ttf",
+        "source": "https://raw.githubusercontent.com/notofonts/noto-fonts/ffebf8c1ee449e544955a7e813c54f9b73848eac/hinted/ttf/NotoSans/NotoSans-Bold.ttf",
+        "size": 575740,
+        "sha256": "c976e4b1b99edc88775377fcc21692ca4bfa46b6d6ca6522bfda505b28ff9d6a",
+        "license": "OFL-1.1"
+      },
+      {
+        "file": "Assets/CityGame/Resources/UI/Fonts/OFL.txt",
+        "source": "https://raw.githubusercontent.com/notofonts/noto-fonts/ffebf8c1ee449e544955a7e813c54f9b73848eac/LICENSE",
+        "size": 4377,
+        "sha256": "0dab92d0544f7b233403f14b84a663bdbfa746982eda629e7f4f9ffe1b036feb",
+        "license": "OFL-1.1"
+      }
+    ]
+  },
+  "toolingTestsPassed": 17,
+  "backendAndRetiredAudioTestsPassed": 23,
+  "syntheticElevationAuditTestsPassed": 2,
+  "observedVerificationFailures": [
+    "Old music-pause assertion corrected to require live gameplay.",
+    "Physical Android review found the compact card covering TRCI/SKOK; moved it below the top control row and added native bounds-overlap validation.",
+    "A synthetic bench run missed completion and repeated conditioning-menu checks showed the synthetic Escape was not delivered: menu, pause and conditioning all stayed active. Phase-driven bench input and a dedicated background-capable synthetic keyboard with end-of-frame delivery were added. Final checks are recorded separately."
+  ],
+  "limits": [
+    "Stylized existing low-poly character; bounded jaw deformation is not a realistic face or speech lip sync.",
+    "No new approved natural Serbian NPC speech; captions and original intro remain.",
+    "Flat street terrain unchanged; no new satellite heights, neighborhoods or vehicles delivered.",
+    "Short native input/UI checks and stationary device metrics are not a traversal soak, thermal validation or memory-leak proof.",
+    "Android AssetPackManager startup ClassNotFoundException remains; base APK renders.",
+    "Automated Unity keyboard/EventSystem checks are synthetic; user touch confirmation is recorded separately."
+  ],
+  "sourceSync": {
+    "files": 84,
+    "allOriginalTargetsPreflightPassed": true,
+    "backupCreated": true,
+    "originalSettingsAndScenesChanged": false,
+    "exportDryRun": {
+      "files": 414,
+      "readyToCopy": true,
+      "executedExport": false
+    },
+    "originalUnityEditorPlayRetested": false
+  }
+}

@@ -24,7 +24,7 @@ namespace Pozarevac.CityGame
             if(shader==null)throw new InvalidOperationException("Street character shader missing.");
             cloth=new Material(shader);
             cloth.SetTexture("_BaseMap",Resources.Load<Texture2D>("Models/KenneyRetro/humanMaleA"));
-            Face=model.AddComponent<CityFaceExpression>();Face.Initialize(cloth);
+            Face=model.AddComponent<CityFaceExpression>();Face.Initialize(cloth,body);
             foreach(Renderer renderer in model.GetComponentsInChildren<Renderer>())
             {
                 Material[] slots=new Material[Mathf.Max(1,renderer.sharedMaterials.Length)];

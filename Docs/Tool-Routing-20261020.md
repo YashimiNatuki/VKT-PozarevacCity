@@ -1,0 +1,25 @@
+# Tool routing for the Unity game
+
+This is a fit assessment, not a claim that all named services were activated. The actual session tool inventory and focused local commands take precedence over plugin names. No cloud telemetry, paid generation, account migration or new backend was enabled.
+
+| Work | Best fit now | Observed capability / boundary |
+| --- | --- | --- |
+| Core gameplay, UI/input and animation defects | Unity Essentials + native Unity tests/player | Actual 6000.6.5f1 editor/build workflow is available. This recovery uses the existing `Assets/CityGame` architecture. |
+| Local asset inspection/preparation | Game Asset Production / Game Development Studio | CLI 1.5.1 capabilities and generic doctor succeeded. Blender executable bytes match its configured hash; this doctor did not execute Blender. BasisU and CoACD are not configured. Tripo/Leonardo credentials are absent. |
+| Project-specific implementation/release | Konglomerat / Rođa Game Studio | Version 0.2.1 installed and enabled; three skills and read-only Python helpers. Complete local kit is packaged separately. |
+| Phone verification | Unity Android build + ADB; MiniDroid if its surface fits | A physical Xiaomi 2409BRN2CY/API 36 was connected on 2026-10-20. Installation, UI, input, sound and performance are separate checks. Android simulator output cannot replace phone evidence. |
+| Source publication | Git + GitHub | Existing authenticated Git workflow is available. GitHub connector metadata was exposed but its fetch call returned unavailable to the model; use the existing authorized CLI/API path without printing credentials. |
+| Terrain data | Existing OSM/Cesium conventions; SkyWatch only after data/access review | SkyWatch is installed/enabled in local metadata; no usable satellite data tool was exposed in this session. Dataset rights, CRS and vertical datum still need review. No satellite terrain was integrated in this wave. |
+| Serbian speech candidates | VoiceLab/Hugging Face/local reviewed engines | VoiceLab is installed/enabled, but no callable synthesis tool was exposed. Naturalness remains a listening decision. Do not revive the incompatible VITS runtime or claim filenames prove Serbian speech. |
+| Verification discipline | Riqor, Codex Engineering Guardrails, focused Code Review | Use measurable success and source-backed checks. Package containment/evidence helpers receive targeted tests. This is not a full repository security audit or a claim of perfect reliability. |
+| UI visual assets | Native Unity UI; Adobe/Figma/Spline only for specific authored assets | Current UI needs usable controls and readable typography first. A 2D mockup or browser render does not prove native game input or 3D rig quality. |
+| Models/props | Blender/native Unity; Tripo/Topview/to3D after capability/license review | Generated picture, static mesh, rigged mesh, collision and engine admission are distinct stages. Paid provider invocation needs a concrete approved request and spend ceiling. |
+| Future online features | Appwrite/Convex/Go/Cloudflare/Render/Fastly when a concrete need exists | Offline single-player saves and dialogue fallback do not require another backend. Avoid new hosting, keys and network dependency without player value. |
+
+Orbit is a separate microgame; Unreal skills do not require an engine migration. Bird, HubSpot, revenue-grid, Uniform, Wix and marketplace tools do not address the current Unity controller defects. Boltz, NGS, molecular/biology viewers and literature tools do not produce human character rigs or city collision meshes. Mobile App Builder and React Native do not replace Unity's Android build. BrowserAct/Exa/Parallel Search can support a specific research question when callable; they do not themselves create licensed terrain or prove integration. Evaluators and analytics tools may organize evidence later, but no Mixpanel/Amplitude/Logfire telemetry is present in this recovery.
+
+## Scoped trust-boundary review
+
+The package builder reads a user-selected local marketplace: registry `source.path` -> resolved plugin directory -> JSON/skill/source bytes -> ZIP output. It rejects a plugin path outside that marketplace, linked paths outside its root, unexpected file extensions, stale compatibility identity and existing output archives; it excludes Python caches. A new output must resolve outside the source. Tests cover a sibling-directory registry escape, private `.env`, stale identity, existing-archive preservation and deterministic kit contents. This is a local packaging guard, not a sandbox for concurrently hostile filesystem mutation.
+
+Game dialogue/model output is untrusted presentation data; it cannot execute shell commands or settle rewards. Credentials remain outside public source and player builds. The publication script uses existing credential-manager access in process memory only. Incoming assets/height data are untrusted until format, resource budget, license and engine behavior are checked. No broad account scan, secret rotation or cloud deployment was performed.

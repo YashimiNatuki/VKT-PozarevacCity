@@ -1,4 +1,0 @@
-interface:
-  display_name: "VKT Thug Life Engineer"
-  short_description: "Povezani Unity gameplay i pouzdani save"
-  default_prompt: "Use $vkt-thuglife-engineer for the current VKT Unity project and report verified results."

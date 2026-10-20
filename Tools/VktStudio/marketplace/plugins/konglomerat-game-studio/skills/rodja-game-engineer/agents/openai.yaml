@@ -1,0 +1,4 @@
+interface:
+  display_name: "Rodja Game Engineer"
+  short_description: "Povezani Unity gameplay i pouzdani save"
+  default_prompt: "Use $rodja-game-engineer for the current Unity game project and report verified results."
