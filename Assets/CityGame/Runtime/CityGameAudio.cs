@@ -113,8 +113,8 @@ namespace Pozarevac.CityGame
                 if (shouldPause) { effects.Pause(); dialogue.Pause();feedback.Stop(); }
                 else { effects.UnPause(); dialogue.UnPause(); }
             }
-            if (!gameplayPaused && Cursor.lockState == CursorLockMode.Locked && Keyboard.current != null && Keyboard.current.mKey.wasPressedThisFrame)
-            { SetMuted(!Muted); ui.Notify(Muted ? "Zvuk isključen / M" : "Zvuk uključen / M"); }
+            if (!gameplayPaused && Keyboard.current != null && Keyboard.current.f10Key.wasPressedThisFrame)
+            { SetMuted(!Muted); ui.Notify(Muted ? "Zvuk isključen / F10" : "Zvuk uključen / F10"); }
             Vector3 delta = body.transform.position - lastPosition; lastPosition = body.transform.position;
             bool grounded = body.enabled && body.isGrounded;
             if (shouldPause || delta.sqrMagnitude > 9 || Time.deltaTime <= 0) { walked = 0; wasGrounded = grounded; return; }

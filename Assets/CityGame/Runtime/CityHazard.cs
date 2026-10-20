@@ -19,6 +19,14 @@ namespace Pozarevac.CityGame
         private Transform visual;
         private float reaction;
         private float hitStun, suppressed;
+        private readonly CityHearingMemory hearing = new CityHearingMemory();
+        public bool InvestigatingSound => hearing.Active;
+        public bool HearSignal(Vector3 origin, bool clearPath)
+        {
+            if(IsSuppressed || hitStun > 0f || target == null || !target.IsAlive ||
+                Vector3.Distance(origin, home) > leashRadius) return false;
+            return hearing.Hear(origin, transform.position + Vector3.up * 1.3f, clearPath, CityStreetSignals.Radius);
+        }
         private TextMesh statusLabel;
         public float MaxHitPoints => Kind == CityHazardKind.GuardDog ? 30f : 45f;
         public float CurrentHitPoints { get; private set; } = 30f;
@@ -71,6 +79,7 @@ namespace Pozarevac.CityGame
         {
             float dt = Time.deltaTime;
             if (dt <= 0f) return;
+            hearing.Tick(dt);
             bool wasStunned = hitStun > 0f, wasSuppressed = IsSuppressed;
             hitStun = Mathf.Max(0f, hitStun - dt); suppressed = Mathf.Max(0f, suppressed - dt);
             if (wasSuppressed && !IsSuppressed) { CurrentHitPoints = MaxHitPoints; cooldown = Mathf.Max(cooldown, 1f); }
@@ -82,6 +91,7 @@ namespace Pozarevac.CityGame
             Vector3 delta = target.transform.position - transform.position;
             IsAttacking = target.IsAlive && Mathf.Abs(delta.y) < 3f && delta.sqrMagnitude <= detectionRange * detectionRange;
             Vector3 destination = home;
+            if(hearing.Active && target.IsAlive) destination=hearing.Position;
             if (IsAttacking && Vector3.Distance(target.transform.position, home) <= leashRadius)
             {
                 if (delta.sqrMagnitude <= attackRange * attackRange)

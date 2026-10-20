@@ -14,6 +14,14 @@ namespace Pozarevac.CityGame
         private int patrolStop;
         private static readonly Vector3[] PatrolOffsets={Vector3.forward*4,Vector3.right*4,Vector3.back*4,Vector3.left*4};
         private float patrolWait;
+        private readonly CityHearingMemory hearing = new CityHearingMemory();
+        public bool InvestigatingSound => hearing.Active;
+        public bool HearSignal(Vector3 origin, bool clearPath)
+        {
+            // Noise is not evidence of a crime and cannot override an established pursuit.
+            if(game == null || game.Progression.Lifestyle.Wanted || stun > 0f) return false;
+            return hearing.Hear(origin, transform.position + Vector3.up * 1.3f, clearPath, CityStreetSignals.Radius);
+        }
         public CityPolicePhase Phase=>investigation.Phase;
         public Vector3 LastKnown=>investigation.LastKnown;
         public void ReportIncident(Vector3 at){investigation.ReportIncident(at);}
@@ -62,6 +70,8 @@ namespace Pozarevac.CityGame
         {
             SeesPlayer=CanCapture=false;
             if(game==null||seconds<=0||!body.enabled)return;
+            hearing.Tick(seconds);
+            if(wanted) hearing.Clear();
             if(stun>0){stun=Mathf.Max(0,stun-seconds);return;}
             Vector3 eye=transform.position+Vector3.up*1.5f,target=game.Player.position+Vector3.up*1.3f;
             float distance=Vector3.Distance(eye,target);
@@ -80,6 +90,7 @@ namespace Pozarevac.CityGame
                 patrolWait+=seconds;if(patrolWait>=2.5f){patrolStop=(patrolStop+1)%4;patrolWait=0;}
             }
             Vector3 goal=investigation.Step(seconds,wanted,SeesPlayer,game.Player.position,transform.position,patrolGoal);
+            if(!wanted && hearing.Active) goal=hearing.Position;
             Vector3 travel=goal-transform.position;travel.y=0;
             if(travel.magnitude>.8f&&!CanCapture)
             {

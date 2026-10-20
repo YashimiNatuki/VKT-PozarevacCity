@@ -209,6 +209,7 @@ namespace Pozarevac.CityGame
                     if (offline || authored) gameObject.AddComponent<CityVisualPolish>().Initialize(this);
                     gameObject.AddComponent<CityLifestyleRuntime>().Initialize(this, hud, spawn);
                     gameObject.AddComponent<CitySpatialSoundscape>().Initialize(this, spawn);
+                    gameObject.AddComponent<CityStreetSignals>().Initialize(this, hud);
                     if (Intro != null && Intro.IsActive) Director.SetPaused(true);
                     WorldReady = true;
                     gameObject.AddComponent<CityControlsDock>().Initialize(this);

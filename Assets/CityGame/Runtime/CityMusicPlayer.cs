@@ -26,6 +26,8 @@ namespace Pozarevac.CityGame
         public string Folder => Path.Combine(Application.persistentDataPath, "Music");
         public int Count => tracks.Count;
         public bool IsPlaying => source != null && source.isPlaying;
+        // A selected or paused personal track takes priority over automatic room music.
+        public bool HasPlaybackSelection => current >= 0;
         public bool IsReady => ownedClip != null && loading == null;
         public int LocalCount { get { int count = 0; foreach (Track track in tracks) if (!track.Radio) count++; return count; } }
         public float Volume { get => userVolume; set => userVolume = float.IsNaN(value) ? 0f : Mathf.Clamp01(value); }

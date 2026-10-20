@@ -20,6 +20,10 @@ namespace Pozarevac.CityGame
             public float peakObservedSpeed;
             public bool gaitReady;
             public bool musicControlsClear;
+            public bool signalBlockedByMenu,signalBlockedByWall,signalReachesOfficer,signalCooldown,signalDoesNotPauseOrAddHeat;
+            public bool hideoutScoreFades,hideoutScoreMutes;
+            public bool helpAudioTextFits,hideoutMusicPreferenceMutes,disabledSignalBlocked;
+            public bool mapPreservesAudio,muteShortcutWorks;
             public string error="",input="Synthetic Unity Input System keyboard and EventSystem submit; not human input.";
         }
         private readonly Report report=new Report();
@@ -74,16 +78,28 @@ namespace Pozarevac.CityGame
             var dock=game.GetComponent<CityControlsDock>();
             report.dockVisible=dock!=null&&dock.transform.Find("VKT_Controls/QuickControls").gameObject.activeInHierarchy;
             yield return Press(Key.F1);bool helpShown=dock!=null&&dock.HelpOpen&&game.Director.IsPaused;
+            report.signalBlockedByMenu=helpShown&&!game.GetComponent<CityStreetSignals>().TryWhistle();
             if(helpShown)Capture(game,"help");
+            if(helpShown)
+            {
+                for(int page=0;page<3;page++){Submit("DALJE");yield return null;}
+                Canvas.ForceUpdateCanvases();
+                var helpText=dock.transform.Find("VKT_Controls/HelpBackdrop/HelpCard/Label").GetComponent<Text>();
+                report.helpAudioTextFits=helpText.preferredHeight<=helpText.rectTransform.rect.height;
+                Capture(game,"help-audio");
+            }
             yield return Press(Key.Escape);report.helpReturnsControl=helpShown&&!dock.HelpOpen&&!game.Director.IsPaused;
             yield return Press(Key.P);
             report.phoneBeforeContract=phone.IsOpen&&game.Progression.CompletedContracts==0;
             if(phone.IsOpen)Capture(game,"phone");
             if(phone.IsOpen)yield return Press(Key.Escape);
-            yield return Press(Key.M);
+            game.Audio.SetMuted(false);yield return Press(Key.M);
+            report.mapPreservesAudio=!game.Audio.Muted;
             var map=phone.transform.Find("MapPanel");report.mapBeforeContract=phone.IsOpen&&map!=null&&map.gameObject.activeSelf;
             if(report.mapBeforeContract)Capture(game,"map");
             if(phone.IsOpen)yield return Press(Key.Escape);
+            yield return Press(Key.F10);bool muted=game.Audio.Muted;
+            yield return Press(Key.F10);report.muteShortcutWorks=muted&&!game.Audio.Muted;
             yield return Press(Key.F6);
             var music=game.GetComponent<CityMusicPanel>();report.musicNonModal=music.IsOpen&&!game.Director.IsPaused&&Time.timeScale>0;
             Canvas.ForceUpdateCanvases();report.musicControlsClear=MusicClearsTouchControls(game);
@@ -138,7 +154,49 @@ namespace Pozarevac.CityGame
                 }
                 report.benchCompleted=life.Life.Workouts==before+1;
             }
+            yield return ValidateStreetSound(game);
             Finish("");
+        }
+        private IEnumerator ValidateStreetSound(CityGameBootstrap game)
+        {
+            var signals=game.GetComponent<CityStreetSignals>();
+            var officer=FindAnyObjectByType<CityPoliceOfficer>();
+            var body=game.Player.GetComponent<CharacterController>();
+            var movement=game.Player.GetComponent<CityPlayerController>();
+            var policeBody=officer.GetComponent<CharacterController>();
+            Vector3 playerAt=game.Player.position,officerAt=officer.transform.position;
+            // A temporary isolated physics fixture above the city avoids dependence on changing street geometry.
+            movement.enabled=false;body.enabled=false;policeBody.enabled=false;
+            game.Player.position=playerAt+Vector3.up*50;
+            officer.transform.position=game.Player.position+Vector3.forward*6;
+            var wall=GameObject.CreatePrimitive(PrimitiveType.Cube);wall.name="ValidationSoundWall";
+            wall.transform.position=game.Player.position+Vector3.up*1.4f+Vector3.forward*3;
+            wall.transform.localScale=new Vector3(5,4,.4f);Physics.SyncTransforms();
+            float heat=game.Session.Heat;
+            yield return Press(Key.G);
+            report.signalBlockedByWall=signals.Emitted==1&&!officer.InvestigatingSound&&signals.LastListeners==0;
+            report.signalCooldown=!signals.TryWhistle();
+            Destroy(wall);yield return new WaitForSecondsRealtime(CityStreetSignals.Cooldown+.2f);
+            Physics.SyncTransforms();
+            Submit(game.Touch.IsVisible?"ZVIŽDI":"ZVIŽDI / G");yield return null;yield return null;
+            report.signalReachesOfficer=signals.Emitted==2&&officer.InvestigatingSound&&signals.LastListeners==1&&signals.Playing;
+            report.signalDoesNotPauseOrAddHeat=!game.Director.IsPaused&&Time.timeScale>0&&game.Session.Heat<=heat&&!game.Progression.Lifestyle.Wanted;
+            signals.enabled=false;report.disabledSignalBlocked=!signals.TryWhistle();signals.enabled=true;
+            game.Player.position=playerAt;officer.transform.position=officerAt;
+            body.enabled=true;policeBody.enabled=true;movement.enabled=true;Physics.SyncTransforms();
+            Capture(game,"street-signal");
+            // Use the real authored room entry and existing save progression gate.
+            game.Progression.CompleteContract(1);
+            bool entered=game.Hideout.Travel(true);
+            yield return new WaitForSecondsRealtime(1.2f);
+            var ambience=game.GetComponent<CityAmbience>();
+            report.hideoutScoreFades=entered&&ambience.HideoutMusicVolume>.03f;
+            game.Audio.SetMuted(true);yield return null;yield return null;
+            report.hideoutScoreMutes=ambience.HideoutMusicVolume==0;
+            game.Audio.SetMuted(false);
+            var music=game.GetComponent<CityMusicPlayer>();music.Muted=true;yield return null;yield return null;
+            report.hideoutMusicPreferenceMutes=ambience.HideoutMusicVolume==0;
+            music.Muted=false;game.Hideout.Travel(false);
         }
         private IEnumerator Press(Key key)
         {
@@ -182,6 +240,9 @@ namespace Pozarevac.CityGame
         {
             report.error=error;
             report.passed=error.Length==0&&report.phoneBeforeContract&&report.mapBeforeContract&&report.musicNonModal&&report.musicControlsClear&&report.movementAfterMusic&&report.legsAnimated&&report.benchStarted&&report.benchCompleted&&report.dockVisible&&report.helpReturnsControl&&report.onboardingCreated;
+            report.passed=report.passed&&report.signalBlockedByMenu&&report.signalBlockedByWall&&report.signalReachesOfficer&&report.signalCooldown&&report.signalDoesNotPauseOrAddHeat&&report.hideoutScoreFades&&report.hideoutScoreMutes;
+            report.passed=report.passed&&report.helpAudioTextFits&&report.hideoutMusicPreferenceMutes&&report.disabledSignalBlocked;
+            report.passed=report.passed&&report.mapPreservesAudio&&report.muteShortcutWorks;
             string path=Arg("-vktFlowReport",Path.Combine(Path.GetTempPath(),"vkt-input-flow.json"));
             File.WriteAllText(path,JsonUtility.ToJson(report,true));Debug.Log("VKT_INPUT_FLOW "+(report.passed?"PASS":"FAIL"));
             if(keyboard!=null)InputSystem.RemoveDevice(keyboard);Application.Quit(report.passed?0:1);

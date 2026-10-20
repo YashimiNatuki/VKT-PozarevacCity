@@ -15,6 +15,11 @@ namespace Pozarevac.CityGame
         private bool initialized;
         private bool suspended;
         private CityGameAudio dialogue;
+        private CityMusicPlayer music;
+        private CityGameBootstrap game;
+        private AudioSource hideoutSource;
+        private AudioClip hideoutClip;
+        public float HideoutMusicVolume => hideoutSource != null ? hideoutSource.volume : 0f;
         public bool IsUsingSyntheticFallback { get; private set; }
 
         public void Initialize(CityWorldAtmosphere worldClock, Func<bool> interior, Func<bool> muted)
@@ -25,6 +30,7 @@ namespace Pozarevac.CityGame
             isInterior = interior ?? throw new ArgumentNullException(nameof(interior));
             isMuted = muted ?? throw new ArgumentNullException(nameof(muted));
             dialogue = GetComponent<CityGameAudio>();
+            game = GetComponent<CityGameBootstrap>();
             AudioClip day = Resources.Load<AudioClip>("Audio/Ambience/day");
             AudioClip night = Resources.Load<AudioClip>("Audio/Ambience/night");
             if (day == null) day = generatedDay = CreateSyntheticLoop(false);
@@ -32,8 +38,10 @@ namespace Pozarevac.CityGame
             IsUsingSyntheticFallback = generatedDay != null || generatedNight != null;
             daySource = CreateSource(day);
             nightSource = CreateSource(night);
+            hideoutClip = CreateHideoutLoop();
+            hideoutSource = CreateSource(hideoutClip);
             initialized = true;
-            if (isActiveAndEnabled) { daySource.Play(); nightSource.Play(); }
+            if (isActiveAndEnabled) { daySource.Play(); nightSource.Play(); hideoutSource.Play(); }
         }
 
         private AudioSource CreateSource(AudioClip clip)
@@ -51,16 +59,43 @@ namespace Pozarevac.CityGame
         private void Update()
         {
             if (!initialized || clock == null) return;
-            if (suspended || Time.timeScale <= 0f || isMuted())
+            if (music == null) music = GetComponent<CityMusicPlayer>();
+            if (suspended || Time.timeScale <= 0f || isMuted() || (game != null && game.Vitals != null && !game.Vitals.IsAlive))
             {
                 daySource.volume = 0f;
                 nightSource.volume = 0f;
+                hideoutSource.volume = 0f;
                 return;
             }
             float target = OutdoorVolume * (isInterior() ? InteriorAttenuation : 1f) * (dialogue != null && dialogue.IsDialoguePlaying ? 0.5f : 1f);
             float blend = 1f - Mathf.Exp(-2f * Time.unscaledDeltaTime);
             daySource.volume = Mathf.Lerp(daySource.volume, clock.IsDay ? target : 0f, blend);
             nightSource.volume = Mathf.Lerp(nightSource.volume, clock.IsDay ? 0f : target, blend);
+            float roomTarget = isInterior() && (music == null || (!music.HasPlaybackSelection && !music.Muted))
+                ? .32f * (music != null ? music.Volume : .35f) * (dialogue != null ? dialogue.DialogueDuck : 1f) : 0f;
+            hideoutSource.volume = music != null && (music.HasPlaybackSelection || music.Muted) ? 0f : Mathf.Lerp(hideoutSource.volume, roomTarget, blend);
+        }
+
+        // Original ten-second instrumental loop, with no external recording or impersonated voice.
+        public static AudioClip CreateHideoutLoop()
+        {
+            const int rate = 22050, count = rate * 10;
+            var data = new float[count];
+            float[] notes = { 130.8128f, 155.5635f, 174.6141f, 116.5409f };
+            for (int i = 0; i < count; i++)
+            {
+                float t = (float)i / rate, beat = t * 1.6f, within = beat - Mathf.Floor(beat);
+                int chord = Mathf.Min(3, (int)(beat / 4)); float root = notes[chord];
+                float attack = Mathf.Min(1f, within / .025f);
+                float bass = Mathf.Sin(2 * Mathf.PI * root * .5f * t) * Mathf.Exp(-within * 7) * .16f * attack;
+                float offbeat = Mathf.Max(0f, within - .5f);
+                float keys = within >= .5f ? (Mathf.Sin(2 * Mathf.PI * root * t) + Mathf.Sin(2 * Mathf.PI * root * 1.5f * t)) * Mathf.Exp(-offbeat * 20) * .055f * Mathf.Min(1f, offbeat / .025f) : 0f;
+                float kick = Mathf.Sin(2 * Mathf.PI * 55 * t) * Mathf.Exp(-within * 35) * .12f * attack;
+                float edge = Mathf.Min(1f, Mathf.Min(i, count - 1 - i) / (rate * .025f));
+                data[i] = (bass + keys + kick) * edge;
+            }
+            var clip = AudioClip.Create("VKT_OriginalHideoutDowntempo", count, 1, rate, false);
+            clip.SetData(data, 0); return clip;
         }
 
         private static AudioClip CreateSyntheticLoop(bool night)
@@ -103,24 +138,28 @@ namespace Pozarevac.CityGame
         private void OnEnable()
         {
             if (!initialized) return;
-            daySource.UnPause(); nightSource.UnPause();
+            daySource.UnPause(); nightSource.UnPause(); hideoutSource.UnPause();
         }
         private void OnApplicationPause(bool value)
         {
             suspended=value;
-            if(value&&initialized){daySource.volume=nightSource.volume=0;daySource.Pause();nightSource.Pause();}
-            else if(initialized){daySource.UnPause();nightSource.UnPause();}
+            if(value&&initialized){daySource.volume=nightSource.volume=hideoutSource.volume=0;daySource.Pause();nightSource.Pause();hideoutSource.Pause();}
+            else if(initialized){daySource.UnPause();nightSource.UnPause();hideoutSource.UnPause();}
         }
         private void OnDisable()
         {
             if (!initialized) return;
             daySource.volume = nightSource.volume = 0f;
+            hideoutSource.volume = 0f;
             daySource.Pause(); nightSource.Pause();
+            hideoutSource.Pause();
         }
         private void OnDestroy()
         {
             if (daySource != null) { daySource.Stop(); Destroy(daySource); }
             if (nightSource != null) { nightSource.Stop(); Destroy(nightSource); }
+            if (hideoutSource != null) { hideoutSource.Stop(); Destroy(hideoutSource); }
+            if (hideoutClip != null) Destroy(hideoutClip);
             if (generatedDay != null) Destroy(generatedDay);
             if (generatedNight != null) Destroy(generatedNight);
         }
