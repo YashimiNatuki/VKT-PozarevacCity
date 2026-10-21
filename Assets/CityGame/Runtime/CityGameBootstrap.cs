@@ -120,6 +120,7 @@ namespace Pozarevac.CityGame
             character.center = new Vector3(0f, 0.9f, 0f);
             character.enabled = false;
             movement = player.AddComponent<CityPlayerController>();
+            movement.ConfigureStats(Progression.Stats);
             movement.enabled = false;
             Vitals = player.AddComponent<CityPlayerVitals>();
             movement.SetCanAct(() => Vitals.CanAct);
@@ -239,6 +240,7 @@ namespace Pozarevac.CityGame
         }
         private void OnPlayerDied()
         {
+            Progression.Stats.RecordDeath();
             Director?.FailCurrent("Pao si. H / BOLNICA: vrati se na bezbedno mesto; zatim R za novi pokušaj.");
             hud.ShowNotification("Nema života. H: bolnica. Nezavršena misija ne isplaćuje nagradu.", 10);
         }

@@ -25,6 +25,7 @@ namespace Pozarevac.CityGame
             public bool helpAudioTextFits,hideoutMusicPreferenceMutes,disabledSignalBlocked;
             public bool mapPreservesAudio,muteShortcutWorks;
             public bool gardenPacked,gardenDelivery,gardenPause,gardenDiskCargo,gardenDiskReceipt,gardenSinglePayout,gardenTrainingGate,gardenPhoneCancellation;
+            public bool statsWalking,statsSprinting,statsTeleportExcluded,statsPause,statsDisk,statsPage;
             public string error="",input="Synthetic Unity Input System keyboard and EventSystem submit; not human input.";
         }
         private readonly Report report=new Report();
@@ -114,6 +115,7 @@ namespace Pozarevac.CityGame
             foreach(Transform bone in game.Player.GetComponentsInChildren<Transform>())
             {if(bone.name=="LeftLeg")left=bone;if(bone.name=="RightLeg")right=bone;}
             Vector3 start=game.Player.position;Quaternion l=left!=null?left.localRotation:Quaternion.identity,r=right!=null?right.localRotation:Quaternion.identity;
+            float walkedBefore=game.Progression.Stats.TotalDistanceWalked;
             InputSystem.QueueStateEvent(keyboard,new KeyboardState(Key.W));
             float walkUntil=Time.realtimeSinceStartup+1.2f;
             int walkingFrames=0;
@@ -130,10 +132,38 @@ namespace Pozarevac.CityGame
             report.distanceAfterMusic=Vector3.Distance(start,game.Player.position);
             report.movementAfterMusic=report.distanceAfterMusic>1&&!game.Director.IsPaused&&!music.IsOpen;
             report.legsAnimated=report.leftLegDegrees>8&&report.rightLegDegrees>8;
+            report.statsWalking=game.Progression.Stats.TotalDistanceWalked>walkedBefore+1;
             Capture(game,"walking");
+            float sprintedBefore=game.Progression.Stats.TotalDistanceSprinted;
+            // Retrace the segment just walked: continuing forward can press against its end obstacle.
+            InputSystem.QueueStateEvent(keyboard,new KeyboardState(Key.S,Key.LeftShift));
+            yield return new WaitForSecondsRealtime(1f);
+            InputSystem.QueueStateEvent(keyboard,new KeyboardState());yield return null;yield return null;
+            report.statsSprinting=game.Progression.Stats.TotalDistanceSprinted>sprintedBefore+1;
+            yield return Press(Key.P);Submit("Statistics");yield return null;
+            Canvas.ForceUpdateCanvases();
+            var statistics=phone.transform.Find("StatisticsPanel");
+            var details=statistics.GetComponentInChildren<Text>();
+            foreach(var text in statistics.GetComponentsInChildren<Text>())if(text.name=="StatisticsDetailsText")details=text;
+            report.statsPage=statistics.gameObject.activeInHierarchy&&game.Director.IsPaused&&details.text.Contains("Hod:")&&details.preferredHeight<=details.rectTransform.rect.height;
+            float playtime=game.Progression.Stats.TotalPlayTimeSeconds;
+            yield return new WaitForSecondsRealtime(.3f);
+            report.statsPause=game.Progression.Stats.TotalPlayTimeSeconds==playtime;
+            progress.SaveNow();
+            if(new CitySaveStore(progress.SavePath).TryLoad(out var savedStats,out _))
+            {
+                var restoredStats=new CityProgression(CitySession.Restore(savedStats),savedStats).Stats;
+                report.statsDisk=restoredStats.TotalDistance==game.Progression.Stats.TotalDistance&&restoredStats.TotalPlayTimeSeconds==playtime;
+            }
+            Capture(game,"statistics");yield return new WaitForSecondsRealtime(.15f);
+            Submit("BackFromStatistics");yield return null;
+            yield return Press(Key.Escape);
             var life=game.GetComponent<CityLifestyleRuntime>();
             if(game.Director.IsPaused)game.Director.SetPaused(false);
+            float distanceBeforeTeleport=game.Progression.Stats.TotalDistance;
             var body=game.Player.GetComponent<CharacterController>();body.enabled=false;game.Player.position=life.Gym.position+Vector3.back*2;body.enabled=true;Physics.SyncTransforms();
+            yield return null;yield return null;
+            report.statsTeleportExcluded=Mathf.Abs(game.Progression.Stats.TotalDistance-distanceBeforeTeleport)<.05f;
             yield return Press(Key.L);Submit("TRENING / kod klupe");yield return new WaitForSecondsRealtime(.3f);
             report.benchStarted=life.Life.IsTraining;
             if(report.benchStarted)
@@ -313,6 +343,7 @@ namespace Pozarevac.CityGame
             report.passed=report.passed&&report.helpAudioTextFits&&report.hideoutMusicPreferenceMutes&&report.disabledSignalBlocked;
             report.passed=report.passed&&report.mapPreservesAudio&&report.muteShortcutWorks;
             report.passed=report.passed&&report.gardenPacked&&report.gardenDelivery&&report.gardenPause&&report.gardenDiskCargo&&report.gardenDiskReceipt&&report.gardenSinglePayout&&report.gardenTrainingGate&&report.gardenPhoneCancellation;
+            report.passed=report.passed&&report.statsWalking&&report.statsSprinting&&report.statsTeleportExcluded&&report.statsPause&&report.statsDisk&&report.statsPage;
             string path=Arg("-vktFlowReport",Path.Combine(Path.GetTempPath(),"vkt-input-flow.json"));
             File.WriteAllText(path,JsonUtility.ToJson(report,true));Debug.Log("VKT_INPUT_FLOW "+(report.passed?"PASS":"FAIL"));
             if(keyboard!=null)InputSystem.RemoveDevice(keyboard);Application.Quit(report.passed?0:1);

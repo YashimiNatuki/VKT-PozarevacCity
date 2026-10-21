@@ -1,5 +1,7 @@
 # Master Blueprint: integration review, 2026-10-21
 
+Update after reading the original `HANDOFF-NASTAVAK.md`: the parallel checkout was rebased onto `75401b3`; its candidate runtime commit is now `fcfd5b8` and blueprint commit `53c10f1`. This removes the older base divergence, but does not by itself validate the candidate mechanics. The first isolated integration is documented in the active [handoff](../HANDOFF-NASTAVAK.md): movement/time statistics with profile v9. The remaining candidates stay inactive pending their own checks.
+
 ## Provenance and delivery boundary
 
 The original [Master Blueprint](VKT-Master-Upgrade-Blueprint.md) was read in full and imported unchanged from commit `8a4be21ab663a8bfa463376f4031944849744955` in `C:\Users\jamal\Documents\antigravity\radiant-kepler\VKT-PozarevacCity`.

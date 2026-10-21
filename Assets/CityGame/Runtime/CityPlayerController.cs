@@ -20,6 +20,8 @@ namespace Pozarevac.CityGame
         private CityTouchControls touch;
         private CityPlayerVitals vitals;
         private CityLifestyle lifestyle;
+        private CityPlayerStats stats;
+        public void ConfigureStats(CityPlayerStats state) { stats = state; }
         public void ConfigureLifestyle(CityLifestyle state) { lifestyle = state; }
         private Func<bool> canAct;
         public void ConfigureTouch(CityTouchControls controls) { touch = controls; }
@@ -76,7 +78,11 @@ namespace Pozarevac.CityGame
             float speed = ((desktopInput && keyboard.leftShiftKey.isPressed) || (touchActive && touch.Sprint)) ? sprintSpeed : walkSpeed;
             if (lifestyle != null && speed > walkSpeed) speed = lifestyle.CanSprint ? speed * lifestyle.SprintMultiplier : walkSpeed;
             Vector3 direction = transform.right * moveInput.x + transform.forward * moveInput.y;
+            Vector3 before = transform.position;
             controller.Move((direction * speed + Vector3.up * verticalVelocity) * Time.deltaTime);
+            // Measure only this collision-resolved move, never the gap since last frame (teleports).
+            Vector3 displacement = transform.position - before;
+            stats?.RecordMovement(new Vector2(displacement.x, displacement.z).magnitude, speed > walkSpeed, false);
         }
     }
 }

@@ -85,6 +85,8 @@ namespace Pozarevac.CityGame
             if (keyboard != null && keyboard.mKey.wasPressedThisFrame && Progression.IsCreated) OpenMap();
             if (director != null && !director.IsPaused)
             {
+                if (Progression.IsCreated && game.Vitals != null && game.Vitals.IsAlive)
+                    Progression.Stats.Tick(Time.deltaTime);
                 if (Progression.IsGrowing) dirty = true;
                 if (Progression.Tick(Time.deltaTime)) hud.ShowNotification("Probna saksija je spremna. P: berba.", 5);
             }

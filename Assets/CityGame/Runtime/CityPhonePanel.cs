@@ -38,7 +38,9 @@ namespace Pozarevac.CityGame
         private Text jobDetails;
         private Button acceptJob, cancelJob;
         private ScrollRect jobScroll;
-        public bool IsOpen => (map != null && map.activeSelf) || (content != null && content.activeSelf) || (catalog != null && catalog.activeSelf) || (encyclopedia != null && encyclopedia.activeSelf) || (journal != null && journal.activeSelf);
+        private GameObject statistics;
+        private Text statisticsText;
+        public bool IsOpen => (statistics != null && statistics.activeSelf) || (map != null && map.activeSelf) || (content != null && content.activeSelf) || (catalog != null && catalog.activeSelf) || (encyclopedia != null && encyclopedia.activeSelf) || (journal != null && journal.activeSelf);
 
         public void Initialize(CityProgressionController controller)
         {
@@ -80,6 +82,7 @@ namespace Pozarevac.CityGame
             recruit = Button("Recruit", economy.transform, "Angažuj / 250 cash", new Vector2(-160, 40), () => Act(owner.Progression.Recruit));
             claim = Button("Claim", economy.transform, "Preuzmi blok / 750 cash", new Vector2(160, 40), () => Act(owner.Progression.ClaimTerritory));
             status = Label("Status", content.transform, "", 18, 645, 35);
+            Button("Statistics", content.transform, "MOJA STATISTIKA", new Vector2(0, -210), OpenStatistics);
             Button("Catalog", content.transform, "KATALOG / BAŠTA", new Vector2(-160, -290), OpenCatalog);
             Button("StreetJob", content.transform, "DNEVNIK / POSLOVI", new Vector2(160, -290), OpenJobs);
             Button("Map", content.transform, "MAPA", new Vector2(-160, -350), OpenMap);
@@ -89,6 +92,7 @@ namespace Pozarevac.CityGame
             BuildEncyclopedia();
             BuildJobs();
             BuildMap();
+            BuildStatistics();
             gameObject.AddComponent<CityUiSkin>().ApplyTree();
             Close();
         }
@@ -102,17 +106,38 @@ namespace Pozarevac.CityGame
             Button("BackFromMap",map.transform,"NAZAD U TELEFON",new Vector2(0,-395),Open);
             map.SetActive(false);
         }
+        private void BuildStatistics()
+        {
+            statistics = Rect("StatisticsPanel", transform, new Vector2(720,880), Vector2.zero).gameObject;
+            statistics.AddComponent<Image>().color = new Color(.025f,.04f,.065f,.99f);
+            Label("StatisticsTitle",statistics.transform,"MOJ BLOK / STATISTIKA",28,25,50);
+            statisticsText = Label("StatisticsDetails",statistics.transform,"",22,110,610);
+            statisticsText.supportRichText = false;
+            statisticsText.alignment = TextAnchor.UpperLeft;
+            Button("BackFromStatistics",statistics.transform,"NAZAD U TELEFON",new Vector2(0,-365),Open);
+            statistics.SetActive(false);
+        }
+        public void OpenStatistics()
+        {
+            if (!owner.Progression.IsCreated) return;
+            if (!IsOpen) owner.OpenPanel();
+            content.SetActive(false); catalog.SetActive(false); encyclopedia.SetActive(false);
+            journal.SetActive(false); map.SetActive(false);
+            backdrop.SetActive(true); statistics.SetActive(true);
+            statisticsText.text = owner.Progression.Stats.FormatSummary();
+        }
         public void OpenMap()
         {
             if(gameObject==null||map==null)return;
             if(!owner.Progression.IsCreated)return;
             if(!IsOpen)owner.OpenPanel();
+            statistics.SetActive(false);
             content.SetActive(false);catalog.SetActive(false);encyclopedia.SetActive(false);journal.SetActive(false);
             backdrop.SetActive(true);map.SetActive(true);mapView.Initialize();mapView.RefreshPosition();
         }        private void Act(Func<bool> action) { if (!owner.Perform(action)) ShowFeedback("Akcija nije dostupna: proveri uslove, prostor i novac."); Refresh(); }
         private void ShowFeedback(string message) { feedback = message; feedbackUntil = Time.unscaledTime + 5; status.text = message; }
-        public void Open() { if(map!=null) map.SetActive(false); backdrop.SetActive(true); journal.SetActive(false); encyclopedia.SetActive(false); catalog.SetActive(false); content.SetActive(true); Refresh(); }
-        public void Close() { if(map!=null) map.SetActive(false); if (content != null) content.SetActive(false); if (catalog != null) catalog.SetActive(false); if (encyclopedia != null) encyclopedia.SetActive(false); if (journal != null) journal.SetActive(false); if (backdrop != null) backdrop.SetActive(false); }
+        public void Open() { if(statistics!=null) statistics.SetActive(false); if(map!=null) map.SetActive(false); backdrop.SetActive(true); journal.SetActive(false); encyclopedia.SetActive(false); catalog.SetActive(false); content.SetActive(true); Refresh(); }
+        public void Close() { if(statistics!=null) statistics.SetActive(false); if(map!=null) map.SetActive(false); if (content != null) content.SetActive(false); if (catalog != null) catalog.SetActive(false); if (encyclopedia != null) encyclopedia.SetActive(false); if (journal != null) journal.SetActive(false); if (backdrop != null) backdrop.SetActive(false); }
         private void Update()
         {
             if (!IsOpen) return;
@@ -140,6 +165,7 @@ namespace Pozarevac.CityGame
         {
             if (!owner.Progression.PhoneUnlocked) { ShowFeedback("Poslovni katalog se otključava posle prvog ugovora. MAPA je već dostupna.");return; }
             encyclopedia.SetActive(false);
+            statistics.SetActive(false);
             journal.SetActive(false);
             content.SetActive(false); catalog.SetActive(true); RefreshCatalog();
         }
@@ -147,6 +173,7 @@ namespace Pozarevac.CityGame
         {
             if (!owner.Progression.IsCreated) return;
             map.SetActive(false);
+            statistics.SetActive(false);
             content.SetActive(false); catalog.SetActive(false); encyclopedia.SetActive(false);
             journal.SetActive(true); RefreshJobs();Canvas.ForceUpdateCanvases();jobScroll.verticalNormalizedPosition=1;
         }

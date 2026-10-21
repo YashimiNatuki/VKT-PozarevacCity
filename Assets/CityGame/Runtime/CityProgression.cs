@@ -24,6 +24,7 @@ namespace Pozarevac.CityGame
         public CityMissionSaveData mission;
         public CityStreetJobSaveData streetJob;
         public CityGardenOrderData gardenOrder;
+        public CityStatsData stats;
     }
 
     // Fictional, game-time economy. No real-world cultivation or trafficking instructions.
@@ -36,13 +37,14 @@ namespace Pozarevac.CityGame
         private CityStreetJobs streetJobs;
         private Func<CityMissionSaveData> captureMission;
         public CityMissionSaveData SavedMission => CityMissionSaveData.Copy(data.mission);
-        public const int CurrentProfileVersion = 8;
+        public const int CurrentProfileVersion = 9;
         public int CompletedStreetJobs => streetJobs != null ? streetJobs.CompletedJobs : data.completedStreetJobs;
         public CitySession Session { get; }
         public CityGarden Garden { get; }
         public CityGardenOrder GardenOrder { get; }
         public CityLifestyle Lifestyle { get; }
         public CityAppearance Appearance { get; }
+        public CityPlayerStats Stats { get; }
         public string Callsign => data.callsign;
         public bool IsCreated => !string.IsNullOrEmpty(Callsign);
         public int CompletedContracts => data.completedContracts;
@@ -64,6 +66,7 @@ namespace Pozarevac.CityGame
             Lifestyle = new CityLifestyle(session, data.lifestyle);
             GardenOrder = new CityGardenOrder(session, Garden, Lifestyle, data.gardenOrder);
             Appearance = new CityAppearance(data.appearance);
+            Stats = new CityPlayerStats(data.stats);
         }
 
         public static void Validate(CityProfileData value)
@@ -76,6 +79,7 @@ namespace Pozarevac.CityGame
             CityMissionSaveData.Validate(value.mission, value.completedContracts);
             CityStreetJobs.ValidateCheckpoint(value.streetJob,value.completedStreetJobs);
             CityGardenOrder.Validate(value.gardenOrder);
+            CityPlayerStats.Validate(value.stats);
             if (!CityGardenOrder.IsEmpty(value.gardenOrder) && (value.version < 8 || value.completedContracts != 3))
                 throw new ArgumentException("Garden order progress requires profile v8 and the completed campaign.");
             if (value.gardenOrder != null && value.gardenOrder.phase != CityGardenOrderPhase.Idle && value.streetJob != null && value.streetJob.active)
@@ -217,6 +221,7 @@ namespace Pozarevac.CityGame
             snapshot.gardenOrder = GardenOrder.Snapshot();
             snapshot.lifestyle = Lifestyle.Snapshot();
             snapshot.appearance = Appearance.Snapshot();
+            snapshot.stats = Stats.Snapshot();
             return snapshot;
         }
 
@@ -225,7 +230,7 @@ namespace Pozarevac.CityGame
             version = source.version, callsign = source.callsign, cash = source.cash, reputation = source.reputation, heat = source.heat,
             completedContracts = source.completedContracts, completedStreetJobs = source.completedStreetJobs, seeds = source.seeds, stock = source.stock, growSeconds = source.growSeconds,
             harvestReady = source.harvestReady, crew = source.crew, territories = source.territories, garden = CityGarden.Copy(source.garden), lifestyle = CityLifestyle.Copy(source.lifestyle), appearance = CityAppearance.Copy(source.appearance),
-            mission=CityMissionSaveData.Copy(source.mission), streetJob=CityStreetJobSaveData.Copy(source.streetJob), gardenOrder=CityGardenOrder.Copy(source.gardenOrder)
+            mission=CityMissionSaveData.Copy(source.mission), streetJob=CityStreetJobSaveData.Copy(source.streetJob), gardenOrder=CityGardenOrder.Copy(source.gardenOrder), stats=CityPlayerStats.Copy(source.stats)
         };
     }
 }

@@ -107,7 +107,7 @@ namespace Pozarevac.CityGame.Tests
         public void LegacyV7MigratesWithoutChangingBalancesInventoryOrRoutes()
         {
             var p=Campaign();
-            Assert.AreEqual(8,p.Snapshot().version);Assert.AreEqual(1000,p.Session.Cash);Assert.AreEqual(4,p.Garden.Stock(0));
+            Assert.AreEqual(CityProgression.CurrentProfileVersion,p.Snapshot().version);Assert.AreEqual(1000,p.Session.Cash);Assert.AreEqual(4,p.Garden.Stock(0));
             var profile=p.Snapshot();profile.version=7;profile.gardenOrder=null;
             var restored=new CityProgression(CitySession.Restore(profile),profile);
             var restoredJobs=new CityStreetJobs(restored.Session);restored.BindStreetJobs(restoredJobs);
