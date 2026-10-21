@@ -6,6 +6,52 @@ namespace Pozarevac.CityGame.Tests
 {
     public sealed class CityBenchPressTests
     {
+        [Test]
+        public void BenchSolesKeepTheirStandingOrientationThroughTheWholeStroke()
+        {
+            var standing=new GameObject("StandingReference");
+            var bench=new GameObject("RotatedBench");
+            var mesh=CityVisualMeshes.RoundedBox();
+            var material=new Material(Resources.Load<Material>("CityMissionMarker"));
+            CityCharacterPhysique referenceBody=null;
+            try
+            {
+                var model=UnityEngine.Object.Instantiate(CityCharacterModel.LoadSource(),standing.transform);
+                referenceBody=new CityCharacterPhysique(model);
+                var idle=Array.Find(Resources.LoadAll<AnimationClip>("Models/KenneyRetro/idle"),c=>!c.name.StartsWith("__preview__"));
+                Assert.IsTrue(CityCharacterModel.Normalize(standing.transform,model,idle,referenceBody));
+                var reference=model.GetComponentsInChildren<Transform>();
+                Quaternion left=Array.Find(reference,b=>b.name=="LeftFoot").rotation;
+                Quaternion right=Array.Find(reference,b=>b.name=="RightFoot").rotation;
+                float leftHeight=Array.Find(reference,b=>b.name=="LeftFoot").position.y;
+                float rightHeight=Array.Find(reference,b=>b.name=="RightFoot").position.y;
+                bench.transform.rotation=Quaternion.Euler(0,65,0);
+                var visual=bench.AddComponent<CityBenchVisual>();visual.Initialize(mesh,material,material);
+                var posed=bench.GetComponentsInChildren<Transform>(true);
+                Transform leftFoot=Array.Find(posed,b=>b.name=="LeftFoot"),rightFoot=Array.Find(posed,b=>b.name=="RightFoot");
+                var supports=bench.GetComponentsInChildren<BoxCollider>();
+                for(int i=0;i<40;i++)
+                {
+                    visual.Pose(true,Mathf.PingPong(i*.13f,1));
+                    Assert.That(Quaternion.Angle(leftFoot.rotation,bench.transform.rotation*left),Is.LessThan(.1f),"Left sole tilted.");
+                    Assert.That(Quaternion.Angle(rightFoot.rotation,bench.transform.rotation*right),Is.LessThan(.1f),"Right sole tilted.");
+                    Assert.That(bench.transform.InverseTransformPoint(leftFoot.position).y,Is.EqualTo(leftHeight).Within(.03f));
+                    Assert.That(bench.transform.InverseTransformPoint(rightFoot.position).y,Is.EqualTo(rightHeight).Within(.03f));
+                    Assert.That(visual.FootError,Is.LessThan(.03f));
+                    Assert.That(visual.HandError,Is.LessThan(.03f));
+                    foreach(var support in supports)
+                    {
+                        Assert.That(Vector3.Distance(support.ClosestPoint(leftFoot.position),leftFoot.position),Is.GreaterThan(.04f),"Left ankle intersects "+support.name);
+                        Assert.That(Vector3.Distance(support.ClosestPoint(rightFoot.position),rightFoot.position),Is.GreaterThan(.04f),"Right ankle intersects "+support.name);
+                    }
+                }
+            }
+            finally
+            {
+                referenceBody?.Dispose();UnityEngine.Object.DestroyImmediate(standing);UnityEngine.Object.DestroyImmediate(bench);
+                UnityEngine.Object.DestroyImmediate(mesh);UnityEngine.Object.DestroyImmediate(material);
+            }
+        }
         [Test] public void CompleteCycleCountsOnceAndRejectsSpam()
         {
             var bench = new CityBenchPress();

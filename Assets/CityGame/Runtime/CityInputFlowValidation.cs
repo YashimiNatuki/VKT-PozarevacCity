@@ -26,10 +26,22 @@ namespace Pozarevac.CityGame
             public bool mapPreservesAudio,muteShortcutWorks;
             public bool gardenPacked,gardenDelivery,gardenPause,gardenDiskCargo,gardenDiskReceipt,gardenSinglePayout,gardenTrainingGate,gardenPhoneCancellation;
             public bool statsWalking,statsSprinting,statsTeleportExcluded,statsPause,statsDisk,statsPage;
+            public bool benchContacts;
+            public int benchContactFrames;
+            public float benchMaxHandError,benchMaxFootError,benchMaxFootAngle;
             public string error="",input="Synthetic Unity Input System keyboard and EventSystem submit; not human input.";
         }
         private readonly Report report=new Report();
         private Keyboard keyboard;
+        private CityBenchVisual observedBench;
+        private void LateUpdate()
+        {
+            if(observedBench==null||!observedBench.RigReady||!observedBench.FeetReady)return;
+            report.benchContactFrames++;
+            report.benchMaxHandError=Mathf.Max(report.benchMaxHandError,observedBench.HandError);
+            report.benchMaxFootError=Mathf.Max(report.benchMaxFootError,observedBench.FootError);
+            report.benchMaxFootAngle=Mathf.Max(report.benchMaxFootAngle,observedBench.FootOrientationError);
+        }
         private static bool keyboardLayoutRegistered;
         internal static Keyboard CreateValidationKeyboard()
         {
@@ -168,6 +180,7 @@ namespace Pozarevac.CityGame
             report.benchStarted=life.Life.IsTraining;
             if(report.benchStarted)
             {
+                observedBench=life.BenchVisual;
                 int before=life.Life.Workouts;
                 for(int i=0;i<CityLifestyle.RequiredReps&&life.Life.IsTraining;i++)
                 {
@@ -184,6 +197,7 @@ namespace Pozarevac.CityGame
                     if(i==1)Capture(game,"bench");
                 }
                 report.benchCompleted=life.Life.Workouts==before+1;
+                observedBench=null;
             }
             yield return ValidateStreetSound(game);
             yield return ValidateGardenOrder(game);
@@ -344,6 +358,8 @@ namespace Pozarevac.CityGame
             report.passed=report.passed&&report.mapPreservesAudio&&report.muteShortcutWorks;
             report.passed=report.passed&&report.gardenPacked&&report.gardenDelivery&&report.gardenPause&&report.gardenDiskCargo&&report.gardenDiskReceipt&&report.gardenSinglePayout&&report.gardenTrainingGate&&report.gardenPhoneCancellation;
             report.passed=report.passed&&report.statsWalking&&report.statsSprinting&&report.statsTeleportExcluded&&report.statsPause&&report.statsDisk&&report.statsPage;
+            report.benchContacts=report.benchContactFrames>=20&&report.benchMaxHandError<.03f&&report.benchMaxFootError<.03f&&report.benchMaxFootAngle<.1f;
+            report.passed=report.passed&&report.benchContacts;
             string path=Arg("-vktFlowReport",Path.Combine(Path.GetTempPath(),"vkt-input-flow.json"));
             File.WriteAllText(path,JsonUtility.ToJson(report,true));Debug.Log("VKT_INPUT_FLOW "+(report.passed?"PASS":"FAIL"));
             if(keyboard!=null)InputSystem.RemoveDevice(keyboard);Application.Quit(report.passed?0:1);

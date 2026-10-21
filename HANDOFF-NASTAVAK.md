@@ -8,7 +8,13 @@ Predlog Antigravity saradnika i njegov izvorni handoff pročitani su u `C:\Users
 Plan: [Master Blueprint](Docs/VKT-Master-Upgrade-Blueprint.md).
 Pregled rizika: [Integracija paralelnih dodataka](Docs/Blueprint-Integration-Review-20261021.md).
 
-## Prva izdvojena celina: statistika
+## Najnovija dorada: oslonac stopala i kadar benča
+
+`CityBenchVisual` sada koristi ugao i visinu stopala iz normalizovanog stojećeg modela. Prednji metalni oslonac pomeren je van prostora cipela, a kamera na slobodnu stranu klupe. Novi test proverava 40 položaja na okrenutoj klupi, ugao/visinu stopala, razmak od kolajdera i zadržan hvat šipke.
+
+Puna provera: 223 uspešna testa, 0 neuspešnih, 1 preskočen. Profil v9 i nagrade treninga ostaju isti. [Opis i granice](Docs/Bench-Contact-20261021.md) i [završna evidencija](Docs/Verification-Bench-Contact-20261021.json) vode ishode Windows provera. Hod, ručni zglobovi, lice i ostali kandidati imaju zasebne naredne korake.
+
+## Prethodna povezana celina: statistika
 
 - Preuzet `CityPlayerStats` i njegovi osnovni testovi; dopunjene zaštite od prelivanja brojeva i nevažećeg trajanja.
 - Vlasnik statistike je `CityProgression`; nema drugog novčanika, životnog sistema ili rukovaoca misijama.

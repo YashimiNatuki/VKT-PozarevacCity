@@ -11,6 +11,8 @@ namespace Pozarevac.CityGame
         private CityOutfit outfit;
         public CityOutfit CurrentOutfit => outfit;
         private readonly Transform[] thighs=new Transform[2],knees=new Transform[2],feet=new Transform[2];
+        private readonly Quaternion[] soleRotations=new Quaternion[2];
+        private readonly float[] soleHeights=new float[2];
         private CityCharacterPhysique physique;
         public void SetStrength(int value) { strength=value;if(look!=null)look.Apply(outfit,strength); }
         public void SetOutfit(CityOutfit value){outfit=value;if(look!=null)look.Apply(outfit,strength);}
@@ -19,18 +21,22 @@ namespace Pozarevac.CityGame
         public bool RigReady { get; private set; }
         public float HandError { get; private set; }
         public float FootError { get; private set; }
+        public float FootOrientationError { get; private set; }
         private int plantedFeet;
         public bool FeetReady => plantedFeet == 2;
-        public Vector3 CameraPosition => transform.TransformPoint(new Vector3(2.5f, 2.2f, 2.3f));
-        public Vector3 CameraTarget => transform.TransformPoint(new Vector3(0, .9f, -.1f));
+        // The positive-X side contains the authored boxing stand and bag.
+        public Vector3 CameraPosition => transform.TransformPoint(new Vector3(-2.8f, 2.1f, 2.6f));
+        public Vector3 CameraTarget => transform.TransformPoint(new Vector3(0, .7f, .1f));
 
         public void Initialize(Mesh rounded, Material steel, Material pad)
         {
             Part("BenchPad", transform, new Vector3(0, .42f, .05f), new Vector3(.56f, .14f, 1.7f), rounded, pad, true);
             for (int side = -1; side <= 1; side += 2)
             {
-                Part("BenchLeg", transform, new Vector3(0, .2f, side * .55f), new Vector3(.16f, .4f, .18f), rounded, steel, true);
-                Part("StableFoot", transform, new Vector3(0, .08f, side * .55f), new Vector3(.95f, .12f, .3f), rounded, steel, true);
+                // Keep the front support beneath the pad end, outside the planted shoe contacts.
+                float supportZ=side<0?-.55f:.85f;
+                Part("BenchLeg", transform, new Vector3(0, .2f, supportZ), new Vector3(.16f, .4f, .18f), rounded, steel, true);
+                Part("StableFoot", transform, new Vector3(0, .08f, supportZ), new Vector3(.95f, .12f, .3f), rounded, steel, true);
                 Part("Rack", transform, new Vector3(side * .8f, .7f, -.55f), new Vector3(.1f, 1.4f, .12f), rounded, steel, true);
                 Part("SafetyArm", transform, new Vector3(side * .7f, .72f, -.1f), new Vector3(.12f, .1f, 1f), rounded, steel, true);
             }
@@ -57,6 +63,12 @@ namespace Pozarevac.CityGame
             {
                 string side=i==0?"Left":"Right";thighs[i]=root.Find("HipsCtrl/Hips/"+side+"UpLeg");
                 knees[i]=thighs[i]!=null?thighs[i].Find(side+"Leg"):null;feet[i]=knees[i]!=null?knees[i].Find(side+"Foot"):null;
+                if(feet[i]!=null)
+                {
+                    // Capture the normalized standing shoe contact before rotating the athlete onto the pad.
+                    soleRotations[i]=Quaternion.Inverse(transform.rotation)*feet[i].rotation;
+                    soleHeights[i]=transform.InverseTransformPoint(feet[i].position).y;
+                }
             }
             const string chest = "HipsCtrl/Hips/Spine/Chest/UpperChest/";
             leftArm = root.Find(chest + "LeftShoulder/LeftArm"); leftElbow = leftArm != null ? leftArm.Find("LeftForeArm") : null;
@@ -80,7 +92,7 @@ namespace Pozarevac.CityGame
                 upperHeight = Mathf.Min(MaximumBarHeight(leftArm, leftElbow, leftHand, gripSide * .43f),
                     MaximumBarHeight(rightArm, rightElbow, rightHand, -gripSide * .43f));
             }
-            FootError=0;plantedFeet=0;
+            FootError=0;FootOrientationError=0;plantedFeet=0;
             PlantLeg(0,-.3f);PlantLeg(1,.3f);
         }
         private void PlantLeg(int index,float x)
@@ -90,12 +102,15 @@ namespace Pozarevac.CityGame
             {
                 Vector3 hip = transform.InverseTransformPoint(thigh.position);
                 float reach = (Vector3.Distance(thigh.position, knee.position) + Vector3.Distance(knee.position, foot.position)) * .98f;
-                float vertical = hip.y - .14f, across = hip.x - x;
+                float vertical = hip.y - soleHeights[index], across = hip.x - x;
                 float forward = Mathf.Min(.45f, Mathf.Sqrt(Mathf.Max(0, reach * reach - vertical * vertical - across * across)));
-                Vector3 target = transform.TransformPoint(new Vector3(x, .14f, hip.z + forward));
+                Vector3 target = transform.TransformPoint(new Vector3(x, soleHeights[index], hip.z + forward));
                 Solve(thigh, knee, foot, target, transform.up);
+                Quaternion orientation=transform.rotation*soleRotations[index];
+                foot.rotation=orientation;
                 plantedFeet++;
                 FootError = Mathf.Max(FootError, Vector3.Distance(foot.position, target));
+                FootOrientationError=Mathf.Max(FootOrientationError,Quaternion.Angle(foot.rotation,orientation));
             }
         }
         public void Pose(bool active, float extension)
