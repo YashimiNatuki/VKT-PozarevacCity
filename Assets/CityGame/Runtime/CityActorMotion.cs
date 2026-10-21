@@ -3,25 +3,27 @@ namespace Pozarevac.CityGame
 {
     public sealed class CityActorMotion : MonoBehaviour
     {
-        private Transform actor;private Animation animationPlayer;private Vector3 previous;private bool running;private float phase;
+        private Transform actor;private Animation animationPlayer;private Vector3 previous;private bool running;
+        private readonly CityGaitState gait=new CityGaitState();
         private Transform leftArm,leftElbow,rightArm,rightElbow;
         private Transform leftHip,leftKnee,leftFoot,rightHip,rightKnee,rightFoot;
-        private readonly Transform[] gaitBones=new Transform[4];
-        private readonly Quaternion[] gaitBase=new Quaternion[4];
-        private float speed,leftSide=-1,rightSide=1;
+        private readonly Transform[] poseBones=new Transform[10];
+        private readonly Quaternion[] basePose=new Quaternion[10],renderedPose=new Quaternion[10];
+        private float leftSide=-1,rightSide=1;
         private Transform chest,head,view;
-        private Quaternion chestBase,headBase;
-        private bool posed;
+        private bool posed,hasRenderedPose;
         private float breath,turn,previousYaw;
         private CityLifestyle boxingLife;
         private CityBoxingRun boxing;
         public bool BoxingPoseActive=>boxingLife!=null&&boxingLife.IsBoxing&&leftArm!=null&&leftElbow!=null&&rightArm!=null&&rightElbow!=null;
         public void ConfigureBoxing(CityLifestyle life,CityBoxingRun run){boxingLife=life;boxing=run;}
-        public float ObservedSpeed=>speed;
+        public float ObservedSpeed=>gait.Speed;
+        public float LocomotionWeight=>gait.Weight;
         public bool GaitReady=>leftHip!=null&&leftKnee!=null&&leftFoot!=null&&rightHip!=null&&rightKnee!=null&&rightFoot!=null;
         public float BreathingPhase=>breath;
         public void Initialize(Transform owner,Animation player)
         {
+            RestorePose();gait.Reset();hasRenderedPose=false;
             actor=owner;animationPlayer=player;previous=owner.position;
             const string upper="HipsCtrl/Hips/Spine/Chest/UpperChest/";
             leftArm=player.transform.Find(upper+"LeftShoulder/LeftArm");leftElbow=leftArm!=null?leftArm.Find("LeftForeArm"):null;
@@ -29,53 +31,69 @@ namespace Pozarevac.CityGame
             if(leftArm!=null)leftSide=Mathf.Sign(transform.InverseTransformPoint(leftArm.position).x);
             if(rightArm!=null)rightSide=Mathf.Sign(transform.InverseTransformPoint(rightArm.position).x);
             chest=player.transform.Find("HipsCtrl/Hips/Spine/Chest/UpperChest");
-            if(chest!=null)head=chest.Find("Neck/Head");
+            head=chest!=null?chest.Find("Neck/Head"):null;
             foreach(Transform bone in player.GetComponentsInChildren<Transform>())
                 switch(bone.name)
                 {
                     case "LeftUpLeg":leftHip=bone;break;case "LeftLeg":leftKnee=bone;break;case "LeftFoot":leftFoot=bone;break;
                     case "RightUpLeg":rightHip=bone;break;case "RightLeg":rightKnee=bone;break;case "RightFoot":rightFoot=bone;break;
                 }
-            gaitBones[0]=leftHip;gaitBones[1]=leftKnee;gaitBones[2]=rightHip;gaitBones[3]=rightKnee;
+            poseBones[0]=leftHip;poseBones[1]=leftKnee;poseBones[2]=rightHip;poseBones[3]=rightKnee;
+            poseBones[4]=leftArm;poseBones[5]=leftElbow;poseBones[6]=rightArm;poseBones[7]=rightElbow;
+            poseBones[8]=chest;poseBones[9]=head;
             view=Camera.main!=null?Camera.main.transform:null;previousYaw=transform.eulerAngles.y;
         }
         private void RestorePose()
         {
             // Remove only last frame's additive pose before the legacy animation samples again.
-            if(!posed)return;if(chest!=null)chest.localRotation=chestBase;if(head!=null)head.localRotation=headBase;
-            for(int i=0;i<gaitBones.Length;i++)if(gaitBones[i]!=null)gaitBones[i].localRotation=gaitBase[i];
+            if(!posed)return;
+            for(int i=0;i<poseBones.Length;i++)if(poseBones[i]!=null)poseBones[i].localRotation=basePose[i];
             posed=false;
         }
-        private void Update()=>RestorePose();
-        private void OnEnable(){if(actor!=null){previous=actor.position;speed=0;running=false;if(animationPlayer!=null)animationPlayer.Play("VKT_Idle");}}
-        private void OnDisable(){RestorePose();speed=0;running=false;}
+        private void Update(){if(Time.timeScale>0&&Time.deltaTime>0)RestorePose();}
+        private void OnEnable()
+        {
+            if(actor==null)return;
+            previous=actor.position;previousYaw=transform.eulerAngles.y;turn=0;gait.Reset();running=false;hasRenderedPose=false;
+            if(animationPlayer!=null&&animationPlayer["VKT_Idle"]!=null)animationPlayer.Play("VKT_Idle");
+        }
+        private void OnDisable(){RestorePose();gait.Reset();running=false;hasRenderedPose=false;}
         private void LateUpdate()
         {
             if(actor==null||animationPlayer==null)return;
             Vector3 delta=actor.position-previous;previous=actor.position;
-            if(Time.deltaTime<=0)return;
-            if(Time.deltaTime>0)
+            if(Time.timeScale<=0||Time.deltaTime<=0)
             {
-                delta.y=0;
-                float measured=delta.magnitude>5?0:delta.magnitude/Mathf.Max(.001f,Time.deltaTime);
-                speed=Mathf.Lerp(speed,measured,1-Mathf.Exp(-10*Time.deltaTime));
-                bool moving=speed>.18f;
-                if(moving!=running){running=moving;animationPlayer.CrossFade(running?"VKT_Run":"VKT_Idle",.18f);}
-                if(moving)
+                // Legacy clips can sample while the clock is paused. Preserve the final displayed pose.
+                if(hasRenderedPose)
                 {
-                    AnimationState run=animationPlayer["VKT_Run"];if(run!=null)run.speed=Mathf.Clamp(speed/5.5f,.55f,1.45f);
-                    phase=Mathf.Repeat(phase+delta.magnitude*(Mathf.PI*2/2.4f),Mathf.PI*2);
-                    if(delta.sqrMagnitude>.00001f)transform.rotation=Quaternion.Slerp(transform.rotation,Quaternion.LookRotation(delta),1-Mathf.Exp(-8*Time.deltaTime));
+                    for(int i=0;i<poseBones.Length;i++)if(poseBones[i]!=null)poseBones[i].localRotation=renderedPose[i];
+                    posed=true;
                 }
+                return;
             }
-            float swing=running?Mathf.Sin(phase)*Mathf.Lerp(.2f,.48f,Mathf.Clamp01(speed/8)):0;
-            RelaxArm(leftArm,leftElbow,transform,leftSide,swing);RelaxArm(rightArm,rightElbow,transform,rightSide,-swing);
-            for(int i=0;i<gaitBones.Length;i++)if(gaitBones[i]!=null)gaitBase[i]=gaitBones[i].localRotation;
-            if(running)
+            gait.Step(delta,Time.deltaTime);
+            if(gait.WasTeleported)
             {
-                float amplitude=Mathf.Lerp(18,32,Mathf.Clamp01(speed/8));
-                PoseLeg(leftHip,leftKnee,leftFoot,transform,Mathf.Sin(phase)*amplitude,6+Mathf.Max(0,-Mathf.Cos(phase))*42);
-                PoseLeg(rightHip,rightKnee,rightFoot,transform,-Mathf.Sin(phase)*amplitude,6+Mathf.Max(0,Mathf.Cos(phase))*42);
+                running=false;turn=0;transform.rotation=Quaternion.Euler(0,actor.eulerAngles.y,0);previousYaw=transform.eulerAngles.y;
+                if(animationPlayer["VKT_Idle"]!=null){animationPlayer.Play("VKT_Idle");animationPlayer.Sample();}
+            }
+            float speed=gait.Speed;bool moving=speed>.18f;
+            if(moving!=running)
+            {running=moving;string clip=running?"VKT_Run":"VKT_Idle";if(animationPlayer[clip]!=null)animationPlayer.CrossFade(clip,.18f);}
+            if(moving)
+            {
+                AnimationState run=animationPlayer["VKT_Run"];if(run!=null)run.speed=Mathf.Clamp(speed/5.5f,.55f,1.45f);
+                delta.y=0;
+                if(delta.sqrMagnitude>.00001f)transform.rotation=Quaternion.Slerp(transform.rotation,Quaternion.LookRotation(delta),1-Mathf.Exp(-8*Time.deltaTime));
+            }
+            for(int i=0;i<poseBones.Length;i++)if(poseBones[i]!=null)basePose[i]=poseBones[i].localRotation;
+            RelaxArm(leftArm,leftElbow,transform,leftSide,gait.LeftArmSwing);
+            RelaxArm(rightArm,rightElbow,transform,rightSide,gait.RightArmSwing);
+            if(gait.Weight>.005f)
+            {
+                PoseLeg(leftHip,leftKnee,leftFoot,transform,gait.LeftStride,gait.LeftKneeFlex);
+                PoseLeg(rightHip,rightKnee,rightFoot,transform,gait.RightStride,gait.RightKneeFlex);
             }
             if(boxingLife!=null&&boxingLife.IsBoxing)
             {
@@ -84,17 +102,17 @@ namespace Pozarevac.CityGame
             }
             breath+=Time.deltaTime*Mathf.Lerp(1.8f,3.8f,Mathf.Clamp01(speed/8));
             float yaw=transform.eulerAngles.y;
-            float yawRate=delta.magnitude>5?0:Mathf.DeltaAngle(previousYaw,yaw)/Mathf.Max(.001f,Time.deltaTime);previousYaw=yaw;
+            float yawRate=Mathf.DeltaAngle(previousYaw,yaw)/Mathf.Max(.001f,Time.deltaTime);previousYaw=yaw;
             turn=Mathf.Lerp(turn,Mathf.Clamp(yawRate*.035f,-7,7),1-Mathf.Exp(-7*Time.deltaTime));
-            if(chest!=null){chestBase=chest.localRotation;chest.localRotation*=Quaternion.Euler(Mathf.Sin(breath)*.8f+Mathf.Clamp01(speed/8)*6,0,-turn);}
+            if(chest!=null)chest.localRotation*=Quaternion.Euler(Mathf.Sin(breath)*.8f+Mathf.Clamp01(speed/8)*6,0,-turn);
             if(head!=null)
             {
-                headBase=head.localRotation;
                 Vector3 gaze=view!=null?transform.InverseTransformDirection(view.forward):Vector3.forward;
                 float glance=Mathf.Clamp(Mathf.Atan2(gaze.x,gaze.z)*Mathf.Rad2Deg,-28,28);
                 head.localRotation*=Quaternion.Euler(Mathf.Sin(breath*.5f)*1.4f,glance*.45f,turn*.35f);
             }
-            posed=true;
+            for(int i=0;i<poseBones.Length;i++)if(poseBones[i]!=null)renderedPose[i]=poseBones[i].localRotation;
+            posed=true;hasRenderedPose=true;
         }
         public static void RelaxArm(Transform arm,Transform elbow,Transform model,float side,float swing)
         {

@@ -29,6 +29,9 @@ namespace Pozarevac.CityGame
             public bool benchContacts;
             public int benchContactFrames;
             public float benchMaxHandError,benchMaxFootError,benchMaxFootAngle;
+            public bool gaitContralateral,gaitPausePreservesPose,gaitTeleportReset,gaitStopSettles;
+            public int gaitPairSamples,gaitBadPairs;
+            public float gaitPauseLeftDelta,gaitPauseRightDelta;
             public string error="",input="Synthetic Unity Input System keyboard and EventSystem submit; not human input.";
         }
         private readonly Report report=new Report();
@@ -122,10 +125,15 @@ namespace Pozarevac.CityGame
             // Original reproduction: closing music then pressing W must return control to the player.
             var camera=game.Player.GetComponentInChildren<CityCameraRig>();camera.SetMode(CityCameraMode.Chase);
             yield return new WaitForSecondsRealtime(.3f);
-            Transform left=null,right=null;
+            Transform left=null,right=null,leftHip=null,rightHip=null,leftUpper=null,rightUpper=null,leftElbow=null,rightElbow=null;
             var actorMotion=game.Player.GetComponentInChildren<CityActorMotion>();report.gaitReady=actorMotion!=null&&actorMotion.GaitReady;
             foreach(Transform bone in game.Player.GetComponentsInChildren<Transform>())
-            {if(bone.name=="LeftLeg")left=bone;if(bone.name=="RightLeg")right=bone;}
+            {
+                if(bone.name=="LeftLeg")left=bone;if(bone.name=="RightLeg")right=bone;
+                if(bone.name=="LeftUpLeg")leftHip=bone;if(bone.name=="RightUpLeg")rightHip=bone;
+                if(bone.name=="LeftArm")leftUpper=bone;if(bone.name=="RightArm")rightUpper=bone;
+                if(bone.name=="LeftForeArm")leftElbow=bone;if(bone.name=="RightForeArm")rightElbow=bone;
+            }
             Vector3 start=game.Player.position;Quaternion l=left!=null?left.localRotation:Quaternion.identity,r=right!=null?right.localRotation:Quaternion.identity;
             float walkedBefore=game.Progression.Stats.TotalDistanceWalked;
             InputSystem.QueueStateEvent(keyboard,new KeyboardState(Key.W));
@@ -138,6 +146,14 @@ namespace Pozarevac.CityGame
                 if(left!=null)report.leftLegDegrees=Mathf.Max(report.leftLegDegrees,Quaternion.Angle(l,left.localRotation));
                 if(right!=null)report.rightLegDegrees=Mathf.Max(report.rightLegDegrees,Quaternion.Angle(r,right.localRotation));
                 if(actorMotion!=null)report.peakObservedSpeed=Mathf.Max(report.peakObservedSpeed,actorMotion.ObservedSpeed);
+                if(leftHip!=null&&rightHip!=null&&leftUpper!=null&&rightUpper!=null&&leftElbow!=null&&rightElbow!=null)
+                {
+                    Vector3 forward=actorMotion.transform.forward;
+                    float arms=Vector3.Dot((leftElbow.position-leftUpper.position).normalized-(rightElbow.position-rightUpper.position).normalized,forward);
+                    float legs=Vector3.Dot((left.position-leftHip.position).normalized-(right.position-rightHip.position).normalized,forward);
+                    if(Mathf.Abs(arms)>.12f&&Mathf.Abs(legs)>.12f)
+                    {report.gaitPairSamples++;if(arms*legs>=0)report.gaitBadPairs++;}
+                }
                 walkingFrames++;if(walkingFrames==20)Capture(game,"walking-stride");
             }
             InputSystem.QueueStateEvent(keyboard,new KeyboardState());yield return null;
@@ -145,6 +161,7 @@ namespace Pozarevac.CityGame
             report.movementAfterMusic=report.distanceAfterMusic>1&&!game.Director.IsPaused&&!music.IsOpen;
             report.legsAnimated=report.leftLegDegrees>8&&report.rightLegDegrees>8;
             report.statsWalking=game.Progression.Stats.TotalDistanceWalked>walkedBefore+1;
+            report.gaitContralateral=report.gaitPairSamples>=5&&report.gaitBadPairs==0;
             Capture(game,"walking");
             float sprintedBefore=game.Progression.Stats.TotalDistanceSprinted;
             // Retrace the segment just walked: continuing forward can press against its end obstacle.
@@ -152,6 +169,21 @@ namespace Pozarevac.CityGame
             yield return new WaitForSecondsRealtime(1f);
             InputSystem.QueueStateEvent(keyboard,new KeyboardState());yield return null;yield return null;
             report.statsSprinting=game.Progression.Stats.TotalDistanceSprinted>sprintedBefore+1;
+            yield return new WaitForEndOfFrame();
+            Quaternion pauseLeft=left.localRotation,pauseRight=right.localRotation;
+            yield return Press(Key.P);yield return new WaitForSecondsRealtime(.25f);yield return new WaitForEndOfFrame();
+            report.gaitPauseLeftDelta=Quaternion.Angle(pauseLeft,left.localRotation);report.gaitPauseRightDelta=Quaternion.Angle(pauseRight,right.localRotation);
+            report.gaitPausePreservesPose=game.Director.IsPaused&&report.gaitPauseLeftDelta<.5f&&report.gaitPauseRightDelta<.5f;
+            yield return Press(Key.Escape);
+            var teleportBody=game.Player.GetComponent<CharacterController>();Vector3 beforeProbe=game.Player.position;
+            teleportBody.enabled=false;game.Player.position+=Vector3.right*40;teleportBody.enabled=true;Physics.SyncTransforms();
+            yield return new WaitForEndOfFrame();
+            report.gaitTeleportReset=actorMotion.ObservedSpeed<.001f;
+            teleportBody.enabled=false;game.Player.position=beforeProbe;teleportBody.enabled=true;Physics.SyncTransforms();
+            yield return null;
+            InputSystem.QueueStateEvent(keyboard,new KeyboardState(Key.W));yield return new WaitForSecondsRealtime(.25f);
+            InputSystem.QueueStateEvent(keyboard,new KeyboardState());yield return new WaitForSecondsRealtime(.7f);
+            report.gaitStopSettles=actorMotion.ObservedSpeed<.1f&&actorMotion.LocomotionWeight<.01f;
             yield return Press(Key.P);Submit("Statistics");yield return null;
             Canvas.ForceUpdateCanvases();
             var statistics=phone.transform.Find("StatisticsPanel");
@@ -360,6 +392,7 @@ namespace Pozarevac.CityGame
             report.passed=report.passed&&report.statsWalking&&report.statsSprinting&&report.statsTeleportExcluded&&report.statsPause&&report.statsDisk&&report.statsPage;
             report.benchContacts=report.benchContactFrames>=20&&report.benchMaxHandError<.03f&&report.benchMaxFootError<.03f&&report.benchMaxFootAngle<.1f;
             report.passed=report.passed&&report.benchContacts;
+            report.passed=report.passed&&report.gaitContralateral&&report.gaitPausePreservesPose&&report.gaitTeleportReset&&report.gaitStopSettles;
             string path=Arg("-vktFlowReport",Path.Combine(Path.GetTempPath(),"vkt-input-flow.json"));
             File.WriteAllText(path,JsonUtility.ToJson(report,true));Debug.Log("VKT_INPUT_FLOW "+(report.passed?"PASS":"FAIL"));
             if(keyboard!=null)InputSystem.RemoveDevice(keyboard);Application.Quit(report.passed?0:1);

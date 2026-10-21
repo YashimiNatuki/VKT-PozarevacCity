@@ -43,7 +43,8 @@ def main():
                     "disabledSignalBlocked", "mapPreservesAudio", "muteShortcutWorks",
                     "gardenPacked", "gardenDelivery", "gardenPause", "gardenDiskCargo",
                     "gardenDiskReceipt", "gardenSinglePayout", "gardenTrainingGate", "gardenPhoneCancellation",
-                    "statsWalking", "statsSprinting", "statsTeleportExcluded", "statsPause", "statsDisk", "statsPage", "benchContacts"]
+                    "statsWalking", "statsSprinting", "statsTeleportExcluded", "statsPause", "statsDisk", "statsPage", "benchContacts",
+                    "gaitContralateral", "gaitPausePreservesPose", "gaitTeleportReset", "gaitStopSettles"]
         failed = [name for name in required if report.get(name) is not True]
         errors = re.findall(r"NullReferenceException|MissingReferenceException|IndexOutOfRangeException|Unhandled Exception|Shader error", log)
         passed = result.returncode == 0 and not failed and not errors

@@ -8,7 +8,15 @@ Predlog Antigravity saradnika i njegov izvorni handoff pročitani su u `C:\Users
 Plan: [Master Blueprint](Docs/VKT-Master-Upgrade-Blueprint.md).
 Pregled rizika: [Integracija paralelnih dodataka](Docs/Blueprint-Integration-Review-20261021.md).
 
-## Najnovija dorada: oslonac stopala i kadar benča
+## Najnovija dorada: koordinacija hoda i stabilna pauza
+
+`CityGaitState` računa fazu iz pređenog horizontalnog puta i postepeno smiruje pozu pri stajanju. Ruke sada prate suprotne noge. `CityActorMotion` poništava stanje pri teleportu, čuva završne rotacije tokom pauze i proverava `Time.timeScale` već u kadru otvaranja telefona. Nema novog vlasnika kretanja, izdržljivosti ili profila.
+
+Pre popravke Windows provera našla je 33 pogrešna para od 33 uzorka i neuspešno poništavanje brzine posle teleporta. Završni desktop prolaz ima 24 merljiva para, 0 pogrešnih i 0° pomeranja oba kolena tokom pauze. Puna EditMode provera: **231 uspešan test, 0 neuspešnih, 1 preskočen**. Windows build i završni desktop/touch-preview prolazi imaju izlaz 0. Benč, statistika, telefon/mapa/muzika i porudžbina sa jednom isplatom ostali su u istoj proveri.
+
+[Opis, komande i granice](Docs/Locomotion-20261021.md) | [Evidencija](Docs/Verification-Locomotion-20261021.json). Ovo je dorada postojećeg stilizovanog modela; novi model, oslonac na proizvoljnom terenu, glasovi i dugotrajno profilisanje ostaju naredne celine. Fizički mobilni uređaj se ne koristi.
+
+## Prethodna dorada: oslonac stopala i kadar benča
 
 `CityBenchVisual` sada koristi ugao i visinu stopala iz normalizovanog stojećeg modela. Prednji metalni oslonac pomeren je van prostora cipela, a kamera na slobodnu stranu klupe. Novi test proverava 40 položaja na okrenutoj klupi, ugao/visinu stopala, razmak od kolajdera i zadržan hvat šipke.
 
@@ -30,7 +38,7 @@ Pešaci, dodatna minimapa, skejt i efekti ekrana iz `fcfd5b8` nisu automatski uk
 
 ## Sledeći potezi
 
-1. Hod, proporcije tela i kontakt ruku sa benčom.
+1. Oslonac stopala na nagibima/ivičnjacima, zatim ručni zglobovi i hvat šipke/gard.
 2. Potpuna vožnja skejta, fizičko preuzimanje i bezbedan silazak.
 3. Vidljivi pešaci, prepreke i reakcija na zvuk/opasnost.
 4. Mini-mapa sa ispravnim smerom i svim aktivnim ciljevima.
