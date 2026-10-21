@@ -1,10 +1,12 @@
 # Rođa: sledeći razvojni potezi
 
+Master Blueprint je pročitan i prenet iz paralelnog checkout-a. [Provera stanja, rizici integracije i redosled narednih celina](Blueprint-Integration-Review-20261021.md) razlikuju planirane funkcije od potvrđene Windows isporuke.
+
 Prioritet: Windows. Android podrška ostaje u istom Unity projektu; telefon se u ovoj iteraciji ne koristi. iOS je posebna naredna validacija, ne obećani gotov build.
 
 ## Pravac i granice
 
-VKT je urbana akcija sa humorom, Požarevcem, kontaktima, treningom, štekom i posledicama odluka. Napredak treba da bude primetan kroz ono što igrač vidi i radi, a ne kroz broj instaliranih biblioteka. Postojeći ugovori, profil v7, katalog, muzika i originalna špica ostaju osnova. Ne menjati determinističko generisanje već prihvaćenih poslova: njihove sačuvane rute moraju ostati iste.
+VKT je urbana akcija sa humorom, Požarevcem, kontaktima, treningom, štekom i posledicama odluka. Napredak treba da bude primetan kroz ono što igrač vidi i radi, a ne kroz broj instaliranih biblioteka. Postojeći ugovori, profil v8, katalog, muzika i originalna špica ostaju osnova. Ne menjati determinističko generisanje već prihvaćenih poslova: njihove sačuvane rute moraju ostati iste.
 
 ## 1. Ulični zvuk i akcija → reakcija
 
