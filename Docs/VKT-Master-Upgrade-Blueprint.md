@@ -1,8 +1,8 @@
 # 🚀 VKT / Velika Krađa Točkova — Master Blueprint za Nadogradnju Projekta
 
-> **Dokument:** Master plan arhitekture, preporučenih modela, biblioteka, alata i mehanika za postizanje svetskog indie nivoa ("Game Changer").  
-> **Lokacija:** Požarevac, Srbija  
-> **Ciljna platforma:** PC (Windows / Steam / itch.io) + Optimizovani Android port  
+> **Dokument:** Master plan arhitekture, preporučenih modela, biblioteka, alata i mehanika za postizanje svetskog indie nivoa ("Game Changer").
+> **Lokacija:** Požarevac, Srbija
+> **Ciljna platforma:** PC (Windows / Steam / itch.io) + Optimizovani Android port
 > **Engine:** Unity 6000.6 (URP)
 
 ---
@@ -136,5 +136,5 @@ flowchart TD
 
 ## 💡 Zaključak
 
-VKT već ima nešto što 95% indie projekata nema: **modularnu bazu, čist C# kod, 201 test i integraciju realnih OSM ulica**.  
+VKT već ima nešto što 95% indie projekata nema: **modularnu bazu, čist C# kod, 201 test i integraciju realnih OSM ulica**.
 Dodavanjem **autentičnog balkanskog humora (Yugo, skidanje točkova, domaći glasovi, požarevački korzo)**, igra prelazi iz kategorije "Unity prototip" u **viralni balkanski hit** koji će privući pažnju gejmera, YouTube kreatora i zajednice.
