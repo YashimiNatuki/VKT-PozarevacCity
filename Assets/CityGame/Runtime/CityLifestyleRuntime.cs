@@ -188,6 +188,7 @@ namespace Pozarevac.CityGame
             if(!Near(Gym))return $"KLUPA JE {Vector3.Distance(game.Player.position,Gym.position):0} m OD TEBE / priđi na manje od 3,5 m.";
             if(Life.Wanted)return "POTERA / izgubi policiju pre treninga.";
             if(game.Director.Jobs.IsActive)return "AKTIVNA DOSTAVA / završi je ili otkaži u telefonu: P > DNEVNIK.";
+            if(game.Progression.GardenOrder.IsActive)return "PORUDŽBINA IZ ŠTEKA / završi je ili otkaži u P > DNEVNIK. Otkaz gubi robu.";
             if(game.Director.Run.State==CityMissionState.Active)return "AKTIVAN UGOVOR / prvo završi dostavu, pa se vrati na klupu.";
             if(Life.WorkoutCooldown>0)return $"ODMOR / sačekaj još {Math.Ceiling(Life.WorkoutCooldown)} s posle prethodnog treninga.";
             if(Life.Nutrition<food)return $"HRANA / potrebno je {food:0}% hrane. Priđi kiosku i kupi obrok.";
@@ -196,10 +197,10 @@ namespace Pozarevac.CityGame
             return "TRENING NIJE DOSTUPAN / proveri lik, pauzu i položaj kod klupe.";
         }
         public bool StartWorkout()
-        {if(!CanSimulate||!Near(Gym)||game.Director.Jobs.IsActive||game.Director.Run.State==CityMissionState.Active||benchVisual==null||!benchVisual.RigReady||!benchVisual.FeetReady||!Life.TryStartWorkout())return false;bench=new CityBenchPress();progress.SaveNow();hud.ShowNotification("BENČ: 8 celih ponavljanja za 45 s. F/TAP: spusti, pa pritisni kad piše GURAJ. ESC: prekid.",5);return true;}
+        {if(!CanSimulate||!Near(Gym)||game.Director.Jobs.IsActive||game.Progression.GardenOrder.IsActive||game.Director.Run.State==CityMissionState.Active||benchVisual==null||!benchVisual.RigReady||!benchVisual.FeetReady||!Life.TryStartWorkout())return false;bench=new CityBenchPress();progress.SaveNow();hud.ShowNotification("BENČ: 8 celih ponavljanja za 45 s. F/TAP: spusti, pa pritisni kad piše GURAJ. ESC: prekid.",5);return true;}
         public bool StartConditioning()
         {
-            if(!CanSimulate||!Near(Gym)||game.Director.Jobs.IsActive||game.Director.Run.State==CityMissionState.Active||!Life.TryStartConditioning())return false;
+            if(!CanSimulate||!Near(Gym)||game.Director.Jobs.IsActive||game.Progression.GardenOrder.IsActive||game.Director.Run.State==CityMissionState.Active||!Life.TryStartConditioning())return false;
             conditioning.Start();progress.SaveNow();game.Audio.PlayCue(CityAudioCue.Checkpoint);
             hud.ShowNotification("KONDICIJA: obiđi 3 plava kruga za 75 s. U svakom stani 1.2 s. +20 XP; zajednički odmor 90 s. ESC: prekid.",7);return true;
         }
@@ -226,7 +227,7 @@ namespace Pozarevac.CityGame
         }
         public bool StartBoxing()
         {
-            if(!CanSimulate||!Near(Gym)||game.Director.Jobs.IsActive||game.Director.Run.State==CityMissionState.Active||!Life.TryStartBoxing())return false;
+            if(!CanSimulate||!Near(Gym)||game.Director.Jobs.IsActive||game.Progression.GardenOrder.IsActive||game.Director.Run.State==CityMissionState.Active||!Life.TryStartBoxing())return false;
             boxing.Start();progress.SaveNow();
             foreach(CityActorMotion motion in game.Player.GetComponentsInChildren<CityActorMotion>(true))motion.ConfigureBoxing(Life,boxing);
             hud.ShowNotification("BOKS: 8 reakcija, najmanje 6 tačnih. Sačekaj SAD, J/udarac ili K/gard. +30 XP i razvoj izdržljivosti. ESC: prekid.",8);return true;

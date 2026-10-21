@@ -23,9 +23,9 @@ Sledeći korak ove oblasti: autoritativan cilj misije „odvuci pažnju“, snim
 
 ## 2. Štek, bašta i povezani poslovi
 
-Ulaz → pregled stanja → katalog/zalihe → nega ili berba → zadatak → isporuka → jedna isplata → sačuvano stanje. Prvo dodati sažet pregled četiri saksije, suvih/spremnih mesta i zaliha. Zatim jedan konkretan posao sa kontaktnom osobom i stvarnom potrošnjom inventara. Aktivni posao mora da nastavi posle učitavanja bez ponovne nagrade.
+Isporučena prva povezana celina: pult PORUDŽBINE / KURE → 2 komada iz stvarnih zaliha → predaja kod markera 2 → potvrda → povratak na pult → jedna isplata. Prihvatanje troši robu; otkaz, smrt i istek je gube bez povraćaja i nagrade. Profil v8 čuva fazu, cenu i rok, uz podržan prelazak starih profila. Stare rute nisu menjane. [Arhitektura, tok i granice](Garden-Orders-20261020.md).
 
-Završni kriterijum: testovi prekida, punog skladišta, nedostatka zaliha, otkaza, učitavanja usred isporuke i ponovljenog poslednjeg koraka. Koristiti apstraktne parametre igre, bez realnih uputstava za uzgoj.
+Sledeće: sažet pregled četiri saksije, suvih/spremnih mesta i skladišta, zatim dodatni autorski zadaci i namerno pripremljen susret za odvlačenje pažnje. Kure u ovoj celini koristi postojeći fizički marker, ne novi humanoidni model. Prirodni glas još nije dodat. Koristiti apstraktne parametre igre, bez realnih uputstava za uzgoj.
 
 ## 3. Lik, dodiri i trening
 

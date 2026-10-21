@@ -35,13 +35,21 @@ namespace Pozarevac.CityGame
         public event Action Changed;
         private readonly CitySession session;
         private CityLifestyle lifestyle;
+        private CityGardenOrder gardenOrder;
+        public void BindGardenOrder(CityGardenOrder value)
+        {
+            if(value==null)throw new ArgumentNullException(nameof(value));
+            if(gardenOrder!=null&&gardenOrder!=value)throw new InvalidOperationException("Garden order already bound.");
+            gardenOrder=value;
+        }
         public void BindLifestyle(CityLifestyle value)
         {
             if(value==null)throw new ArgumentNullException(nameof(value));
             if(lifestyle!=null&&lifestyle!=value)throw new InvalidOperationException("Lifestyle already bound.");
             lifestyle=value;
         }
-        public string BlockReason=>lifestyle!=null&&lifestyle.Wanted?"Potera je aktivna. Izgubi policiju pre kontakta.":
+        public string BlockReason=>gardenOrder!=null&&gardenOrder.IsActive?"Završi ili otkaži aktivnu porudžbinu iz šteka.":
+            lifestyle!=null&&lifestyle.Wanted?"Potera je aktivna. Izgubi policiju pre kontakta.":
             lifestyle!=null&&(lifestyle.IsTraining||lifestyle.IsConditioning||lifestyle.IsBoxing)?"Završi ili prekini trening pre kontakta.":
             session.Heat>Offer.MaximumHeat?"Smanji HEAT na "+Offer.MaximumHeat+" za ovaj kontakt.":"";
         private uint random;

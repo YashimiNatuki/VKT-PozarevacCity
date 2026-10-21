@@ -368,7 +368,7 @@ namespace Pozarevac.CityGame
             resumed.TryVisit(resumed.Offer.StationAt(1));resumed.TryVisit(resumed.Offer.StationAt(2));
             if(restored.Session.Cash!=cash+reward||resumed.TryVisit(0)){Finish(false,"Restored mission replayed or missed its reward.");yield break;}
             jobs.Cancel();controller.SaveNow();resumeBoxingVerified=true;
-            Debug.Log("VKT_RESUME_BOXING_VERIFIED profileVersion=7 diskCargoResume=true payoutOnce=true boxingRounds=8 separateEndurance=true pause=true");
+            Debug.Log("VKT_RESUME_BOXING_VERIFIED profileVersion="+CityProgression.CurrentProfileVersion+" diskCargoResume=true payoutOnce=true boxingRounds=8 separateEndurance=true pause=true");
         }
 
         private IEnumerator VerifyLifestyle(CityGameBootstrap game)

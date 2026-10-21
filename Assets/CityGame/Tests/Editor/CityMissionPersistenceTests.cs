@@ -66,7 +66,7 @@ namespace Pozarevac.CityGame.Tests
         [Test] public void OldProfilesMigrateAndImpossibleCheckpointsFailClosed()
         {
             var old=new CityProfileData{version=6,callsign="Mini Yash"};var profile=new CityProgression(new CitySession(0),old);
-            Assert.That(profile.Snapshot().version,Is.EqualTo(7));Assert.That(profile.SavedMission,Is.Null);
+            Assert.That(profile.Snapshot().version,Is.EqualTo(CityProgression.CurrentProfileVersion));Assert.That(profile.SavedMission,Is.Null);
             old.mission=new CityMissionSaveData{contractNumber=1,state=CityMissionState.Active,objectiveIndex=3,attempt=1,remainingSeconds=4};
             Assert.Throws<ArgumentException>(()=>CityProgression.Validate(old));old.mission=null;
             old.streetJob=new CityStreetJobSaveData{offerSeed=1,active=true,remainingSeconds=60};

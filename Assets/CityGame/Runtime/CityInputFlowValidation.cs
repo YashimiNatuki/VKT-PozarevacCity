@@ -24,6 +24,7 @@ namespace Pozarevac.CityGame
             public bool hideoutScoreFades,hideoutScoreMutes;
             public bool helpAudioTextFits,hideoutMusicPreferenceMutes,disabledSignalBlocked;
             public bool mapPreservesAudio,muteShortcutWorks;
+            public bool gardenPacked,gardenDelivery,gardenPause,gardenDiskCargo,gardenDiskReceipt,gardenSinglePayout,gardenTrainingGate,gardenPhoneCancellation;
             public string error="",input="Synthetic Unity Input System keyboard and EventSystem submit; not human input.";
         }
         private readonly Report report=new Report();
@@ -155,7 +156,75 @@ namespace Pozarevac.CityGame
                 report.benchCompleted=life.Life.Workouts==before+1;
             }
             yield return ValidateStreetSound(game);
+            yield return ValidateGardenOrder(game);
             Finish("");
+        }
+        private IEnumerator ValidateGardenOrder(CityGameBootstrap game)
+        {
+            var director=game.Director;var progress=game.GetComponent<CityProgressionController>();
+            int attempts=0;
+            while(!director.StreetJobsUnlocked&&attempts++<12)
+            {
+                if(director.Run.State==CityMissionState.Completed)director.TryNextContract();
+                else if(!director.TryInteract(director.Run.ObjectiveIndex)){Finish("Garden fixture campaign progression failed.");yield break;}
+            }
+            if(!director.StreetJobsUnlocked){Finish("Garden fixture did not unlock campaign.");yield break;}
+            var garden=game.Progression.Garden;var order=game.Progression.GardenOrder;
+            GrowValidationHarvest(garden);int before=garden.Stock(0);
+            game.Hideout.SelectVariety(0);game.Hideout.Travel(true);
+            yield return null;
+            report.gardenPacked=InteractAt(game,game.Hideout.OrderDesk,.7f)&&order.HasCargo&&garden.Stock(0)==before-2;
+            if(!report.gardenPacked){Finish("Garden order did not pack real inventory at its physical desk.");yield break;}
+            if(new CitySaveStore(progress.SavePath).TryLoad(out var cargo,out _))
+            {
+                var resumed=new CityProgression(CitySession.Restore(cargo),cargo);
+                report.gardenDiskCargo=resumed.GardenOrder.HasCargo&&resumed.Garden.Stock(0)==before-2&&resumed.GardenOrder.CashReward==order.CashReward;
+            }
+            yield return Press(Key.P);game.GetComponentInChildren<CityPhonePanel>().OpenJobs();
+            double time=order.RemainingSeconds;yield return new WaitForSecondsRealtime(.25f);
+            report.gardenPause=order.RemainingSeconds==time&&director.IsPaused;
+            Capture(game,"garden-order-journal");yield return Press(Key.Escape);
+            game.Hideout.Travel(false);
+            var body=game.Player.GetComponent<CharacterController>();var life=game.GetComponent<CityLifestyleRuntime>();
+            life.Life.Tick(91,false);if(life.Life.Nutrition<35)life.Life.TryEat(false);
+            body.enabled=false;game.Player.position=life.Gym.position+Vector3.back*2;body.enabled=true;Physics.SyncTransforms();
+            report.gardenTrainingGate=!life.StartWorkout()&&!life.StartBoxing()&&!life.StartConditioning()&&!director.TryAcceptStreetJob();
+            report.gardenDelivery=InteractAt(game,director.StationAt(CityGardenOrder.DeliveryStation).transform,.73f)&&order.Phase==CityGardenOrderPhase.Receipt;
+            if(new CitySaveStore(progress.SavePath).TryLoad(out var receipt,out _))
+            {
+                var resumed=new CityProgression(CitySession.Restore(receipt),receipt);
+                report.gardenDiskReceipt=resumed.GardenOrder.Phase==CityGardenOrderPhase.Receipt;
+            }
+            game.Hideout.Travel(true);int cash=game.Session.Cash,reward=order.CashReward,count=order.Completed;
+            bool settled=InteractAt(game,game.Hideout.OrderDesk,.7f);
+            report.gardenSinglePayout=settled&&!order.TrySettle()&&game.Session.Cash==cash+reward&&order.Completed==count+1&&garden.Stock(0)==before-2;
+            Capture(game,"garden-order-settled");
+            order.Tick(31);GrowValidationHarvest(garden);int cancelStock=garden.Stock(0),cancelCash=game.Session.Cash;
+            bool packed=InteractAt(game,game.Hideout.OrderDesk,.7f);
+            yield return Press(Key.P);game.GetComponentInChildren<CityPhonePanel>().OpenJobs();
+            Submit("CancelJob");yield return null;
+            report.gardenPhoneCancellation=packed&&!order.IsActive&&garden.Stock(0)==cancelStock-2&&game.Session.Cash==cancelCash;
+            yield return Press(Key.Escape);game.Hideout.Travel(false);
+        }
+
+        private static void GrowValidationHarvest(CityGarden garden)
+        {
+            // Isolated test profile only: advance the existing fictional garden clock, never change production timers.
+            long now=Math.Max(DateTimeOffset.UtcNow.ToUnixTimeSeconds(),garden.Snapshot().lastUtcSeconds+1);
+            if(!garden.BuySeed(0)||!garden.PlantFromInventory(0,0,now))throw new InvalidOperationException("Garden validation seed fixture failed.");
+            int steps=0;
+            while(!garden.IsReady(0)&&steps++<12)
+            {garden.Water(0,now);now+=(long)CityGarden.WaterDuration;garden.Advance(now);}
+            if(!garden.Harvest(0,now))throw new InvalidOperationException("Garden validation harvest failed.");
+        }
+
+        private static bool InteractAt(CityGameBootstrap game,Transform target,float height)
+        {
+            var body=game.Player.GetComponent<CharacterController>();body.enabled=false;
+            game.Player.position=target.position+new Vector3(0,-height,-2.2f);body.enabled=true;
+            var rig=game.Player.GetComponentInChildren<CityCameraRig>();rig.SetMode(CityCameraMode.FirstPerson);
+            game.Player.GetComponentInChildren<Camera>().transform.LookAt(target.position);Physics.SyncTransforms();
+            return game.Player.GetComponent<CityPlayerInteraction>().TryInteract();
         }
         private IEnumerator ValidateStreetSound(CityGameBootstrap game)
         {
@@ -243,6 +312,7 @@ namespace Pozarevac.CityGame
             report.passed=report.passed&&report.signalBlockedByMenu&&report.signalBlockedByWall&&report.signalReachesOfficer&&report.signalCooldown&&report.signalDoesNotPauseOrAddHeat&&report.hideoutScoreFades&&report.hideoutScoreMutes;
             report.passed=report.passed&&report.helpAudioTextFits&&report.hideoutMusicPreferenceMutes&&report.disabledSignalBlocked;
             report.passed=report.passed&&report.mapPreservesAudio&&report.muteShortcutWorks;
+            report.passed=report.passed&&report.gardenPacked&&report.gardenDelivery&&report.gardenPause&&report.gardenDiskCargo&&report.gardenDiskReceipt&&report.gardenSinglePayout&&report.gardenTrainingGate&&report.gardenPhoneCancellation;
             string path=Arg("-vktFlowReport",Path.Combine(Path.GetTempPath(),"vkt-input-flow.json"));
             File.WriteAllText(path,JsonUtility.ToJson(report,true));Debug.Log("VKT_INPUT_FLOW "+(report.passed?"PASS":"FAIL"));
             if(keyboard!=null)InputSystem.RemoveDevice(keyboard);Application.Quit(report.passed?0:1);

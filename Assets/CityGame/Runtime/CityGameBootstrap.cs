@@ -178,6 +178,7 @@ namespace Pozarevac.CityGame
                     checkpoint.AddComponent<CesiumGlobeAnchor>(); Vitals.Configure(checkpoint.transform);
                     Hideout = gameObject.AddComponent<CityHideout>();
                     Hideout.Initialize(this, progressionController, positions[2]);
+                    Director.BindGardenOrder(Progression.GardenOrder, Hideout);
                     Touch = gameObject.AddComponent<CityTouchControls>();
                     Touch.Initialize(() => Player.GetComponent<CityPlayerInteraction>().TryInteract(), progressionController.TogglePanel,
                         () => Director.TryNextContract(), () => Director.TryRetry(), () => { if (!Director.IsPaused) Vitals.Respawn(); });

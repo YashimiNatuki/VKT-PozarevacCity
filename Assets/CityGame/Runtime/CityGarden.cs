@@ -72,6 +72,13 @@ namespace Pozarevac.CityGame
             return true;
         }
         public CityGardenPlotData Plot(int index) => CopyPlot(At(index));
+        internal bool TryTakeStock(int variety, int quantity)
+        {
+            CityPlantCatalog.Get(variety);
+            if (quantity <= 0 || quantity > Stock(variety)) return false;
+            data.stock[variety] -= quantity;
+            return true;
+        }
         public bool IsReady(int index) { CityGardenPlotData p = At(index); return p.planted && p.grownSeconds >= GrowDuration(p.variety); }
         public bool NeedsWater(int index) => At(index).planted && !IsReady(index) && At(index).moistureSeconds <= 0;
         public bool Plant(int index, int variety, long utcSeconds)

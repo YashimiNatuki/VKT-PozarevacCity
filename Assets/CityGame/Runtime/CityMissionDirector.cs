@@ -28,6 +28,16 @@ namespace Pozarevac.CityGame
         private CityLifestyle lifestyle;
         private CityGameAudio audioFeedback;
         private bool applicationSuspended;
+        private CityGardenOrder gardenOrder;
+        private CityHideout hideout;
+        public void BindGardenOrder(CityGardenOrder order, CityHideout room)
+        {
+            if(gardenOrder!=null)throw new InvalidOperationException("Garden order already bound.");
+            gardenOrder=order??throw new ArgumentNullException(nameof(order));
+            hideout=room!=null?room:throw new ArgumentNullException(nameof(room));
+            gardenOrder.Changed+=RefreshPresentation;
+            RefreshPresentation();
+        }
         private bool CanAct => !applicationSuspended&&(vitals == null || vitals.CanAct);
         public string ContactBlockReason=>lifestyle!=null&&lifestyle.Wanted?"POTERA / prvo izgubi policiju.":
             lifestyle!=null&&(lifestyle.IsTraining||lifestyle.IsConditioning||lifestyle.IsBoxing)?"TRENING / završi ili prekini seriju pre misije.":"";
@@ -37,7 +47,7 @@ namespace Pozarevac.CityGame
             lifestyle=state??throw new ArgumentNullException(nameof(state));audioFeedback=audio;Jobs.BindLifestyle(state);
         }
         public void BindVitals(CityPlayerVitals value) { vitals = value; }
-        public void FailCurrent(string reason) { Jobs?.Cancel(reason); if (run != null) { run.Abort(reason); RefreshPresentation(); ProgressChanged?.Invoke(); } }
+        public void FailCurrent(string reason) { gardenOrder?.Cancel(reason+" Paket/potvrda izgubljeni; nema povraćaja robe ni isplate."); Jobs?.Cancel(reason); if (run != null) { run.Abort(reason); RefreshPresentation(); ProgressChanged?.Invoke(); } }
         public event Action<int> ContractCompleted;
         public event Action ProgressChanged;
 
@@ -90,9 +100,12 @@ namespace Pozarevac.CityGame
             RefreshPresentation();
         }
 
-        public bool IsStationAvailable(int index) => CanAct && !IsPaused && ContactBlockReason.Length==0 && run != null && (Jobs.IsActive ? Jobs.BlockReason.Length==0&&index == Jobs.Offer.StationAt(Jobs.ObjectiveIndex) : run.CanVisit(index));
+        public bool IsStationAvailable(int index) => CanAct && !IsPaused && ContactBlockReason.Length==0 && run != null &&
+            (gardenOrder!=null&&gardenOrder.IsActive?gardenOrder.HasCargo&&gardenOrder.BlockReason.Length==0&&index==CityGardenOrder.DeliveryStation:
+            Jobs.IsActive ? Jobs.BlockReason.Length==0&&index == Jobs.Offer.StationAt(Jobs.ObjectiveIndex) : run.CanVisit(index));
         public bool IsStationComplete(int index)
         {
+            if(gardenOrder!=null&&gardenOrder.IsActive)return !gardenOrder.HasCargo&&index==CityGardenOrder.DeliveryStation;
             if (Jobs != null && Jobs.IsActive)
             {
                 for (int objective = 0; objective < Jobs.ObjectiveIndex; objective++)
@@ -117,6 +130,11 @@ namespace Pozarevac.CityGame
             if (run == null) return "City terrain is loading";
             if (IsPaused) return "Paused - Esc to resume";
             if(ContactBlockReason.Length>0)return ContactBlockReason;
+            if(gardenOrder!=null&&gardenOrder.IsActive)
+            {
+                if(gardenOrder.BlockReason.Length>0)return gardenOrder.BlockReason;
+                return !gardenOrder.HasCargo?"Vrati potvrdu na pult PORUDŽBINE u šteku.":index==CityGardenOrder.DeliveryStation?"[E] Kure / predaj paket iz šteka":"Porudžbina iz šteka / prati marker 2";
+            }
             if (Jobs.IsActive)
             {
                 if(Jobs.BlockReason.Length>0)return Jobs.BlockReason;
@@ -136,6 +154,11 @@ namespace Pozarevac.CityGame
         {
             if(!CanAct||IsPaused)return false;
             if(ContactBlockReason.Length>0){hud.ShowNotification(ContactBlockReason,4);audioFeedback?.PlayCue(CityAudioCue.Failure);return false;}
+            if(gardenOrder!=null&&gardenOrder.IsActive)
+            {
+                if(index!=CityGardenOrder.DeliveryStation||!gardenOrder.TryDeliver())return false;
+                hud.ShowNotification(gardenOrder.Message,6);audioFeedback?.PlayCue(CityAudioCue.Checkpoint);RefreshPresentation();return true;
+            }
             if (Jobs != null && Jobs.IsActive)
             {
                 if (!Jobs.TryVisit(index)){if(Jobs.BlockReason.Length>0)hud.ShowNotification(Jobs.BlockReason+" Rok i dalje teče.",4);return false;}
@@ -224,6 +247,11 @@ namespace Pozarevac.CityGame
             if (keyboard != null && keyboard.rKey.wasPressedThisFrame) TryRetry();
 
             bool streetJobWasActive = Jobs.IsActive;
+            if(gardenOrder!=null)
+            {
+                bool wasActive=gardenOrder.IsActive;gardenOrder.Tick(Time.deltaTime);
+                if(wasActive&&!gardenOrder.IsActive){hud.ShowNotification(gardenOrder.Message,6);audioFeedback?.PlayCue(CityAudioCue.Failure);RefreshPresentation();}
+            }
             Jobs.Tick(Time.deltaTime);
             if (streetJobWasActive && !Jobs.IsActive) { hud.ShowNotification(Jobs.Message, 5f);audioFeedback?.PlayCue(CityAudioCue.Failure); RefreshPresentation(); }
             run.Tick(Time.deltaTime);
@@ -252,12 +280,14 @@ namespace Pozarevac.CityGame
             for (int i = 0; i < stations.Length; i++)
             {
                 if (stationRenderers[i] == null) continue;
-                bool target = Jobs.IsActive ? i == Jobs.Offer.StationAt(Jobs.ObjectiveIndex) : run.HasTarget && i == run.ObjectiveIndex;
+                bool target = gardenOrder!=null&&gardenOrder.IsActive?gardenOrder.HasCargo&&i==CityGardenOrder.DeliveryStation:
+                    Jobs.IsActive ? i == Jobs.Offer.StationAt(Jobs.ObjectiveIndex) : run.HasTarget && i == run.ObjectiveIndex;
                 int appearance = IsStationComplete(i) ? 2 : target ? 1 : 0;
                 stationRenderers[i].sharedMaterial = materials[appearance];
                 if (stationLabels[i] != null)
                 {
                     string title = run.Contract.ObjectiveTitle(i);
+                    if(gardenOrder!=null&&gardenOrder.IsActive&&i==CityGardenOrder.DeliveryStation)title=gardenOrder.HasCargo?"Kure / predaj paket":"Kure / potvrda preuzeta";
                     if (Jobs.IsActive)
                         for (int objective = 0; objective < 3; objective++)
                             if (Jobs.Offer.StationAt(objective) == i) title = Jobs.Offer.ObjectiveTitle(objective);
@@ -277,6 +307,14 @@ namespace Pozarevac.CityGame
             {
                 hud.SetMissionText($"{heading}\nPAUSED - Esc to resume");
                 return;
+            }
+            if(gardenOrder!=null&&gardenOrder.IsActive)
+            {
+                Vector3 at=gardenOrder.HasCargo?stations[CityGardenOrder.DeliveryStation].transform.position:hideout.Entrance.position;
+                Vector3 offset=at-player.position;float gardenMeters=new Vector2(offset.x,offset.z).magnitude;
+                string objective=gardenOrder.HasCargo?hideout.IsInside?"Izađi iz šteka, zatim marker 2 / Kure":"E: predaj Kuretu / marker 2":"Vrati potvrdu na pult PORUDŽBINE u šteku";
+                string blocked=gardenOrder.BlockReason.Length>0?gardenOrder.BlockReason:objective;
+                hud.SetMissionText($"ŠTEK / KURE / {CityGarden.VarietyName(gardenOrder.Variety)} × 2\n{blocked}\n{gardenMeters:0} m {NavigationHint(player,offset)} / rok {Math.Ceiling(gardenOrder.RemainingSeconds)} s\nNaplata u šteku: {gardenOrder.CashReward} DIN + 3 REP / P: dnevnik");return;
             }
             if (Jobs.IsActive)
             {
@@ -377,18 +415,21 @@ namespace Pozarevac.CityGame
 
         private void OnDisable()
         {
+            if(gardenOrder!=null)gardenOrder.Changed-=RefreshPresentation;
             if (IsPaused) SetPaused(false);
             SetCursor(false);
         }
 
         private void OnEnable()
         {
+            if(gardenOrder!=null)gardenOrder.Changed+=RefreshPresentation;
             if (run != null && !IsPaused) SetCursor(true);
         }
         private void OnApplicationPause(bool paused){applicationSuspended=paused;}
 
         private void OnDestroy()
         {
+            if(gardenOrder!=null)gardenOrder.Changed-=RefreshPresentation;
             foreach (Material material in materials)
                 if (material != null) Destroy(material);
         }

@@ -25,6 +25,7 @@ namespace Pozarevac.CityGame
             game.Session.Changed += MarkDirty;
             Progression.Lifestyle.Changed += MarkDirty;
             Progression.Appearance.Changed += MarkDirty;
+            Progression.GardenOrder.Changed += OnMissionCheckpoint;
             panel = new GameObject("VKTPhone").AddComponent<CityPhonePanel>();
             panel.transform.SetParent(transform, false);
             panel.Initialize(this);
@@ -163,6 +164,7 @@ namespace Pozarevac.CityGame
             game.Session.Changed += MarkDirty;
             Progression.Lifestyle.Changed += MarkDirty;
             Progression.Appearance.Changed += MarkDirty;
+            Progression.GardenOrder.Changed += OnMissionCheckpoint;
             if (director != null) { director.ContractCompleted += OnContractCompleted; director.Jobs.Completed += OnStreetJobCompleted; director.ProgressChanged += OnMissionCheckpoint; director.Jobs.Changed += OnMissionCheckpoint; }
         }
         private void OnDisable()
@@ -172,6 +174,7 @@ namespace Pozarevac.CityGame
             game.Session.Changed -= MarkDirty;
             Progression.Lifestyle.Changed -= MarkDirty;
             if(game != null && game.Progression != null) Progression.Appearance.Changed -= MarkDirty;
+            Progression.GardenOrder.Changed -= OnMissionCheckpoint;
             if (director != null) { director.ContractCompleted -= OnContractCompleted; director.Jobs.Completed -= OnStreetJobCompleted; director.ProgressChanged -= OnMissionCheckpoint; director.Jobs.Changed -= OnMissionCheckpoint; director.SetOverlayOpen(false); }
             if (panel != null) panel.Close();
         }
@@ -181,6 +184,7 @@ namespace Pozarevac.CityGame
             if (game != null && game.Session != null) game.Session.Changed -= MarkDirty;
             if (game != null && game.Progression != null) Progression.Lifestyle.Changed -= MarkDirty;
             if(game != null && game.Progression != null) Progression.Appearance.Changed -= MarkDirty;
+            if(game != null && game.Progression != null) Progression.GardenOrder.Changed -= OnMissionCheckpoint;
             if (director != null) { director.ContractCompleted -= OnContractCompleted; director.Jobs.Completed -= OnStreetJobCompleted; director.ProgressChanged -= OnMissionCheckpoint; director.Jobs.Changed -= OnMissionCheckpoint; }
             if (panel != null) Destroy(panel.gameObject);
         }

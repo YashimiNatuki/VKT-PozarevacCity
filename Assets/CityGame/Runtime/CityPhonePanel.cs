@@ -174,8 +174,12 @@ namespace Pozarevac.CityGame
             cancelJob = Button("CancelJob", journal.transform, "OTKAŽI / BEZ ISPLATE", new Vector2(160, -280), () =>
             {
                 CityGameBootstrap game = owner.GetComponent<CityGameBootstrap>();
-                if (game != null && game.Vitals.CanAct && game.Director.Jobs.Cancel())
-                    ShowFeedback("Posao otkazan; paket vraćen, bez isplate.");
+                if (game != null && game.Vitals.CanAct)
+                {
+                    if(owner.Progression.GardenOrder.IsActive)
+                    { if(owner.Progression.GardenOrder.Cancel())ShowFeedback(owner.Progression.GardenOrder.Message); }
+                    else if(game.Director.Jobs.Cancel())ShowFeedback("Posao otkazan; bez isplate.");
+                }
                 RefreshJobs();
             });
             Button("BackFromJobs", journal.transform, "NAZAD U TELEFON", new Vector2(0, -365), Open);
@@ -187,6 +191,13 @@ namespace Pozarevac.CityGame
             CityStreetJobs jobs = director != null ? director.Jobs : null;
             if (jobs == null) { jobDetails.text = "Učitavanje dnevnika..."; acceptJob.interactable = cancelJob.interactable = false; return; }
             bool unlocked = director.StreetJobsUnlocked;
+            var order=owner.Progression.GardenOrder;
+            if(order.IsActive)
+            {
+                string phase=order.HasCargo?"1 / PREDAJA: izađi iz šteka i predaj paket Kuretu kod markera 2.":"2 / POTVRDA: vrati se u štek, pult PORUDŽBINE, i pritisni E za isplatu.";
+                jobDetails.text=$"PORUDŽBINA IZ ŠTEKA / KURE\n{CityGarden.VarietyName(order.Variety)} × 2 / roba je već skinuta iz zaliha\n\n{phase}\n\nRok: {Math.Ceiling(order.RemainingSeconds)} s igre\nIsplata tek u šteku: {order.CashReward} DIN + 3 REP\n\n{order.BlockReason}\n{order.Message}\n\nOTKAZ, SMRT I ISTEK ROKA gube paket/potvrdu; nema povraćaja robe ni isplate. Telefon pauzira rok.\n\nNapredak i preostalo vreme nastavljaju posle učitavanja.";
+                acceptJob.interactable=false;cancelJob.interactable=true;return;
+            }
             if(!unlocked)
             {
                 var run=director.Run;
@@ -204,7 +215,7 @@ namespace Pozarevac.CityGame
                 : jobs.CooldownSeconds > 0 ? $"Novi poziv za {Math.Ceiling(jobs.CooldownSeconds)} sekundi igre" : "Ponuda je spremna za prihvatanje.";
             if (Time.unscaledTime < feedbackUntil) availability = feedback;
             else if(unlocked&&jobs.BlockReason.Length>0)availability=jobs.BlockReason+(jobs.IsActive?" Rok nastavlja kada zatvoriš telefon.":"");
-            jobDetails.text = $"Glavni ugovori: {owner.Progression.CompletedContracts}/3\nZavršeni poslovi: {jobs.CompletedJobs} / poglavlje {jobs.StoryChapter}/3\n{jobs.PhaseSummary}\n\n{jobs.Offer.Title}\n{jobs.Offer.Briefing}\n\n{route}\nNagrada: {jobs.Offer.CashReward} cash + {jobs.Offer.ReputationReward} REP\nRok ponude: {jobs.Offer.TimeLimit:0}s\n\n{availability}\nTelefon pauzira rok; zatvori ga za nastavak.";
+            jobDetails.text = $"Glavni ugovori: {owner.Progression.CompletedContracts}/3\nZavršeni poslovi: {jobs.CompletedJobs} / poglavlje {jobs.StoryChapter}/3\n{jobs.PhaseSummary}\n\n{jobs.Offer.Title}\n{jobs.Offer.Briefing}\n\n{route}\nNagrada: {jobs.Offer.CashReward} cash + {jobs.Offer.ReputationReward} REP\nRok ponude: {jobs.Offer.TimeLimit:0}s\n\n{availability}\nTelefon pauzira rok; zatvori ga za nastavak.\n\nPORUDŽBINE IZ ŠTEKA: {order.Completed} završeno. Pult PORUDŽBINE u šteku pakuje 2 komada izabranog strejna iz zaliha. V menja strejn. Prihvatanje skida robu; otkaz/istek roka je gube. Predaja kod markera 2, isplata nazad u šteku.";
             acceptJob.interactable = unlocked && !jobs.IsActive && jobs.CooldownSeconds <= 0 && jobs.BlockReason.Length==0;
             cancelJob.interactable = jobs.IsActive;
         }

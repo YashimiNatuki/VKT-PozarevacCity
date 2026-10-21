@@ -40,7 +40,9 @@ def main():
                     "signalBlockedByMenu", "signalBlockedByWall", "signalReachesOfficer",
                     "signalCooldown", "signalDoesNotPauseOrAddHeat", "hideoutScoreFades",
                     "hideoutScoreMutes", "helpAudioTextFits", "hideoutMusicPreferenceMutes",
-                    "disabledSignalBlocked", "mapPreservesAudio", "muteShortcutWorks"]
+                    "disabledSignalBlocked", "mapPreservesAudio", "muteShortcutWorks",
+                    "gardenPacked", "gardenDelivery", "gardenPause", "gardenDiskCargo",
+                    "gardenDiskReceipt", "gardenSinglePayout", "gardenTrainingGate", "gardenPhoneCancellation"]
         failed = [name for name in required if report.get(name) is not True]
         errors = re.findall(r"NullReferenceException|MissingReferenceException|IndexOutOfRangeException|Unhandled Exception|Shader error", log)
         passed = result.returncode == 0 and not failed and not errors

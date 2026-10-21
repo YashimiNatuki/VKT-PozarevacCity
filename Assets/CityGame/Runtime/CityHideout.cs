@@ -27,6 +27,7 @@ namespace Pozarevac.CityGame
         private Mesh plantMesh;
         private Mesh furnitureMesh;
         public Transform WorkDesk { get; private set; }
+        public Transform OrderDesk { get; private set; }
         public Vector3 InteriorSoundPosition => room.transform.TransformPoint(new Vector3(-4.4f,2.4f,3));
         private readonly TextMesh[] labels = new TextMesh[CityGarden.PlotCount];
         private float refreshCountdown;
@@ -119,6 +120,10 @@ namespace Pozarevac.CityGame
             WorkDesk.GetComponent<MeshFilter>().sharedMesh=furnitureMesh;
             WorkDesk.gameObject.AddComponent<CityHideoutDesk>().Initialize(this);
             Text(WorkDesk,"PLAN BLOKA / [E]\nDnevnik i poslovi",new Vector3(0,1.4f,0));
+            OrderDesk=Box("PultPorudzbine",room.transform,new Vector3(3.5f,.7f,-.9f),new Vector3(1.4f,1.3f,1.2f),floorMaterial,true).transform;
+            OrderDesk.GetComponent<MeshFilter>().sharedMesh=furnitureMesh;
+            OrderDesk.gameObject.AddComponent<CityHideoutOrderDesk>().Initialize(this);
+            Text(OrderDesk,"PORUDŽBINE / KURE / [E]\n2 kom iz zaliha → marker 2 → potvrda ovde\n180 s / otkaz gubi robu / V: izaberi strejn",new Vector3(0,1.25f,0)).characterSize=.022f;
             Box("TablaPlaniranja",room.transform,new Vector3(-4.78f,2.2f,-.9f),new Vector3(.06f,1.1f,2.2f),potMaterial,true);
             for(int crate=0;crate<3;crate++)
             {
@@ -139,6 +144,28 @@ namespace Pozarevac.CityGame
         {
             if(!IsInside||game.Director.IsPaused||!ReferenceEquals(session,game.Session)||!Progression.PhoneUnlocked)return false;
             progression.OpenPanel();FindAnyObjectByType<CityPhonePanel>().OpenJobs();return true;
+        }
+
+        public string OrderPrompt
+        {
+            get
+            {
+                var order=Progression.GardenOrder;
+                if(order.IsActive)return order.HasCargo?"Kure čeka kod markera 2. Izađi iz šteka; P: dnevnik.":"[E] Vrati Kuretovu potvrdu / naplati "+order.CashReward+" DIN + 3 REP";
+                if(Progression.CompletedContracts<3)return "PORUDŽBINE / prvo završi sva 3 glavna ugovora.";
+                if(order.CooldownSeconds>0)return "Kure odmara još "+Math.Ceiling(order.CooldownSeconds)+" s igre.";
+                return $"[E] Spakuj 2 × {CityGarden.VarietyName(SelectedVariety)} / zaliha {Progression.Garden.Stock(SelectedVariety)} / {CityGardenOrder.Quote(SelectedVariety)} DIN / rok 180 s / otkaz gubi robu";
+            }
+        }
+        public bool ActOnOrder(CitySession session)
+        {
+            if(!IsInside||game.Director.IsPaused||!game.Vitals.CanAct||!ReferenceEquals(session,game.Session))return false;
+            var order=Progression.GardenOrder;
+            if(order.HasCargo){progression.Notify(order.Message);return false;}
+            bool success=progression.Perform(()=>order.IsActive?order.TrySettle():Progression.TryAcceptGardenOrder(SelectedVariety));
+            progression.Notify(success?order.Message:Progression.CompletedContracts<3?"Završi sva 3 glavna ugovora pre porudžbina.":game.Director.Jobs.IsActive?"Prvo završi ili otkaži aktivni ulični posao.":order.Message);
+            game.Audio.PlayCue(success?(order.IsActive?CityAudioCue.Checkpoint:CityAudioCue.Success):CityAudioCue.Failure);
+            return success;
         }
 
         public void SelectVariety(int index)
@@ -329,6 +356,13 @@ namespace Pozarevac.CityGame
         public void Initialize(CityHideout value){owner=value;}
         public override string Prompt=>"[E] Plan bloka / dnevnik poslova";
         public override bool TryInteract(CitySession session)=>owner.OpenWorkJournal(session);
+    }
+    public sealed class CityHideoutOrderDesk : CityInteractable
+    {
+        private CityHideout owner;
+        public void Initialize(CityHideout value){owner=value;}
+        public override string Prompt=>owner.OrderPrompt;
+        public override bool TryInteract(CitySession session)=>owner.ActOnOrder(session);
     }
     public sealed class CityHideoutFan : MonoBehaviour
     {
