@@ -32,6 +32,9 @@ namespace Pozarevac.CityGame
             public bool gaitContralateral,gaitPausePreservesPose,gaitTeleportReset,gaitStopSettles;
             public int gaitPairSamples,gaitBadPairs;
             public float gaitPauseLeftDelta,gaitPauseRightDelta;
+            public bool groundSlopeContacts,groundPauseFeet,groundAirborneRelease;
+            public int groundContactFrames,groundedFrames;
+            public float groundPauseLeftDelta,groundPauseRightDelta,groundVisualOffset,groundPauseOffsetDelta;
             public string error="",input="Synthetic Unity Input System keyboard and EventSystem submit; not human input.";
         }
         private readonly Report report=new Report();
@@ -184,6 +187,7 @@ namespace Pozarevac.CityGame
             InputSystem.QueueStateEvent(keyboard,new KeyboardState(Key.W));yield return new WaitForSecondsRealtime(.25f);
             InputSystem.QueueStateEvent(keyboard,new KeyboardState());yield return new WaitForSecondsRealtime(.7f);
             report.gaitStopSettles=actorMotion.ObservedSpeed<.1f&&actorMotion.LocomotionWeight<.01f;
+            yield return VerifyGroundContact(game,actorMotion,left.Find("LeftFoot"),right.Find("RightFoot"));
             yield return Press(Key.P);Submit("Statistics");yield return null;
             Canvas.ForceUpdateCanvases();
             var statistics=phone.transform.Find("StatisticsPanel");
@@ -343,6 +347,42 @@ namespace Pozarevac.CityGame
             report.hideoutMusicPreferenceMutes=ambience.HideoutMusicVolume==0;
             music.Muted=false;game.Hideout.Travel(false);
         }
+        private IEnumerator VerifyGroundContact(CityGameBootstrap game,CityActorMotion motion,Transform left,Transform right)
+        {
+            var body=game.Player.GetComponent<CharacterController>();var mover=game.Player.GetComponent<CityPlayerController>();
+            Vector3 saved=game.Player.position;bool wasEnabled=mover.enabled;
+            var support=GameObject.CreatePrimitive(PrimitiveType.Cube);support.name="VKT_ValidationSlope";
+            support.GetComponent<Renderer>().sharedMaterial=Resources.Load<Material>("CityMissionMarker");
+            support.transform.position=saved+Vector3.up*3;support.transform.rotation=Quaternion.Euler(0,0,12);
+            support.transform.localScale=new Vector3(6,.2f,6);
+            try
+            {
+                mover.enabled=false;body.enabled=false;game.Player.position=support.transform.position+Vector3.up*.5f;body.enabled=true;Physics.SyncTransforms();
+                for(int i=0;i<50;i++)
+                {
+                    body.Move(Vector3.down*.04f);yield return null;yield return new WaitForEndOfFrame();
+                    if(body.isGrounded)report.groundedFrames++;
+                    if(body.isGrounded&&motion.SupportedFeet>0)report.groundContactFrames++;
+                }
+                report.groundVisualOffset=motion.GroundingOffset;
+                report.groundSlopeContacts=report.groundContactFrames>=5&&Mathf.Abs(report.groundVisualOffset)>.01f&&Mathf.Abs(report.groundVisualOffset)<=.12f;
+                Capture(game,"ground-slope");
+                Quaternion beforeLeft=left.localRotation,beforeRight=right.localRotation;
+                yield return Press(Key.P);yield return new WaitForSecondsRealtime(.25f);yield return new WaitForEndOfFrame();
+                report.groundPauseLeftDelta=Quaternion.Angle(beforeLeft,left.localRotation);report.groundPauseRightDelta=Quaternion.Angle(beforeRight,right.localRotation);
+                report.groundPauseOffsetDelta=Mathf.Abs(motion.GroundingOffset-report.groundVisualOffset);
+                report.groundPauseFeet=game.Director.IsPaused&&report.groundPauseLeftDelta<.5f&&report.groundPauseRightDelta<.5f&&report.groundPauseOffsetDelta<.0001f;
+                yield return Press(Key.Escape);
+                body.Move(Vector3.up);yield return null;yield return new WaitForEndOfFrame();
+                report.groundAirborneRelease=!body.isGrounded&&motion.SupportedFeet==0;
+            }
+            finally
+            {
+                body.enabled=false;game.Player.position=saved;body.enabled=true;mover.enabled=wasEnabled;
+                Destroy(support);Physics.SyncTransforms();
+            }
+            yield return null;
+        }
         private IEnumerator Press(Key key)
         {
             InputSystem.QueueStateEvent(keyboard,new KeyboardState(key));yield return null;yield return null;
@@ -393,6 +433,7 @@ namespace Pozarevac.CityGame
             report.benchContacts=report.benchContactFrames>=20&&report.benchMaxHandError<.03f&&report.benchMaxFootError<.03f&&report.benchMaxFootAngle<.1f;
             report.passed=report.passed&&report.benchContacts;
             report.passed=report.passed&&report.gaitContralateral&&report.gaitPausePreservesPose&&report.gaitTeleportReset&&report.gaitStopSettles;
+            report.passed=report.passed&&report.groundSlopeContacts&&report.groundPauseFeet&&report.groundAirborneRelease;
             string path=Arg("-vktFlowReport",Path.Combine(Path.GetTempPath(),"vkt-input-flow.json"));
             File.WriteAllText(path,JsonUtility.ToJson(report,true));Debug.Log("VKT_INPUT_FLOW "+(report.passed?"PASS":"FAIL"));
             if(keyboard!=null)InputSystem.RemoveDevice(keyboard);Application.Quit(report.passed?0:1);

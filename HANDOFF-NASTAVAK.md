@@ -1,4 +1,4 @@
-# VKT: nastavak rada, 2026-10-21
+# VKT: nastavak rada, 2026-10-26
 
 ## Aktivni izvor i poreklo saveta
 
@@ -8,7 +8,17 @@ Predlog Antigravity saradnika i njegov izvorni handoff pročitani su u `C:\Users
 Plan: [Master Blueprint](Docs/VKT-Master-Upgrade-Blueprint.md).
 Pregled rizika: [Integracija paralelnih dodataka](Docs/Blueprint-Integration-Review-20261021.md).
 
-## Najnovija dorada: koordinacija hoda i stabilna pauza
+## Najnovija dorada: stopala i margina fizičkog kontrolera
+
+`CityFootContact` podešava dve kosti noge i orijentaciju cipele prema ograničenoj statičkoj podlozi. `CityGroundingOffset` uklanja vizuelno lebdenje koje stvara kontaktna margina kapsule, bez pomeranja fizičkog igrača ili kamere. Aktivira ih samo avatar igrača; pauza, vazduh, teleport, boks i disable imaju eksplicitne granice. Profil ostaje v9.
+
+Završno: **245 uspešnih Unity testova, 0 neuspešnih, 1 opcioni skip**. Windows build i oba native toka imaju izlaz 0. Nova reprodukcija koristila je stvarni CharacterController: pre popravke oba testa kosine su pala, posle nje prolaze uz proveru stvarnih vertexa cipela. [Dokumentacija](Docs/Foot-Contact-20261026.md) i [izveštaj](Docs/Verification-Foot-Contact-20261026.json) vode tačne rezultate.
+
+Špica ima [odvojeni montažni kandidat](Docs/Intro-Candidate-20261026.md), bez novih AI kadrova i bez zamene originala u igri. Android kandidat od 24. oktobra je stariji od završne korekcije; ne instalirati ga kao ovu isporuku. Fizički telefon se sada ne testira, po zahtevu korisnika.
+
+Sledeće: hvat šipke/gard → povezana misija/kontakti → centralni blok i proverene visine → skejt → srpski glasovi i miks. [Konsolidovan plan](Docs/Delivery-Plan-20261022.md) razlikuje postojeće sisteme od kandidata. Paralelni Antigravity izvor ostaje odvojen.
+
+## Prethodna dorada: koordinacija hoda i stabilna pauza
 
 `CityGaitState` računa fazu iz pređenog horizontalnog puta i postepeno smiruje pozu pri stajanju. Ruke sada prate suprotne noge. `CityActorMotion` poništava stanje pri teleportu, čuva završne rotacije tokom pauze i proverava `Time.timeScale` već u kadru otvaranja telefona. Nema novog vlasnika kretanja, izdržljivosti ili profila.
 

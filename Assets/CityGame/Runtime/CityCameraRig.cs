@@ -52,7 +52,7 @@ namespace Pozarevac.CityGame
                         Animation motion = root.GetComponent<Animation>(); if (motion == null) motion = root.AddComponent<Animation>();
                         motion.enabled = true; motion.cullingType = AnimationCullingType.AlwaysAnimate;
                         motion.AddClip(idle, "VKT_Idle"); motion.AddClip(run, "VKT_Run"); motion.wrapMode = WrapMode.Loop; motion.Play("VKT_Idle");
-                        actorMotion=wrapper.gameObject.AddComponent<CityActorMotion>();actorMotion.Initialize(owner, motion);
+                        actorMotion=wrapper.gameObject.AddComponent<CityActorMotion>();actorMotion.Initialize(owner, motion, true);
                     }
                 }
             }

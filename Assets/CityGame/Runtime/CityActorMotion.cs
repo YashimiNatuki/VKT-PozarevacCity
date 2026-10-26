@@ -7,8 +7,11 @@ namespace Pozarevac.CityGame
         private readonly CityGaitState gait=new CityGaitState();
         private Transform leftArm,leftElbow,rightArm,rightElbow;
         private Transform leftHip,leftKnee,leftFoot,rightHip,rightKnee,rightFoot;
-        private readonly Transform[] poseBones=new Transform[10];
-        private readonly Quaternion[] basePose=new Quaternion[10],renderedPose=new Quaternion[10];
+        private readonly Transform[] poseBones=new Transform[12];
+        private readonly Quaternion[] basePose=new Quaternion[12],renderedPose=new Quaternion[12];
+        private CharacterController groundingBody;
+        private CityFootContact leftContact,rightContact;
+        private CityGroundingOffset groundingOffset;
         private float leftSide=-1,rightSide=1;
         private Transform chest,head,view;
         private bool posed,hasRenderedPose;
@@ -19,11 +22,13 @@ namespace Pozarevac.CityGame
         public void ConfigureBoxing(CityLifestyle life,CityBoxingRun run){boxingLife=life;boxing=run;}
         public float ObservedSpeed=>gait.Speed;
         public float LocomotionWeight=>gait.Weight;
+        public int SupportedFeet { get; private set; }
+        public float GroundingOffset=>groundingOffset!=null?groundingOffset.Offset:0;
         public bool GaitReady=>leftHip!=null&&leftKnee!=null&&leftFoot!=null&&rightHip!=null&&rightKnee!=null&&rightFoot!=null;
         public float BreathingPhase=>breath;
-        public void Initialize(Transform owner,Animation player)
+        public void Initialize(Transform owner,Animation player,bool groundContact=false)
         {
-            RestorePose();gait.Reset();hasRenderedPose=false;
+            RestorePose();groundingOffset?.Reset();gait.Reset();hasRenderedPose=false;
             actor=owner;animationPlayer=player;previous=owner.position;
             const string upper="HipsCtrl/Hips/Spine/Chest/UpperChest/";
             leftArm=player.transform.Find(upper+"LeftShoulder/LeftArm");leftElbow=leftArm!=null?leftArm.Find("LeftForeArm"):null;
@@ -41,6 +46,16 @@ namespace Pozarevac.CityGame
             poseBones[0]=leftHip;poseBones[1]=leftKnee;poseBones[2]=rightHip;poseBones[3]=rightKnee;
             poseBones[4]=leftArm;poseBones[5]=leftElbow;poseBones[6]=rightArm;poseBones[7]=rightElbow;
             poseBones[8]=chest;poseBones[9]=head;
+            poseBones[10]=leftFoot;poseBones[11]=rightFoot;
+            SupportedFeet=0;groundingBody=groundContact?owner.GetComponent<CharacterController>():null;
+            leftContact=rightContact=null;
+            groundingOffset=null;
+            if(groundingBody!=null&&GaitReady)
+            {
+                groundingOffset=new CityGroundingOffset(owner,transform);
+                leftContact=new CityFootContact(owner,transform,leftHip,leftKnee,leftFoot);
+                rightContact=new CityFootContact(owner,transform,rightHip,rightKnee,rightFoot);
+            }
             view=Camera.main!=null?Camera.main.transform:null;previousYaw=transform.eulerAngles.y;
         }
         private void RestorePose()
@@ -54,10 +69,10 @@ namespace Pozarevac.CityGame
         private void OnEnable()
         {
             if(actor==null)return;
-            previous=actor.position;previousYaw=transform.eulerAngles.y;turn=0;gait.Reset();running=false;hasRenderedPose=false;
+            previous=actor.position;previousYaw=transform.eulerAngles.y;turn=0;gait.Reset();running=false;hasRenderedPose=false;SupportedFeet=0;
             if(animationPlayer!=null&&animationPlayer["VKT_Idle"]!=null)animationPlayer.Play("VKT_Idle");
         }
-        private void OnDisable(){RestorePose();gait.Reset();running=false;hasRenderedPose=false;}
+        private void OnDisable(){RestorePose();groundingOffset?.Reset();gait.Reset();running=false;hasRenderedPose=false;SupportedFeet=0;}
         private void LateUpdate()
         {
             if(actor==null||animationPlayer==null)return;
@@ -72,7 +87,7 @@ namespace Pozarevac.CityGame
                 }
                 return;
             }
-            gait.Step(delta,Time.deltaTime);
+            SupportedFeet=0;gait.Step(delta,Time.deltaTime);
             if(gait.WasTeleported)
             {
                 running=false;turn=0;transform.rotation=Quaternion.Euler(0,actor.eulerAngles.y,0);previousYaw=transform.eulerAngles.y;
@@ -95,6 +110,12 @@ namespace Pozarevac.CityGame
                 PoseLeg(leftHip,leftKnee,leftFoot,transform,gait.LeftStride,gait.LeftKneeFlex);
                 PoseLeg(rightHip,rightKnee,rightFoot,transform,gait.RightStride,gait.RightKneeFlex);
             }
+            bool contactAllowed=groundingBody!=null&&groundingBody.enabled&&groundingBody.isGrounded&&!gait.WasTeleported&&
+                (boxingLife==null||!boxingLife.IsBoxing);
+            if(gait.WasTeleported)groundingOffset?.Reset();
+            groundingOffset?.Step(contactAllowed,Time.deltaTime);
+            if(contactAllowed)
+            {if(leftContact!=null&&leftContact.Probe())SupportedFeet++;if(rightContact!=null&&rightContact.Probe())SupportedFeet++;}
             if(boxingLife!=null&&boxingLife.IsBoxing)
             {
                 BoxingArm(leftArm,leftElbow,transform,leftSide,boxing!=null?boxing.Punch:0);
