@@ -45,7 +45,8 @@ def main():
                     "gardenDiskReceipt", "gardenSinglePayout", "gardenTrainingGate", "gardenPhoneCancellation",
                     "statsWalking", "statsSprinting", "statsTeleportExcluded", "statsPause", "statsDisk", "statsPage", "benchContacts",
                     "gaitContralateral", "gaitPausePreservesPose", "gaitTeleportReset", "gaitStopSettles",
-                    "groundSlopeContacts", "groundPauseFeet", "groundAirborneRelease"]
+                    "groundSlopeContacts", "groundPauseFeet", "groundAirborneRelease",
+                    "boxingStarted", "boxingCompleted", "boxingHands", "boxingPause", "boxingSinglePayout", "boxingReturnsControl"]
         failed = [name for name in required if report.get(name) is not True]
         errors = re.findall(r"NullReferenceException|MissingReferenceException|IndexOutOfRangeException|Unhandled Exception|Shader error", log)
         passed = result.returncode == 0 and not failed and not errors

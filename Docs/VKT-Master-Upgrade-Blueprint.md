@@ -5,6 +5,8 @@
 > **Ciljna platforma:** PC (Windows / Steam / itch.io) + Optimizovani Android port
 > **Engine:** Unity 6000.6 (URP)
 
+> **Status proveren 28. oktobra 2026:** ovo je plan, ne spisak isporučenih funkcija. Pešaci, dodatna minimapa i skejt iz paralelnog Antigravity izvora ostaju kandidati za integraciju. [Pregled stvarnog stanja i kriterijuma narednih koraka](VKT-Stanje-I-Sledeci-Potezi-20261028.md) ima prednost nad starim oznakama dovršenosti. Pakete u nastavku uvoditi tek kada postoji konkretna potreba i potvrđena kompatibilnost.
+
 ---
 
 ## 🏛️ 1. Vizuelni Identitet i 3D Aspekt (Modeli, Rigovi, Svet)
@@ -49,7 +51,7 @@ Umesto generičkih automobila, uvesti domaće kultne modele koji odmah prave hum
 ## 🎧 3. Audio Inženjering i Glasovi (Balkanski Vibe)
 
 ### A. Glasovna Gluma (Voice Acting)
-* **Lokalni akcenti i sleng:** Čak i 30 kratkih audio snimaka po liku podiže imerziju za 500%:
+* **Lokalni akcenti i sleng:** Pripremiti 20–30 kratkih replika i oceniti prirodnost ljudskim slušanjem:
   * *Rođa:* "Brate, jesi doneo ono? Nemoj da me zezaš, patrola kruži oko parka."
   * *Kuret:* "Alo bre, šta se guraš? 'Oćeš da ti skinem felne?!"
   * *Policajac:* "Stoj! Ruke na haubu!"
@@ -87,7 +89,7 @@ Telefon u igri (taster `P`) treba da bude centar dešavanja:
 * **"Po-Oglasi" App:** Kupovina polovnih delova, alata za obijanje, felni i semena za baštu.
 * **Kamera & Foto mod:** Slikanje grafita i znamenitosti Požarevca — nagrada "Ulična reputacija" za svaku fotku.
 * **Poruke (Signal/Viber stil):** Rođa šalje slike lokacija gde je sakriven paket, umesto običnog teksta.
-* **GPS Radar:** Nadogradnja postojećeg `CityMinimap` sistema sa mogućnošću postavljanja sopstvenih markera na mapi.
+* **GPS Radar:** Integracija kandidata `CityMinimap` uz postojeću `CityMapView`, sa ciljevima svih aktivnih misija i bez preklapanja komandi.
 
 ---
 
@@ -107,9 +109,9 @@ Telefon u igri (taster `P`) treba da bude centar dešavanja:
 ```mermaid
 flowchart TD
     subgraph "FAZA 1: Dinamika i Pokret (Sada)"
-        A1["Minimap & Kompas (Završeno)"] --> A2["Pešaci šetači (Završeno)"]
-        A2 --> A3["Skejtbord vožnja (Završeno)"]
-        A3 --> A4["Postavljanje skejtborda u scenu i pickup"]
+        A1["Minimap & Kompas (kandidat)"] --> A2["Pešaci šetači (kandidat)"]
+        A2 --> A3["Skejtbord vožnja (kandidat)"]
+        A3 --> A4["Provera kretanja, pickup-a i bezbednog silaska"]
     end
 
     subgraph "FAZA 2: Balkanska Vozila i Točkovi"
@@ -136,5 +138,6 @@ flowchart TD
 
 ## 💡 Zaključak
 
-VKT već ima nešto što 95% indie projekata nema: **modularnu bazu, čist C# kod, 201 test i integraciju realnih OSM ulica**.
-Dodavanjem **autentičnog balkanskog humora (Yugo, skidanje točkova, domaći glasovi, požarevački korzo)**, igra prelazi iz kategorije "Unity prototip" u **viralni balkanski hit** koji će privući pažnju gejmera, YouTube kreatora i zajednice.
+VKT ima postojeće vlasnike kretanja, misija, profila i audio sistema, testove i OSM ulice. Tačan broj prolaza i granice svake isporuke nalaze se u njenom izveštaju; broj testova nije ocena vizuelnog kvaliteta ili završene igre.
+
+Autentični objekti, bolji lik, domaće replike i povezane misije predstavljaju sledeće proverljive celine. Uspeh se procenjuje igranjem i merenjem, bez obećanja tržišnog ili viralnog rezultata.

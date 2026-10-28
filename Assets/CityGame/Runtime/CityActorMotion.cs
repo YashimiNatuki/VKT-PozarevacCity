@@ -7,8 +7,9 @@ namespace Pozarevac.CityGame
         private readonly CityGaitState gait=new CityGaitState();
         private Transform leftArm,leftElbow,rightArm,rightElbow;
         private Transform leftHip,leftKnee,leftFoot,rightHip,rightKnee,rightFoot;
-        private readonly Transform[] poseBones=new Transform[12];
-        private readonly Quaternion[] basePose=new Quaternion[12],renderedPose=new Quaternion[12];
+        private readonly Transform[] poseBones=new Transform[24];
+        private readonly Quaternion[] basePose=new Quaternion[24],renderedPose=new Quaternion[24];
+        private CityHandPose leftHandPose,rightHandPose;
         private CharacterController groundingBody;
         private CityFootContact leftContact,rightContact;
         private CityGroundingOffset groundingOffset;
@@ -19,6 +20,8 @@ namespace Pozarevac.CityGame
         private CityLifestyle boxingLife;
         private CityBoxingRun boxing;
         public bool BoxingPoseActive=>boxingLife!=null&&boxingLife.IsBoxing&&leftArm!=null&&leftElbow!=null&&rightArm!=null&&rightElbow!=null;
+        public bool BoxingHandsReady=>leftHandPose!=null&&rightHandPose!=null&&leftHandPose.Ready&&rightHandPose.Ready;
+        public float BoxingWristAngle { get; private set; }
         public void ConfigureBoxing(CityLifestyle life,CityBoxingRun run){boxingLife=life;boxing=run;}
         public float ObservedSpeed=>gait.Speed;
         public float LocomotionWeight=>gait.Weight;
@@ -47,6 +50,9 @@ namespace Pozarevac.CityGame
             poseBones[4]=leftArm;poseBones[5]=leftElbow;poseBones[6]=rightArm;poseBones[7]=rightElbow;
             poseBones[8]=chest;poseBones[9]=head;
             poseBones[10]=leftFoot;poseBones[11]=rightFoot;
+            leftHandPose=new CityHandPose(leftElbow!=null?leftElbow.Find("LeftHand"):null,true);
+            rightHandPose=new CityHandPose(rightElbow!=null?rightElbow.Find("RightHand"):null,false);
+            CacheHand(leftHandPose,12);CacheHand(rightHandPose,18);
             SupportedFeet=0;groundingBody=groundContact?owner.GetComponent<CharacterController>():null;
             leftContact=rightContact=null;
             groundingOffset=null;
@@ -57,6 +63,11 @@ namespace Pozarevac.CityGame
                 rightContact=new CityFootContact(owner,transform,rightHip,rightKnee,rightFoot);
             }
             view=Camera.main!=null?Camera.main.transform:null;previousYaw=transform.eulerAngles.y;
+        }
+        private void CacheHand(CityHandPose hand,int start)
+        {
+            poseBones[start]=hand.Hand;
+            for(int i=0;i<5;i++)poseBones[start+i+1]=hand.Ready?hand.Finger(i):null;
         }
         private void RestorePose()
         {
@@ -116,11 +127,6 @@ namespace Pozarevac.CityGame
             groundingOffset?.Step(contactAllowed,Time.deltaTime);
             if(contactAllowed)
             {if(leftContact!=null&&leftContact.Probe())SupportedFeet++;if(rightContact!=null&&rightContact.Probe())SupportedFeet++;}
-            if(boxingLife!=null&&boxingLife.IsBoxing)
-            {
-                BoxingArm(leftArm,leftElbow,transform,leftSide,boxing!=null?boxing.Punch:0);
-                BoxingArm(rightArm,rightElbow,transform,rightSide,0);
-            }
             breath+=Time.deltaTime*Mathf.Lerp(1.8f,3.8f,Mathf.Clamp01(speed/8));
             float yaw=transform.eulerAngles.y;
             float yawRate=Mathf.DeltaAngle(previousYaw,yaw)/Mathf.Max(.001f,Time.deltaTime);previousYaw=yaw;
@@ -131,6 +137,15 @@ namespace Pozarevac.CityGame
                 Vector3 gaze=view!=null?transform.InverseTransformDirection(view.forward):Vector3.forward;
                 float glance=Mathf.Clamp(Mathf.Atan2(gaze.x,gaze.z)*Mathf.Rad2Deg,-28,28);
                 head.localRotation*=Quaternion.Euler(Mathf.Sin(breath*.5f)*1.4f,glance*.45f,turn*.35f);
+            }
+            BoxingWristAngle=0;
+            if(boxingLife!=null&&boxingLife.IsBoxing)
+            {
+                PoseBoxingArm(leftArm,leftElbow,transform,leftSide,boxing!=null?boxing.Punch:0,leftHandPose);
+                PoseBoxingArm(rightArm,rightElbow,transform,rightSide,0,rightHandPose);
+                if(BoxingHandsReady)BoxingWristAngle=Mathf.Max(
+                    Vector3.Angle(leftHandPose.LongAxis,leftHandPose.Hand.position-leftElbow.position),
+                    Vector3.Angle(rightHandPose.LongAxis,rightHandPose.Hand.position-rightElbow.position));
             }
             for(int i=0;i<poseBones.Length;i++)if(poseBones[i]!=null)renderedPose[i]=poseBones[i].localRotation;
             posed=true;hasRenderedPose=true;
@@ -162,9 +177,10 @@ namespace Pozarevac.CityGame
             Vector3 shin=Quaternion.AngleAxis(-stride+flex,model.right)*(-model.up);
             if(lower.sqrMagnitude>.00001f)knee.rotation=Quaternion.FromToRotation(lower,shin)*knee.rotation;
         }
-        private static void BoxingArm(Transform arm,Transform elbow,Transform model,float side,float punch)
+        public static void PoseBoxingArm(Transform arm,Transform elbow,Transform model,float side,float punch,CityHandPose handPose)
         {
-            if(arm==null||elbow==null)return;
+            if(arm==null||elbow==null||model==null)return;
+            punch=float.IsFinite(punch)?Mathf.Clamp01(punch):0;
             Vector3 upper=elbow.position-arm.position;
             Vector3 target=(model.forward*.55f+model.right*side*.24f-model.up*.12f).normalized;
             if(upper.sqrMagnitude>.00001f)arm.rotation=Quaternion.FromToRotation(upper,target)*arm.rotation;
@@ -172,6 +188,13 @@ namespace Pozarevac.CityGame
             Vector3 lower=elbow.GetChild(0).position-elbow.position;
             Vector3 guard=Vector3.Lerp(model.up*.85f+model.forward*.3f,model.forward,punch).normalized;
             if(lower.sqrMagnitude>.00001f)elbow.rotation=Quaternion.FromToRotation(lower,guard)*elbow.rotation;
+            if(handPose!=null&&handPose.Ready)
+            {
+                // A stable forearm frame avoids the 180-degree flip of a normal lerp
+                // when the requested palm vector becomes parallel to the forearm.
+                Vector3 palm=Quaternion.AngleAxis(90*side*punch,guard)*Vector3.Cross(guard,model.right);
+                handPose.Close(handPose.Orientation(guard,palm));
+            }
         }
     }
     public sealed class CityWorldLabel : MonoBehaviour

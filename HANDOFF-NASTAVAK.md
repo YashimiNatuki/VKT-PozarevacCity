@@ -1,4 +1,15 @@
-# VKT: nastavak rada, 2026-10-26
+# VKT: nastavak rada, 2026-10-28
+
+## Najnovija dorada: šake, gard i nova montaža špice
+
+Hvat šipke sada odvaja zglob od metala i zatvara prste; boksački gard poravnava zglob sa podlakticom i čuva pozu tokom pauze. Profil ostaje v9. **255 uspešnih Unity testova, 0 neuspešnih, 1 opcioni skip; Windows build, oba native toka i dve provere špice imaju izlaz 0.**
+
+Nova 30-sekundna remontaža je uključena u Windows paket; original je sačuvan. To nisu novi AI kadrovi ili novi realistični model. Provereni su prirodan završetak špice, preskakanje i povratak u igru. Fizički Android/iPhone i ljudska ocena zvuka ostaju odvojeni.
+
+[Izmene i granice](Docs/Hand-Contact-20261028.md) | [Evidencija](Docs/Verification-Hand-Contact-20261028.json) | [Konsolidovan plan](Docs/VKT-Stanje-I-Sledeci-Potezi-20261028.md) | [Poreklo špice](Docs/Intro-Integration-20261028.md).
+
+Sledeći veći vizuelni korak je prava 3D glava/telo i adapter rig-a. Pregledani AiRođa/AiGad Noir koristi 2D WebP, pa je vizuelna referenca, ne model koji se direktno prenosi u Unity. Zatim: povezana misija sa kontaktima, prepoznatljiv centralni blok, pregledani srpski glasovi, skejt i retka transformišuća klupa.
+
 
 ## Aktivni izvor i poreklo saveta
 
@@ -8,7 +19,7 @@ Predlog Antigravity saradnika i njegov izvorni handoff pročitani su u `C:\Users
 Plan: [Master Blueprint](Docs/VKT-Master-Upgrade-Blueprint.md).
 Pregled rizika: [Integracija paralelnih dodataka](Docs/Blueprint-Integration-Review-20261021.md).
 
-## Najnovija dorada: stopala i margina fizičkog kontrolera
+## Prethodna dorada: stopala i margina fizičkog kontrolera
 
 `CityFootContact` podešava dve kosti noge i orijentaciju cipele prema ograničenoj statičkoj podlozi. `CityGroundingOffset` uklanja vizuelno lebdenje koje stvara kontaktna margina kapsule, bez pomeranja fizičkog igrača ili kamere. Aktivira ih samo avatar igrača; pauza, vazduh, teleport, boks i disable imaju eksplicitne granice. Profil ostaje v9.
 
@@ -48,7 +59,7 @@ Pešaci, dodatna minimapa, skejt i efekti ekrana iz `fcfd5b8` nisu automatski uk
 
 ## Sledeći potezi
 
-1. Oslonac stopala na nagibima/ivičnjacima, zatim ručni zglobovi i hvat šipke/gard.
+1. Kvalitetniji 3D model glave/tela, zatim kompatibilan adapter rig-a; ograničeni oslonac stopala i hvat/gard već su obrađeni.
 2. Potpuna vožnja skejta, fizičko preuzimanje i bezbedan silazak.
 3. Vidljivi pešaci, prepreke i reakcija na zvuk/opasnost.
 4. Mini-mapa sa ispravnim smerom i svim aktivnim ciljevima.

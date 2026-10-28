@@ -41,3 +41,7 @@ Svaka celina: postojeći vlasnik i kriterijum → test koji reprodukuje nedostat
 Završen je prvi korak za ograničene statičke oslonce: [kontakt stopala](Foot-Contact-20261026.md), 245 uspešnih testova i dva Windows toka. To nije puna obrada svih stepenika, karlice ili proizvoljnog terena.
 
 Napravljen je [odvojen kandidat špice](Intro-Candidate-20261026.md): stvarna 30-sekundna remontaža postojećeg videa, sa novom tipografijom i ujednačenim zvukom. Novi AI kadrovi, realističan grad i nova lica nisu generisani. Sledeći kodni korak ostaje hvat šipke/gard, zatim povezana misija sa kontaktima i zvučnim odvlačenjem pažnje. Fizički mobilni testovi čekaju ponovno povezivanje uređaja.
+
+## Potvrđeno 28. oktobra 2026.
+
+Završen hvat šipke i boksački gard/prsti u postojećem rig-u. Novi Windows paket sadrži remontažu špice; prirodan završetak i preskakanje su provereni. [Evidencija](Verification-Hand-Contact-20261028.json) razlikuje testove, native tokove i neproverene granice. [Ažurirani plan](VKT-Stanje-I-Sledeci-Potezi-20261028.md) daje prednost stvarnom 3D kandidatu glave/tela, zatim povezanoj misiji i centralnom bloku.

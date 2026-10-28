@@ -1,5 +1,7 @@
 # VKT / Po-Blok: odvojeni kandidat špice
 
+> Ažuriranje 28. oktobra: kandidat je sada integrisan i proveren u novom Windows paketu. [Aktuelni status](Intro-Integration-20261028.md). Tekst ispod beleži stanje prethodne isporuke.
+
 Napravljen je stvarni MP4 od 30 sekundi: nova montaža postojećih scena, VKT / Velika Krađa Točkova / Požarevac / Po-Blok naslovi i ujednačena glasnoća. Format je 1280×720, 30 fps, H.264 video, AAC stereo 48 kHz. Završni audio izmeren je na -16,05 LUFS i -2,58 dBTP; to nije ljudska ocena zvuka.
 
 Kandidat: `C:\Users\jamal\Documents\VKT-Intro-20261023\VKT-PoBlok-Intro-Remontaza-v1.mp4`. U istom privatnom folderu su PREVIEW.html, storyboard, render skripta, pregled kadrova i verification.json. MP4 je potpuno dekodiran bez greške (exit 0); naslovi su vizuelno pregledani. Izvorni video je ostao byte-identičan.

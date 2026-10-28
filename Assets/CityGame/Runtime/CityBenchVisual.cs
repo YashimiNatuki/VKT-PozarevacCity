@@ -14,12 +14,16 @@ namespace Pozarevac.CityGame
         private readonly Quaternion[] soleRotations=new Quaternion[2];
         private readonly float[] soleHeights=new float[2];
         private CityCharacterPhysique physique;
+        private CityHandPose leftGrip, rightGrip;
         public void SetStrength(int value) { strength=value;if(look!=null)look.Apply(outfit,strength); }
         public void SetOutfit(CityOutfit value){outfit=value;if(look!=null)look.Apply(outfit,strength);}
         public void SetAppearance(CityOutfit value,int power){outfit=value;strength=power;if(look!=null)look.Apply(outfit,strength);}
         private float gripSide = -1, lowerHeight = .94f, upperHeight = 1.2f, barZ = -.35f;
         public bool RigReady { get; private set; }
         public float HandError { get; private set; }
+        public float HandOrientationError { get; private set; }
+        public float WristClearance { get; private set; }
+        public bool HandsReady => leftGrip != null && rightGrip != null && leftGrip.Ready && rightGrip.Ready;
         public float FootError { get; private set; }
         public float FootOrientationError { get; private set; }
         private int plantedFeet;
@@ -76,6 +80,7 @@ namespace Pozarevac.CityGame
             rightArm = root.Find(chest + "RightShoulder/RightArm"); rightElbow = rightArm != null ? rightArm.Find("RightForeArm") : null;
             rightHand = rightElbow != null ? rightElbow.Find("RightHand") : null;
             RigReady = leftHand != null && rightHand != null;
+            leftGrip = new CityHandPose(leftHand, true); rightGrip = new CityHandPose(rightHand, false);
             athlete.localPosition = new Vector3(0, .6f, .9f); athlete.localRotation = Quaternion.Euler(-90, 0, 0);
             ConfigureReach();
             athlete.gameObject.SetActive(false); Pose(false, 1);
@@ -89,8 +94,8 @@ namespace Pozarevac.CityGame
                 gripSide = Mathf.Sign(shoulder.x);
                 barZ = (shoulder.z + other.z) * .5f + .04f;
                 lowerHeight = Mathf.Max(shoulder.y, other.y) + .1f;
-                upperHeight = Mathf.Min(MaximumBarHeight(leftArm, leftElbow, leftHand, gripSide * .43f),
-                    MaximumBarHeight(rightArm, rightElbow, rightHand, -gripSide * .43f));
+                upperHeight = Mathf.Min(MaximumBarHeight(leftArm, leftElbow, leftHand, leftGrip, gripSide * .43f),
+                    MaximumBarHeight(rightArm, rightElbow, rightHand, rightGrip, -gripSide * .43f));
             }
             FootError=0;FootOrientationError=0;plantedFeet=0;
             PlantLeg(0,-.3f);PlantLeg(1,.3f);
@@ -115,6 +120,7 @@ namespace Pozarevac.CityGame
         }
         public void Pose(bool active, float extension)
         {
+            extension = float.IsFinite(extension) ? Mathf.Clamp01(extension) : 1;
             if(look!=null)look.Face.SetEffort(active?Mathf.Lerp(.9f,.4f,Mathf.Clamp01(extension)):0);
             if (bar == null) return;
             if (athlete != null) athlete.gameObject.SetActive(active);
@@ -123,16 +129,32 @@ namespace Pozarevac.CityGame
             ConfigureReach();
             bar.localPosition = new Vector3(0, Mathf.Lerp(lowerHeight, upperHeight, extension), barZ);
             Vector3 left = bar.TransformPoint(new Vector3(gripSide * .43f, 0, 0)), right = bar.TransformPoint(new Vector3(-gripSide * .43f, 0, 0));
-            Solve(leftArm, leftElbow, leftHand, left, transform.right * gripSide + transform.forward * .4f);
-            Solve(rightArm, rightElbow, rightHand, right, -transform.right * gripSide + transform.forward * .4f);
-            HandError = Mathf.Max(Vector3.Distance(leftHand.position, left), Vector3.Distance(rightHand.position, right));
+            HandError = HandOrientationError = 0; WristClearance = float.MaxValue;
+            PoseHand(leftArm, leftElbow, leftHand, leftGrip, left, gripSide);
+            PoseHand(rightArm, rightElbow, rightHand, rightGrip, right, -gripSide);
         }
-        private float MaximumBarHeight(Transform upper, Transform lower, Transform hand, float gripX)
+        private void PoseHand(Transform upper, Transform lower, Transform hand, CityHandPose grip, Vector3 contact, float side)
+        {
+            bool ready = grip != null && grip.Ready;
+            Quaternion rotation = ready ? grip.Orientation(transform.up, transform.forward) : hand.rotation;
+            Vector3 wrist = ready ? grip.WristTarget(contact, rotation) : contact;
+            Solve(upper, lower, hand, wrist, transform.right * side + transform.forward * .4f);
+            if (ready) grip.Close(rotation);
+            HandError = Mathf.Max(HandError, Vector3.Distance(ready ? grip.GripPoint : hand.position, contact));
+            if (ready) HandOrientationError = Mathf.Max(HandOrientationError,
+                Mathf.Max(Vector3.Angle(grip.LongAxis, transform.up), Vector3.Angle(grip.PalmNormal, transform.forward)));
+            Vector3 radial = Vector3.ProjectOnPlane(hand.position - contact, transform.right);
+            WristClearance = Mathf.Min(WristClearance, radial.magnitude - .016f);
+        }
+        private float MaximumBarHeight(Transform upper, Transform lower, Transform hand, CityHandPose grip, float gripX)
         {
             Vector3 shoulder = transform.InverseTransformPoint(upper.position);
+            Vector3 wrist = new Vector3(gripX, 0, barZ);
+            if (grip != null && grip.Ready) wrist = transform.InverseTransformPoint(grip.WristTarget(
+                transform.TransformPoint(wrist), grip.Orientation(transform.up, transform.forward)));
             float reach = (Vector3.Distance(upper.position, lower.position) + Vector3.Distance(lower.position, hand.position)) * .96f;
-            float horizontal = (gripX - shoulder.x) * (gripX - shoulder.x) + (barZ - shoulder.z) * (barZ - shoulder.z);
-            return shoulder.y + Mathf.Sqrt(Mathf.Max(.01f, reach * reach - horizontal));
+            float horizontal = (wrist.x - shoulder.x) * (wrist.x - shoulder.x) + (wrist.z - shoulder.z) * (wrist.z - shoulder.z);
+            return shoulder.y + Mathf.Sqrt(Mathf.Max(.01f, reach * reach - horizontal)) - wrist.y;
         }
         private static void Solve(Transform upper, Transform lower, Transform tip, Vector3 target, Vector3 hint)
         {

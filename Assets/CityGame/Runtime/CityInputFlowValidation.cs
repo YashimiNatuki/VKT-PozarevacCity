@@ -29,6 +29,10 @@ namespace Pozarevac.CityGame
             public bool benchContacts;
             public int benchContactFrames;
             public float benchMaxHandError,benchMaxFootError,benchMaxFootAngle;
+            public float benchMaxHandAngle,benchMinWristClearance=1;
+            public bool boxingStarted,boxingCompleted,boxingHands,boxingPause,boxingSinglePayout,boxingReturnsControl;
+            public int boxingPoseFrames;
+            public float boxingMaxWristAngle,boxingPauseHandDelta;
             public bool gaitContralateral,gaitPausePreservesPose,gaitTeleportReset,gaitStopSettles;
             public int gaitPairSamples,gaitBadPairs;
             public float gaitPauseLeftDelta,gaitPauseRightDelta;
@@ -47,6 +51,8 @@ namespace Pozarevac.CityGame
             report.benchMaxHandError=Mathf.Max(report.benchMaxHandError,observedBench.HandError);
             report.benchMaxFootError=Mathf.Max(report.benchMaxFootError,observedBench.FootError);
             report.benchMaxFootAngle=Mathf.Max(report.benchMaxFootAngle,observedBench.FootOrientationError);
+            report.benchMaxHandAngle=Mathf.Max(report.benchMaxHandAngle,observedBench.HandOrientationError);
+            report.benchMinWristClearance=Mathf.Min(report.benchMinWristClearance,observedBench.WristClearance);
         }
         private static bool keyboardLayoutRegistered;
         internal static Keyboard CreateValidationKeyboard()
@@ -235,9 +241,53 @@ namespace Pozarevac.CityGame
                 report.benchCompleted=life.Life.Workouts==before+1;
                 observedBench=null;
             }
+            yield return ValidateBoxing(game);
             yield return ValidateStreetSound(game);
             yield return ValidateGardenOrder(game);
             Finish("");
+        }
+        private IEnumerator ValidateBoxing(CityGameBootstrap game)
+        {
+            var life=game.GetComponent<CityLifestyleRuntime>();
+            // Isolated validation profile: advance only the shared rest before the second workout.
+            life.Life.Tick(91,false);
+            int before=life.Life.BoxingSessions,xp=life.Life.Experience;
+            yield return Press(Key.L);Submit("BOKS / reakcija i gard");yield return new WaitForSecondsRealtime(.2f);
+            report.boxingStarted=life.Life.IsBoxing;
+            if(!report.boxingStarted)yield break;
+            var motion=game.Player.GetComponentInChildren<CityActorMotion>();
+            Transform[] all=motion.GetComponentsInChildren<Transform>();
+            var hands=Array.FindAll(all,b=>b.name.Contains("Hand")&&!b.name.EndsWith("_end",StringComparison.Ordinal));
+            var rotations=new Quaternion[hands.Length];
+            // Compare displayed poses after legacy sampling and additive LateUpdate, as in the gait checks.
+            yield return new WaitForEndOfFrame();
+            for(int i=0;i<hands.Length;i++)rotations[i]=hands[i].localRotation;
+            double pausedTime=life.Boxing.RoundTime;
+            game.Director.SetPaused(true);yield return new WaitForSecondsRealtime(.3f);
+            yield return new WaitForEndOfFrame();
+            for(int i=0;i<hands.Length;i++)report.boxingPauseHandDelta=Mathf.Max(report.boxingPauseHandDelta,Quaternion.Angle(rotations[i],hands[i].localRotation));
+            report.boxingPause=hands.Length>=12&&Math.Abs(life.Boxing.RoundTime-pausedTime)<.001&&report.boxingPauseHandDelta<.1f;
+            game.Director.SetPaused(false);
+            float deadline=Time.realtimeSinceStartup+25;
+            bool captured=false;
+            while(life.Life.IsBoxing&&Time.realtimeSinceStartup<deadline)
+            {
+                if(motion.BoxingPoseActive&&motion.BoxingHandsReady)
+                {
+                    report.boxingPoseFrames++;
+                    report.boxingMaxWristAngle=Mathf.Max(report.boxingMaxWristAngle,motion.BoxingWristAngle);
+                }
+                if(life.Boxing.WindowOpen)yield return Press(life.Boxing.Expected==CityBoxingAction.Jab?Key.J:Key.K);
+                if(!captured&&life.Boxing.Punch>.7f){Capture(game,"boxing");captured=true;}
+                yield return null;
+            }
+            report.boxingCompleted=life.Life.BoxingSessions==before+1&&life.Boxing.Successes>=CityBoxingRun.RequiredSuccesses;
+            report.boxingHands=report.boxingPoseFrames>=20&&report.boxingMaxWristAngle<.1f;
+            report.boxingSinglePayout=life.Life.Experience==xp+30&&!life.Boxing.TryClaim(life.Life);
+            Vector3 start=game.Player.position;
+            InputSystem.QueueStateEvent(keyboard,new KeyboardState(Key.S));yield return new WaitForSecondsRealtime(.4f);
+            InputSystem.QueueStateEvent(keyboard,new KeyboardState());yield return null;
+            report.boxingReturnsControl=!life.Life.IsBoxing&&!motion.BoxingPoseActive&&Vector3.Distance(start,game.Player.position)>.2f;
         }
         private IEnumerator ValidateGardenOrder(CityGameBootstrap game)
         {
@@ -430,8 +480,9 @@ namespace Pozarevac.CityGame
             report.passed=report.passed&&report.mapPreservesAudio&&report.muteShortcutWorks;
             report.passed=report.passed&&report.gardenPacked&&report.gardenDelivery&&report.gardenPause&&report.gardenDiskCargo&&report.gardenDiskReceipt&&report.gardenSinglePayout&&report.gardenTrainingGate&&report.gardenPhoneCancellation;
             report.passed=report.passed&&report.statsWalking&&report.statsSprinting&&report.statsTeleportExcluded&&report.statsPause&&report.statsDisk&&report.statsPage;
-            report.benchContacts=report.benchContactFrames>=20&&report.benchMaxHandError<.03f&&report.benchMaxFootError<.03f&&report.benchMaxFootAngle<.1f;
+            report.benchContacts=report.benchContactFrames>=20&&report.benchMaxHandError<.005f&&report.benchMaxFootError<.03f&&report.benchMaxFootAngle<.1f&&report.benchMaxHandAngle<.1f&&report.benchMinWristClearance>.02f;
             report.passed=report.passed&&report.benchContacts;
+            report.passed=report.passed&&report.boxingStarted&&report.boxingCompleted&&report.boxingHands&&report.boxingPause&&report.boxingSinglePayout&&report.boxingReturnsControl;
             report.passed=report.passed&&report.gaitContralateral&&report.gaitPausePreservesPose&&report.gaitTeleportReset&&report.gaitStopSettles;
             report.passed=report.passed&&report.groundSlopeContacts&&report.groundPauseFeet&&report.groundAirborneRelease;
             string path=Arg("-vktFlowReport",Path.Combine(Path.GetTempPath(),"vkt-input-flow.json"));
