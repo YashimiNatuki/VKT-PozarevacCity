@@ -50,3 +50,11 @@ The body remains the reviewed CC0 Kenney Retro skin/atlas. First-party bind-spac
 ## Atmosphere and intro - 2026-10-17
 
 The wristwatch, room furniture/fan, rounded pots and synthetic mono ambience/footstep/landing waveforms are first-party procedural work. The existing reviewed Kenney skin and animation assets are reused. No new third-party audio pack or Steam Audio native plugin is imported. The exact original user-supplied project intro movie is restored to release binaries as a separate media input; it remains outside the MIT source export. Runtime captures document actual Windows rendering rather than generated concept art. See Atmosphere-Intro-20261017.md and the release verification receipt.
+
+## RodjaHuman wardrobe candidate — 2026-10-29
+
+Human base, game-engine rig, skin, casual clothing, shoes, low-poly eyes, eyebrows, short hair and teeth derive from MakeHuman/MPFB core assets and the official CC0 system asset pack. These assets carry CC0 1.0 Universal dedication. Original notices identify the MakeHuman team, Data Collection AB, Joel Palmius and Jonas Hauquier. The generic fictional adult is not a scan or likeness of the user.
+
+Source: https://github.com/makehumancommunity/mpfb2/tree/v2.0.18 and https://files2.makehumancommunity.org/asset_packs/makehuman_system_assets/makehuman_system_assets_cc0.zip . Local generation used Blender 4.5.9 and MPFB 2.0.18. The GPL MPFB program itself is not linked or redistributed as game code. See Docs/RodjaHuman-Provenance-20261029.json and Docs/RodjaHuman-CC0-LICENSE.md (the release package includes the license at its root).
+
+This is an opt-in static art preview. It does not replace the playable character or supply facial animation. Clothing masks, body shape and export were prepared locally; no private portrait, commercial music or paid generation output was added.

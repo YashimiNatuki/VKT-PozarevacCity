@@ -8,13 +8,16 @@ namespace Pozarevac.CityGame
     {
         private CityGameBootstrap game;
         private CityLifestyleRuntime lifestyle;
-        private GameObject canvas,stage,panel;
+        private GameObject canvas,stage,panel,originalPreview,candidatePreview,candidateLights;
         private Transform pivot;
         private Camera preview;
         private RenderTexture image;
         private CityCharacterLook look;
         private CityCharacterPhysique physique;
-        private Text title, expressionLabel;
+        private Text title, expressionLabel,info,candidateLabel;
+        private Button expressionButton;
+        private readonly Button[] outfitButtons=new Button[3];
+        public bool CandidatePreview { get; private set; }
         public CityFaceMood PreviewMood=>look!=null?look.Face.PreviewMood:CityFaceMood.Calm;
         private bool ownsPause;
         public bool Portrait { get; private set; }
@@ -26,6 +29,7 @@ namespace Pozarevac.CityGame
             stage=new GameObject("VKT_WardrobeStage");stage.transform.position=new Vector3(10000,-1000,10000);
             pivot=new GameObject("PreviewTurntable").transform;pivot.SetParent(stage.transform,false);
             Transform wrapper=new GameObject("NormalizedCharacter").transform;wrapper.SetParent(pivot,false);
+            originalPreview=wrapper.gameObject;
             GameObject model=Instantiate(CityCharacterModel.LoadSource(),wrapper);
             physique=new CityCharacterPhysique(model);AnimationClip pose=null;
             foreach(AnimationClip clip in Resources.LoadAll<AnimationClip>("Models/KenneyRetro/idle"))
@@ -60,14 +64,16 @@ namespace Pozarevac.CityGame
             RectTransform photo=Rect("Preview",panel.transform,new Vector2(330,440),new Vector2(-260,5));
             photo.gameObject.AddComponent<RawImage>().texture=image;
             title=Label(Rect("Title",panel.transform,new Vector2(520,100),new Vector2(200,215)),"",25);
-            Label(Rect("Info",panel.transform,new Vector2(500,130),new Vector2(220,100)),"GARDEROBER / ORIGINAL VKT\nMajica • pantalone • patike • kačket\nKozmetika je besplatna. Snaga menja građu.\nIzgled se čuva sa likom.",20);
-            for(int i=0;i<3;i++){int choice=i;Button(CityAppearance.Name((CityOutfit)i),new Vector2(210,10-i*65),()=>Select((CityOutfit)choice));}
+            info=Label(Rect("Info",panel.transform,new Vector2(500,130),new Vector2(220,100)),"",20);
+            for(int i=0;i<3;i++){int choice=i;outfitButtons[i]=Button(CityAppearance.Name((CityOutfit)i),new Vector2(210,10-i*65),()=>Select((CityOutfit)choice));}
             Button("← OKRENI",new Vector2(-355,-250),()=>Rotate(-45));
             Button("OKRENI →",new Vector2(-165,-250),()=>Rotate(45));
             Button("LICE / CEO LIK",new Vector2(-260,280),TogglePortrait);
-            expressionLabel=Button("IZRAZ LICA",new Vector2(-60,280),CycleExpression).GetComponentInChildren<Text>();
+            expressionButton=Button("IZRAZ LICA",new Vector2(-60,280),CycleExpression);
+            expressionLabel=expressionButton.GetComponentInChildren<Text>();
             expressionLabel.text="IZRAZ / MIRAN";
-            Button("NAZAD U GRAD / ESC",new Vector2(210,-225),Close);
+            candidateLabel=Button("NOVI 3D LIK / PREGLED",new Vector2(210,-175),()=>ToggleCandidate()).GetComponentInChildren<Text>();
+            Button("NAZAD U GRAD / ESC",new Vector2(210,-245),Close);
             canvas.AddComponent<CityUiSkin>().ApplyTree();
         }
         private static RectTransform Rect(string name,Transform parent,Vector2 size,Vector2 at)
@@ -94,7 +100,7 @@ namespace Pozarevac.CityGame
         }
         public void CycleExpression()
         {
-            if(!IsOpen)return;
+            if(!IsOpen||CandidatePreview)return;
             look.Face.PreviewMood=(CityFaceMood)(((int)look.Face.PreviewMood+1)%5);
             expressionLabel.text="IZRAZ / "+CityFaceState.Name(look.Face.PreviewMood);
         }
@@ -102,19 +108,79 @@ namespace Pozarevac.CityGame
         {
             if(!IsOpen)return;
             Portrait=!Portrait;
-            preview.transform.localPosition=Portrait?new Vector3(0,1.59f,1.25f):new Vector3(0,1.05f,3.25f);
-            preview.transform.LookAt(stage.transform.position+Vector3.up*(Portrait?1.57f:.96f));
+            FramePreview();
+        }
+        private void FramePreview()
+        {
+            if(preview==null)return;
+            float faceHeight=CandidatePreview?1.66f:1.57f;
+            preview.transform.localPosition=Portrait?new Vector3(0,faceHeight+.02f,1.25f):new Vector3(0,1.05f,3.25f);
+            preview.transform.LookAt(stage.transform.position+Vector3.up*(Portrait?faceHeight:.96f));
+        }
+        public bool ToggleCandidate()
+        {
+            if(!IsOpen)return false;
+            if(!CandidatePreview&&candidatePreview==null)
+            {
+                GameObject source=Resources.Load<GameObject>("Models/RodjaHuman/RodjaHuman");
+                if(!TryPrepareCandidate(source,pivot,out candidatePreview))
+                {info.text="Novi 3D pregled nije dostupan u ovom paketu.\nTvoj postojeći lik ostaje aktivan.";return false;}
+                candidateLights=new GameObject("CandidateStudioLights");candidateLights.transform.SetParent(stage.transform,false);
+                StudioLight(new Vector3(1.4f,2.3f,2.1f),new Color(1,.91f,.82f),4);
+                StudioLight(new Vector3(-1.5f,1.6f,1.3f),new Color(.72f,.84f,1),2.2f);
+            }
+            CandidatePreview=!CandidatePreview;
+            originalPreview.SetActive(!CandidatePreview);candidatePreview.SetActive(CandidatePreview);
+            candidateLights.SetActive(CandidatePreview);FramePreview();Refresh();return true;
+        }
+        private void StudioLight(Vector3 position,Color color,float intensity)
+        {
+            Light light=new GameObject("CandidateFill",typeof(Light)).GetComponent<Light>();
+            light.transform.SetParent(candidateLights.transform,false);light.transform.localPosition=position;
+            light.type=LightType.Point;light.range=6;light.intensity=intensity;light.color=color;
+            light.shadows=LightShadows.None;light.cullingMask=1<<30;
+        }
+        internal static bool TryPrepareCandidate(GameObject source,Transform parent,out GameObject prepared)
+        {
+            prepared=null;if(source==null||parent==null)return false;
+            // Validate the asset before Instantiate can run any imported behaviour callbacks.
+            if(!parent.gameObject.activeInHierarchy||source.GetComponentsInChildren<MonoBehaviour>(true).Length>0||
+               source.GetComponentsInChildren<Collider>(true).Length>0||source.GetComponentsInChildren<Rigidbody>(true).Length>0||
+               source.GetComponentsInChildren<Camera>(true).Length>0||source.GetComponentsInChildren<AudioSource>(true).Length>0||
+               source.GetComponentsInChildren<AudioListener>(true).Length>0)return false;
+            GameObject wrapper=new GameObject("ReviewedHumanPreview");wrapper.transform.SetParent(parent,false);
+            bool ready=false;
+            try
+            {
+                GameObject model=Object.Instantiate(source,wrapper.transform);
+                foreach(Animator animator in model.GetComponentsInChildren<Animator>(true))animator.enabled=false;
+                if(!CityCharacterModel.Normalize(wrapper.transform,model,null))return false;
+                foreach(Transform item in wrapper.GetComponentsInChildren<Transform>(true))item.gameObject.layer=30;
+                wrapper.SetActive(false);prepared=wrapper;ready=true;return true;
+            }
+            finally{if(!ready){if(Application.isPlaying)Object.Destroy(wrapper);else Object.DestroyImmediate(wrapper);}}
         }
         public bool Select(CityOutfit outfit)
         {
-            if(!IsOpen)return false;
+            if(!IsOpen||CandidatePreview)return false;
             bool changed=game.Progression.Appearance.Select(outfit);
             Refresh();game.GetComponent<CityProgressionController>().SaveNow();return changed;
         }
         public void Rotate(float degrees){if(IsOpen)pivot.Rotate(Vector3.up,degrees,Space.Self);}
-        private void Refresh(){look.Apply(game.Progression.Appearance.Outfit,game.Progression.Lifestyle.Strength);title.text="TVOJ LIK / "+CityAppearance.Name(game.Progression.Appearance.Outfit)+"\nSNAGA "+game.Progression.Lifestyle.Strength+"/5";}
+        private void Refresh()
+        {
+            look.Apply(game.Progression.Appearance.Outfit,game.Progression.Lifestyle.Strength);
+            title.text=CandidatePreview?"NOVI 3D LIK\nSAMO PREGLED":"TVOJ LIK / "+CityAppearance.Name(game.Progression.Appearance.Outfit)+"\nSNAGA "+game.Progression.Lifestyle.Strength+"/5";
+            info.text=CandidatePreview?"Probni model • materijali • proporcije\nOkreni model i pogledaj lice.\nPrikaz ne menja tvog igrača.\nAnimacije i mimika još nisu povezane.":"GARDEROBER / ORIGINAL VKT\nMajica • pantalone • patike • kačket\nKozmetika je besplatna. Snaga menja građu.\nIzgled se čuva sa likom.";
+            candidateLabel.text=CandidatePreview?"NAZAD NA TVOG LIKA":"NOVI 3D LIK / PREGLED";
+            foreach(Button button in outfitButtons)button.interactable=!CandidatePreview;
+            expressionButton.gameObject.SetActive(!CandidatePreview);
+        }
         public void Close()
         {
+            CandidatePreview=false;Portrait=false;
+            if(candidatePreview!=null)candidatePreview.SetActive(false);if(candidateLights!=null)candidateLights.SetActive(false);
+            if(originalPreview!=null)originalPreview.SetActive(true);FramePreview();
             if(panel!=null)panel.SetActive(false);if(stage!=null)stage.SetActive(false);
             if(ownsPause){ownsPause=false;game.Director.SetOverlayOpen(false);}
         }

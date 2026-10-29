@@ -1,0 +1,131 @@
+{
+  "generator": "MPFB 2.0.18 / Blender 4.5.9",
+  "rig": "game_engine",
+  "license": "CC0-1.0",
+  "materials": [
+    {
+      "name": "Material",
+      "diffuse": null,
+      "normal": null,
+      "alphaClip": false
+    },
+    {
+      "name": "RodjaBody.body",
+      "diffuse": "young_lightskinned_male_diffuse.png",
+      "normal": null,
+      "alphaClip": false
+    },
+    {
+      "name": "RodjaBody.ears",
+      "diffuse": "young_lightskinned_male_diffuse.png",
+      "normal": null,
+      "alphaClip": false
+    },
+    {
+      "name": "RodjaBody.eyebrow001",
+      "diffuse": "eyebrow001.png",
+      "normal": null,
+      "alphaClip": true
+    },
+    {
+      "name": "RodjaBody.fingernails",
+      "diffuse": "young_lightskinned_male_diffuse.png",
+      "normal": null,
+      "alphaClip": false
+    },
+    {
+      "name": "RodjaBody.genitals",
+      "diffuse": "young_lightskinned_male_diffuse.png",
+      "normal": null,
+      "alphaClip": false
+    },
+    {
+      "name": "RodjaBody.lips",
+      "diffuse": "young_lightskinned_male_diffuse.png",
+      "normal": null,
+      "alphaClip": false
+    },
+    {
+      "name": "RodjaBody.low-poly",
+      "diffuse": "brown_eye.png",
+      "normal": null,
+      "alphaClip": false
+    },
+    {
+      "name": "RodjaBody.male_casualsuit01",
+      "diffuse": "male_casualsuit01_diffuse.png",
+      "normal": "male_casualsuit01_normal.png",
+      "alphaClip": false
+    },
+    {
+      "name": "RodjaBody.nipple",
+      "diffuse": "young_lightskinned_male_diffuse.png",
+      "normal": null,
+      "alphaClip": false
+    },
+    {
+      "name": "RodjaBody.shoes02",
+      "diffuse": "shoes02_diffuse.png",
+      "normal": null,
+      "alphaClip": false
+    },
+    {
+      "name": "RodjaBody.short02",
+      "diffuse": "short02_diffuse.png",
+      "normal": null,
+      "alphaClip": true
+    },
+    {
+      "name": "RodjaBody.teeth_base",
+      "diffuse": "teeth.png",
+      "normal": null,
+      "alphaClip": false
+    },
+    {
+      "name": "RodjaBody.toenails",
+      "diffuse": "young_lightskinned_male_diffuse.png",
+      "normal": null,
+      "alphaClip": false
+    }
+  ],
+  "meshes": [
+    {
+      "name": "RodjaBody",
+      "vertices": 7840,
+      "triangles": 15500
+    },
+    {
+      "name": "RodjaBody.male_casualsuit01",
+      "vertices": 8426,
+      "triangles": 16672
+    },
+    {
+      "name": "RodjaBody.shoes02",
+      "vertices": 1594,
+      "triangles": 3064
+    },
+    {
+      "name": "RodjaBody.low-poly",
+      "vertices": 96,
+      "triangles": 172
+    },
+    {
+      "name": "RodjaBody.eyebrow001",
+      "vertices": 124,
+      "triangles": 192
+    },
+    {
+      "name": "RodjaBody.short02",
+      "vertices": 1755,
+      "triangles": 3344
+    },
+    {
+      "name": "RodjaBody.teeth_base",
+      "vertices": 3868,
+      "triangles": 7120
+    }
+  ],
+  "triangles": 46064,
+  "bones": 53,
+  "fbx_sha256": "a78473ae8aa4f7771764dc3346dc1b2fd1c92dd3606b8f7a43dc4421ea0d3918"
+}

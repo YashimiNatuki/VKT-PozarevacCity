@@ -1,0 +1,501 @@
+{
+  "source": "https://files2.makehumancommunity.org/asset_packs/makehuman_system_assets/makehuman_system_assets_cc0.zip",
+  "license": "CC0-1.0",
+  "files": [
+    {
+      "path": "skins/young_caucasian_male/young_lightskinned_male_diffuse.png",
+      "bytes": 3693828,
+      "sha256": "862a26e335e958b70534cb5f0d7c47ef30ab148a56c42b3e9da969cf76f12963"
+    },
+    {
+      "path": "skins/young_caucasian_male/young_caucasian_male.thumb",
+      "bytes": 79031,
+      "sha256": "9ea46d1b5c4230bcff248b1262eaf4f5b4b14bbffd8fc09d2c20c6058f02e12d"
+    },
+    {
+      "path": "skins/young_caucasian_male/young_caucasian_male.mhmat",
+      "bytes": 1462,
+      "sha256": "6eda60b07ff2afbde078a2535ef3913593d84e9de92b2eb76c30f396a181fe2e"
+    },
+    {
+      "path": "clothes/shoes02/shoes02.mhw",
+      "bytes": 309023,
+      "sha256": "dba34894b93f102ea64d7ad21968894a9788c7a0770c066584a66a536a3e92b6"
+    },
+    {
+      "path": "clothes/shoes02/shoes02.mhclo",
+      "bytes": 110217,
+      "sha256": "0d447fd6b7415d6b2603e91697336ee51ac2f00ef85878d6667e9acfb45a20fe"
+    },
+    {
+      "path": "clothes/shoes02/shoes02.mhmat",
+      "bytes": 1184,
+      "sha256": "7f2cb19506784fbe22ba3f766f94bb13d1eee1712dd29ed10b926c5905bab924"
+    },
+    {
+      "path": "clothes/shoes02/shoes02_diffuse.png",
+      "bytes": 1282057,
+      "sha256": "efef94ea34b0e0c2283095cb47a9e0389b55449c61a4f4972d0ad4d2bf06b4f0"
+    },
+    {
+      "path": "clothes/shoes02/shoes02.obj",
+      "bytes": 125457,
+      "sha256": "5726aabac42ff489998d0a769545dea013961bbb71b9c6024d75170181a98818"
+    },
+    {
+      "path": "clothes/shoes02/shoes02.thumb",
+      "bytes": 43978,
+      "sha256": "0e41c095f5ff5a13c0d2b12a6c96d65d907137e1ae3fb120ff14300fc818015d"
+    },
+    {
+      "path": "clothes/male_casualsuit01/male_casualsuit01_diffuse.png",
+      "bytes": 5531728,
+      "sha256": "3fd0bba5dcbdea0ac427f644a6c7c298938f7369b8f96626621ce1e88989394e"
+    },
+    {
+      "path": "clothes/male_casualsuit01/male_casualsuit01_normal.png",
+      "bytes": 1738660,
+      "sha256": "ff029fc5a3350ebc72813cdf050afcffd23064c7701d99e664572713cfa98a5f"
+    },
+    {
+      "path": "clothes/male_casualsuit01/male_casualsuit01.thumb",
+      "bytes": 39401,
+      "sha256": "cd8a8c9461b164542d8660b9beaae17636040c9199020b65755a03559809cfc1"
+    },
+    {
+      "path": "clothes/male_casualsuit01/male_casualsuit01.mhmat",
+      "bytes": 1345,
+      "sha256": "043b25cefd398261b893d3dae58c81fc3e9633a25a01eafe66963591f5ad6eb6"
+    },
+    {
+      "path": "clothes/male_casualsuit01/male_casualsuit01.mhclo",
+      "bytes": 570419,
+      "sha256": "78503ed7f56c149843d85e06e1164bc6871ce7319b2ef689237046352cc90de4"
+    },
+    {
+      "path": "clothes/male_casualsuit01/male_casualsuit01_ao.png",
+      "bytes": 785596,
+      "sha256": "9402d75d71318ef3ad90ee59f8b8688effefd13b3ec56423330e005bed5cd6c0"
+    },
+    {
+      "path": "clothes/male_casualsuit01/male_casualsuit01.obj",
+      "bytes": 699545,
+      "sha256": "001921d237e408c35103720d046aa37f9c5512db1a179a5ede6a065cd504ba89"
+    },
+    {
+      "path": "teeth/teeth_base/teeth_base.obj",
+      "bytes": 313110,
+      "sha256": "f55198069e55d360c4b4cc7ecb1cc292b2c7665753ab8b65eabf46a8783f2875"
+    },
+    {
+      "path": "teeth/teeth_base/teeth_base.mhclo",
+      "bytes": 263220,
+      "sha256": "9edc3deff3bb97a95c791878064dd069a74a38f95ea6d9707a9ba68d888b3b5c"
+    },
+    {
+      "path": "teeth/teeth_base/teeth.mhmat",
+      "bytes": 1086,
+      "sha256": "3baeff72d9eb06ca16c3cff7ca2ab304216717dee247e0d88f1dc33037c8320e"
+    },
+    {
+      "path": "teeth/teeth_base/teeth.png",
+      "bytes": 1799930,
+      "sha256": "d0afb57869c6fbb56b98f5efc4aec629ee7593e70d8dd2bfb9de923acfb65f43"
+    },
+    {
+      "path": "teeth/teeth_base/teeth_base.thumb",
+      "bytes": 50147,
+      "sha256": "04b97c4fa15c3ba0786e552a4bf5474d47efc1162d9f7f4dbdc2f06d1ae43004"
+    },
+    {
+      "path": "hair/short02/short02.thumb",
+      "bytes": 41127,
+      "sha256": "af21a0e84bfcc294b9840d90a04f1b6655ad909bc09328251886adffbc0727e8"
+    },
+    {
+      "path": "hair/short02/short02.obj",
+      "bytes": 139742,
+      "sha256": "48f979114adfa712165a69cc55c45a70831af1fb3cba8e2a89120f0c87407b64"
+    },
+    {
+      "path": "hair/short02/short02.mhclo",
+      "bytes": 119240,
+      "sha256": "625736cdb73e6d094df6e5a2df18f371781f1d2cd37b0ae15795c5d7051c3ec2"
+    },
+    {
+      "path": "hair/short02/short02.mhmat",
+      "bytes": 1323,
+      "sha256": "2ed04c8aad9c1a35d858ca72091525d32b1da3b61b5a031634dd528fd8530f6d"
+    },
+    {
+      "path": "hair/short02/short02_diffuse.png",
+      "bytes": 3553543,
+      "sha256": "47fe33831a3929567c733356dd66243116e05df2ace1f884ddca0080b728229f"
+    },
+    {
+      "path": "hair/short02/short02_normal.png",
+      "bytes": 1626745,
+      "sha256": "2cfac7619f8eec77dd90df979d912415058f4f0fc16940cba40a8eb1ae6d74b5"
+    },
+    {
+      "path": "eyebrows/eyebrow001/eyebrow001.obj",
+      "bytes": 8227,
+      "sha256": "88b13146395133f3901715e11706cdfd293e5d6087ad7c5e01efe1485a26b513"
+    },
+    {
+      "path": "eyebrows/eyebrow001/eyebrow001.png",
+      "bytes": 89619,
+      "sha256": "9940f7d0b1b223709a19b05156ba6f6e9e4dbdbced02d7574f4d51d72c58967b"
+    },
+    {
+      "path": "eyebrows/eyebrow001/eyebrow001.mhclo",
+      "bytes": 9141,
+      "sha256": "54c8892c2ba577f4152d779ce1f20f7cd323beb8cbd9cb701796165c221b4f5b"
+    },
+    {
+      "path": "eyebrows/eyebrow001/eyebrow001.thumb",
+      "bytes": 137534,
+      "sha256": "98b68eccf50977ff00242a33eb1dc6e3eaf4cc262e1f6c4ceca5c1c564f6c745"
+    },
+    {
+      "path": "eyebrows/eyebrow001/eyebrow001.mhmat",
+      "bytes": 1098,
+      "sha256": "976e5f4f1d3922d7a11c6e2db233f8b4584b068d00619d5749687e81c92d61fc"
+    },
+    {
+      "path": "eyes/materials/brown.thumb",
+      "bytes": 29627,
+      "sha256": "5bd2de12f0c04d423ab00fa13f691a1879b944e63947e228117ddcce31f9cff9"
+    },
+    {
+      "path": "eyes/materials/brownlight.thumb",
+      "bytes": 34947,
+      "sha256": "32722c2f00ea29b7cee7bc2b140db165ec724cd20d10d073e906b21b278bde26"
+    },
+    {
+      "path": "eyes/materials/brownlight.mhmat",
+      "bytes": 1256,
+      "sha256": "75ae6903fe51134ee6f10147dadad3cb1b355aecf8218213431fb6ddbb3ba71d"
+    },
+    {
+      "path": "eyes/materials/bluegreen_eye.png",
+      "bytes": 697879,
+      "sha256": "653b3154e67f67e118c22acd19c472aa7543e0c229209f687c3f7f669f191fd9"
+    },
+    {
+      "path": "eyes/materials/ice.mhmat",
+      "bytes": 1242,
+      "sha256": "4b2d2d10d9d887dc6f4dd2f66ff252a85b60ca2a30bc2b57672f83b758db776b"
+    },
+    {
+      "path": "eyes/materials/brown.mhmat",
+      "bytes": 1247,
+      "sha256": "4abad93ce50541c08127721e77bce035640c9f16bed16cd0f5524b1cd5908465"
+    },
+    {
+      "path": "eyes/materials/deepblue_eye.png",
+      "bytes": 658984,
+      "sha256": "55ec9e3d06c8193e74fbbcea32ea474c100feaccef96556d9181e796fe2a7ea6"
+    },
+    {
+      "path": "eyes/materials/grey_eye.png",
+      "bytes": 669883,
+      "sha256": "ecb05613126036a3d017880fabbd570501c5f14032c186462d8f6e2d719f6c4f"
+    },
+    {
+      "path": "eyes/materials/grey.thumb",
+      "bytes": 32862,
+      "sha256": "add8c7bd15edeccaa7612cb33d8311ae849d884b6ea062e18fa78de54128805d"
+    },
+    {
+      "path": "eyes/materials/bluegreen.thumb",
+      "bytes": 36549,
+      "sha256": "d6fcfe5b57d7b05f2f9453e11cefb7cb68352746a36613b030e069442e2eadcc"
+    },
+    {
+      "path": "eyes/materials/green.thumb",
+      "bytes": 32775,
+      "sha256": "525ffdef4adb5a82ffe07814b1a46d017014fad571ae206bfeda970531560c10"
+    },
+    {
+      "path": "eyes/materials/green_eye.png",
+      "bytes": 662241,
+      "sha256": "b9864ac4f4fa484b24e18f6aba030d70dbc8820cbbacfbe63a974c76772c2009"
+    },
+    {
+      "path": "eyes/materials/bluegreen.mhmat",
+      "bytes": 1250,
+      "sha256": "2dfb910b48da0e0739b44a8fa4728b3b351bf9b408034c6402a1b9c07915b884"
+    },
+    {
+      "path": "eyes/materials/brown_eye.png",
+      "bytes": 610817,
+      "sha256": "4659691c7295ad6206c78b003e5fd0e5f91dcd53032fa914a229bb48cabe424b"
+    },
+    {
+      "path": "eyes/materials/deepblue.thumb",
+      "bytes": 32356,
+      "sha256": "10b1fa542476d35dee4ac92b6f1a654ecf391d849231727a591820b895d8d815"
+    },
+    {
+      "path": "eyes/materials/green.mhmat",
+      "bytes": 1246,
+      "sha256": "b3b512120d9f87f91cd34879ac17ad9f26eb6a250d92be52df8b19df5cc90113"
+    },
+    {
+      "path": "eyes/materials/lightblue.thumb",
+      "bytes": 36919,
+      "sha256": "4e70a6c6530469ead049980969944cf1c2860700907c9dfee0fbc87af7965c68"
+    },
+    {
+      "path": "eyes/materials/lightblue_eye.png",
+      "bytes": 701486,
+      "sha256": "687c8f6d95a8550bcd4a34158f415d6bb376c0bb32e67d127bbb51e5fa469eef"
+    },
+    {
+      "path": "eyes/materials/lightblue.mhmat",
+      "bytes": 1254,
+      "sha256": "3bb470d56dfdf40b16e499578bf6ea2c4e0e7e27db4c5bd2adb47f760f5c5f34"
+    },
+    {
+      "path": "eyes/materials/ice.thumb",
+      "bytes": 34110,
+      "sha256": "a8e150fb9fb901051a0dd6e753ec68d501ad5dc20e01adcdf6ac1f81657c5df9"
+    },
+    {
+      "path": "eyes/materials/blue.thumb",
+      "bytes": 33300,
+      "sha256": "5d7474af291a83b4b122ccd276b5ad10f9a4554efa940aad1d515363e22d7b6b"
+    },
+    {
+      "path": "eyes/materials/blue.mhmat",
+      "bytes": 1243,
+      "sha256": "bd9cab4d2f6ca54df6253c1adfbb1c82e0ee61057361d95449ade06a1b5669c4"
+    },
+    {
+      "path": "eyes/materials/deepblue.mhmat",
+      "bytes": 1252,
+      "sha256": "08f7a30d8cd8d264d21d755afcfdca3d28386e780b9e9fea11a662337e99d3a3"
+    },
+    {
+      "path": "eyes/materials/brownlight_eye.png",
+      "bytes": 680577,
+      "sha256": "3f43a4de70e446186dac1760cfa01dfe36d530ed7564208455395b0ebcdf788a"
+    },
+    {
+      "path": "eyes/materials/blue_eye.png",
+      "bytes": 666029,
+      "sha256": "572ddc93ab3e177100619ec7c00b2574540cfb382805afc2e450788117f6140c"
+    },
+    {
+      "path": "eyes/materials/ice_eye.png",
+      "bytes": 676501,
+      "sha256": "a5903596fe033371ba7130b5c8b2c09ce2f5d282d77557c21060ab8a778bf03d"
+    },
+    {
+      "path": "eyes/materials/grey.mhmat",
+      "bytes": 1244,
+      "sha256": "65c536157ef0550b2f8461a9526c726707533dc7cfe8a65abb9b9db0b4e6b25e"
+    },
+    {
+      "path": "eyes/low-poly/low-poly.thumb",
+      "bytes": 15938,
+      "sha256": "27b09c5a2bd792671c99a00016ec836855278f199bc4753c3018f1ac73068c72"
+    },
+    {
+      "path": "eyes/low-poly/low-poly.mhclo",
+      "bytes": 1344,
+      "sha256": "68582e28e9176cba7cfcf35208f671b6201b8d1bc95c32decff61a3160ec34d8"
+    },
+    {
+      "path": "eyes/low-poly/low-poly.obj",
+      "bytes": 6604,
+      "sha256": "783fe1e6331162c876520b4c2bed7a8ca06354ca15497e8ebd68bb1b59f4d3de"
+    }
+  ],
+  "generatorSource": "https://github.com/makehumancommunity/mpfb2/tree/v2.0.18",
+  "export": {
+    "generator": "MPFB 2.0.18 / Blender 4.5.9",
+    "rig": "game_engine",
+    "license": "CC0-1.0",
+    "materials": [
+      {
+        "name": "Material",
+        "diffuse": null,
+        "normal": null,
+        "alphaClip": false
+      },
+      {
+        "name": "RodjaBody.body",
+        "diffuse": "young_lightskinned_male_diffuse.png",
+        "normal": null,
+        "alphaClip": false
+      },
+      {
+        "name": "RodjaBody.ears",
+        "diffuse": "young_lightskinned_male_diffuse.png",
+        "normal": null,
+        "alphaClip": false
+      },
+      {
+        "name": "RodjaBody.eyebrow001",
+        "diffuse": "eyebrow001.png",
+        "normal": null,
+        "alphaClip": true
+      },
+      {
+        "name": "RodjaBody.fingernails",
+        "diffuse": "young_lightskinned_male_diffuse.png",
+        "normal": null,
+        "alphaClip": false
+      },
+      {
+        "name": "RodjaBody.genitals",
+        "diffuse": "young_lightskinned_male_diffuse.png",
+        "normal": null,
+        "alphaClip": false
+      },
+      {
+        "name": "RodjaBody.lips",
+        "diffuse": "young_lightskinned_male_diffuse.png",
+        "normal": null,
+        "alphaClip": false
+      },
+      {
+        "name": "RodjaBody.low-poly",
+        "diffuse": "brown_eye.png",
+        "normal": null,
+        "alphaClip": false
+      },
+      {
+        "name": "RodjaBody.male_casualsuit01",
+        "diffuse": "male_casualsuit01_diffuse.png",
+        "normal": "male_casualsuit01_normal.png",
+        "alphaClip": false
+      },
+      {
+        "name": "RodjaBody.nipple",
+        "diffuse": "young_lightskinned_male_diffuse.png",
+        "normal": null,
+        "alphaClip": false
+      },
+      {
+        "name": "RodjaBody.shoes02",
+        "diffuse": "shoes02_diffuse.png",
+        "normal": null,
+        "alphaClip": false
+      },
+      {
+        "name": "RodjaBody.short02",
+        "diffuse": "short02_diffuse.png",
+        "normal": null,
+        "alphaClip": true
+      },
+      {
+        "name": "RodjaBody.teeth_base",
+        "diffuse": "teeth.png",
+        "normal": null,
+        "alphaClip": false
+      },
+      {
+        "name": "RodjaBody.toenails",
+        "diffuse": "young_lightskinned_male_diffuse.png",
+        "normal": null,
+        "alphaClip": false
+      }
+    ],
+    "meshes": [
+      {
+        "name": "RodjaBody",
+        "vertices": 7840,
+        "triangles": 15500
+      },
+      {
+        "name": "RodjaBody.male_casualsuit01",
+        "vertices": 8426,
+        "triangles": 16672
+      },
+      {
+        "name": "RodjaBody.shoes02",
+        "vertices": 1594,
+        "triangles": 3064
+      },
+      {
+        "name": "RodjaBody.low-poly",
+        "vertices": 96,
+        "triangles": 172
+      },
+      {
+        "name": "RodjaBody.eyebrow001",
+        "vertices": 124,
+        "triangles": 192
+      },
+      {
+        "name": "RodjaBody.short02",
+        "vertices": 1755,
+        "triangles": 3344
+      },
+      {
+        "name": "RodjaBody.teeth_base",
+        "vertices": 3868,
+        "triangles": 7120
+      }
+    ],
+    "triangles": 46064,
+    "bones": 53,
+    "fbx_sha256": "a78473ae8aa4f7771764dc3346dc1b2fd1c92dd3606b8f7a43dc4421ea0d3918",
+    "use": "Optional static wardrobe preview; not playable character or animated face."
+  },
+  "distributedFiles": [
+    {
+      "path": "Assets/CityGame/Resources/Models/RodjaHuman/brown_eye.png",
+      "sha256": "4659691c7295ad6206c78b003e5fd0e5f91dcd53032fa914a229bb48cabe424b",
+      "bytes": 610817
+    },
+    {
+      "path": "Assets/CityGame/Resources/Models/RodjaHuman/eyebrow001.png",
+      "sha256": "9940f7d0b1b223709a19b05156ba6f6e9e4dbdbced02d7574f4d51d72c58967b",
+      "bytes": 89619
+    },
+    {
+      "path": "Assets/CityGame/Resources/Models/RodjaHuman/male_casualsuit01_diffuse.png",
+      "sha256": "3fd0bba5dcbdea0ac427f644a6c7c298938f7369b8f96626621ce1e88989394e",
+      "bytes": 5531728
+    },
+    {
+      "path": "Assets/CityGame/Resources/Models/RodjaHuman/male_casualsuit01_normal.png",
+      "sha256": "ff029fc5a3350ebc72813cdf050afcffd23064c7701d99e664572713cfa98a5f",
+      "bytes": 1738660
+    },
+    {
+      "path": "Assets/CityGame/Resources/Models/RodjaHuman/manifest.json",
+      "sha256": "ce38fc31ea1fb02b1fbd3cabcecc0fc26804ab463a89e149de33b191cc5ce8e5",
+      "bytes": 3068
+    },
+    {
+      "path": "Assets/CityGame/Resources/Models/RodjaHuman/RodjaSource.fbx",
+      "sha256": "a78473ae8aa4f7771764dc3346dc1b2fd1c92dd3606b8f7a43dc4421ea0d3918",
+      "bytes": 1910908
+    },
+    {
+      "path": "Assets/CityGame/Resources/Models/RodjaHuman/shoes02_diffuse.png",
+      "sha256": "efef94ea34b0e0c2283095cb47a9e0389b55449c61a4f4972d0ad4d2bf06b4f0",
+      "bytes": 1282057
+    },
+    {
+      "path": "Assets/CityGame/Resources/Models/RodjaHuman/short02_diffuse.png",
+      "sha256": "47fe33831a3929567c733356dd66243116e05df2ace1f884ddca0080b728229f",
+      "bytes": 3553543
+    },
+    {
+      "path": "Assets/CityGame/Resources/Models/RodjaHuman/teeth.png",
+      "sha256": "d0afb57869c6fbb56b98f5efc4aec629ee7593e70d8dd2bfb9de923acfb65f43",
+      "bytes": 1799930
+    },
+    {
+      "path": "Assets/CityGame/Resources/Models/RodjaHuman/young_lightskinned_male_diffuse.png",
+      "sha256": "862a26e335e958b70534cb5f0d7c47ef30ab148a56c42b3e9da969cf76f12963",
+      "bytes": 3693828
+    }
+  ]
+}

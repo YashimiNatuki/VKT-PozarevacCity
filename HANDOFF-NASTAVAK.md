@@ -1,6 +1,14 @@
-# VKT: nastavak rada, 2026-10-28
+# VKT: nastavak rada, 2026-10-29
 
-## Najnovija dorada: šake, gard i nova montaža špice
+## Najnovija dorada: ljudski 3D kandidat i objedinjen plan
+
+Novi MPFB/MakeHuman model je opcioni pregled: **L → ODEĆA / GARDEROBER → NOVI 3D LIK / PREGLED**. Ima 46.064 trougla, 53 kosti, oči, kosu, obrve, telo, odeću i URP materijale. Postojeći igrivi model i profil v9 ostaju aktivni. Kandidat još nema povezane animacije, mimiku ili izbor odeće; naredni korak je adapter njegovog skeleta.
+
+**259 uspešnih Unity testova, 0 neuspešnih, 1 opcioni skip; Windows build, pregled, desktop/touch-preview regresije i oba toka špice — izlaz 0.** Pregled proverava četiri ugla, ponovno korišćenje modela, očuvan save i povratak kontrole. [Izmene](Docs/Human-Preview-20261029.md) | [Dokazi](Docs/Verification-Human-Preview-20261029.json) | [Svi zahtevi i redosled](Docs/VKT-Svi-Zahtevi-I-Redosled-20261029.md) | [TXT kopija](Docs/VKT-Svi-Zahtevi-I-Redosled-20261029.txt).
+
+Špica ostaje nova remontaža postojećeg materijala, ne novi AI film. Fizički Android/iPhone, prirodnost glasova i dugotrajan FPS test nisu potvrđeni. Slede: animirani ljudski rig → kontakti/povezana misija → centralni blok/visine → glasovi/miks → skejt → štek i retka transformišuća klupa.
+
+## Prethodna dorada: šake, gard i nova montaža špice
 
 Hvat šipke sada odvaja zglob od metala i zatvara prste; boksački gard poravnava zglob sa podlakticom i čuva pozu tokom pauze. Profil ostaje v9. **255 uspešnih Unity testova, 0 neuspešnih, 1 opcioni skip; Windows build, oba native toka i dve provere špice imaju izlaz 0.**
 

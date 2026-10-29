@@ -14,6 +14,7 @@ namespace Pozarevac.CityGame
         private bool lifestyleVerified;
         private bool routineVerified;
         private bool resumeBoxingVerified;
+        private bool humanCandidateVerified;
         [Serializable] private sealed class Report { public bool passed; public string details; public string product; }
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         private static void Install()
@@ -212,6 +213,12 @@ namespace Pozarevac.CityGame
             cameraBody.enabled = false; game.Player.position = savedPlayerPosition; cameraBody.enabled = true;
             yield return new WaitForEndOfFrame();
             details += " Three camera modes, imported player avatar, bounded orbit, obstruction retraction and first-person restoration passed.";
+            if (Array.IndexOf(Environment.GetCommandLineArgs(), "-vktHumanCandidateSmoke") >= 0)
+            {
+                yield return VerifyHumanCandidate(game);
+                if (!humanCandidateVerified) yield break;
+                details += " Human candidate: rendered front/side/back/face, isolated art, repeat toggle, unchanged profile and restored control passed.";
+            }
             if (Array.Exists(Environment.GetCommandLineArgs(), arg => arg == "-vktLifeSmoke"))
             {
                 yield return VerifyLifestyle(game);
@@ -369,6 +376,64 @@ namespace Pozarevac.CityGame
             if(restored.Session.Cash!=cash+reward||resumed.TryVisit(0)){Finish(false,"Restored mission replayed or missed its reward.");yield break;}
             jobs.Cancel();controller.SaveNow();resumeBoxingVerified=true;
             Debug.Log("VKT_RESUME_BOXING_VERIFIED profileVersion="+CityProgression.CurrentProfileVersion+" diskCargoResume=true payoutOnce=true boxingRounds=8 separateEndurance=true pause=true");
+        }
+
+        private IEnumerator VerifyHumanCandidate(CityGameBootstrap game)
+        {
+            var runtime = game.GetComponent<CityLifestyleRuntime>();
+            var controller = game.GetComponent<CityProgressionController>();
+            controller.ClosePanel();game.GetComponent<CityMusicPanel>()?.Close();
+            if(runtime==null||!runtime.Wardrobe.Open()){Finish(false,"Human preview wardrobe unavailable.");yield break;}
+            int cash=game.Session.Cash,xp=runtime.Life.Experience;
+            CityOutfit outfit=game.Progression.Appearance.Outfit;
+            string saved=File.Exists(controller.SavePath)?File.ReadAllText(controller.SavePath):null;
+            int cameras=FindObjectsByType<Camera>(FindObjectsSortMode.None).Length;
+            int listeners=FindObjectsByType<AudioListener>(FindObjectsSortMode.None).Length;
+            var button=Array.Find(FindObjectsByType<UnityEngine.UI.Button>(FindObjectsSortMode.None),b=>b.name=="NOVI 3D LIK / PREGLED");
+            if(button==null){Finish(false,"Human preview UI button missing.");yield break;}
+            button.onClick.Invoke();yield return new WaitForSecondsRealtime(.25f);
+            GameObject candidate=GameObject.Find("ReviewedHumanPreview");
+            if(candidate==null||!runtime.Wardrobe.CandidatePreview||!game.Director.IsPaused)
+            {Finish(false,"Candidate did not render under wardrobe pause ownership.");yield break;}
+            GameObject identity=candidate;
+            if(candidate.GetComponentsInChildren<SkinnedMeshRenderer>().Length<5||
+               FindObjectsByType<Camera>(FindObjectsSortMode.None).Length!=cameras||
+               FindObjectsByType<AudioListener>(FindObjectsSortMode.None).Length!=listeners)
+            {Finish(false,"Candidate geometry missing or introduced a camera/audio owner.");yield break;}
+            string folder=Argument("-vktHumanCaptures","");
+            if(string.IsNullOrEmpty(folder)){Finish(false,"Human preview requires rendered capture evidence.");yield break;}
+            Directory.CreateDirectory(folder);
+            runtime.Wardrobe.Rotate(15);
+            foreach(string angle in new[]{"front","side","back","face"})
+            {
+                if(angle=="side"||angle=="back")runtime.Wardrobe.Rotate(90);
+                if(angle=="face"){runtime.Wardrobe.Rotate(-180);runtime.Wardrobe.TogglePortrait();}
+                yield return new WaitForSecondsRealtime(.25f);
+                if(!CaptureRenderedFrame(game,Path.Combine(folder,angle+".png"),out string error))
+                {Finish(false,error);yield break;}
+            }
+            CityFaceMood mood=runtime.Wardrobe.PreviewMood;
+            runtime.Wardrobe.CycleExpression();
+            if(runtime.Wardrobe.Select(CityOutfit.Busije)||runtime.Wardrobe.PreviewMood!=mood)
+            {Finish(false,"Candidate allowed original avatar customization.");yield break;}
+            for(int i=0;i<3;i++)
+            {
+                button.onClick.Invoke();button.onClick.Invoke();yield return null;
+                candidate=GameObject.Find("ReviewedHumanPreview");
+                if(candidate==null||candidate!=identity||!game.Director.IsPaused)
+                {Finish(false,"Candidate toggle leaked a model or released pause.");yield break;}
+            }
+            if(game.Session.Cash!=cash||runtime.Life.Experience!=xp||game.Progression.Appearance.Outfit!=outfit||
+               saved!=(File.Exists(controller.SavePath)?File.ReadAllText(controller.SavePath):null))
+            {Finish(false,"Preview changed player progression or save data.");yield break;}
+            runtime.Wardrobe.Close();yield return null;yield return null;
+            if(game.Director.IsPaused||runtime.Wardrobe.CandidatePreview||runtime.Wardrobe.Portrait||!runtime.CanSimulate)
+            {Finish(false,"Closing candidate failed to restore gameplay.");yield break;}
+            if(!runtime.Wardrobe.Open()||runtime.Wardrobe.CandidatePreview)
+            {Finish(false,"Wardrobe did not reopen on original player.");yield break;}
+            runtime.Wardrobe.Close();yield return null;
+            humanCandidateVerified=true;
+            Debug.Log("VKT_HUMAN_PREVIEW_VERIFIED renderedAngles=4 reuse=true profileUnchanged=true controlRestored=true");
         }
 
         private IEnumerator VerifyLifestyle(CityGameBootstrap game)
