@@ -386,7 +386,11 @@ namespace Pozarevac.CityGame
             if(runtime==null||!runtime.Wardrobe.Open()){Finish(false,"Human preview wardrobe unavailable.");yield break;}
             int cash=game.Session.Cash,xp=runtime.Life.Experience;
             CityOutfit outfit=game.Progression.Appearance.Outfit;
-            string saved=File.Exists(controller.SavePath)?File.ReadAllText(controller.SavePath):null;
+            controller.SaveNow();
+            var previewStore=new CitySaveStore(controller.SavePath);
+            if(!previewStore.TryLoad(out CityProfileData beforePreview,out _))
+            {Finish(false,"Preview baseline profile could not be read.");yield break;}
+            string saved=PreviewProfileSignature(beforePreview);
             int cameras=FindObjectsByType<Camera>(FindObjectsSortMode.None).Length;
             int listeners=FindObjectsByType<AudioListener>(FindObjectsSortMode.None).Length;
             var button=Array.Find(FindObjectsByType<UnityEngine.UI.Button>(FindObjectsSortMode.None),b=>b.name=="NOVI 3D LIK / PREGLED");
@@ -413,6 +417,40 @@ namespace Pozarevac.CityGame
                 {Finish(false,error);yield break;}
             }
             CityFaceMood mood=runtime.Wardrobe.PreviewMood;
+            if(Array.IndexOf(Environment.GetCommandLineArgs(),"-vktHumanMotionSmoke")>=0)
+            {
+                if(runtime.Wardrobe.Portrait)runtime.Wardrobe.TogglePortrait();
+                var motion=Array.Find(FindObjectsByType<UnityEngine.UI.Button>(FindObjectsSortMode.None),b=>b.name=="POKRET / MIRAN");
+                Transform[] bones=candidate.GetComponentsInChildren<Transform>();
+                Transform leftKnee=Array.Find(bones,b=>b.name=="calf_l"),rightKnee=Array.Find(bones,b=>b.name=="calf_r");
+                Transform pelvis=Array.Find(bones,b=>b.name=="pelvis"),leftHand=Array.Find(bones,b=>b.name=="hand_l"),rightHand=Array.Find(bones,b=>b.name=="hand_r");
+                if(motion==null||leftKnee==null||rightKnee==null||pelvis==null||leftHand==null||rightHand==null)
+                {Finish(false,"Human motion controls or required bones missing.");yield break;}
+                Vector3 stagePosition=candidate.transform.position;
+                for(int mode=1;mode<=3;mode++)
+                {
+                    motion.onClick.Invoke();yield return new WaitForSecondsRealtime(.2f);
+                    Quaternion left=leftKnee.localRotation,right=rightKnee.localRotation;
+                    float leftDelta=0,rightDelta=0,until=Time.realtimeSinceStartup+1.3f;int frames=0;
+                    while(Time.realtimeSinceStartup<until)
+                    {
+                        yield return new WaitForEndOfFrame();frames++;
+                        leftDelta=Mathf.Max(leftDelta,Quaternion.Angle(left,leftKnee.localRotation));
+                        rightDelta=Mathf.Max(rightDelta,Quaternion.Angle(right,rightKnee.localRotation));
+                    }
+                    Debug.Log("VKT_HUMAN_MOTION_SAMPLE mode="+mode+" frames="+frames+" leftKneeDelta="+leftDelta+" rightKneeDelta="+rightDelta);
+                    if(runtime.Wardrobe.CandidateMotion!=mode||!game.Director.IsPaused||candidate.transform.position!=stagePosition||
+                       frames<10||(mode<3&&(leftDelta<3||rightDelta<3))||
+                       (mode==3&&(leftHand.position.y<pelvis.position.y+.1f||rightHand.position.y<pelvis.position.y+.1f)))
+                    {Finish(false,"Human walking/running/guard pose failed or changed world ownership.");yield break;}
+                    if(!CaptureRenderedFrame(game,Path.Combine(folder,"motion-"+mode+".png"),out string motionError))
+                    {Finish(false,motionError);yield break;}
+                    Debug.Log("VKT_HUMAN_MOTION mode="+mode+" leftKneeDelta="+leftDelta+" rightKneeDelta="+rightDelta+" pausedWorld=true");
+                }
+                motion.onClick.Invoke();
+                if(runtime.Wardrobe.CandidateMotion!=0){Finish(false,"Human motion did not cycle back to idle.");yield break;}
+                Debug.Log("VKT_HUMAN_MOTION_VERIFIED modes=4 unscaledPreview=true worldPaused=true");
+            }
             runtime.Wardrobe.CycleExpression();
             if(runtime.Wardrobe.Select(CityOutfit.Busije)||runtime.Wardrobe.PreviewMood!=mood)
             {Finish(false,"Candidate allowed original avatar customization.");yield break;}
@@ -423,17 +461,31 @@ namespace Pozarevac.CityGame
                 if(candidate==null||candidate!=identity||!game.Director.IsPaused)
                 {Finish(false,"Candidate toggle leaked a model or released pause.");yield break;}
             }
+            controller.SaveNow();previewStore=new CitySaveStore(controller.SavePath);
             if(game.Session.Cash!=cash||runtime.Life.Experience!=xp||game.Progression.Appearance.Outfit!=outfit||
-               saved!=(File.Exists(controller.SavePath)?File.ReadAllText(controller.SavePath):null))
+               !previewStore.TryLoad(out CityProfileData afterPreview,out _)||saved!=PreviewProfileSignature(afterPreview))
             {Finish(false,"Preview changed player progression or save data.");yield break;}
             runtime.Wardrobe.Close();yield return null;yield return null;
-            if(game.Director.IsPaused||runtime.Wardrobe.CandidatePreview||runtime.Wardrobe.Portrait||!runtime.CanSimulate)
+            if(game.Director.IsPaused||runtime.Wardrobe.CandidatePreview||runtime.Wardrobe.Portrait||runtime.Wardrobe.CandidateMotion!=0||!runtime.CanSimulate)
             {Finish(false,"Closing candidate failed to restore gameplay.");yield break;}
             if(!runtime.Wardrobe.Open()||runtime.Wardrobe.CandidatePreview)
             {Finish(false,"Wardrobe did not reopen on original player.");yield break;}
             runtime.Wardrobe.Close();yield return null;
             humanCandidateVerified=true;
             Debug.Log("VKT_HUMAN_PREVIEW_VERIFIED renderedAngles=4 reuse=true profileUnchanged=true controlRestored=true");
+        }
+
+        private static string PreviewProfileSignature(CityProfileData copy)
+        {
+            // The existing garden intentionally advances in UTC while menus are open.
+            // Compare all saved gameplay fields, allowing only its clock/growth/moisture progression.
+            if(copy.garden!=null)
+            {
+                copy.garden.lastUtcSeconds=0;
+                foreach(CityGardenPlotData plot in copy.garden.plots)
+                {plot.grownSeconds=0;plot.moistureSeconds=0;}
+            }
+            return JsonUtility.ToJson(copy);
         }
 
         private IEnumerator VerifyLifestyle(CityGameBootstrap game)

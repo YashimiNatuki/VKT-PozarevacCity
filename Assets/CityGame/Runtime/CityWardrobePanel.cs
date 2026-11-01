@@ -16,6 +16,11 @@ namespace Pozarevac.CityGame
         private CityCharacterPhysique physique;
         private Text title, expressionLabel,info,candidateLabel;
         private Button expressionButton;
+        private Button motionButton;
+        private Text motionLabel;
+        private CityHumanPose humanPose;
+        private int candidateMotion;
+        public int CandidateMotion => candidateMotion;
         private readonly Button[] outfitButtons=new Button[3];
         public bool CandidatePreview { get; private set; }
         public CityFaceMood PreviewMood=>look!=null?look.Face.PreviewMood:CityFaceMood.Calm;
@@ -73,6 +78,8 @@ namespace Pozarevac.CityGame
             expressionLabel=expressionButton.GetComponentInChildren<Text>();
             expressionLabel.text="IZRAZ / MIRAN";
             candidateLabel=Button("NOVI 3D LIK / PREGLED",new Vector2(210,-175),()=>ToggleCandidate()).GetComponentInChildren<Text>();
+            motionButton=Button("POKRET / MIRAN",new Vector2(-260,-310),CycleCandidateMotion);
+            motionLabel=motionButton.GetComponentInChildren<Text>();motionButton.gameObject.SetActive(false);
             Button("NAZAD U GRAD / ESC",new Vector2(210,-245),Close);
             canvas.AddComponent<CityUiSkin>().ApplyTree();
         }
@@ -125,13 +132,26 @@ namespace Pozarevac.CityGame
                 GameObject source=Resources.Load<GameObject>("Models/RodjaHuman/RodjaHuman");
                 if(!TryPrepareCandidate(source,pivot,out candidatePreview))
                 {info.text="Novi 3D pregled nije dostupan u ovom paketu.\nTvoj postojeći lik ostaje aktivan.";return false;}
+                CityHumanPose.TryCreate(candidatePreview,candidatePreview.transform,out humanPose);
                 candidateLights=new GameObject("CandidateStudioLights");candidateLights.transform.SetParent(stage.transform,false);
                 StudioLight(new Vector3(1.4f,2.3f,2.1f),new Color(1,.91f,.82f),4);
                 StudioLight(new Vector3(-1.5f,1.6f,1.3f),new Color(.72f,.84f,1),2.2f);
             }
             CandidatePreview=!CandidatePreview;
+            ResetCandidateMotion();
             originalPreview.SetActive(!CandidatePreview);candidatePreview.SetActive(CandidatePreview);
             candidateLights.SetActive(CandidatePreview);FramePreview();Refresh();return true;
+        }
+        public void CycleCandidateMotion()
+        {
+            if(!IsOpen||!CandidatePreview||humanPose==null)return;
+            humanPose.Reset();candidateMotion=(candidateMotion+1)%4;
+            motionLabel.text="POKRET / "+new[]{"MIRAN","HOD","TRČANJE","GARD"}[candidateMotion];
+        }
+        private void ResetCandidateMotion()
+        {
+            humanPose?.Reset();candidateMotion=0;
+            if(motionLabel!=null)motionLabel.text="POKRET / MIRAN";
         }
         private void StudioLight(Vector3 position,Color color,float intensity)
         {
@@ -171,20 +191,28 @@ namespace Pozarevac.CityGame
         {
             look.Apply(game.Progression.Appearance.Outfit,game.Progression.Lifestyle.Strength);
             title.text=CandidatePreview?"NOVI 3D LIK\nSAMO PREGLED":"TVOJ LIK / "+CityAppearance.Name(game.Progression.Appearance.Outfit)+"\nSNAGA "+game.Progression.Lifestyle.Strength+"/5";
-            info.text=CandidatePreview?"Probni model • materijali • proporcije\nOkreni model i pogledaj lice.\nPrikaz ne menja tvog igrača.\nAnimacije i mimika još nisu povezane.":"GARDEROBER / ORIGINAL VKT\nMajica • pantalone • patike • kačket\nKozmetika je besplatna. Snaga menja građu.\nIzgled se čuva sa likom.";
+            info.text=CandidatePreview?"Probni model • materijali • proporcije\nPOKRET: miran / hod / trčanje / gard\nAnimacija u mestu, bez nagrade i pomeranja.\nIgrivi rig i mimika su sledeći korak.":"GARDEROBER / ORIGINAL VKT\nMajica • pantalone • patike • kačket\nKozmetika je besplatna. Snaga menja građu.\nIzgled se čuva sa likom.";
             candidateLabel.text=CandidatePreview?"NAZAD NA TVOG LIKA":"NOVI 3D LIK / PREGLED";
             foreach(Button button in outfitButtons)button.interactable=!CandidatePreview;
             expressionButton.gameObject.SetActive(!CandidatePreview);
+            motionButton.gameObject.SetActive(CandidatePreview&&humanPose!=null);
         }
         public void Close()
         {
+            ResetCandidateMotion();
             CandidatePreview=false;Portrait=false;
             if(candidatePreview!=null)candidatePreview.SetActive(false);if(candidateLights!=null)candidateLights.SetActive(false);
             if(originalPreview!=null)originalPreview.SetActive(true);FramePreview();
             if(panel!=null)panel.SetActive(false);if(stage!=null)stage.SetActive(false);
             if(ownsPause){ownsPause=false;game.Director.SetOverlayOpen(false);}
         }
-        private void Update(){if(IsOpen&&Keyboard.current!=null&&Keyboard.current.escapeKey.wasPressedThisFrame)Close();}
+        private void Update()
+        {
+            if(IsOpen&&Keyboard.current!=null&&Keyboard.current.escapeKey.wasPressedThisFrame)Close();
+            // The wardrobe owns an unscaled presentation clock while the game remains paused.
+            if(IsOpen&&CandidatePreview&&candidatePreview.activeInHierarchy&&humanPose!=null)
+                humanPose.Step(Time.unscaledDeltaTime,candidateMotion==1?2:candidateMotion==2?5.5f:0,candidateMotion==3);
+        }
         private void OnDisable(){Close();}
         private void OnDestroy()
         {

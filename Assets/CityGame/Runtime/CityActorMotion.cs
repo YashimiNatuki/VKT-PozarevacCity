@@ -177,12 +177,13 @@ namespace Pozarevac.CityGame
             Vector3 shin=Quaternion.AngleAxis(-stride+flex,model.right)*(-model.up);
             if(lower.sqrMagnitude>.00001f)knee.rotation=Quaternion.FromToRotation(lower,shin)*knee.rotation;
         }
-        public static void PoseBoxingArm(Transform arm,Transform elbow,Transform model,float side,float punch,CityHandPose handPose)
+        public static void PoseBoxingArm(Transform arm,Transform elbow,Transform model,float side,float punch,CityHandPose handPose,float upperDrop=.12f)
         {
             if(arm==null||elbow==null||model==null)return;
             punch=float.IsFinite(punch)?Mathf.Clamp01(punch):0;
             Vector3 upper=elbow.position-arm.position;
-            Vector3 target=(model.forward*.55f+model.right*side*.24f-model.up*.12f).normalized;
+            upperDrop=float.IsFinite(upperDrop)?Mathf.Clamp(upperDrop,.12f,1f):.12f;
+            Vector3 target=(model.forward*.55f+model.right*side*.24f-model.up*upperDrop).normalized;
             if(upper.sqrMagnitude>.00001f)arm.rotation=Quaternion.FromToRotation(upper,target)*arm.rotation;
             if(elbow.childCount==0)return;
             Vector3 lower=elbow.GetChild(0).position-elbow.position;

@@ -1,6 +1,14 @@
-# VKT: nastavak rada, 2026-10-29
+# VKT: nastavak rada, 2026-11-01
 
-## Najnovija dorada: ljudski 3D kandidat i objedinjen plan
+## Najnovije: prvi pokreti ljudskog riga i iPhone plan — 1. novembar 2026.
+
+U pregledu novog modela dodato je dugme POKRET: miran, hod, trčanje i gard. Adapter koristi postojeće funkcije hoda i poza. Ovo je animacija u garderoberu; novi model još nije igrivi avatar, nema mimiku niti zatvorene šake. Svet ostaje pauziran, profil v9 i nagrade se ne menjaju.
+
+264 uspešna Unity testa, 0 neuspešnih, 1 opcioni skip; build, native režimi, desktop/touch-preview regresije i oba toka špice prošli su izlazom 0. [Izmene](Docs/Human-Motion-20261101.md) | [Dokazi](Docs/Verification-Human-Motion-20261101.json) | [iPhone 13+ plan](Docs/iPhone-Plan-20261101.md).
+
+iPhone audit potvrđuje prisutnu Cesium iOS biblioteku i postojeće mobilne kontrole; lokalno nedostaju iOS Build Support i Mac/Xcode. Nema IPA ili fizičkog testa. Slede: stvarni igrivi adapter, stopala/karlica, benč/prsti, mimika/glas i LOD; zatim priča i centralni blok.
+
+## Prethodna dorada: ljudski 3D kandidat i objedinjen plan
 
 Novi MPFB/MakeHuman model je opcioni pregled: **L → ODEĆA / GARDEROBER → NOVI 3D LIK / PREGLED**. Ima 46.064 trougla, 53 kosti, oči, kosu, obrve, telo, odeću i URP materijale. Postojeći igrivi model i profil v9 ostaju aktivni. Kandidat još nema povezane animacije, mimiku ili izbor odeće; naredni korak je adapter njegovog skeleta.
 

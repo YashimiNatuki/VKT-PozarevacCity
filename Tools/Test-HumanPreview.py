@@ -11,6 +11,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--player', type=pathlib.Path, required=True)
     parser.add_argument('--output', type=pathlib.Path, required=True)
+    parser.add_argument('--motion', action='store_true', help='Verify and capture walking, running and guard')
     args = parser.parse_args()
     if not args.player.is_file():
         parser.error('Windows player missing')
@@ -24,13 +25,17 @@ def main():
                '-vktSmoke', '-vktHumanCandidateSmoke', '-vktLifeSmoke', '-vktCharacterSmoke',
                '-vktHumanCaptures', str(output / 'captures'), '-vktReport', str(report),
                '-logFile', str(log)]
+    if args.motion: command.append('-vktHumanMotionSmoke')
     try:
         run = subprocess.run(command, timeout=180, check=False)
         data = json.loads(report.read_text(encoding='utf-8'))
         text = log.read_text(encoding='utf-8', errors='replace')
         errors = re.findall(r'NullReferenceException|MissingReferenceException|IndexOutOfRangeException|Unhandled Exception|Shader error', text)
         markers = 'VKT_HUMAN_PREVIEW_VERIFIED renderedAngles=4 reuse=true profileUnchanged=true controlRestored=true' in text
-        captures = all((output / 'captures' / (angle + '.png')).stat().st_size > 50000 for angle in ['front', 'side', 'back', 'face'])
+        captures = all((output / 'captures' / (angle + '.png')).is_file() and (output / 'captures' / (angle + '.png')).stat().st_size > 50000 for angle in ['front', 'side', 'back', 'face'])
+        if args.motion:
+            markers = markers and 'VKT_HUMAN_MOTION_VERIFIED modes=4 unscaledPreview=true worldPaused=true' in text
+            captures = captures and all((output / 'captures' / ('motion-' + str(i) + '.png')).is_file() and (output / 'captures' / ('motion-' + str(i) + '.png')).stat().st_size > 50000 for i in [1, 2, 3])
         passed = run.returncode == 0 and data.get('passed') is True and markers and captures and not errors
         result = dict(passed=passed, processExit=run.returncode, previewChecks=markers,
                       captures=captures, runtimeErrors=errors, report=data,

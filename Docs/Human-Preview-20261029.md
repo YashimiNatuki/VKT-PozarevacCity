@@ -1,5 +1,7 @@
 # Ljudski 3D kandidat u garderoberu — 29. oktobar 2026.
 
+> Ažuriranje 1. novembra: pregled sada ima prve pokrete. [Aktuelna dorada](Human-Motion-20261101.md); opis ispod čuva stanje prethodnog izdanja.
+
 Dodali smo stvaran teksturisan 3D model za poređenje sa sadašnjim stilizovanim igračem. Model ima telo, oči, obrve, kosu, zube, košulju/farmerke i cipele, 53 kosti i 46.064 trougla. Ovo je **opcion pregled**, ne zamena igrivog avatara. Hod, trening, policija i ostali NPC-i još koriste prethodni rig. Kandidat nema aktivnu mimiku, govor ili animaciju.
 
 ## Kako otvoriti

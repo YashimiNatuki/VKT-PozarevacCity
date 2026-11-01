@@ -1,0 +1,20 @@
+{
+  "auditCompleted": true,
+  "validationExit": 0,
+  "target": "iPhone 13 and newer",
+  "host": "Windows",
+  "iosBuildSupportInstalled": false,
+  "cesiumIosNativeLibraryPresent": true,
+  "macHost": false,
+  "xcodeCommandAvailable": false,
+  "localBuildPrerequisitesPresent": false,
+  "signingConfigured": "not inspected",
+  "iosBuildVerified": false,
+  "physicalIPhoneTested": false,
+  "remaining": [
+    "Install matching iOS Build Support",
+    "Use macOS/Xcode or a configured cloud Mac",
+    "Configure signing on the build host",
+    "Export, compile and test on iPhone 13+"
+  ]
+}
