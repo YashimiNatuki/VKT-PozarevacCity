@@ -1,6 +1,14 @@
 # VKT: nastavak rada, 2026-11-01
 
-## Najnovije: šake i stvarni udarac — 1. novembar 2026.
+## Najnovije: mapa i katalog telefona — 1. novembar 2026.
+
+Ispravljen je prelaz mapa → otključani katalog: mapa se gasi kada se katalog otvori. Zaključani katalog ostavlja mapu dostupnom. Dva stvarna uGUI/progresija testa proveravaju oba stanja i nepromenjen profil v9.
+
+**292 Unity testa prošla, 0 palo, 1 opcioni preskočen; 2/2 ciljana testa.** Windows build, native šake/lice/lik/pregled, desktop/touch-preview i oba toka prethodne špice prošli su izlazom 0. [Izmene](Docs/Phone-Screens-20261101.md) | [Dokazi](Docs/Verification-Phone-Screens-20261101.json).
+
+Ovo je uska popravka postojećeg telefona. Fizički hvat telefona, novi trening-rig, teren, glasovi i novi AI film ostaju otvoreni. Sledeći arhitektonski kandidat je kontakt šake/telefona uz odvojen sat prikaza tokom pauze; širi refaktor još nije primenjen.
+
+## Prethodno: šake i stvarni udarac — 1. novembar 2026.
 
 Šake novog lika sada koriste svih 30 zglobova prstiju. Gard zatvara pesnice i poravnava dlanove/zglobove; postojeći unarmed LMB/NAPAD pokreće desni udarac i levi gard. Pauza i cooldown ostaju autoritativni; teleport i izlazak iz napada oslobađaju pozu. Nema novih modela, biblioteka ili promene profila v9.
 

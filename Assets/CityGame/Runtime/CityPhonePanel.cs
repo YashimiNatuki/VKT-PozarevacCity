@@ -164,6 +164,7 @@ namespace Pozarevac.CityGame
         public void OpenCatalog()
         {
             if (!owner.Progression.PhoneUnlocked) { ShowFeedback("Poslovni katalog se otključava posle prvog ugovora. MAPA je već dostupna.");return; }
+            map.SetActive(false);
             encyclopedia.SetActive(false);
             statistics.SetActive(false);
             journal.SetActive(false);
