@@ -17,6 +17,7 @@ namespace Pozarevac.CityGame
         private Text title, expressionLabel,info,candidateLabel;
         private Button expressionButton;
         private Button motionButton;
+        private Button playButton,originalButton;
         private Text motionLabel;
         private CityHumanPose humanPose;
         private int candidateMotion;
@@ -80,6 +81,8 @@ namespace Pozarevac.CityGame
             candidateLabel=Button("NOVI 3D LIK / PREGLED",new Vector2(210,-175),()=>ToggleCandidate()).GetComponentInChildren<Text>();
             motionButton=Button("POKRET / MIRAN",new Vector2(-260,-310),CycleCandidateMotion);
             motionLabel=motionButton.GetComponentInChildren<Text>();motionButton.gameObject.SetActive(false);
+            playButton=Button("IGRAJ U GRADU",new Vector2(210,-105),PlayAsCandidate);playButton.gameObject.SetActive(false);
+            originalButton=Button("VRATI ORIGINALNI LIK",new Vector2(210,-105),UseOriginal);originalButton.gameObject.SetActive(false);
             Button("NAZAD U GRAD / ESC",new Vector2(210,-245),Close);
             canvas.AddComponent<CityUiSkin>().ApplyTree();
         }
@@ -162,23 +165,17 @@ namespace Pozarevac.CityGame
         }
         internal static bool TryPrepareCandidate(GameObject source,Transform parent,out GameObject prepared)
         {
-            prepared=null;if(source==null||parent==null)return false;
-            // Validate the asset before Instantiate can run any imported behaviour callbacks.
-            if(!parent.gameObject.activeInHierarchy||source.GetComponentsInChildren<MonoBehaviour>(true).Length>0||
-               source.GetComponentsInChildren<Collider>(true).Length>0||source.GetComponentsInChildren<Rigidbody>(true).Length>0||
-               source.GetComponentsInChildren<Camera>(true).Length>0||source.GetComponentsInChildren<AudioSource>(true).Length>0||
-               source.GetComponentsInChildren<AudioListener>(true).Length>0)return false;
-            GameObject wrapper=new GameObject("ReviewedHumanPreview");wrapper.transform.SetParent(parent,false);
-            bool ready=false;
-            try
-            {
-                GameObject model=Object.Instantiate(source,wrapper.transform);
-                foreach(Animator animator in model.GetComponentsInChildren<Animator>(true))animator.enabled=false;
-                if(!CityCharacterModel.Normalize(wrapper.transform,model,null))return false;
-                foreach(Transform item in wrapper.GetComponentsInChildren<Transform>(true))item.gameObject.layer=30;
-                wrapper.SetActive(false);prepared=wrapper;ready=true;return true;
-            }
-            finally{if(!ready){if(Application.isPlaying)Object.Destroy(wrapper);else Object.DestroyImmediate(wrapper);}}
+            return CityCharacterModel.TryPrepareHuman(source,parent,30,out prepared);
+        }
+        private void PlayAsCandidate()
+        {
+            if(!IsOpen||!CandidatePreview)return;
+            if(game.Player.GetComponentInChildren<CityCameraRig>().SelectHumanAvatar(true))Close();
+            else info.text="Izbor lika trenutno nije dostupan. Vrati se i pokušaj ponovo.";
+        }
+        private void UseOriginal()
+        {
+            if(IsOpen&&game.Player.GetComponentInChildren<CityCameraRig>().SelectHumanAvatar(false))Close();
         }
         public bool Select(CityOutfit outfit)
         {
@@ -190,10 +187,14 @@ namespace Pozarevac.CityGame
         private void Refresh()
         {
             look.Apply(game.Progression.Appearance.Outfit,game.Progression.Lifestyle.Strength);
-            title.text=CandidatePreview?"NOVI 3D LIK\nSAMO PREGLED":"TVOJ LIK / "+CityAppearance.Name(game.Progression.Appearance.Outfit)+"\nSNAGA "+game.Progression.Lifestyle.Strength+"/5";
-            info.text=CandidatePreview?"Probni model • materijali • proporcije\nPOKRET: miran / hod / trčanje / gard\nAnimacija u mestu, bez nagrade i pomeranja.\nIgrivi rig i mimika su sledeći korak.":"GARDEROBER / ORIGINAL VKT\nMajica • pantalone • patike • kačket\nKozmetika je besplatna. Snaga menja građu.\nIzgled se čuva sa likom.";
+            title.text=CandidatePreview?"NOVI 3D LIK\nPREGLED I GRAD":"TVOJ LIK / "+CityAppearance.Name(game.Progression.Appearance.Outfit)+"\nSNAGA "+game.Progression.Lifestyle.Strength+"/5";
+            info.text=CandidatePreview?"POKRET: miran / hod / trčanje / gard\nIGRAJ U GRADU: izbor za ovu sesiju\nC: promena perspektive u gradu\nBenč i boks koriste trening-prikaz.":"GARDEROBER / ORIGINAL VKT\nMajica • pantalone • patike • kačket\nKozmetika je besplatna. Snaga menja građu.\nIzgled se čuva sa likom.";
             candidateLabel.text=CandidatePreview?"NAZAD NA TVOG LIKA":"NOVI 3D LIK / PREGLED";
-            foreach(Button button in outfitButtons)button.interactable=!CandidatePreview;
+            bool selected=game.Player.GetComponentInChildren<CityCameraRig>().HumanSelected;
+            foreach(Button button in outfitButtons)button.gameObject.SetActive(!CandidatePreview&&!selected);
+            playButton.gameObject.SetActive(CandidatePreview&&humanPose!=null);
+            originalButton.gameObject.SetActive(!CandidatePreview&&selected);
+            if(!CandidatePreview&&selected)info.text="U GRADU IGRAŠ SA NOVIM LIKOM\nOdeća i izrazi ovde pripadaju originalu.\nVRATI ORIGINALNI LIK da ih izabereš.\nIzbor novog lika važi za ovu sesiju.";
             expressionButton.gameObject.SetActive(!CandidatePreview);
             motionButton.gameObject.SetActive(CandidatePreview&&humanPose!=null);
         }

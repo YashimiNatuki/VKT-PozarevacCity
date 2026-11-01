@@ -13,6 +13,8 @@ namespace Pozarevac.CityGame
         private GameObject avatar;
         private CityCharacterLook look;
         private CityActorMotion actorMotion;
+        public CityHumanActor HumanActor {get;private set;}
+        public bool HumanSelected {get;private set;}
         public CityOutfit CurrentOutfit => look!=null?look.Outfit:CityOutfit.Korzo;
         public void ConfigureFeedback(CityGameAudio audio){if(look!=null)look.Face.BindFeedback(owner.GetComponent<CityPlayerVitals>(),audio);}
         private readonly RaycastHit[] hits = new RaycastHit[24];
@@ -70,7 +72,26 @@ namespace Pozarevac.CityGame
         {
             if ((int)mode < 0 || (int)mode > 2) throw new System.ArgumentOutOfRangeException(nameof(mode));
             Mode = mode;
-            if (avatar != null) avatar.SetActive(mode != CityCameraMode.FirstPerson);
+            ApplyAvatarVisibility();
+        }
+        public bool SelectHumanAvatar(bool selected)
+        {
+            if(owner==null||(lifestyle!=null&&(lifestyle.IsTraining||lifestyle.IsBoxing)))return false;
+            if(selected&&HumanActor==null)
+            {
+                if(!CityHumanActor.TryCreate(owner,Resources.Load<GameObject>("Models/RodjaHuman/RodjaHuman"),out CityHumanActor actor))return false;
+                HumanActor=actor;
+            }
+            HumanSelected=selected;
+            if(selected)Mode=CityCameraMode.Chase;
+            ApplyAvatarVisibility();return true;
+        }
+        private void ApplyAvatarVisibility()
+        {
+            bool training=lifestyle!=null&&lifestyle.IsTraining&&bench!=null;
+            bool boxing=lifestyle!=null&&lifestyle.IsBoxing;
+            if(avatar!=null)avatar.SetActive(!training&&(boxing||Mode!=CityCameraMode.FirstPerson)&&(!HumanSelected||boxing));
+            HumanActor?.SetVisible(HumanSelected&&!training&&!boxing&&Mode!=CityCameraMode.FirstPerson);
         }
         public static Vector3 Offset(CityCameraMode mode) => mode == CityCameraMode.FirstPerson ? Vector3.zero :
             mode == CityCameraMode.Shoulder ? new Vector3(.65f, .25f, -2.6f) : new Vector3(0, 1.1f, -5f);
@@ -105,7 +126,8 @@ namespace Pozarevac.CityGame
             if(look!=null)look.Apply(appearance!=null?appearance.Outfit:CityOutfit.Korzo,lifestyle!=null?lifestyle.Strength:0);
             if(look!=null)look.Face.SetEffort(boxing?.8f:actorMotion!=null?Mathf.Clamp01(actorMotion.ObservedSpeed/8):0);
             if(look!=null)look.Face.SetAlert(lifestyle!=null&&lifestyle.Wanted);
-            if(avatar!=null)avatar.SetActive(!training&&(boxing||Mode!=CityCameraMode.FirstPerson));
+            ApplyAvatarVisibility();
+            HumanActor?.Advance(Time.deltaTime,Time.timeScale<=0||Time.deltaTime<=0);
             if(training||boxing)
             {
                 if(!wasTraining){previousCursor=Cursor.lockState;previousCursorVisible=Cursor.visible;}
@@ -143,6 +165,6 @@ namespace Pozarevac.CityGame
             if (weapon == null) weapon = view.Find("VKT_HeldWeapon");
             if (weapon != null) weapon.gameObject.SetActive(Mode == CityCameraMode.FirstPerson);
         }
-        private void OnDestroy() { if (avatar != null) Destroy(avatar); if(look!=null)look.Dispose();else physique?.Dispose(); }
+        private void OnDestroy() { HumanActor?.Dispose();if (avatar != null) Destroy(avatar); if(look!=null)look.Dispose();else physique?.Dispose(); }
     }
 }

@@ -17,6 +17,28 @@ namespace Pozarevac.CityGame
         private readonly float leftSide, rightSide;
         private float seconds;
         public float Phase => gait.Phase;
+        public float ObservedSpeed => gait.Speed;
+        public float Weight => gait.Weight;
+        public bool WasTeleported => gait.WasTeleported;
+        private CityFootContact leftContact,rightContact;
+        private CityGroundingOffset grounding;
+        public int SupportedFeet {get;private set;}
+        public float GroundingOffset => grounding!=null?grounding.Offset:0;
+
+        public void ConfigureGrounding(Transform owner)
+        {
+            grounding=new CityGroundingOffset(owner,frame);
+            leftContact=new CityFootContact(owner,frame,bones[9],bones[10],bones[11]);
+            rightContact=new CityFootContact(owner,frame,bones[12],bones[13],bones[14]);
+        }
+
+        public void ApplyGrounding(bool allowed,float deltaSeconds)
+        {
+            SupportedFeet=0;grounding?.Step(allowed,deltaSeconds);
+            if(!allowed)return;
+            if(leftContact!=null&&leftContact.Probe())SupportedFeet++;
+            if(rightContact!=null&&rightContact.Probe())SupportedFeet++;
+        }
 
         private CityHumanPose(Transform reference, Transform[] selected)
         {
@@ -55,11 +77,19 @@ namespace Pozarevac.CityGame
         {
             if (!float.IsFinite(deltaSeconds) || deltaSeconds <= 0 || !float.IsFinite(speed)) return;
             float dt = Mathf.Min(deltaSeconds, .05f);
-            seconds = Mathf.Repeat(seconds + dt, 1000);
+            StepObserved(Vector3.forward*(guard?0:Mathf.Clamp(speed,0,8))*dt,dt,guard);
+        }
+
+        public void StepObserved(Vector3 displacement,float deltaSeconds,bool guard)
+        {
+            if(!float.IsFinite(deltaSeconds)||deltaSeconds<=0)return;
             Restore();
-            gait.Step(Vector3.forward * (guard ? 0 : Mathf.Clamp(speed, 0, 8)) * dt, dt);
-            CityActorMotion.PoseLeg(bones[9], bones[10], bones[11], frame, gait.LeftStride, gait.LeftKneeFlex);
-            CityActorMotion.PoseLeg(bones[12], bones[13], bones[14], frame, gait.RightStride, gait.RightKneeFlex);
+            if(!gait.Step(displacement,deltaSeconds)){Reset();return;}
+            if(gait.WasTeleported){grounding?.Reset();seconds=0;}
+            seconds=Mathf.Repeat(seconds+Mathf.Min(deltaSeconds,.05f),1000);
+            // Slight standing flex leaves room for the shared two-bone support solver.
+            CityActorMotion.PoseLeg(bones[9], bones[10], bones[11], frame, gait.LeftStride, Mathf.Max(4,gait.LeftKneeFlex));
+            CityActorMotion.PoseLeg(bones[12], bones[13], bones[14], frame, gait.RightStride, Mathf.Max(4,gait.RightKneeFlex));
             bones[11].rotation = frame.rotation * leftFootFrame;
             bones[14].rotation = frame.rotation * rightFootFrame;
             if (guard)
@@ -76,6 +106,6 @@ namespace Pozarevac.CityGame
         }
 
         private void Restore() { for (int i = 0; i < bones.Length; i++) if (bones[i] != null) bones[i].localRotation = rest[i]; }
-        public void Reset() { Restore(); gait.Reset(); seconds = 0; }
+        public void Reset() { Restore(); gait.Reset(); seconds = 0;grounding?.Reset();SupportedFeet=0; }
     }
 }

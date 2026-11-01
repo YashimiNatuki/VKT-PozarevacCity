@@ -9,7 +9,7 @@ using UnityEngine.Rendering.Universal;
 namespace Pozarevac.CityGame
 {
     // Explicit development-player verification. Batch profiles are isolated from personal saves.
-    public sealed class CityPlayerValidation : MonoBehaviour
+    public sealed partial class CityPlayerValidation : MonoBehaviour
     {
         private bool lifestyleVerified;
         private bool routineVerified;
@@ -236,6 +236,12 @@ namespace Pozarevac.CityGame
                 yield return VerifyResumeBoxing(game);
                 if(!resumeBoxingVerified)yield break;
                 details+=" Active street-job disk resume, single settlement, boxing UI/reaction/guard/reward/pause and durable rest passed.";
+            }
+            if(Array.IndexOf(Environment.GetCommandLineArgs(),"-vktHumanPlayableSmoke")>=0)
+            {
+                yield return VerifyHumanPlayable(game);
+                if(!humanPlayableVerified)yield break;
+                details+=" Human playable avatar: physical movement, pause, camera modes, teleport and training fallback passed.";
             }
             if (Array.Exists(Environment.GetCommandLineArgs(), arg => arg == "-vktPerspectiveCapture"))
             {

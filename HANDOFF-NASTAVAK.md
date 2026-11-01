@@ -1,6 +1,14 @@
 # VKT: nastavak rada, 2026-11-01
 
-## Najnovije: prvi pokreti ljudskog riga i iPhone plan — 1. novembar 2026.
+## Najnovije: ljudski lik u gradu — 1. novembar 2026.
+
+L → ODEĆA / GARDEROBER → NOVI 3D LIK / PREGLED → IGRAJ U GRADU bira novi model za tekuću sesiju. WASD i Shift pomeraju isti fizički kontroler; noge i suprotne ruke prate stvarno pomeranje. C menja tri perspektive; prvo lice skriva telo. VRATI ORIGINALNI LIK vraća original. Benč i boks privremeno koriste postojeće trening-modele, pa vraćaju odabrani izgled. Profil ostaje v9; izbor nije trajno zapisan.
+
+269 Unity testova prošlo, 0 palo, 1 opcioni skip. Windows build, stvarni native tok novog lika, garderober pregled, desktop/touch-preview regresije i oba toka špice prošli su izlazom 0. Provereni su pauza, teleport, jedna fizička kapsula, kamere, đon na ravnoj podlozi i povratak iz treninga. [Izmene](Docs/Human-Playable-20261101.md) | [Dokazi](Docs/Verification-Human-Playable-20261101.json).
+
+Nisu potvrđeni kosine/stepenice novog riga, novi hvat/prsti, mimika, nove glasovne replike, LOD, dugi FPS test ili fizički telefon. Slede stopala/karlica na neravnom terenu, benč/boks novog riga, lice/glas, kontakti/misije i optimizacija.
+
+## Prethodno: prvi pokreti ljudskog riga i iPhone plan — 1. novembar 2026.
 
 U pregledu novog modela dodato je dugme POKRET: miran, hod, trčanje i gard. Adapter koristi postojeće funkcije hoda i poza. Ovo je animacija u garderoberu; novi model još nije igrivi avatar, nema mimiku niti zatvorene šake. Svet ostaje pauziran, profil v9 i nagrade se ne menjaju.
 

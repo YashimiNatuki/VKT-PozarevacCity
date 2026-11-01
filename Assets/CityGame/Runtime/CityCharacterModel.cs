@@ -3,6 +3,24 @@ namespace Pozarevac.CityGame
 {
     public static class CityCharacterModel
     {
+        public static bool TryPrepareHuman(GameObject source,Transform parent,int layer,out GameObject prepared)
+        {
+            prepared=null;
+            if(source==null||parent==null||!parent.gameObject.activeInHierarchy||layer<0||layer>31)return false;
+            if(source.GetComponentsInChildren<MonoBehaviour>(true).Length>0||source.GetComponentsInChildren<Collider>(true).Length>0||
+               source.GetComponentsInChildren<Rigidbody>(true).Length>0||source.GetComponentsInChildren<Camera>(true).Length>0||
+               source.GetComponentsInChildren<AudioSource>(true).Length>0||source.GetComponentsInChildren<AudioListener>(true).Length>0)return false;
+            GameObject wrapper=new GameObject("ReviewedHumanPreview");wrapper.transform.SetParent(parent,false);bool ready=false;
+            try
+            {
+                GameObject model=Object.Instantiate(source,wrapper.transform);
+                foreach(Animator animator in model.GetComponentsInChildren<Animator>(true))animator.enabled=false;
+                if(!Normalize(wrapper.transform,model,null))return false;
+                foreach(Transform item in wrapper.GetComponentsInChildren<Transform>(true))item.gameObject.layer=layer;
+                wrapper.SetActive(false);prepared=wrapper;ready=true;return true;
+            }
+            finally{if(!ready){if(Application.isPlaying)Object.Destroy(wrapper);else Object.DestroyImmediate(wrapper);}}
+        }
         public static GameObject LoadSource()
         {
             // The motion FBX retains the control-rig hierarchy its clips actually address.
