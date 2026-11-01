@@ -24,6 +24,7 @@ namespace Pozarevac.CityGame
             if(audio!=null)audio.CueRequested+=OnCue;
         }
         public void SetAlert(bool value)=>alert=value;
+        public void SetCombatPunch(float value)=>pose.SetCombatPunch(value);
         private void OnDamage(float amount)=>expression.Damage(amount);
         private void ClearExpression()=>expression.Clear();
         private void OnCue(CityAudioCue cue){if(cue==CityAudioCue.Success)expression.Celebrate();else expression.Focus();}

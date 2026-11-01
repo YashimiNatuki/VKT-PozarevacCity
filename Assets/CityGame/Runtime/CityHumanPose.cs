@@ -16,6 +16,11 @@ namespace Pozarevac.CityGame
         private readonly CityGaitState gait = new CityGaitState();
         private readonly float leftSide, rightSide;
         private float seconds;
+        private CityHumanHandPose leftHand, rightHand;
+        private float guardWeight, combatPunch;
+        public bool HandsReady => leftHand != null && rightHand != null;
+        public float GuardWeight => guardWeight;
+        public void SetCombatPunch(float value) { combatPunch = float.IsFinite(value) ? Mathf.Clamp01(value) : 0; }
         public CityHumanFace Face {get;private set;}
         public float Phase => gait.Phase;
         public float ObservedSpeed => gait.Speed;
@@ -73,6 +78,9 @@ namespace Pozarevac.CityGame
                 selected[13].parent != selected[12] || selected[14].parent != selected[13]) return false;
             pose = new CityHumanPose(reference, selected);
             CityHumanFace.TryCreate(model,reference,out CityHumanFace face);pose.Face=face;
+            if (CityHumanHandPose.TryCreate(all,true,out CityHumanHandPose left) &&
+                CityHumanHandPose.TryCreate(all,false,out CityHumanHandPose right))
+            { pose.leftHand=left;pose.rightHand=right; }
             return true;
         }
 
@@ -88,27 +96,42 @@ namespace Pozarevac.CityGame
             if(!float.IsFinite(deltaSeconds)||deltaSeconds<=0)return;
             Restore();
             if(!gait.Step(displacement,deltaSeconds)){Reset();return;}
-            if(gait.WasTeleported){grounding?.Reset();seconds=0;}
+            if(gait.WasTeleported){grounding?.Reset();seconds=guardWeight=combatPunch=0;}
             seconds=Mathf.Repeat(seconds+Mathf.Min(deltaSeconds,.05f),1000);
             // Slight standing flex leaves room for the shared two-bone support solver.
             CityActorMotion.PoseLeg(bones[9], bones[10], bones[11], frame, gait.LeftStride, Mathf.Max(4,gait.LeftKneeFlex));
             CityActorMotion.PoseLeg(bones[12], bones[13], bones[14], frame, gait.RightStride, Mathf.Max(4,gait.RightKneeFlex));
             bones[11].rotation = frame.rotation * leftFootFrame;
             bones[14].rotation = frame.rotation * rightFootFrame;
-            if (guard)
+            // Explicit wardrobe poses are immediate; live combat blends in and out.
+            guardWeight=guard?1:Mathf.MoveTowards(guardWeight,combatPunch>0?1:0,Mathf.Min(deltaSeconds,.05f)*(combatPunch>0?18:7));
+            CityActorMotion.RelaxArm(bones[3], bones[4], frame, leftSide, gait.LeftArmSwing);
+            CityActorMotion.RelaxArm(bones[6], bones[7], frame, rightSide, gait.RightArmSwing);
+            if (guardWeight > 0)
             {
+                Quaternion leftArm=bones[3].localRotation,leftElbow=bones[4].localRotation;
+                Quaternion rightArm=bones[6].localRotation,rightElbow=bones[7].localRotation;
                 CityActorMotion.PoseBoxingArm(bones[3], bones[4], frame, leftSide, 0, null, .7f);
-                CityActorMotion.PoseBoxingArm(bones[6], bones[7], frame, rightSide, 0, null, .7f);
+                CityActorMotion.PoseBoxingArm(bones[6], bones[7], frame, rightSide, combatPunch, null, .7f);
+                bones[3].localRotation=Quaternion.Slerp(leftArm,bones[3].localRotation,guardWeight);
+                bones[4].localRotation=Quaternion.Slerp(leftElbow,bones[4].localRotation,guardWeight);
+                bones[6].localRotation=Quaternion.Slerp(rightArm,bones[6].localRotation,guardWeight);
+                bones[7].localRotation=Quaternion.Slerp(rightElbow,bones[7].localRotation,guardWeight);
             }
-            else
-            {
-                CityActorMotion.RelaxArm(bones[3], bones[4], frame, leftSide, gait.LeftArmSwing);
-                CityActorMotion.RelaxArm(bones[6], bones[7], frame, rightSide, gait.RightArmSwing);
-            }
+            ApplyHand(leftHand,bones[4],bones[5],leftSide,0);
+            ApplyHand(rightHand,bones[7],bones[8],rightSide,combatPunch);
             bones[1].localRotation *= Quaternion.Euler(Mathf.Sin(seconds * 1.8f) * .6f, 0, 0);
         }
 
+        private void ApplyHand(CityHumanHandPose hand,Transform elbow,Transform wrist,float side,float punch)
+        {
+            if(hand==null)return;
+            Vector3 direction=(wrist.position-elbow.position).normalized;
+            Vector3 palm=Quaternion.AngleAxis(90*side*punch,direction)*Vector3.Cross(direction,frame.right);
+            hand.Apply(guardWeight,gait.Speed/8,palm);
+        }
+
         private void Restore() { for (int i = 0; i < bones.Length; i++) if (bones[i] != null) bones[i].localRotation = rest[i]; }
-        public void Reset() { Restore(); Face?.Reset();gait.Reset(); seconds = 0;grounding?.Reset();SupportedFeet=0; }
+        public void Reset() { Restore(); leftHand?.Reset();rightHand?.Reset();Face?.Reset();gait.Reset(); seconds = guardWeight = combatPunch = 0;grounding?.Reset();SupportedFeet=0; }
     }
 }

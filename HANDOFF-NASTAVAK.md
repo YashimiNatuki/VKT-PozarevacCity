@@ -1,6 +1,14 @@
 # VKT: nastavak rada, 2026-11-01
 
-## Najnovije: lice, mimika i pogled — 1. novembar 2026.
+## Najnovije: šake i stvarni udarac — 1. novembar 2026.
+
+Šake novog lika sada koriste svih 30 zglobova prstiju. Gard zatvara pesnice i poravnava dlanove/zglobove; postojeći unarmed LMB/NAPAD pokreće desni udarac i levi gard. Pauza i cooldown ostaju autoritativni; teleport i izlazak iz napada oslobađaju pozu. Nema novih modela, biblioteka ili promene profila v9.
+
+**290 Unity testova prošlo, 0 palo, 1 opcioni preskočen; 8/8 ciljanih testova.** Windows build, native šake/lice/lik/pregled, desktop/touch-preview i oba toka prethodne špice prošli su izlazom 0. [Izmene](Docs/Human-Hands-20261101.md) | [Dokazi](Docs/Verification-Human-Hands-20261101.json).
+
+Benč/boks još koriste prethodne trening-modele. Držanje telefona, novi hvat šipke, fizički mobilni i dugi FPS test, novi glasovi i novi AI film ostaju otvoreni. Slede kontakt šake/predmeta → novi trening-rig → teren/kontakti → centar → govor → misije.
+
+## Prethodno: lice, mimika i pogled — 1. novembar 2026.
 
 Kapci, vilica, obrve, osmeh i pogled sada koriste 15 stvarnih CC0 facial kontrola. U garderoberu IZRAZ LICA menja pet stanja; u gradu reaguje na povredu, uspeh i napor. Oči su poravnate prema stvarnom Unity/FBX okviru. Pauza zamrzava gradski izraz; pregled radi dok je grad pauziran. Izbor modela ostaje sesijski, profil v9. Benč/boks koriste prethodne trening-modele.
 

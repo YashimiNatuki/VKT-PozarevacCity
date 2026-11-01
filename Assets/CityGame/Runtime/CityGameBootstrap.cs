@@ -190,6 +190,7 @@ namespace Pozarevac.CityGame
                     Touch.BindCamera(cameraRig.Cycle);
                     Combat = gameObject.AddComponent<CityCombatRuntime>();
                     Combat.Initialize(this, hud, georeference.transform, Player.position);
+                    cameraRig.ConfigureCombat(Combat);
                     CreateHazard(spawn + new Vector3(18, 0, 8), CityHazardKind.GuardDog);
                     CreateHazard(spawn + new Vector3(-22, 0, 20), CityHazardKind.HostileAdult);
                     CityAmbience ambience = gameObject.AddComponent<CityAmbience>();

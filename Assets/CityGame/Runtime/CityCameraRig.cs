@@ -17,6 +17,8 @@ namespace Pozarevac.CityGame
         public bool HumanSelected {get;private set;}
         public CityOutfit CurrentOutfit => look!=null?look.Outfit:CityOutfit.Korzo;
         private CityGameAudio feedbackAudio;
+        private CityCombatRuntime combat;
+        public void ConfigureCombat(CityCombatRuntime runtime){combat=runtime;}
         public void ConfigureFeedback(CityGameAudio audio)
         {
             feedbackAudio=audio;
@@ -135,6 +137,7 @@ namespace Pozarevac.CityGame
             if(look!=null)look.Face.SetAlert(lifestyle!=null&&lifestyle.Wanted);
             ApplyAvatarVisibility();
             HumanActor?.SetAlert(lifestyle!=null&&lifestyle.Wanted);
+            HumanActor?.SetCombatPunch(combat!=null&&combat.CanAct?combat.UnarmedPunch:0);
             HumanActor?.Advance(Time.deltaTime,Time.timeScale<=0||Time.deltaTime<=0);
             if(training||boxing)
             {

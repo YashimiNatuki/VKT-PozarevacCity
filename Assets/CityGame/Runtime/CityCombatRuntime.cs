@@ -26,6 +26,9 @@ namespace Pozarevac.CityGame
         private GameObject heldStone, heldStick;
         private Material stoneMaterial, woodMaterial, glassMaterial;
         private float swing, hudCountdown;
+        private CityWeapon swingWeapon;
+        // Presentation observes only accepted attacks; changing equipment cannot invent a punch.
+        public float UnarmedPunch => swingWeapon==CityWeapon.Unarmed&&swing>0 ? Mathf.Sin(Mathf.Clamp01(swing/.2f)*Mathf.PI) : 0;
         public CityCombat Inventory { get; private set; }
         public CityWeaponPickup[] Pickups { get; private set; }
         public CityBreakableWindow PracticeWindow { get; private set; }
@@ -122,6 +125,7 @@ namespace Pozarevac.CityGame
             }
             if (!Inventory.TryAttack(true, out CityAttack attack)) return false;
             swing = .2f;
+            swingWeapon=attack.Weapon;
             if (attack.Weapon == CityWeapon.Stone)
             {
                 available.Attack = attack; available.Position = Aim.origin;

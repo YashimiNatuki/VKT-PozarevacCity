@@ -249,6 +249,12 @@ namespace Pozarevac.CityGame
                 if(!humanFaceVerified)yield break;
                 details+=" Human face: reviewed morphs, gaze, wardrobe, feedback and pause passed.";
             }
+            if(Array.IndexOf(Environment.GetCommandLineArgs(),"-vktHumanHandsSmoke")>=0)
+            {
+                yield return VerifyHumanHands(game);
+                if(!humanHandsVerified)yield break;
+                details+=" Human hands: thirty finger joints, guard deformation, actual unarmed attack, pause and recovery passed.";
+            }
             if (Array.Exists(Environment.GetCommandLineArgs(), arg => arg == "-vktPerspectiveCapture"))
             {
                 game.GetComponent<CityProgressionController>().ClosePanel();
