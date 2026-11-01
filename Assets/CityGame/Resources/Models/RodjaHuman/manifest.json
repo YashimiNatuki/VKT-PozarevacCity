@@ -1,14 +1,241 @@
 {
   "generator": "MPFB 2.0.18 / Blender 4.5.9",
-  "rig": "game_engine",
   "license": "CC0-1.0",
-  "materials": [
+  "rig": "game_engine",
+  "meshes": [
     {
-      "name": "Material",
-      "diffuse": null,
-      "normal": null,
-      "alphaClip": false
+      "name": "RodjaBody",
+      "vertices": 7840,
+      "triangles": 15500
     },
+    {
+      "name": "RodjaBody.male_casualsuit01",
+      "vertices": 8426,
+      "triangles": 16672
+    },
+    {
+      "name": "RodjaBody.shoes02",
+      "vertices": 1594,
+      "triangles": 3064
+    },
+    {
+      "name": "RodjaBody.low-poly",
+      "vertices": 96,
+      "triangles": 172
+    },
+    {
+      "name": "RodjaBody.eyebrow001",
+      "vertices": 124,
+      "triangles": 192
+    },
+    {
+      "name": "RodjaBody.short02",
+      "vertices": 1755,
+      "triangles": 3344
+    },
+    {
+      "name": "RodjaBody.teeth_base",
+      "vertices": 3868,
+      "triangles": 7120
+    }
+  ],
+  "triangles": 46064,
+  "bones": 53,
+  "zeroPoseMaximumDeltaMeters": 0.0,
+  "restRigMaximumDelta": 0.0,
+  "topologyUnchanged": true,
+  "skinWeightsUnchanged": true,
+  "targets": {
+    "RodjaBody": {
+      "eyeBlinkLeft": {
+        "movedVertices": 718,
+        "maximumDeltaMeters": 0.012613429752137051
+      },
+      "eyeBlinkRight": {
+        "movedVertices": 718,
+        "maximumDeltaMeters": 0.012613429752137051
+      },
+      "jawOpen": {
+        "movedVertices": 2239,
+        "maximumDeltaMeters": 0.038738342036593244
+      },
+      "mouthSmileLeft": {
+        "movedVertices": 1627,
+        "maximumDeltaMeters": 0.01868205476504101
+      },
+      "mouthSmileRight": {
+        "movedVertices": 1628,
+        "maximumDeltaMeters": 0.018060436845334985
+      },
+      "browDownLeft": {
+        "movedVertices": 499,
+        "maximumDeltaMeters": 0.006952015226565901
+      },
+      "browDownRight": {
+        "movedVertices": 499,
+        "maximumDeltaMeters": 0.006952015226565901
+      },
+      "eyeLookUpLeft": {
+        "movedVertices": 708,
+        "maximumDeltaMeters": 0.002578813692373326
+      },
+      "eyeLookUpRight": {
+        "movedVertices": 707,
+        "maximumDeltaMeters": 0.002578813692373326
+      },
+      "eyeLookDownLeft": {
+        "movedVertices": 360,
+        "maximumDeltaMeters": 0.0037336478402108858
+      },
+      "eyeLookDownRight": {
+        "movedVertices": 360,
+        "maximumDeltaMeters": 0.0037336478402108858
+      },
+      "eyeLookInLeft": {
+        "movedVertices": 323,
+        "maximumDeltaMeters": 0.0010049878988679212
+      },
+      "eyeLookInRight": {
+        "movedVertices": 323,
+        "maximumDeltaMeters": 0.0010049878988679212
+      },
+      "eyeLookOutLeft": {
+        "movedVertices": 323,
+        "maximumDeltaMeters": 0.0010049878988679212
+      },
+      "eyeLookOutRight": {
+        "movedVertices": 323,
+        "maximumDeltaMeters": 0.0010049878988679212
+      }
+    },
+    "RodjaBody.male_casualsuit01": {},
+    "RodjaBody.shoes02": {},
+    "RodjaBody.low-poly": {
+      "eyeLookUpLeft": {
+        "movedVertices": 48,
+        "maximumDeltaMeters": 0.002912031846809803
+      },
+      "eyeLookUpRight": {
+        "movedVertices": 48,
+        "maximumDeltaMeters": 0.002912031846809803
+      },
+      "eyeLookDownLeft": {
+        "movedVertices": 48,
+        "maximumDeltaMeters": 0.004755022849646256
+      },
+      "eyeLookDownRight": {
+        "movedVertices": 48,
+        "maximumDeltaMeters": 0.004755022849646256
+      },
+      "eyeLookInLeft": {
+        "movedVertices": 48,
+        "maximumDeltaMeters": 0.005825805689479947
+      },
+      "eyeLookInRight": {
+        "movedVertices": 48,
+        "maximumDeltaMeters": 0.005825805689479947
+      },
+      "eyeLookOutLeft": {
+        "movedVertices": 48,
+        "maximumDeltaMeters": 0.005725381476272839
+      },
+      "eyeLookOutRight": {
+        "movedVertices": 48,
+        "maximumDeltaMeters": 0.005725381476272839
+      }
+    },
+    "RodjaBody.eyebrow001": {
+      "eyeBlinkLeft": {
+        "movedVertices": 23,
+        "maximumDeltaMeters": 0.003617727086186807
+      },
+      "eyeBlinkRight": {
+        "movedVertices": 23,
+        "maximumDeltaMeters": 0.003617727086186807
+      },
+      "jawOpen": {
+        "movedVertices": 14,
+        "maximumDeltaMeters": 0.00038118838202170287
+      },
+      "mouthSmileLeft": {
+        "movedVertices": 9,
+        "maximumDeltaMeters": 0.00037404611431405627
+      },
+      "mouthSmileRight": {
+        "movedVertices": 9,
+        "maximumDeltaMeters": 0.00037404611431405627
+      },
+      "browDownLeft": {
+        "movedVertices": 72,
+        "maximumDeltaMeters": 0.005528810229681563
+      },
+      "browDownRight": {
+        "movedVertices": 72,
+        "maximumDeltaMeters": 0.005528810229681563
+      },
+      "eyeLookUpLeft": {
+        "movedVertices": 22,
+        "maximumDeltaMeters": 0.0007670403729687052
+      },
+      "eyeLookUpRight": {
+        "movedVertices": 22,
+        "maximumDeltaMeters": 0.0007670403729687052
+      },
+      "eyeLookDownLeft": {
+        "movedVertices": 12,
+        "maximumDeltaMeters": 0.0009452501064673053
+      },
+      "eyeLookDownRight": {
+        "movedVertices": 12,
+        "maximumDeltaMeters": 0.0009452501064673053
+      },
+      "eyeLookInLeft": {
+        "movedVertices": 8,
+        "maximumDeltaMeters": 0.0002385899404776527
+      },
+      "eyeLookInRight": {
+        "movedVertices": 8,
+        "maximumDeltaMeters": 0.0002385899404776527
+      },
+      "eyeLookOutLeft": {
+        "movedVertices": 8,
+        "maximumDeltaMeters": 0.00023938594133495267
+      },
+      "eyeLookOutRight": {
+        "movedVertices": 8,
+        "maximumDeltaMeters": 0.00023938594133495267
+      }
+    },
+    "RodjaBody.short02": {
+      "jawOpen": {
+        "movedVertices": 136,
+        "maximumDeltaMeters": 0.0015775932452659542
+      },
+      "mouthSmileLeft": {
+        "movedVertices": 55,
+        "maximumDeltaMeters": 0.001438801689548357
+      },
+      "mouthSmileRight": {
+        "movedVertices": 55,
+        "maximumDeltaMeters": 0.0017327271664698222
+      },
+      "browDownLeft": {
+        "movedVertices": 197,
+        "maximumDeltaMeters": 0.006718371279834008
+      },
+      "browDownRight": {
+        "movedVertices": 219,
+        "maximumDeltaMeters": 0.006843624040328898
+      }
+    },
+    "RodjaBody.teeth_base": {
+      "jawOpen": {
+        "movedVertices": 1884,
+        "maximumDeltaMeters": 0.030256370138346055
+      }
+    }
+  },
+  "materials": [
     {
       "name": "RodjaBody.body",
       "diffuse": "young_lightskinned_male_diffuse.png",
@@ -88,44 +315,695 @@
       "alphaClip": false
     }
   ],
-  "meshes": [
-    {
-      "name": "RodjaBody",
-      "vertices": 7840,
-      "triangles": 15500
-    },
-    {
-      "name": "RodjaBody.male_casualsuit01",
-      "vertices": 8426,
-      "triangles": 16672
-    },
-    {
-      "name": "RodjaBody.shoes02",
-      "vertices": 1594,
-      "triangles": 3064
-    },
-    {
-      "name": "RodjaBody.low-poly",
-      "vertices": 96,
-      "triangles": 172
-    },
-    {
-      "name": "RodjaBody.eyebrow001",
-      "vertices": 124,
-      "triangles": 192
-    },
-    {
-      "name": "RodjaBody.short02",
-      "vertices": 1755,
-      "triangles": 3344
-    },
-    {
-      "name": "RodjaBody.teeth_base",
-      "vertices": 3868,
-      "triangles": 7120
+  "baselineBlendSha256": "d784e76c488d0fcb9192c8b9ee3d6c0fb50831d32cd485882784658d0cadba92",
+  "baselineGeometrySha256": "04cf6d7199c8926214fd71a794bd18a6d03253514219fc28d4e0bef28caf9f0f",
+  "generatedGeometrySha256": "04cf6d7199c8926214fd71a794bd18a6d03253514219fc28d4e0bef28caf9f0f",
+  "targetPack": {
+    "source": "https://files2.makehumancommunity.org/functional/faceunits01.zip",
+    "sourcePage": "https://static.makehumancommunity.org/assets/assetpacks/faceunits01.html",
+    "licensePage": "https://static.makehumancommunity.org/assets/assetpacks.html",
+    "license": "CC0-1.0",
+    "bytes": 257821,
+    "sha256": "d113107bd7eb59f3af4df6fc0ec29bfcc593f496d0b336aec14f086a80ce7146",
+    "pack": {
+      "cheekPuff": {
+        "author": "Mika Suominen",
+        "category": "Faceunit",
+        "changed": "",
+        "created": "",
+        "description": "Autogenerated ARKit faceunit",
+        "license": "CC0",
+        "original_author": "",
+        "original_source": "",
+        "source": "",
+        "thumbnail": "",
+        "type": "target"
+      },
+      "mouthLeft": {
+        "author": "Mika Suominen",
+        "category": "Faceunit",
+        "changed": "",
+        "created": "",
+        "description": "Autogenerated ARKit faceunit",
+        "license": "CC0",
+        "original_author": "",
+        "original_source": "",
+        "source": "",
+        "thumbnail": "",
+        "type": "target"
+      },
+      "noseSneerLeft": {
+        "author": "Mika Suominen",
+        "category": "Faceunit",
+        "changed": "",
+        "created": "",
+        "description": "Autogenerated ARKit faceunit",
+        "license": "CC0",
+        "original_author": "",
+        "original_source": "",
+        "source": "",
+        "thumbnail": "",
+        "type": "target"
+      },
+      "eyeLookDownLeft": {
+        "author": "Mika Suominen",
+        "category": "Faceunit",
+        "changed": "",
+        "created": "",
+        "description": "Autogenerated ARKit faceunit",
+        "license": "CC0",
+        "original_author": "",
+        "original_source": "",
+        "source": "",
+        "thumbnail": "",
+        "type": "target"
+      },
+      "cheekSquintLeft": {
+        "author": "Mika Suominen",
+        "category": "Faceunit",
+        "changed": "",
+        "created": "",
+        "description": "Autogenerated ARKit faceunit",
+        "license": "CC0",
+        "original_author": "",
+        "original_source": "",
+        "source": "",
+        "thumbnail": "",
+        "type": "target"
+      },
+      "cheekSquintRight": {
+        "author": "Mika Suominen",
+        "category": "Faceunit",
+        "changed": "",
+        "created": "",
+        "description": "Autogenerated ARKit faceunit",
+        "license": "CC0",
+        "original_author": "",
+        "original_source": "",
+        "source": "",
+        "thumbnail": "",
+        "type": "target"
+      },
+      "mouthFrownRight": {
+        "author": "Mika Suominen",
+        "category": "Faceunit",
+        "changed": "",
+        "created": "",
+        "description": "Autogenerated ARKit faceunit",
+        "license": "CC0",
+        "original_author": "",
+        "original_source": "",
+        "source": "",
+        "thumbnail": "",
+        "type": "target"
+      },
+      "tongueOut": {
+        "author": "Mika Suominen",
+        "category": "Faceunit",
+        "changed": "",
+        "created": "",
+        "description": "Autogenerated ARKit faceunit",
+        "license": "CC0",
+        "original_author": "",
+        "original_source": "",
+        "source": "",
+        "thumbnail": "",
+        "type": "target"
+      },
+      "eyeLookInLeft": {
+        "author": "Mika Suominen",
+        "category": "Faceunit",
+        "changed": "",
+        "created": "",
+        "description": "Autogenerated ARKit faceunit",
+        "license": "CC0",
+        "original_author": "",
+        "original_source": "",
+        "source": "",
+        "thumbnail": "",
+        "type": "target"
+      },
+      "jawOpen": {
+        "author": "Mika Suominen",
+        "category": "Faceunit",
+        "changed": "",
+        "created": "",
+        "description": "Autogenerated ARKit faceunit",
+        "license": "CC0",
+        "original_author": "",
+        "original_source": "",
+        "source": "",
+        "thumbnail": "",
+        "type": "target"
+      },
+      "mouthSmileRight": {
+        "author": "Mika Suominen",
+        "category": "Faceunit",
+        "changed": "",
+        "created": "",
+        "description": "Autogenerated ARKit faceunit",
+        "license": "CC0",
+        "original_author": "",
+        "original_source": "",
+        "source": "",
+        "thumbnail": "",
+        "type": "target"
+      },
+      "mouthStretchRight": {
+        "author": "Mika Suominen",
+        "category": "Faceunit",
+        "changed": "",
+        "created": "",
+        "description": "Autogenerated ARKit faceunit",
+        "license": "CC0",
+        "original_author": "",
+        "original_source": "",
+        "source": "",
+        "thumbnail": "",
+        "type": "target"
+      },
+      "mouthFrownLeft": {
+        "author": "Mika Suominen",
+        "category": "Faceunit",
+        "changed": "",
+        "created": "",
+        "description": "Autogenerated ARKit faceunit",
+        "license": "CC0",
+        "original_author": "",
+        "original_source": "",
+        "source": "",
+        "thumbnail": "",
+        "type": "target"
+      },
+      "eyeWideRight": {
+        "author": "Mika Suominen",
+        "category": "Faceunit",
+        "changed": "",
+        "created": "",
+        "description": "Autogenerated ARKit faceunit",
+        "license": "CC0",
+        "original_author": "",
+        "original_source": "",
+        "source": "",
+        "thumbnail": "",
+        "type": "target"
+      },
+      "mouthShrugLower": {
+        "author": "Mika Suominen",
+        "category": "Faceunit",
+        "changed": "",
+        "created": "",
+        "description": "Autogenerated ARKit faceunit",
+        "license": "CC0",
+        "original_author": "",
+        "original_source": "",
+        "source": "",
+        "thumbnail": "",
+        "type": "target"
+      },
+      "eyeLookOutRight": {
+        "author": "Mika Suominen",
+        "category": "Faceunit",
+        "changed": "",
+        "created": "",
+        "description": "Autogenerated ARKit faceunit",
+        "license": "CC0",
+        "original_author": "",
+        "original_source": "",
+        "source": "",
+        "thumbnail": "",
+        "type": "target"
+      },
+      "jawForward": {
+        "author": "Mika Suominen",
+        "category": "Faceunit",
+        "changed": "",
+        "created": "",
+        "description": "Autogenerated ARKit faceunit",
+        "license": "CC0",
+        "original_author": "",
+        "original_source": "",
+        "source": "",
+        "thumbnail": "",
+        "type": "target"
+      },
+      "eyeSquintRight": {
+        "author": "Mika Suominen",
+        "category": "Faceunit",
+        "changed": "",
+        "created": "",
+        "description": "Autogenerated ARKit faceunit",
+        "license": "CC0",
+        "original_author": "",
+        "original_source": "",
+        "source": "",
+        "thumbnail": "",
+        "type": "target"
+      },
+      "browOuterUpLeft": {
+        "author": "Mika Suominen",
+        "category": "Faceunit",
+        "changed": "",
+        "created": "",
+        "description": "Autogenerated ARKit faceunit",
+        "license": "CC0",
+        "original_author": "",
+        "original_source": "",
+        "source": "",
+        "thumbnail": "",
+        "type": "target"
+      },
+      "eyeSquintLeft": {
+        "author": "Mika Suominen",
+        "category": "Faceunit",
+        "changed": "",
+        "created": "",
+        "description": "Autogenerated ARKit faceunit",
+        "license": "CC0",
+        "original_author": "",
+        "original_source": "",
+        "source": "",
+        "thumbnail": "",
+        "type": "target"
+      },
+      "mouthDimpleRight": {
+        "author": "Mika Suominen",
+        "category": "Faceunit",
+        "changed": "",
+        "created": "",
+        "description": "Autogenerated ARKit faceunit",
+        "license": "CC0",
+        "original_author": "",
+        "original_source": "",
+        "source": "",
+        "thumbnail": "",
+        "type": "target"
+      },
+      "mouthClose": {
+        "author": "Mika Suominen",
+        "category": "Faceunit",
+        "changed": "",
+        "created": "",
+        "description": "Autogenerated ARKit faceunit",
+        "license": "CC0",
+        "original_author": "",
+        "original_source": "",
+        "source": "",
+        "thumbnail": "",
+        "type": "target"
+      },
+      "mouthSmileLeft": {
+        "author": "Mika Suominen",
+        "category": "Faceunit",
+        "changed": "",
+        "created": "",
+        "description": "Autogenerated ARKit faceunit",
+        "license": "CC0",
+        "original_author": "",
+        "original_source": "",
+        "source": "",
+        "thumbnail": "",
+        "type": "target"
+      },
+      "jawRight": {
+        "author": "Mika Suominen",
+        "category": "Faceunit",
+        "changed": "",
+        "created": "",
+        "description": "Autogenerated ARKit faceunit",
+        "license": "CC0",
+        "original_author": "",
+        "original_source": "",
+        "source": "",
+        "thumbnail": "",
+        "type": "target"
+      },
+      "eyeWideLeft": {
+        "author": "Mika Suominen",
+        "category": "Faceunit",
+        "changed": "",
+        "created": "",
+        "description": "Autogenerated ARKit faceunit",
+        "license": "CC0",
+        "original_author": "",
+        "original_source": "",
+        "source": "",
+        "thumbnail": "",
+        "type": "target"
+      },
+      "eyeLookOutLeft": {
+        "author": "Mika Suominen",
+        "category": "Faceunit",
+        "changed": "",
+        "created": "",
+        "description": "Autogenerated ARKit faceunit",
+        "license": "CC0",
+        "original_author": "",
+        "original_source": "",
+        "source": "",
+        "thumbnail": "",
+        "type": "target"
+      },
+      "eyeLookInRight": {
+        "author": "Mika Suominen",
+        "category": "Faceunit",
+        "changed": "",
+        "created": "",
+        "description": "Autogenerated ARKit faceunit",
+        "license": "CC0",
+        "original_author": "",
+        "original_source": "",
+        "source": "",
+        "thumbnail": "",
+        "type": "target"
+      },
+      "mouthPucker": {
+        "author": "Mika Suominen",
+        "category": "Faceunit",
+        "changed": "",
+        "created": "",
+        "description": "Autogenerated ARKit faceunit",
+        "license": "CC0",
+        "original_author": "",
+        "original_source": "",
+        "source": "",
+        "thumbnail": "",
+        "type": "target"
+      },
+      "eyeLookUpRight": {
+        "author": "Mika Suominen",
+        "category": "Faceunit",
+        "changed": "",
+        "created": "",
+        "description": "Autogenerated ARKit faceunit",
+        "license": "CC0",
+        "original_author": "",
+        "original_source": "",
+        "source": "",
+        "thumbnail": "",
+        "type": "target"
+      },
+      "mouthRollUpper": {
+        "author": "Mika Suominen",
+        "category": "Faceunit",
+        "changed": "",
+        "created": "",
+        "description": "Autogenerated ARKit faceunit",
+        "license": "CC0",
+        "original_author": "",
+        "original_source": "",
+        "source": "",
+        "thumbnail": "",
+        "type": "target"
+      },
+      "browDownRight": {
+        "author": "Mika Suominen",
+        "category": "Faceunit",
+        "changed": "",
+        "created": "",
+        "description": "Autogenerated ARKit faceunit",
+        "license": "CC0",
+        "original_author": "",
+        "original_source": "",
+        "source": "",
+        "thumbnail": "",
+        "type": "target"
+      },
+      "mouthRight": {
+        "author": "Mika Suominen",
+        "category": "Faceunit",
+        "changed": "",
+        "created": "",
+        "description": "Autogenerated ARKit faceunit",
+        "license": "CC0",
+        "original_author": "",
+        "original_source": "",
+        "source": "",
+        "thumbnail": "",
+        "type": "target"
+      },
+      "noseSneerRight": {
+        "author": "Mika Suominen",
+        "category": "Faceunit",
+        "changed": "",
+        "created": "",
+        "description": "Autogenerated ARKit faceunit",
+        "license": "CC0",
+        "original_author": "",
+        "original_source": "",
+        "source": "",
+        "thumbnail": "",
+        "type": "target"
+      },
+      "mouthLowerDownLeft": {
+        "author": "Mika Suominen",
+        "category": "Faceunit",
+        "changed": "",
+        "created": "",
+        "description": "Autogenerated ARKit faceunit",
+        "license": "CC0",
+        "original_author": "",
+        "original_source": "",
+        "source": "",
+        "thumbnail": "",
+        "type": "target"
+      },
+      "browInnerUp": {
+        "author": "Mika Suominen",
+        "category": "Faceunit",
+        "changed": "",
+        "created": "",
+        "description": "Autogenerated ARKit faceunit",
+        "license": "CC0",
+        "original_author": "",
+        "original_source": "",
+        "source": "",
+        "thumbnail": "",
+        "type": "target"
+      },
+      "eyeBlinkLeft": {
+        "author": "Mika Suominen",
+        "category": "Faceunit",
+        "changed": "",
+        "created": "",
+        "description": "Autogenerated ARKit faceunit",
+        "license": "CC0",
+        "original_author": "",
+        "original_source": "",
+        "source": "",
+        "thumbnail": "",
+        "type": "target"
+      },
+      "mouthUpperUpRight": {
+        "author": "Mika Suominen",
+        "category": "Faceunit",
+        "changed": "",
+        "created": "",
+        "description": "Autogenerated ARKit faceunit",
+        "license": "CC0",
+        "original_author": "",
+        "original_source": "",
+        "source": "",
+        "thumbnail": "",
+        "type": "target"
+      },
+      "mouthFunnel": {
+        "author": "Mika Suominen",
+        "category": "Faceunit",
+        "changed": "",
+        "created": "",
+        "description": "Autogenerated ARKit faceunit",
+        "license": "CC0",
+        "original_author": "",
+        "original_source": "",
+        "source": "",
+        "thumbnail": "",
+        "type": "target"
+      },
+      "mouthLowerDownRight": {
+        "author": "Mika Suominen",
+        "category": "Faceunit",
+        "changed": "",
+        "created": "",
+        "description": "Autogenerated ARKit faceunit",
+        "license": "CC0",
+        "original_author": "",
+        "original_source": "",
+        "source": "",
+        "thumbnail": "",
+        "type": "target"
+      },
+      "mouthRollLower": {
+        "author": "Mika Suominen",
+        "category": "Faceunit",
+        "changed": "",
+        "created": "",
+        "description": "Autogenerated ARKit faceunit",
+        "license": "CC0",
+        "original_author": "",
+        "original_source": "",
+        "source": "",
+        "thumbnail": "",
+        "type": "target"
+      },
+      "eyeLookUpLeft": {
+        "author": "Mika Suominen",
+        "category": "Faceunit",
+        "changed": "",
+        "created": "",
+        "description": "Autogenerated ARKit faceunit",
+        "license": "CC0",
+        "original_author": "",
+        "original_source": "",
+        "source": "",
+        "thumbnail": "",
+        "type": "target"
+      },
+      "mouthPressLeft": {
+        "author": "Mika Suominen",
+        "category": "Faceunit",
+        "changed": "",
+        "created": "",
+        "description": "Autogenerated ARKit faceunit",
+        "license": "CC0",
+        "original_author": "",
+        "original_source": "",
+        "source": "",
+        "thumbnail": "",
+        "type": "target"
+      },
+      "eyeLookDownRight": {
+        "author": "Mika Suominen",
+        "category": "Faceunit",
+        "changed": "",
+        "created": "",
+        "description": "Autogenerated ARKit faceunit",
+        "license": "CC0",
+        "original_author": "",
+        "original_source": "",
+        "source": "",
+        "thumbnail": "",
+        "type": "target"
+      },
+      "mouthPressRight": {
+        "author": "Mika Suominen",
+        "category": "Faceunit",
+        "changed": "",
+        "created": "",
+        "description": "Autogenerated ARKit faceunit",
+        "license": "CC0",
+        "original_author": "",
+        "original_source": "",
+        "source": "",
+        "thumbnail": "",
+        "type": "target"
+      },
+      "mouthUpperUpLeft": {
+        "author": "Mika Suominen",
+        "category": "Faceunit",
+        "changed": "",
+        "created": "",
+        "description": "Autogenerated ARKit faceunit",
+        "license": "CC0",
+        "original_author": "",
+        "original_source": "",
+        "source": "",
+        "thumbnail": "",
+        "type": "target"
+      },
+      "browOuterUpRight": {
+        "author": "Mika Suominen",
+        "category": "Faceunit",
+        "changed": "",
+        "created": "",
+        "description": "Autogenerated ARKit faceunit",
+        "license": "CC0",
+        "original_author": "",
+        "original_source": "",
+        "source": "",
+        "thumbnail": "",
+        "type": "target"
+      },
+      "mouthStretchLeft": {
+        "author": "Mika Suominen",
+        "category": "Faceunit",
+        "changed": "",
+        "created": "",
+        "description": "Autogenerated ARKit faceunit",
+        "license": "CC0",
+        "original_author": "",
+        "original_source": "",
+        "source": "",
+        "thumbnail": "",
+        "type": "target"
+      },
+      "jawLeft": {
+        "author": "Mika Suominen",
+        "category": "Faceunit",
+        "changed": "",
+        "created": "",
+        "description": "Autogenerated ARKit faceunit",
+        "license": "CC0",
+        "original_author": "",
+        "original_source": "",
+        "source": "",
+        "thumbnail": "",
+        "type": "target"
+      },
+      "mouthShrugUpper": {
+        "author": "Mika Suominen",
+        "category": "Faceunit",
+        "changed": "",
+        "created": "",
+        "description": "Autogenerated ARKit faceunit",
+        "license": "CC0",
+        "original_author": "",
+        "original_source": "",
+        "source": "",
+        "thumbnail": "",
+        "type": "target"
+      },
+      "browDownLeft": {
+        "author": "Mika Suominen",
+        "category": "Faceunit",
+        "changed": "",
+        "created": "",
+        "description": "Autogenerated ARKit faceunit",
+        "license": "CC0",
+        "original_author": "",
+        "original_source": "",
+        "source": "",
+        "thumbnail": "",
+        "type": "target"
+      },
+      "mouthDimpleLeft": {
+        "author": "Mika Suominen",
+        "category": "Faceunit",
+        "changed": "",
+        "created": "",
+        "description": "Autogenerated ARKit faceunit",
+        "license": "CC0",
+        "original_author": "",
+        "original_source": "",
+        "source": "",
+        "thumbnail": "",
+        "type": "target"
+      },
+      "eyeBlinkRight": {
+        "author": "Mika Suominen",
+        "category": "Faceunit",
+        "changed": "",
+        "created": "",
+        "description": "Autogenerated ARKit faceunit",
+        "license": "CC0",
+        "original_author": "",
+        "original_source": "",
+        "source": "",
+        "thumbnail": "",
+        "type": "target"
+      }
     }
-  ],
-  "triangles": 46064,
-  "bones": 53,
-  "fbx_sha256": "a78473ae8aa4f7771764dc3346dc1b2fd1c92dd3606b8f7a43dc4421ea0d3918"
+  },
+  "fbx_sha256": "d2fd118ae3bd92b412fb5e74a98badd831792f3de3ceb72ed30feb9ffc7fc6e0",
+  "glb_sha256": "3a950614380872e5463d80bfe0810271093bc4f26ff3108d44410036d2da5307"
 }

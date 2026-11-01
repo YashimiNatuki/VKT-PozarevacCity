@@ -16,6 +16,7 @@ namespace Pozarevac.CityGame
         private readonly CityGaitState gait = new CityGaitState();
         private readonly float leftSide, rightSide;
         private float seconds;
+        public CityHumanFace Face {get;private set;}
         public float Phase => gait.Phase;
         public float ObservedSpeed => gait.Speed;
         public float Weight => gait.Weight;
@@ -70,7 +71,9 @@ namespace Pozarevac.CityGame
                 selected[7].parent != selected[6] || selected[8].parent != selected[7] ||
                 selected[10].parent != selected[9] || selected[11].parent != selected[10] ||
                 selected[13].parent != selected[12] || selected[14].parent != selected[13]) return false;
-            pose = new CityHumanPose(reference, selected); return true;
+            pose = new CityHumanPose(reference, selected);
+            CityHumanFace.TryCreate(model,reference,out CityHumanFace face);pose.Face=face;
+            return true;
         }
 
         public void Step(float deltaSeconds, float speed, bool guard)
@@ -106,6 +109,6 @@ namespace Pozarevac.CityGame
         }
 
         private void Restore() { for (int i = 0; i < bones.Length; i++) if (bones[i] != null) bones[i].localRotation = rest[i]; }
-        public void Reset() { Restore(); gait.Reset(); seconds = 0;grounding?.Reset();SupportedFeet=0; }
+        public void Reset() { Restore(); Face?.Reset();gait.Reset(); seconds = 0;grounding?.Reset();SupportedFeet=0; }
     }
 }

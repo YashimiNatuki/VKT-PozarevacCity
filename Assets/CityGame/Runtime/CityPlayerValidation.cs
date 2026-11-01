@@ -243,6 +243,12 @@ namespace Pozarevac.CityGame
                 if(!humanPlayableVerified)yield break;
                 details+=" Human playable avatar: physical movement, pause, camera modes, teleport and training fallback passed.";
             }
+            if(Array.IndexOf(Environment.GetCommandLineArgs(),"-vktHumanFaceSmoke")>=0)
+            {
+                yield return VerifyHumanFace(game);
+                if(!humanFaceVerified)yield break;
+                details+=" Human face: reviewed morphs, gaze, wardrobe, feedback and pause passed.";
+            }
             if (Array.Exists(Environment.GetCommandLineArgs(), arg => arg == "-vktPerspectiveCapture"))
             {
                 game.GetComponent<CityProgressionController>().ClosePanel();
@@ -391,6 +397,7 @@ namespace Pozarevac.CityGame
             controller.ClosePanel();game.GetComponent<CityMusicPanel>()?.Close();
             if(runtime==null||!runtime.Wardrobe.Open()){Finish(false,"Human preview wardrobe unavailable.");yield break;}
             int cash=game.Session.Cash,xp=runtime.Life.Experience;
+            CityFaceMood originalMood=runtime.Wardrobe.PreviewMood;
             CityOutfit outfit=game.Progression.Appearance.Outfit;
             controller.SaveNow();
             var previewStore=new CitySaveStore(controller.SavePath);
@@ -422,7 +429,7 @@ namespace Pozarevac.CityGame
                 if(!CaptureRenderedFrame(game,Path.Combine(folder,angle+".png"),out string error))
                 {Finish(false,error);yield break;}
             }
-            CityFaceMood mood=runtime.Wardrobe.PreviewMood;
+            CityFaceMood candidateMood=runtime.Wardrobe.PreviewMood;
             if(Array.IndexOf(Environment.GetCommandLineArgs(),"-vktHumanMotionSmoke")>=0)
             {
                 if(runtime.Wardrobe.Portrait)runtime.Wardrobe.TogglePortrait();
@@ -458,8 +465,15 @@ namespace Pozarevac.CityGame
                 Debug.Log("VKT_HUMAN_MOTION_VERIFIED modes=4 unscaledPreview=true worldPaused=true");
             }
             runtime.Wardrobe.CycleExpression();
-            if(runtime.Wardrobe.Select(CityOutfit.Busije)||runtime.Wardrobe.PreviewMood!=mood)
-            {Finish(false,"Candidate allowed original avatar customization.");yield break;}
+            if(runtime.Wardrobe.Select(CityOutfit.Busije)||runtime.Wardrobe.CandidateFace==null||
+               runtime.Wardrobe.PreviewMood!=(CityFaceMood)(((int)candidateMood+1)%5))
+            {Finish(false,"Candidate expression did not change independently of outfit customization.");yield break;}
+            button.onClick.Invoke();
+            if(runtime.Wardrobe.CandidatePreview||runtime.Wardrobe.PreviewMood!=originalMood)
+            {Finish(false,"Candidate expression changed the original avatar expression.");yield break;}
+            button.onClick.Invoke();
+            if(!runtime.Wardrobe.CandidatePreview||runtime.Wardrobe.PreviewMood!=CityFaceMood.Calm)
+            {Finish(false,"Candidate expression did not reset on model return.");yield break;}
             for(int i=0;i<3;i++)
             {
                 button.onClick.Invoke();button.onClick.Invoke();yield return null;

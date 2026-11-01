@@ -11,6 +11,27 @@ namespace Pozarevac.CityGame
         private readonly CityHumanPose pose;
         private Vector3 previous;
         private bool pendingTeleport;
+        private readonly CityFaceState expression=new CityFaceState();
+        private CityPlayerVitals vitals;
+        private CityGameAudio audio;
+        private Transform view;
+        private bool alert;
+        public CityHumanFace Face=>pose.Face;
+        public void BindFeedback(CityPlayerVitals health,CityGameAudio feedback,Transform cameraView)
+        {
+            Unsubscribe();expression.Clear();vitals=health;audio=feedback;view=cameraView;
+            if(vitals!=null){vitals.Damaged+=OnDamage;vitals.Respawned+=ClearExpression;}
+            if(audio!=null)audio.CueRequested+=OnCue;
+        }
+        public void SetAlert(bool value)=>alert=value;
+        private void OnDamage(float amount)=>expression.Damage(amount);
+        private void ClearExpression()=>expression.Clear();
+        private void OnCue(CityAudioCue cue){if(cue==CityAudioCue.Success)expression.Celebrate();else expression.Focus();}
+        private void Unsubscribe()
+        {
+            if(vitals!=null){vitals.Damaged-=OnDamage;vitals.Respawned-=ClearExpression;}
+            if(audio!=null)audio.CueRequested-=OnCue;
+        }
         public GameObject Visual {get;}
         public bool IsVisible=>Visual!=null&&Visual.activeSelf;
         public float ObservedSpeed=>pose.ObservedSpeed;
@@ -44,6 +65,7 @@ namespace Pozarevac.CityGame
             if(owner==null||Visual==null)return;
             Vector3 delta=owner.position-previous;previous=owner.position;
             if(paused&&delta.sqrMagnitude>25)pendingTeleport=true;
+            if(!paused&&float.IsFinite(seconds)&&seconds>0)expression.Tick(seconds);
             if(paused||!IsVisible||!float.IsFinite(seconds)||seconds<=0)return;
             if(pendingTeleport)
             {
@@ -56,9 +78,12 @@ namespace Pozarevac.CityGame
                 Visual.transform.rotation=Quaternion.Slerp(Visual.transform.rotation,Quaternion.LookRotation(flat),1-Mathf.Exp(-8*seconds));
             pose.StepObserved(delta,seconds,false);
             pose.ApplyGrounding(body!=null&&body.enabled&&body.isGrounded&&!pose.WasTeleported,seconds);
+            float effort=Mathf.Clamp01(pose.ObservedSpeed/8);
+            Face?.Step(seconds,view!=null?view.forward:Visual.transform.forward,expression.Resolve(effort,alert),effort);
         }
         public void Dispose()
         {
+            Unsubscribe();expression.Clear();
             pose.Reset();
             if(Visual!=null){if(Application.isPlaying)UnityEngine.Object.Destroy(Visual);else UnityEngine.Object.DestroyImmediate(Visual);}
         }

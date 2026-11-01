@@ -1,6 +1,14 @@
 # VKT: nastavak rada, 2026-11-01
 
-## Najnovije: ljudski lik u gradu — 1. novembar 2026.
+## Najnovije: lice, mimika i pogled — 1. novembar 2026.
+
+Kapci, vilica, obrve, osmeh i pogled sada koriste 15 stvarnih CC0 facial kontrola. U garderoberu IZRAZ LICA menja pet stanja; u gradu reaguje na povredu, uspeh i napor. Oči su poravnate prema stvarnom Unity/FBX okviru. Pauza zamrzava gradski izraz; pregled radi dok je grad pauziran. Izbor modela ostaje sesijski, profil v9. Benč/boks koriste prethodne trening-modele.
+
+**282 Unity testa prošla, 0 pala, 1 opcioni preskočen; 9/9 facijalnih + 4/4 feedback testova.** Windows build, native lice/lik/pregled, desktop/touch-preview i oba toka špice prošli su izlazom 0. [Izmene i 18 planiranih unapređenja](Docs/Human-Face-20261101.md) | [Dokazi](Docs/Verification-Human-Face-20261101.json).
+
+Nema vizema/lip sync-a, novog srpskog glasa, novog AI filma, fizičkog mobilnog testa ili potvrđenih dugih FPS testova. Špica je prethodna remontaža. Slede šake/hvat, kontakti na neravnom terenu, novi trening-rig, glas/vizemi, gradski centar i misije.
+
+## Prethodno: ljudski lik u gradu — 1. novembar 2026.
 
 L → ODEĆA / GARDEROBER → NOVI 3D LIK / PREGLED → IGRAJ U GRADU bira novi model za tekuću sesiju. WASD i Shift pomeraju isti fizički kontroler; noge i suprotne ruke prate stvarno pomeranje. C menja tri perspektive; prvo lice skriva telo. VRATI ORIGINALNI LIK vraća original. Benč i boks privremeno koriste postojeće trening-modele, pa vraćaju odabrani izgled. Profil ostaje v9; izbor nije trajno zapisan.
 

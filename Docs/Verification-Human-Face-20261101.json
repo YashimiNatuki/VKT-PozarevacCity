@@ -1,0 +1,1069 @@
+{
+  "date": "2026-11-01",
+  "baselineCommit": "bf670b071c0c621d9e3d75d2ce4e25ce274c3621",
+  "profileVersion": 9,
+  "tests": {
+    "mode": "tests",
+    "processExit": 0,
+    "total": "283",
+    "passed": "282",
+    "failed": "0",
+    "skipped": "1"
+  },
+  "focused": {
+    "mode": "focused",
+    "processExit": 0,
+    "total": "9",
+    "passed": "9",
+    "failed": "0",
+    "skipped": "0"
+  },
+  "feedbackFocused": {
+    "mode": "focused",
+    "processExit": 0,
+    "total": "4",
+    "passed": "4",
+    "failed": "0",
+    "skipped": "0"
+  },
+  "windowsBuild": {
+    "mode": "build",
+    "processExit": 0
+  },
+  "assetProduction": {
+    "passed": true,
+    "validationExit": 0,
+    "scriptSha256": "0305a6f7c1d37dbbf355209e418e1743fdfea2a887401f557016f7ccf3911167",
+    "blenderProcessExit": 0,
+    "fbxInspectionExit": 0,
+    "glbInspectionExit": 0,
+    "triangles": 46064,
+    "bones": 53,
+    "zeroPoseExact": true,
+    "canonicalAssetsChangedByThisAgent": false
+  },
+  "staticFbxInspection": {
+    "version": 7400,
+    "sha256": "d2fd118ae3bd92b412fb5e74a98badd831792f3de3ceb72ed30feb9ffc7fc6e0",
+    "meshes": 7,
+    "boneModels": 53,
+    "shapeGeometries": 44,
+    "shapeNames": [
+      "eyeBlinkLeft",
+      "eyeBlinkRight",
+      "jawOpen",
+      "mouthSmileLeft",
+      "mouthSmileRight",
+      "browDownLeft",
+      "browDownRight",
+      "eyeLookUpLeft",
+      "eyeLookUpRight",
+      "eyeLookDownLeft",
+      "eyeLookDownRight",
+      "eyeLookInLeft",
+      "eyeLookInRight",
+      "eyeLookOutLeft",
+      "eyeLookOutRight",
+      "eyeBlinkLeft",
+      "eyeBlinkRight",
+      "jawOpen",
+      "mouthSmileLeft",
+      "mouthSmileRight",
+      "browDownLeft",
+      "browDownRight",
+      "eyeLookUpLeft",
+      "eyeLookUpRight",
+      "eyeLookDownLeft",
+      "eyeLookDownRight",
+      "eyeLookInLeft",
+      "eyeLookInRight",
+      "eyeLookOutLeft",
+      "eyeLookOutRight",
+      "eyeLookUpLeft",
+      "eyeLookUpRight",
+      "eyeLookDownLeft",
+      "eyeLookDownRight",
+      "eyeLookInLeft",
+      "eyeLookInRight",
+      "eyeLookOutLeft",
+      "eyeLookOutRight",
+      "jawOpen",
+      "mouthSmileLeft",
+      "mouthSmileRight",
+      "browDownLeft",
+      "browDownRight",
+      "jawOpen"
+    ]
+  },
+  "staticEyeDirection": {
+    "glbSha256": "3a950614380872e5463d80bfe0810271093bc4f26ff3108d44410036d2da5307",
+    "coordinates": "glTF Y-up, world-space default pose, face forward +Z",
+    "eyeMesh": "low-poly",
+    "meshNodeMatrix": [
+      [
+        1,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        1,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        1,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        1
+      ]
+    ],
+    "vertices": 96,
+    "controls": {
+      "eyeLookOutLeft": {
+        "movedVertices": 48,
+        "baseMovedCentroid": [
+          0.028274310907969873,
+          1.368375872572263,
+          0.1284665895315508
+        ],
+        "deltaMovedCentroid": [
+          0.003343749810786297,
+          5.0008296966552734e-05,
+          -0.0009270828838149706
+        ],
+        "deltaFrontHalfMean": [
+          0.0045531247451435775,
+          5.0008296966552734e-05,
+          -0.0010843744967132807
+        ],
+        "frontVertices": 32,
+        "deltaFrontPoleMean": [
+          0.005499999970197678,
+          0.0,
+          -0.0006999969482421875
+        ],
+        "poleVertices": 2,
+        "largestDelta": 0.005725381531791199
+      },
+      "eyeLookInRight": {
+        "movedVertices": 48,
+        "baseMovedCentroid": [
+          -0.028274310907969873,
+          1.368375872572263,
+          0.1284665895315508
+        ],
+        "deltaMovedCentroid": [
+          0.0035624999242524305,
+          -6.251037120819092e-06,
+          2.083399643500646e-05
+        ],
+        "deltaFrontHalfMean": [
+          0.004799999907845631,
+          9.376555681228638e-06,
+          -0.0001437491737306118
+        ],
+        "frontVertices": 32,
+        "deltaFrontPoleMean": [
+          0.005649999715387821,
+          0.0,
+          -0.0007999986410140991
+        ],
+        "poleVertices": 2,
+        "largestDelta": 0.00582580570352971
+      },
+      "eyeLookInLeft": {
+        "movedVertices": 48,
+        "baseMovedCentroid": [
+          0.028274310907969873,
+          1.368375872572263,
+          0.1284665895315508
+        ],
+        "deltaMovedCentroid": [
+          -0.0035624999242524305,
+          -6.251037120819092e-06,
+          2.083399643500646e-05
+        ],
+        "deltaFrontHalfMean": [
+          -0.004799999907845631,
+          9.376555681228638e-06,
+          -0.0001437491737306118
+        ],
+        "frontVertices": 32,
+        "deltaFrontPoleMean": [
+          -0.005649999715387821,
+          0.0,
+          -0.0007999986410140991
+        ],
+        "poleVertices": 2,
+        "largestDelta": 0.00582580570352971
+      },
+      "eyeLookOutRight": {
+        "movedVertices": 48,
+        "baseMovedCentroid": [
+          -0.028274310907969873,
+          1.368375872572263,
+          0.1284665895315508
+        ],
+        "deltaMovedCentroid": [
+          -0.003343749810786297,
+          5.0008296966552734e-05,
+          -0.0009270828838149706
+        ],
+        "deltaFrontHalfMean": [
+          -0.0045531247451435775,
+          5.0008296966552734e-05,
+          -0.0010843744967132807
+        ],
+        "frontVertices": 32,
+        "deltaFrontPoleMean": [
+          -0.005499999970197678,
+          0.0,
+          -0.0006999969482421875
+        ],
+        "poleVertices": 2,
+        "largestDelta": 0.005725381531791199
+      },
+      "eyeLookUpLeft": {
+        "movedVertices": 48,
+        "baseMovedCentroid": [
+          0.028274310907969873,
+          1.368375872572263,
+          0.1284665895315508
+        ],
+        "deltaMovedCentroid": [
+          0.0,
+          0.0013458182414372761,
+          -0.0003270831269522508
+        ],
+        "deltaFrontHalfMean": [
+          0.0,
+          0.002159353345632553,
+          -0.0003343750722706318
+        ],
+        "frontVertices": 32,
+        "deltaFrontPoleMean": [
+          0.0,
+          0.00279998779296875,
+          -0.0006499961018562317
+        ],
+        "poleVertices": 2,
+        "largestDelta": 0.0029120318450179105
+      },
+      "eyeLookUpRight": {
+        "movedVertices": 48,
+        "baseMovedCentroid": [
+          -0.028274310907969873,
+          1.368375872572263,
+          0.1284665895315508
+        ],
+        "deltaMovedCentroid": [
+          0.0,
+          0.0013458182414372761,
+          -0.0003270831269522508
+        ],
+        "deltaFrontHalfMean": [
+          0.0,
+          0.002159353345632553,
+          -0.0003343750722706318
+        ],
+        "frontVertices": 32,
+        "deltaFrontPoleMean": [
+          0.0,
+          0.00279998779296875,
+          -0.0006499961018562317
+        ],
+        "poleVertices": 2,
+        "largestDelta": 0.0029120318450179105
+      },
+      "eyeLookDownLeft": {
+        "movedVertices": 48,
+        "baseMovedCentroid": [
+          0.028274310907969873,
+          1.368375872572263,
+          0.1284665895315508
+        ],
+        "deltaMovedCentroid": [
+          -7.083344583710034e-05,
+          -0.002427081267038981,
+          -0.0016333331974844139
+        ],
+        "deltaFrontHalfMean": [
+          -8.125021122395992e-05,
+          -0.0033531226217746735,
+          -0.0017218752764165401
+        ],
+        "frontVertices": 32,
+        "deltaFrontPoleMean": [
+          -9.999983012676239e-05,
+          -0.004049956798553467,
+          -0.0014500021934509277
+        ],
+        "poleVertices": 2,
+        "largestDelta": 0.004755022864520663
+      },
+      "eyeLookDownRight": {
+        "movedVertices": 48,
+        "baseMovedCentroid": [
+          -0.028274310907969873,
+          1.368375872572263,
+          0.1284665895315508
+        ],
+        "deltaMovedCentroid": [
+          7.083344583710034e-05,
+          -0.002427081267038981,
+          -0.0016333331974844139
+        ],
+        "deltaFrontHalfMean": [
+          8.125021122395992e-05,
+          -0.0033531226217746735,
+          -0.0017218752764165401
+        ],
+        "frontVertices": 32,
+        "deltaFrontPoleMean": [
+          9.999983012676239e-05,
+          -0.004049956798553467,
+          -0.0014500021934509277
+        ],
+        "poleVertices": 2,
+        "largestDelta": 0.004755022864520663
+      }
+    }
+  },
+  "redEvidence": {
+    "red": {
+      "path": "C:\\Users\\jamal\\Documents\\VKT-Human-Face-Evidence-20261101\\red.json",
+      "result": {
+        "mode": "red",
+        "processExit": 2,
+        "total": "5",
+        "passed": "0",
+        "failed": "5",
+        "skipped": "0"
+      }
+    },
+    "eye-and-metric-red": {
+      "path": "C:\\Users\\jamal\\Documents\\VKT-Human-Face-Evidence-20261101\\eye-and-metric-red.json",
+      "result": {
+        "mode": "focused",
+        "processExit": 2,
+        "total": "6",
+        "passed": "4",
+        "failed": "2",
+        "skipped": "0"
+      }
+    },
+    "squint-and-duplicate-red": {
+      "path": "C:\\Users\\jamal\\Documents\\VKT-Human-Face-Evidence-20261101\\squint-and-duplicate-red.json",
+      "result": {
+        "mode": "focused",
+        "processExit": 2,
+        "total": "8",
+        "passed": "6",
+        "failed": "2",
+        "skipped": "0"
+      }
+    },
+    "eye-unity-frame-red": {
+      "path": "C:\\Users\\jamal\\Documents\\VKT-Human-Face-Evidence-20261101\\eye-unity-frame-red.json",
+      "result": {
+        "mode": "focused",
+        "processExit": 2,
+        "total": "9",
+        "passed": "7",
+        "failed": "2",
+        "skipped": "0"
+      }
+    },
+    "feedback-bridges": {
+      "path": "C:\\Users\\jamal\\Documents\\VKT-Human-Face-Feedback-Evidence-20261101\\red.json",
+      "result": {
+        "mode": "red",
+        "processExit": 2,
+        "total": "4",
+        "passed": "1",
+        "failed": "3",
+        "skipped": "0"
+      }
+    },
+    "signed-native-eye-direction": {
+      "path": "C:\\Users\\jamal\\Documents\\VKT-Human-Face-Native-Red-20261101\\verification.json",
+      "result": {
+        "passed": false,
+        "processExit": 1,
+        "failedChecks": [
+          "passed",
+          "worldDamage",
+          "worldSuccess",
+          "pauseStable",
+          "hiddenRecovery",
+          "ownersUnchanged",
+          "controlRestored",
+          "eyeDirectionCorrect"
+        ],
+        "runtimeErrors": [],
+        "captures": false,
+        "metrics": {
+          "passed": false,
+          "authoredChannels": true,
+          "previewBlink": true,
+          "previewJaw": true,
+          "previewSmile": true,
+          "previewUnscaled": true,
+          "profileSelectionUnchanged": true,
+          "gazeBounded": true,
+          "worldDamage": false,
+          "worldSuccess": false,
+          "pauseStable": false,
+          "hiddenRecovery": false,
+          "ownersUnchanged": false,
+          "controlRestored": false,
+          "eyeGaze": true,
+          "eyeDirectionCorrect": false,
+          "blinkWeight": 76.69815826416016,
+          "jawWeight": 7.46025276184082,
+          "smileWeight": 54.722450256347656,
+          "blinkVertexMeters": 0.011590265668928623,
+          "jawVertexMeters": 0.0034623818937689066,
+          "smileVertexMeters": 0.012248042039573193,
+          "hurtVertexMeters": 0.0,
+          "headDegrees": 34.9453125,
+          "neckDegrees": 12.195143699645996,
+          "pauseHeadDegrees": 0.0,
+          "pauseMorphDelta": 0.0,
+          "eyeOutLeftWeight": 64.99714660644531,
+          "eyeInRightWeight": 64.99714660644531,
+          "eyeOpposedWeight": 0.0,
+          "eyeVertexMeters": 0.004458565730601549,
+          "eyeRightMeanMeters": -0.0025478180032223463,
+          "previewFrames": 123
+        },
+        "report": {
+          "passed": false,
+          "details": "World head and neck did not track the existing view within safe limits: ",
+          "product": "VKT"
+        },
+        "boundary": "Synthetic Windows input and actual baked mesh checks; no phoneme lip sync, physical phone or human aesthetic/audio approval."
+      }
+    },
+    "obsolete-preview-mood-contract": {
+      "path": "C:\\Users\\jamal\\Documents\\VKT-Human-Face-Preview-20261101\\verification.json",
+      "result": {
+        "passed": false,
+        "processExit": 1,
+        "previewChecks": false,
+        "captures": true,
+        "runtimeErrors": [],
+        "report": {
+          "passed": false,
+          "details": "Candidate allowed original avatar customization.",
+          "product": "VKT"
+        },
+        "boundary": "Windows preview only; not a playable replacement rig or physical mobile test."
+      }
+    },
+    "contractExplanation": "Old preview assertion assumed human controls could not change expression. Replacement checks candidate-owned mood cycling, untouched legacy mood, neutral reset on return, outfit blocking and unchanged profile; isolation requirements remain."
+  },
+  "humanFace": {
+    "passed": true,
+    "processExit": 0,
+    "failedChecks": [],
+    "runtimeErrors": [],
+    "captures": true,
+    "metrics": {
+      "passed": true,
+      "authoredChannels": true,
+      "previewBlink": true,
+      "previewJaw": true,
+      "previewSmile": true,
+      "previewUnscaled": true,
+      "profileSelectionUnchanged": true,
+      "gazeBounded": true,
+      "worldDamage": true,
+      "worldSuccess": true,
+      "pauseStable": true,
+      "hiddenRecovery": true,
+      "ownersUnchanged": true,
+      "controlRestored": true,
+      "eyeGaze": true,
+      "eyeDirectionCorrect": true,
+      "blinkWeight": 76.7377700805664,
+      "jawWeight": 26.1011962890625,
+      "smileWeight": 54.63719940185547,
+      "blinkVertexMeters": 0.011596238240599632,
+      "jawVertexMeters": 0.012113592587411404,
+      "smileVertexMeters": 0.012228886596858501,
+      "hurtVertexMeters": 0.004241307266056538,
+      "headDegrees": 34.94511413574219,
+      "neckDegrees": 12.194758415222168,
+      "pauseHeadDegrees": 0.0,
+      "pauseMorphDelta": 0.0,
+      "eyeInLeftWeight": 64.99713897705078,
+      "eyeOutRightWeight": 64.99713897705078,
+      "eyeOpposedWeight": 0.0,
+      "eyeVertexMeters": 0.004458582028746605,
+      "eyeRightMeanMeters": 0.0017210589721798897,
+      "previewFrames": 124
+    },
+    "report": {
+      "passed": true,
+      "details": "Actual Windows player: terrain loaded, nine physics interactions, three contracts, growth/trade, crew, district campaign and durable save restore passed. Three camera modes, imported player avatar, bounded orbit, obstruction retraction and first-person restoration passed. Human face: reviewed morphs, gaze, wardrobe, feedback and pause passed.",
+      "product": "VKT"
+    },
+    "boundary": "Synthetic Windows input and actual baked mesh checks; no phoneme lip sync, physical phone or human aesthetic/audio approval."
+  },
+  "humanPlayable": {
+    "passed": true,
+    "processExit": 0,
+    "failedChecks": [],
+    "runtimeErrors": [],
+    "captures": true,
+    "metrics": {
+      "passed": true,
+      "uiSelection": true,
+      "profileSelectionUnchanged": true,
+      "walking": true,
+      "sprinting": true,
+      "movementWithShift": true,
+      "bothKnees": true,
+      "contralateral": true,
+      "pauseStable": true,
+      "teleportReset": true,
+      "stopSettles": true,
+      "firstPersonHidden": true,
+      "shoulderVisible": true,
+      "cachedSelection": true,
+      "ownersUnchanged": true,
+      "flatGroundContact": true,
+      "benchFallback": true,
+      "boxingFallback": true,
+      "fallbackRestored": true,
+      "originalHiddenWalking": true,
+      "originalHiddenFirstPerson": true,
+      "walkMeters": 1.7249946594238281,
+      "sprintMeters": 8.666397094726562,
+      "leftKneeDegrees": 41.25028991699219,
+      "rightKneeDegrees": 14.038516998291016,
+      "peakSpeed": 4.821639060974121,
+      "pausedLeftDegrees": 0.0,
+      "pausedRightDegrees": 0.0,
+      "leftSoleGap": -0.00118255615234375,
+      "rightSoleGap": -0.001255035400390625,
+      "flatWalkObservedSpeed": 4.92790412902832,
+      "flatSprintObservedSpeed": 7.8116536140441895,
+      "flatWalkPhysicalSpeed": 5.295382976531982,
+      "flatSprintPhysicalSpeed": 7.995108127593994,
+      "sampledFrames": 80,
+      "oppositeSamples": 22,
+      "incorrectPairs": 0,
+      "supportedFeet": 2
+    },
+    "report": {
+      "passed": true,
+      "details": "Actual Windows player: terrain loaded, nine physics interactions, three contracts, growth/trade, crew, district campaign and durable save restore passed. Three camera modes, imported player avatar, bounded orbit, obstruction retraction and first-person restoration passed. Human playable avatar: physical movement, pause, camera modes, teleport and training fallback passed.",
+      "product": "VKT"
+    },
+    "boundary": "Synthetic Windows input; flat support only; legacy bench/boxing fallback; no physical mobile test."
+  },
+  "humanPreview": {
+    "passed": true,
+    "processExit": 0,
+    "previewChecks": true,
+    "captures": true,
+    "runtimeErrors": [],
+    "report": {
+      "passed": true,
+      "details": "Actual Windows player: terrain loaded, nine physics interactions, three contracts, growth/trade, crew, district campaign and durable save restore passed. Three camera modes, imported player avatar, bounded orbit, obstruction retraction and first-person restoration passed. Human candidate: rendered front/side/back/face, isolated art, repeat toggle, unchanged profile and restored control passed. Block life: physical gym and kiosk interaction, UI repetitions and anti-spam, pause ownership, paid/stolen food, wanted save restoration, police line-of-sight/occlusion and capture range, accelerated escape/arrest, one-time challenge and durable v5 character stats passed.",
+      "product": "VKT"
+    },
+    "boundary": "Windows preview only; not a playable replacement rig or physical mobile test."
+  },
+  "nativeFlows": {
+    "Desktop": {
+      "passed": true,
+      "phoneBeforeContract": true,
+      "mapBeforeContract": true,
+      "musicNonModal": true,
+      "movementAfterMusic": true,
+      "legsAnimated": true,
+      "benchStarted": true,
+      "benchCompleted": true,
+      "dockVisible": true,
+      "helpReturnsControl": true,
+      "onboardingCreated": true,
+      "distanceAfterMusic": 2.5000579357147217,
+      "leftLegDegrees": 29.640798568725586,
+      "rightLegDegrees": 32.996726989746094,
+      "peakObservedSpeed": 4.966314315795898,
+      "gaitReady": true,
+      "musicControlsClear": true,
+      "signalBlockedByMenu": true,
+      "signalBlockedByWall": true,
+      "signalReachesOfficer": true,
+      "signalCooldown": true,
+      "signalDoesNotPauseOrAddHeat": true,
+      "hideoutScoreFades": true,
+      "hideoutScoreMutes": true,
+      "helpAudioTextFits": true,
+      "hideoutMusicPreferenceMutes": true,
+      "disabledSignalBlocked": true,
+      "mapPreservesAudio": true,
+      "muteShortcutWorks": true,
+      "gardenPacked": true,
+      "gardenDelivery": true,
+      "gardenPause": true,
+      "gardenDiskCargo": true,
+      "gardenDiskReceipt": true,
+      "gardenSinglePayout": true,
+      "gardenTrainingGate": true,
+      "gardenPhoneCancellation": true,
+      "statsWalking": true,
+      "statsSprinting": true,
+      "statsTeleportExcluded": true,
+      "statsPause": true,
+      "statsDisk": true,
+      "statsPage": true,
+      "benchContacts": true,
+      "benchContactFrames": 927,
+      "benchMaxHandError": 1.911070285132155e-06,
+      "benchMaxFootError": 9.652457038100692e-07,
+      "benchMaxFootAngle": 0.0,
+      "benchMaxHandAngle": 0.0,
+      "benchMinWristClearance": 0.02938692830502987,
+      "boxingStarted": true,
+      "boxingCompleted": true,
+      "boxingHands": true,
+      "boxingPause": true,
+      "boxingSinglePayout": true,
+      "boxingReturnsControl": true,
+      "boxingPoseFrames": 816,
+      "boxingMaxWristAngle": 0.02797645516693592,
+      "boxingPauseHandDelta": 0.0,
+      "gaitContralateral": true,
+      "gaitPausePreservesPose": true,
+      "gaitTeleportReset": true,
+      "gaitStopSettles": true,
+      "gaitPairSamples": 23,
+      "gaitBadPairs": 0,
+      "gaitPauseLeftDelta": 0.0,
+      "gaitPauseRightDelta": 0.0,
+      "groundSlopeContacts": true,
+      "groundPauseFeet": true,
+      "groundAirborneRelease": true,
+      "groundContactFrames": 42,
+      "groundedFrames": 43,
+      "groundPauseLeftDelta": 0.0,
+      "groundPauseRightDelta": 0.0,
+      "groundVisualOffset": -0.08714822679758072,
+      "groundPauseOffsetDelta": 0.0,
+      "error": "",
+      "input": "Synthetic Unity Input System keyboard and EventSystem submit; not human input."
+    },
+    "TouchPreview": {
+      "passed": true,
+      "phoneBeforeContract": true,
+      "mapBeforeContract": true,
+      "musicNonModal": true,
+      "movementAfterMusic": true,
+      "legsAnimated": true,
+      "benchStarted": true,
+      "benchCompleted": true,
+      "dockVisible": true,
+      "helpReturnsControl": true,
+      "onboardingCreated": true,
+      "distanceAfterMusic": 2.5000643730163574,
+      "leftLegDegrees": 29.640398025512695,
+      "rightLegDegrees": 32.996673583984375,
+      "peakObservedSpeed": 4.966313362121582,
+      "gaitReady": true,
+      "musicControlsClear": true,
+      "signalBlockedByMenu": true,
+      "signalBlockedByWall": true,
+      "signalReachesOfficer": true,
+      "signalCooldown": true,
+      "signalDoesNotPauseOrAddHeat": true,
+      "hideoutScoreFades": true,
+      "hideoutScoreMutes": true,
+      "helpAudioTextFits": true,
+      "hideoutMusicPreferenceMutes": true,
+      "disabledSignalBlocked": true,
+      "mapPreservesAudio": true,
+      "muteShortcutWorks": true,
+      "gardenPacked": true,
+      "gardenDelivery": true,
+      "gardenPause": true,
+      "gardenDiskCargo": true,
+      "gardenDiskReceipt": true,
+      "gardenSinglePayout": true,
+      "gardenTrainingGate": true,
+      "gardenPhoneCancellation": true,
+      "statsWalking": true,
+      "statsSprinting": true,
+      "statsTeleportExcluded": true,
+      "statsPause": true,
+      "statsDisk": true,
+      "statsPage": true,
+      "benchContacts": true,
+      "benchContactFrames": 926,
+      "benchMaxHandError": 2.081900674966164e-06,
+      "benchMaxFootError": 9.652457038100692e-07,
+      "benchMaxFootAngle": 0.0,
+      "benchMaxHandAngle": 0.0,
+      "benchMinWristClearance": 0.029387013986706734,
+      "boxingStarted": true,
+      "boxingCompleted": true,
+      "boxingHands": true,
+      "boxingPause": true,
+      "boxingSinglePayout": true,
+      "boxingReturnsControl": true,
+      "boxingPoseFrames": 816,
+      "boxingMaxWristAngle": 0.02797645516693592,
+      "boxingPauseHandDelta": 0.0,
+      "gaitContralateral": true,
+      "gaitPausePreservesPose": true,
+      "gaitTeleportReset": true,
+      "gaitStopSettles": true,
+      "gaitPairSamples": 23,
+      "gaitBadPairs": 0,
+      "gaitPauseLeftDelta": 0.0,
+      "gaitPauseRightDelta": 0.0,
+      "groundSlopeContacts": true,
+      "groundPauseFeet": true,
+      "groundAirborneRelease": true,
+      "groundContactFrames": 42,
+      "groundedFrames": 43,
+      "groundPauseLeftDelta": 0.0,
+      "groundPauseRightDelta": 0.0,
+      "groundVisualOffset": -0.08714870363473892,
+      "groundPauseOffsetDelta": 0.0,
+      "error": "",
+      "input": "Synthetic Unity Input System keyboard and EventSystem submit; not human input."
+    }
+  },
+  "nativeFlowRunner": {
+    "Desktop": {
+      "name": "Desktop",
+      "processExit": 0,
+      "command": [
+        "C:\\Users\\jamal\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+        "C:\\Users\\jamal\\Documents\\VKT-PozarevacCity\\Tools\\Test-StreetSound.py",
+        "--player",
+        "C:\\Users\\jamal\\Documents\\CodexBuilds\\VKT-Human-Face-Windows-20261101\\VKT.exe",
+        "--output",
+        "C:\\Users\\jamal\\Documents\\VKT-Human-Face-Desktop-Accepted-20261101"
+      ]
+    },
+    "TouchPreview": {
+      "name": "TouchPreview",
+      "processExit": 0,
+      "command": [
+        "C:\\Users\\jamal\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+        "C:\\Users\\jamal\\Documents\\VKT-PozarevacCity\\Tools\\Test-StreetSound.py",
+        "--player",
+        "C:\\Users\\jamal\\Documents\\CodexBuilds\\VKT-Human-Face-Windows-20261101\\VKT.exe",
+        "--output",
+        "C:\\Users\\jamal\\Documents\\VKT-Human-Face-TouchPreview-Accepted-20261101",
+        "--touch-preview"
+      ]
+    }
+  },
+  "introChecks": [
+    {
+      "mode": "natural",
+      "processExit": 0,
+      "report": {
+        "passed": true,
+        "details": "Original intro decoded, played to natural completion and resumed gameplay.",
+        "product": "VKT"
+      },
+      "decoded": [
+        "VKT_INTRO_VERIFIED frame=30 size=1280x720 seconds=30 audioTracks=1"
+      ],
+      "runtimeErrors": []
+    },
+    {
+      "mode": "skip",
+      "processExit": 0,
+      "report": {
+        "passed": true,
+        "details": "Actual Windows player: terrain loaded, nine physics interactions, three contracts, growth/trade, crew, district campaign and durable save restore passed. Three camera modes, imported player avatar, bounded orbit, obstruction retraction and first-person restoration passed.",
+        "product": "VKT"
+      },
+      "decoded": [
+        "VKT_INTRO_VERIFIED frame=30 size=1280x720 seconds=30 audioTracks=1"
+      ],
+      "runtimeErrors": []
+    }
+  ],
+  "codeReview": {
+    "passed": true,
+    "findings": [],
+    "reviewer": "/root/face_release_review",
+    "boundary": "Read-only actual source review; no independent runtime execution.",
+    "reused": [
+      "CityFaceState",
+      "CityFaceExpression.Blink",
+      "CityFaceMorph.JawWeight",
+      "CityHumanPose",
+      "CityCameraRig",
+      "CityPlayerVitals",
+      "CityGameAudio"
+    ]
+  },
+  "visualReview": {
+    "reviewedCaptures": [
+      "face-calm.png",
+      "face-blink.png",
+      "face-effort.png",
+      "face-success.png",
+      "face-gaze-portrait.png",
+      "face-gaze-world.png",
+      "face-success-world.png"
+    ],
+    "assistantImageReview": true,
+    "humanApproval": false,
+    "notes": [
+      "All seven actual native PNG files viewed by root with view_image.",
+      "Closed eyelids, jaw opening and smile visibly differ.",
+      "New wardrobe text fits without truncation.",
+      "Portrait eye/head response is coherent; wide gameplay camera is not a detailed facial-quality view.",
+      "Character remains generic, stylized and limited by existing hair/skin/eyebrow assets; no photorealism claim."
+    ],
+    "sourceFolder": "C:\\Users\\jamal\\Documents\\VKT-Human-Face-Native-Accepted-20261101\\captures",
+    "captureSha256": {
+      "face-calm.png": "f798caaf6c0f0b0ca7c9eb9423bd7680fc3d9ad12ba7fd82f0529aeeadf96538",
+      "face-blink.png": "431479ddcbcfdda302885fdf8d2a086b4b60e7779ef07c9e0492b2d33b87266b",
+      "face-effort.png": "cefce20582513a0982b96fabfbba30258ce25f6ccaadb8f9d966f95db4c9c9e8",
+      "face-success.png": "83f0ca0c505bd9eedfd802c5755a3401049a15ed69acd77b773fabe352e236b9",
+      "face-gaze-portrait.png": "e206b8f46f620de5313db90c096a50b66cb90f5ab85f56bf35a2371cc2382745",
+      "face-gaze-world.png": "ddde529710c25b69eead6fbe80ffc4f031bd37b98bc9a26638902c1753c9b901",
+      "face-success-world.png": "e6eb3b52670b15a73e8edce7e55ba7333a2e711e0d6741f59c97e585d8f90b82"
+    }
+  },
+  "screenshots": [
+    {
+      "path": "Docs/Screenshots/human-face-calm-windows-20261101.png",
+      "bytes": 248847,
+      "sha256": "f798caaf6c0f0b0ca7c9eb9423bd7680fc3d9ad12ba7fd82f0529aeeadf96538"
+    },
+    {
+      "path": "Docs/Screenshots/human-face-blink-windows-20261101.png",
+      "bytes": 248243,
+      "sha256": "431479ddcbcfdda302885fdf8d2a086b4b60e7779ef07c9e0492b2d33b87266b"
+    },
+    {
+      "path": "Docs/Screenshots/human-face-effort-windows-20261101.png",
+      "bytes": 250361,
+      "sha256": "cefce20582513a0982b96fabfbba30258ce25f6ccaadb8f9d966f95db4c9c9e8"
+    },
+    {
+      "path": "Docs/Screenshots/human-face-success-windows-20261101.png",
+      "bytes": 250332,
+      "sha256": "83f0ca0c505bd9eedfd802c5755a3401049a15ed69acd77b773fabe352e236b9"
+    },
+    {
+      "path": "Docs/Screenshots/human-face-gaze-portrait-windows-20261101.png",
+      "bytes": 245827,
+      "sha256": "e206b8f46f620de5313db90c096a50b66cb90f5ab85f56bf35a2371cc2382745"
+    },
+    {
+      "path": "Docs/Screenshots/human-face-gaze-world-windows-20261101.png",
+      "bytes": 765068,
+      "sha256": "ddde529710c25b69eead6fbe80ffc4f031bd37b98bc9a26638902c1753c9b901"
+    },
+    {
+      "path": "Docs/Screenshots/human-face-success-world-windows-20261101.png",
+      "bytes": 794301,
+      "sha256": "e6eb3b52670b15a73e8edce7e55ba7333a2e711e0d6741f59c97e585d8f90b82"
+    }
+  ],
+  "sourceFingerprint": "db086ac2f8036994d900787bcc7a4c8c8a39d98e8830f9ca7d7abcf72fee289d",
+  "generatedNormalization": {
+    "backup": "C:\\Users\\jamal\\Documents\\VKT-Face-Generated-Backup-20261101-192428",
+    "restored": [
+      {
+        "path": "ProjectSettings/ProjectSettings.asset",
+        "reason": "identical tokens to prior generated backup"
+      },
+      {
+        "path": "Assets/CityGame/Resources/Models/KenneyRetro/characterMedium.fbx.meta",
+        "reason": "whitespace-only"
+      },
+      {
+        "path": "Assets/CityGame/Resources/Models/KenneyRetro/idle.fbx.meta",
+        "reason": "whitespace-only"
+      },
+      {
+        "path": "Assets/CityGame/Resources/Models/KenneyRetro/run.fbx.meta",
+        "reason": "whitespace-only"
+      },
+      {
+        "path": "Assets/CityGame/Resources/Models/RodjaHuman/Materials/RodjaBody.body.mat",
+        "reason": "whitespace-only"
+      },
+      {
+        "path": "Assets/CityGame/Resources/Models/RodjaHuman/Materials/RodjaBody.ears.mat",
+        "reason": "whitespace-only"
+      },
+      {
+        "path": "Assets/CityGame/Resources/Models/RodjaHuman/Materials/RodjaBody.eyebrow001.mat",
+        "reason": "whitespace-only"
+      },
+      {
+        "path": "Assets/CityGame/Resources/Models/RodjaHuman/Materials/RodjaBody.fingernails.mat",
+        "reason": "whitespace-only"
+      },
+      {
+        "path": "Assets/CityGame/Resources/Models/RodjaHuman/Materials/RodjaBody.lips.mat",
+        "reason": "whitespace-only"
+      },
+      {
+        "path": "Assets/CityGame/Resources/Models/RodjaHuman/Materials/RodjaBody.low-poly.mat",
+        "reason": "whitespace-only"
+      },
+      {
+        "path": "Assets/CityGame/Resources/Models/RodjaHuman/Materials/RodjaBody.male_casualsuit01.mat",
+        "reason": "whitespace-only"
+      },
+      {
+        "path": "Assets/CityGame/Resources/Models/RodjaHuman/Materials/RodjaBody.shoes02.mat",
+        "reason": "whitespace-only"
+      },
+      {
+        "path": "Assets/CityGame/Resources/Models/RodjaHuman/Materials/RodjaBody.short02.mat",
+        "reason": "whitespace-only"
+      },
+      {
+        "path": "Assets/CityGame/Resources/Models/RodjaHuman/Materials/RodjaBody.teeth_base.mat",
+        "reason": "whitespace-only"
+      },
+      {
+        "path": "Assets/CityGame/Resources/Models/RodjaHuman/RodjaSource.fbx.meta",
+        "reason": "whitespace-only"
+      },
+      {
+        "path": "Assets/CityGame/Resources/Models/RodjaHuman/brown_eye.png.meta",
+        "reason": "whitespace-only"
+      },
+      {
+        "path": "Assets/CityGame/Resources/Models/RodjaHuman/eyebrow001.png.meta",
+        "reason": "whitespace-only"
+      },
+      {
+        "path": "Assets/CityGame/Resources/Models/RodjaHuman/male_casualsuit01_diffuse.png.meta",
+        "reason": "whitespace-only"
+      },
+      {
+        "path": "Assets/CityGame/Resources/Models/RodjaHuman/male_casualsuit01_normal.png.meta",
+        "reason": "whitespace-only"
+      },
+      {
+        "path": "Assets/CityGame/Resources/Models/RodjaHuman/shoes02_diffuse.png.meta",
+        "reason": "whitespace-only"
+      },
+      {
+        "path": "Assets/CityGame/Resources/Models/RodjaHuman/short02_diffuse.png.meta",
+        "reason": "whitespace-only"
+      },
+      {
+        "path": "Assets/CityGame/Resources/Models/RodjaHuman/teeth.png.meta",
+        "reason": "whitespace-only"
+      },
+      {
+        "path": "Assets/CityGame/Resources/Models/RodjaHuman/young_lightskinned_male_diffuse.png.meta",
+        "reason": "whitespace-only"
+      }
+    ],
+    "keptMainTextureCompatibilityUpdates": [
+      "Assets/CityGame/Resources/Models/RodjaHuman/Materials/RodjaBody.genitals.mat",
+      "Assets/CityGame/Resources/Models/RodjaHuman/Materials/RodjaBody.nipple.mat",
+      "Assets/CityGame/Resources/Models/RodjaHuman/Materials/RodjaBody.toenails.mat"
+    ],
+    "projectSettingsReference": "C:\\Users\\jamal\\Documents\\VKT-Playable-Generated-Backup-20261101-132812\\ProjectSettings\\ProjectSettings.asset"
+  },
+  "playerExecutable": {
+    "path": "VKT.exe",
+    "bytes": 667136,
+    "sha256": "b70442f90f50cd91f7af7bf2272602645fc5d02c4d3156fb221fc27c328d2436"
+  },
+  "unverified": [
+    "Human aesthetic approval of face expressions",
+    "Speech phoneme alignment and Serbian voice review",
+    "Physical Android/iPhone and long FPS/thermal profiling",
+    "Human bench grip, irregular-ground contact, new city art and new AI intro"
+  ],
+  "packageReceiptBoundary": "ZIP receipt intentionally omits archive size/hash to avoid self-reference. Repository receipt adds those after CRC/hash verification.",
+  "changedFiles": [
+    "Assets/CityGame/Resources/Models/RodjaHuman/Materials/RodjaBody.genitals.mat",
+    "Assets/CityGame/Resources/Models/RodjaHuman/Materials/RodjaBody.nipple.mat",
+    "Assets/CityGame/Resources/Models/RodjaHuman/Materials/RodjaBody.toenails.mat",
+    "Assets/CityGame/Resources/Models/RodjaHuman/RodjaHuman.prefab",
+    "Assets/CityGame/Resources/Models/RodjaHuman/RodjaSource.fbx",
+    "Assets/CityGame/Resources/Models/RodjaHuman/manifest.json",
+    "Assets/CityGame/Runtime/CityCameraRig.cs",
+    "Assets/CityGame/Runtime/CityHumanActor.cs",
+    "Assets/CityGame/Runtime/CityHumanFace.cs",
+    "Assets/CityGame/Runtime/CityHumanFace.cs.meta",
+    "Assets/CityGame/Runtime/CityHumanPose.cs",
+    "Assets/CityGame/Runtime/CityPlayerValidation.HumanFace.cs",
+    "Assets/CityGame/Runtime/CityPlayerValidation.HumanFace.cs.meta",
+    "Assets/CityGame/Runtime/CityPlayerValidation.cs",
+    "Assets/CityGame/Runtime/CityWardrobePanel.cs",
+    "Assets/CityGame/Tests/Editor/CityHumanFaceTests.cs",
+    "Assets/CityGame/Tests/Editor/CityHumanFaceTests.cs.meta",
+    "Assets/CityGame/Tests/Editor/CityHumanFeedbackTests.cs",
+    "Assets/CityGame/Tests/Editor/CityHumanFeedbackTests.cs.meta",
+    "Docs/Faceunits01-CC0-LICENSE.md",
+    "Docs/Human-Face-20261101.md",
+    "Docs/RodjaHuman-Face-Provenance-20261101.json",
+    "Docs/Screenshots/human-face-blink-windows-20261101.png",
+    "Docs/Screenshots/human-face-calm-windows-20261101.png",
+    "Docs/Screenshots/human-face-effort-windows-20261101.png",
+    "Docs/Screenshots/human-face-gaze-portrait-windows-20261101.png",
+    "Docs/Screenshots/human-face-gaze-world-windows-20261101.png",
+    "Docs/Screenshots/human-face-success-windows-20261101.png",
+    "Docs/Screenshots/human-face-success-world-windows-20261101.png",
+    "Docs/Verification-Human-Face-20261101.json",
+    "HANDOFF-NASTAVAK.md",
+    "README.md",
+    "THIRD_PARTY_NOTICES.md",
+    "Tools/Character/build_human_face.py",
+    "Tools/Test-HumanFace.py"
+  ],
+  "windows": {
+    "name": "VKT-Human-Face-Windows-20261101.zip",
+    "bytes": 151040022,
+    "sha256": "32210b59bc16e0f409db3680b3052265fb403b8d7a6f8140b8a84608154ddda2",
+    "zipCrcPassed": true
+  },
+  "packagedReceiptSha256": "9f2347c499e7b360e72762202886f80340ecca8f942e216b64e7fa2a60b5d97c",
+  "packagedDocumentFiles": [
+    "Docs/Faceunits01-CC0-LICENSE.md",
+    "Docs/Human-Face-20261101.md",
+    "Docs/Human-Playable-20261101.md",
+    "Docs/RodjaHuman-CC0-LICENSE.md",
+    "Docs/RodjaHuman-Face-Provenance-20261101.json",
+    "Docs/RodjaHuman-Provenance-20261029.json",
+    "Docs/Screenshots/human-city-windows-20261101.png",
+    "Docs/Screenshots/human-face-blink-windows-20261101.png",
+    "Docs/Screenshots/human-face-calm-windows-20261101.png",
+    "Docs/Screenshots/human-face-effort-windows-20261101.png",
+    "Docs/Screenshots/human-face-gaze-portrait-windows-20261101.png",
+    "Docs/Screenshots/human-face-gaze-world-windows-20261101.png",
+    "Docs/Screenshots/human-face-success-windows-20261101.png",
+    "Docs/Screenshots/human-face-success-world-windows-20261101.png",
+    "Docs/Verification-Human-Face-20261101.json",
+    "Docs/Verification-Human-Playable-20261101.json",
+    "Docs/iOS-Readiness-20261101.json",
+    "Docs/iPhone-Plan-20261101.md",
+    "THIRD_PARTY_NOTICES.md",
+    "Tools/Character/build_human_face.py"
+  ]
+}

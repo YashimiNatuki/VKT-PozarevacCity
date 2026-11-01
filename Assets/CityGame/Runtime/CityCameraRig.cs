@@ -16,7 +16,13 @@ namespace Pozarevac.CityGame
         public CityHumanActor HumanActor {get;private set;}
         public bool HumanSelected {get;private set;}
         public CityOutfit CurrentOutfit => look!=null?look.Outfit:CityOutfit.Korzo;
-        public void ConfigureFeedback(CityGameAudio audio){if(look!=null)look.Face.BindFeedback(owner.GetComponent<CityPlayerVitals>(),audio);}
+        private CityGameAudio feedbackAudio;
+        public void ConfigureFeedback(CityGameAudio audio)
+        {
+            feedbackAudio=audio;
+            if(look!=null)look.Face.BindFeedback(owner.GetComponent<CityPlayerVitals>(),audio);
+            HumanActor?.BindFeedback(owner.GetComponent<CityPlayerVitals>(),audio,view);
+        }
         private readonly RaycastHit[] hits = new RaycastHit[24];
         private readonly RaycastHit[] aimHits = new RaycastHit[24];
         private Transform weapon;
@@ -81,6 +87,7 @@ namespace Pozarevac.CityGame
             {
                 if(!CityHumanActor.TryCreate(owner,Resources.Load<GameObject>("Models/RodjaHuman/RodjaHuman"),out CityHumanActor actor))return false;
                 HumanActor=actor;
+                HumanActor.BindFeedback(owner.GetComponent<CityPlayerVitals>(),feedbackAudio,view);
             }
             HumanSelected=selected;
             if(selected)Mode=CityCameraMode.Chase;
@@ -127,6 +134,7 @@ namespace Pozarevac.CityGame
             if(look!=null)look.Face.SetEffort(boxing?.8f:actorMotion!=null?Mathf.Clamp01(actorMotion.ObservedSpeed/8):0);
             if(look!=null)look.Face.SetAlert(lifestyle!=null&&lifestyle.Wanted);
             ApplyAvatarVisibility();
+            HumanActor?.SetAlert(lifestyle!=null&&lifestyle.Wanted);
             HumanActor?.Advance(Time.deltaTime,Time.timeScale<=0||Time.deltaTime<=0);
             if(training||boxing)
             {

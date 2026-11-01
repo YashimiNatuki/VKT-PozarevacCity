@@ -21,10 +21,12 @@ namespace Pozarevac.CityGame
         private Text motionLabel;
         private CityHumanPose humanPose;
         private int candidateMotion;
+        private CityFaceMood candidateMood;
+        public CityHumanFace CandidateFace=>humanPose?.Face;
         public int CandidateMotion => candidateMotion;
         private readonly Button[] outfitButtons=new Button[3];
         public bool CandidatePreview { get; private set; }
-        public CityFaceMood PreviewMood=>look!=null?look.Face.PreviewMood:CityFaceMood.Calm;
+        public CityFaceMood PreviewMood=>CandidatePreview?candidateMood:look!=null?look.Face.PreviewMood:CityFaceMood.Calm;
         private bool ownsPause;
         public bool Portrait { get; private set; }
         public bool IsOpen=>panel!=null&&panel.activeSelf;
@@ -70,7 +72,7 @@ namespace Pozarevac.CityGame
             RectTransform photo=Rect("Preview",panel.transform,new Vector2(330,440),new Vector2(-260,5));
             photo.gameObject.AddComponent<RawImage>().texture=image;
             title=Label(Rect("Title",panel.transform,new Vector2(520,100),new Vector2(200,215)),"",25);
-            info=Label(Rect("Info",panel.transform,new Vector2(500,130),new Vector2(220,100)),"",20);
+            info=Label(Rect("Info",panel.transform,new Vector2(500,170),new Vector2(220,100)),"",20);
             for(int i=0;i<3;i++){int choice=i;outfitButtons[i]=Button(CityAppearance.Name((CityOutfit)i),new Vector2(210,10-i*65),()=>Select((CityOutfit)choice));}
             Button("← OKRENI",new Vector2(-355,-250),()=>Rotate(-45));
             Button("OKRENI →",new Vector2(-165,-250),()=>Rotate(45));
@@ -110,9 +112,14 @@ namespace Pozarevac.CityGame
         }
         public void CycleExpression()
         {
-            if(!IsOpen||CandidatePreview)return;
-            look.Face.PreviewMood=(CityFaceMood)(((int)look.Face.PreviewMood+1)%5);
-            expressionLabel.text="IZRAZ / "+CityFaceState.Name(look.Face.PreviewMood);
+            if(!IsOpen)return;
+            if(CandidatePreview)
+            {
+                if(humanPose?.Face==null)return;
+                candidateMood=(CityFaceMood)(((int)candidateMood+1)%5);
+            }
+            else look.Face.PreviewMood=(CityFaceMood)(((int)look.Face.PreviewMood+1)%5);
+            expressionLabel.text="IZRAZ / "+CityFaceState.Name(PreviewMood);
         }
         public void TogglePortrait()
         {
@@ -124,7 +131,7 @@ namespace Pozarevac.CityGame
         {
             if(preview==null)return;
             float faceHeight=CandidatePreview?1.66f:1.57f;
-            preview.transform.localPosition=Portrait?new Vector3(0,faceHeight+.02f,1.25f):new Vector3(0,1.05f,3.25f);
+            preview.transform.localPosition=Portrait?new Vector3(0,faceHeight+.02f,CandidatePreview ? .72f : 1.25f):new Vector3(0,1.05f,3.25f);
             preview.transform.LookAt(stage.transform.position+Vector3.up*(Portrait?faceHeight:.96f));
         }
         public bool ToggleCandidate()
@@ -154,6 +161,7 @@ namespace Pozarevac.CityGame
         private void ResetCandidateMotion()
         {
             humanPose?.Reset();candidateMotion=0;
+            candidateMood=CityFaceMood.Calm;
             if(motionLabel!=null)motionLabel.text="POKRET / MIRAN";
         }
         private void StudioLight(Vector3 position,Color color,float intensity)
@@ -188,14 +196,16 @@ namespace Pozarevac.CityGame
         {
             look.Apply(game.Progression.Appearance.Outfit,game.Progression.Lifestyle.Strength);
             title.text=CandidatePreview?"NOVI 3D LIK\nPREGLED I GRAD":"TVOJ LIK / "+CityAppearance.Name(game.Progression.Appearance.Outfit)+"\nSNAGA "+game.Progression.Lifestyle.Strength+"/5";
-            info.text=CandidatePreview?"POKRET: miran / hod / trčanje / gard\nIGRAJ U GRADU: izbor za ovu sesiju\nC: promena perspektive u gradu\nBenč i boks koriste trening-prikaz.":"GARDEROBER / ORIGINAL VKT\nMajica • pantalone • patike • kačket\nKozmetika je besplatna. Snaga menja građu.\nIzgled se čuva sa likom.";
+            info.text=CandidatePreview?"POKRET: miran / hod / trčanje / gard\nIZRAZ: miran / fokus / napor / uspeh / povreda\nTreptanje i pogled rade u pregledu.\nIGRAJ U GRADU: izbor za ovu sesiju\nBenč i boks koriste trening-prikaz.":"GARDEROBER / ORIGINAL VKT\nMajica • pantalone • patike • kačket\nKozmetika je besplatna. Snaga menja građu.\nIzgled se čuva sa likom.";
+            if(CandidatePreview&&humanPose?.Face==null)info.text="POKRET: miran / hod / trčanje / gard\nFacijalne kontrole nisu dostupne u ovom modelu.\nIGRAJ U GRADU: izbor za ovu sesiju\nBenč i boks koriste trening-prikaz.";
             candidateLabel.text=CandidatePreview?"NAZAD NA TVOG LIKA":"NOVI 3D LIK / PREGLED";
             bool selected=game.Player.GetComponentInChildren<CityCameraRig>().HumanSelected;
             foreach(Button button in outfitButtons)button.gameObject.SetActive(!CandidatePreview&&!selected);
             playButton.gameObject.SetActive(CandidatePreview&&humanPose!=null);
             originalButton.gameObject.SetActive(!CandidatePreview&&selected);
             if(!CandidatePreview&&selected)info.text="U GRADU IGRAŠ SA NOVIM LIKOM\nOdeća i izrazi ovde pripadaju originalu.\nVRATI ORIGINALNI LIK da ih izabereš.\nIzbor novog lika važi za ovu sesiju.";
-            expressionButton.gameObject.SetActive(!CandidatePreview);
+            expressionButton.gameObject.SetActive(!CandidatePreview||humanPose?.Face!=null);
+            expressionLabel.text="IZRAZ / "+CityFaceState.Name(PreviewMood);
             motionButton.gameObject.SetActive(CandidatePreview&&humanPose!=null);
         }
         public void Close()
@@ -212,7 +222,10 @@ namespace Pozarevac.CityGame
             if(IsOpen&&Keyboard.current!=null&&Keyboard.current.escapeKey.wasPressedThisFrame)Close();
             // The wardrobe owns an unscaled presentation clock while the game remains paused.
             if(IsOpen&&CandidatePreview&&candidatePreview.activeInHierarchy&&humanPose!=null)
+            {
                 humanPose.Step(Time.unscaledDeltaTime,candidateMotion==1?2:candidateMotion==2?5.5f:0,candidateMotion==3);
+                if(humanPose.Face!=null)humanPose.Face.Step(Time.unscaledDeltaTime,preview.transform.position-humanPose.Face.Head.position,candidateMood,candidateMotion==2||candidateMood==CityFaceMood.Effort?1:0);
+            }
         }
         private void OnDisable(){Close();}
         private void OnDestroy()

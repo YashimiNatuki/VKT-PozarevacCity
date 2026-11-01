@@ -1,0 +1,875 @@
+{
+  "date": "2026-11-01",
+  "verification": {
+    "status": "windows-verified-source-normalized",
+    "assetProduction": "passed",
+    "focusedTests": {
+      "mode": "focused",
+      "processExit": 0,
+      "total": "9",
+      "passed": "9",
+      "failed": "0",
+      "skipped": "0"
+    },
+    "feedbackTests": {
+      "mode": "focused",
+      "processExit": 0,
+      "total": "4",
+      "passed": "4",
+      "failed": "0",
+      "skipped": "0"
+    },
+    "fullUnitySuite": {
+      "mode": "tests",
+      "processExit": 0,
+      "total": "283",
+      "passed": "282",
+      "failed": "0",
+      "skipped": "1"
+    },
+    "windowsBuild": {
+      "mode": "build",
+      "processExit": 0
+    },
+    "nativeHumanFace": "passed",
+    "hashStatus": "final-after-generated-normalization",
+    "assistantImageReview": true,
+    "humanVisualApproval": false,
+    "physicalAndroid": "unverified",
+    "physicalIPhone": "unverified"
+  },
+  "license": "CC0-1.0",
+  "historicalBaseline": {
+    "commit": "bf670b071c0c621d9e3d75d2ce4e25ce274c3621",
+    "provenance": "Docs/RodjaHuman-Provenance-20261029.json",
+    "fbxSha256": "a78473ae8aa4f7771764dc3346dc1b2fd1c92dd3606b8f7a43dc4421ea0d3918",
+    "blendFile": "Rodja-clothed-source.blend",
+    "blendSha256": "d784e76c488d0fcb9192c8b9ee3d6c0fb50831d32cd485882784658d0cadba92",
+    "bodyAssetSource": "https://files2.makehumancommunity.org/asset_packs/makehuman_system_assets/makehuman_system_assets_cc0.zip"
+  },
+  "targetPack": {
+    "name": "Faceunits 01",
+    "author": "Mika Suominen",
+    "license": "CC0-1.0",
+    "source": "https://files2.makehumancommunity.org/functional/faceunits01.zip",
+    "sourcePage": "https://static.makehumancommunity.org/assets/assetpacks/faceunits01.html",
+    "licensePage": "https://static.makehumancommunity.org/assets/assetpacks.html",
+    "internalLicenseManifest": "packs/faceunits01.json",
+    "bytes": 257821,
+    "sha256": "d113107bd7eb59f3af4df6fc0ec29bfcc593f496d0b336aec14f086a80ce7146",
+    "selectedTargets": [
+      {
+        "name": "eyeBlinkLeft",
+        "sourcePath": "targets/faceunits/eyeBlinkLeft.target",
+        "bytes": 16277,
+        "sha256": "53d35e0a8357140d4e37277a674f211bdaf97be011b61cfcdff618f0bfea0ec8",
+        "author": "Mika Suominen",
+        "license": "CC0-1.0"
+      },
+      {
+        "name": "eyeBlinkRight",
+        "sourcePath": "targets/faceunits/eyeBlinkRight.target",
+        "bytes": 16075,
+        "sha256": "00d159a70fad650b336eb6f739a1a6a47f916da4331ef9848fb0eef989ca5cc5",
+        "author": "Mika Suominen",
+        "license": "CC0-1.0"
+      },
+      {
+        "name": "jawOpen",
+        "sourcePath": "targets/faceunits/jawOpen.target",
+        "bytes": 51426,
+        "sha256": "2439e703e434f999b58a1d26cffdb6b2fd5f30941b8ff19cac70b75392d4de6f",
+        "author": "Mika Suominen",
+        "license": "CC0-1.0"
+      },
+      {
+        "name": "mouthSmileLeft",
+        "sourcePath": "targets/faceunits/mouthSmileLeft.target",
+        "bytes": 32657,
+        "sha256": "11cabf2fa6f9664c4d0b9f8f0cadaf4b2a1a9625b72c7593262465ce8d4cb9a2",
+        "author": "Mika Suominen",
+        "license": "CC0-1.0"
+      },
+      {
+        "name": "mouthSmileRight",
+        "sourcePath": "targets/faceunits/mouthSmileRight.target",
+        "bytes": 33258,
+        "sha256": "70578981892db13c02512455583c2f9743683d5c571c1e2624b09638cf37bedd",
+        "author": "Mika Suominen",
+        "license": "CC0-1.0"
+      },
+      {
+        "name": "browDownLeft",
+        "sourcePath": "targets/faceunits/browDownLeft.target",
+        "bytes": 11474,
+        "sha256": "095b8e45fc918aa17f845ea6490561644e10d83d3a5aa42790488a6806b2ccf1",
+        "author": "Mika Suominen",
+        "license": "CC0-1.0"
+      },
+      {
+        "name": "browDownRight",
+        "sourcePath": "targets/faceunits/browDownRight.target",
+        "bytes": 11014,
+        "sha256": "f092d3c8446b9e1bdf523b039465796e629b6cf9e20ac3f8fb853f98e890f105",
+        "author": "Mika Suominen",
+        "license": "CC0-1.0"
+      },
+      {
+        "name": "eyeLookUpLeft",
+        "sourcePath": "targets/faceunits/eyeLookUpLeft.target",
+        "bytes": 17382,
+        "sha256": "3c8b3e2ac2bb82561f72deb94bb3d58e3876675cd3b87262967df812bcd6acb9",
+        "author": "Mika Suominen",
+        "license": "CC0-1.0"
+      },
+      {
+        "name": "eyeLookUpRight",
+        "sourcePath": "targets/faceunits/eyeLookUpRight.target",
+        "bytes": 17011,
+        "sha256": "4b91cf96e42c527179e8b7f60f0c69ae9d3dec0abe4ce475ceca0c95f8cd9cc0",
+        "author": "Mika Suominen",
+        "license": "CC0-1.0"
+      },
+      {
+        "name": "eyeLookDownLeft",
+        "sourcePath": "targets/faceunits/eyeLookDownLeft.target",
+        "bytes": 12016,
+        "sha256": "df824a8a46447e95bc465b198ea9e49f10db8429c94531568dfbc512811f3f07",
+        "author": "Mika Suominen",
+        "license": "CC0-1.0"
+      },
+      {
+        "name": "eyeLookDownRight",
+        "sourcePath": "targets/faceunits/eyeLookDownRight.target",
+        "bytes": 11540,
+        "sha256": "568da82dd1a31eb5eb6a46025d56dbf13e6e9a9cb7950f0546111af0781d3f4c",
+        "author": "Mika Suominen",
+        "license": "CC0-1.0"
+      },
+      {
+        "name": "eyeLookInLeft",
+        "sourcePath": "targets/faceunits/eyeLookInLeft.target",
+        "bytes": 9977,
+        "sha256": "d0774cb36def532a3be8576fc62cc23ad10bcc6f668365fcf387fe52a83155a0",
+        "author": "Mika Suominen",
+        "license": "CC0-1.0"
+      },
+      {
+        "name": "eyeLookInRight",
+        "sourcePath": "targets/faceunits/eyeLookInRight.target",
+        "bytes": 9181,
+        "sha256": "de9123797cbca735fa2d12853723dc1eb88d9ad435033465b713dc5e64511a28",
+        "author": "Mika Suominen",
+        "license": "CC0-1.0"
+      },
+      {
+        "name": "eyeLookOutLeft",
+        "sourcePath": "targets/faceunits/eyeLookOutLeft.target",
+        "bytes": 9891,
+        "sha256": "9dd01ff6424676eb3abd4cfcd13ecfa3ffe87ea4feb8eeb252fd06aeb441be1e",
+        "author": "Mika Suominen",
+        "license": "CC0-1.0"
+      },
+      {
+        "name": "eyeLookOutRight",
+        "sourcePath": "targets/faceunits/eyeLookOutRight.target",
+        "bytes": 9949,
+        "sha256": "c25852238d3833d9f8977d7fac66942f810e4a24b0c90f584894d3c76c626ae7",
+        "author": "Mika Suominen",
+        "license": "CC0-1.0"
+      }
+    ]
+  },
+  "generator": {
+    "mpfb": "2.0.18",
+    "mpfbSource": "https://github.com/makehumancommunity/mpfb2/tree/v2.0.18",
+    "blender": "4.5.9 LTS",
+    "script": "Tools/Character/build_human_face.py",
+    "scriptSha256": "0305a6f7c1d37dbbf355209e418e1743fdfea2a887401f557016f7ccf3911167",
+    "pipeline": [
+      "Bake chosen macro body",
+      "Load pinned official face targets before masking",
+      "Resolve MHCLO sources with scene-local second_root",
+      "Interpolate official targets to child meshes",
+      "Bake masks while preserving shape keys",
+      "Compare zero pose, weights and rest rig",
+      "Export FBX without reapplying modifiers"
+    ],
+    "fbxSha256": "d2fd118ae3bd92b412fb5e74a98badd831792f3de3ceb72ed30feb9ffc7fc6e0",
+    "glbSha256": "3a950614380872e5463d80bfe0810271093bc4f26ff3108d44410036d2da5307"
+  },
+  "baselineIdentity": {
+    "meshCount": 7,
+    "triangles": 46064,
+    "bones": 53,
+    "zeroPoseMaximumDeltaMeters": 0.0,
+    "restRigMaximumDelta": 0.0,
+    "topologyUnchanged": true,
+    "skinWeightsUnchanged": true,
+    "baselineGeometrySha256": "04cf6d7199c8926214fd71a794bd18a6d03253514219fc28d4e0bef28caf9f0f",
+    "generatedGeometrySha256": "04cf6d7199c8926214fd71a794bd18a6d03253514219fc28d4e0bef28caf9f0f",
+    "meshes": [
+      {
+        "name": "RodjaBody",
+        "vertices": 7840,
+        "triangles": 15500
+      },
+      {
+        "name": "RodjaBody.male_casualsuit01",
+        "vertices": 8426,
+        "triangles": 16672
+      },
+      {
+        "name": "RodjaBody.shoes02",
+        "vertices": 1594,
+        "triangles": 3064
+      },
+      {
+        "name": "RodjaBody.low-poly",
+        "vertices": 96,
+        "triangles": 172
+      },
+      {
+        "name": "RodjaBody.eyebrow001",
+        "vertices": 124,
+        "triangles": 192
+      },
+      {
+        "name": "RodjaBody.short02",
+        "vertices": 1755,
+        "triangles": 3344
+      },
+      {
+        "name": "RodjaBody.teeth_base",
+        "vertices": 3868,
+        "triangles": 7120
+      }
+    ]
+  },
+  "facialData": {
+    "controlCount": 15,
+    "fbxShapeGeometryCount": 44,
+    "units": "Blender meters before Unity avatar normalization",
+    "meshTargets": {
+      "RodjaBody": {
+        "eyeBlinkLeft": {
+          "movedVertices": 718,
+          "maximumDeltaMeters": 0.012613429752137051
+        },
+        "eyeBlinkRight": {
+          "movedVertices": 718,
+          "maximumDeltaMeters": 0.012613429752137051
+        },
+        "jawOpen": {
+          "movedVertices": 2239,
+          "maximumDeltaMeters": 0.038738342036593244
+        },
+        "mouthSmileLeft": {
+          "movedVertices": 1627,
+          "maximumDeltaMeters": 0.01868205476504101
+        },
+        "mouthSmileRight": {
+          "movedVertices": 1628,
+          "maximumDeltaMeters": 0.018060436845334985
+        },
+        "browDownLeft": {
+          "movedVertices": 499,
+          "maximumDeltaMeters": 0.006952015226565901
+        },
+        "browDownRight": {
+          "movedVertices": 499,
+          "maximumDeltaMeters": 0.006952015226565901
+        },
+        "eyeLookUpLeft": {
+          "movedVertices": 708,
+          "maximumDeltaMeters": 0.002578813692373326
+        },
+        "eyeLookUpRight": {
+          "movedVertices": 707,
+          "maximumDeltaMeters": 0.002578813692373326
+        },
+        "eyeLookDownLeft": {
+          "movedVertices": 360,
+          "maximumDeltaMeters": 0.0037336478402108858
+        },
+        "eyeLookDownRight": {
+          "movedVertices": 360,
+          "maximumDeltaMeters": 0.0037336478402108858
+        },
+        "eyeLookInLeft": {
+          "movedVertices": 323,
+          "maximumDeltaMeters": 0.0010049878988679212
+        },
+        "eyeLookInRight": {
+          "movedVertices": 323,
+          "maximumDeltaMeters": 0.0010049878988679212
+        },
+        "eyeLookOutLeft": {
+          "movedVertices": 323,
+          "maximumDeltaMeters": 0.0010049878988679212
+        },
+        "eyeLookOutRight": {
+          "movedVertices": 323,
+          "maximumDeltaMeters": 0.0010049878988679212
+        }
+      },
+      "RodjaBody.male_casualsuit01": {},
+      "RodjaBody.shoes02": {},
+      "RodjaBody.low-poly": {
+        "eyeLookUpLeft": {
+          "movedVertices": 48,
+          "maximumDeltaMeters": 0.002912031846809803
+        },
+        "eyeLookUpRight": {
+          "movedVertices": 48,
+          "maximumDeltaMeters": 0.002912031846809803
+        },
+        "eyeLookDownLeft": {
+          "movedVertices": 48,
+          "maximumDeltaMeters": 0.004755022849646256
+        },
+        "eyeLookDownRight": {
+          "movedVertices": 48,
+          "maximumDeltaMeters": 0.004755022849646256
+        },
+        "eyeLookInLeft": {
+          "movedVertices": 48,
+          "maximumDeltaMeters": 0.005825805689479947
+        },
+        "eyeLookInRight": {
+          "movedVertices": 48,
+          "maximumDeltaMeters": 0.005825805689479947
+        },
+        "eyeLookOutLeft": {
+          "movedVertices": 48,
+          "maximumDeltaMeters": 0.005725381476272839
+        },
+        "eyeLookOutRight": {
+          "movedVertices": 48,
+          "maximumDeltaMeters": 0.005725381476272839
+        }
+      },
+      "RodjaBody.eyebrow001": {
+        "eyeBlinkLeft": {
+          "movedVertices": 23,
+          "maximumDeltaMeters": 0.003617727086186807
+        },
+        "eyeBlinkRight": {
+          "movedVertices": 23,
+          "maximumDeltaMeters": 0.003617727086186807
+        },
+        "jawOpen": {
+          "movedVertices": 14,
+          "maximumDeltaMeters": 0.00038118838202170287
+        },
+        "mouthSmileLeft": {
+          "movedVertices": 9,
+          "maximumDeltaMeters": 0.00037404611431405627
+        },
+        "mouthSmileRight": {
+          "movedVertices": 9,
+          "maximumDeltaMeters": 0.00037404611431405627
+        },
+        "browDownLeft": {
+          "movedVertices": 72,
+          "maximumDeltaMeters": 0.005528810229681563
+        },
+        "browDownRight": {
+          "movedVertices": 72,
+          "maximumDeltaMeters": 0.005528810229681563
+        },
+        "eyeLookUpLeft": {
+          "movedVertices": 22,
+          "maximumDeltaMeters": 0.0007670403729687052
+        },
+        "eyeLookUpRight": {
+          "movedVertices": 22,
+          "maximumDeltaMeters": 0.0007670403729687052
+        },
+        "eyeLookDownLeft": {
+          "movedVertices": 12,
+          "maximumDeltaMeters": 0.0009452501064673053
+        },
+        "eyeLookDownRight": {
+          "movedVertices": 12,
+          "maximumDeltaMeters": 0.0009452501064673053
+        },
+        "eyeLookInLeft": {
+          "movedVertices": 8,
+          "maximumDeltaMeters": 0.0002385899404776527
+        },
+        "eyeLookInRight": {
+          "movedVertices": 8,
+          "maximumDeltaMeters": 0.0002385899404776527
+        },
+        "eyeLookOutLeft": {
+          "movedVertices": 8,
+          "maximumDeltaMeters": 0.00023938594133495267
+        },
+        "eyeLookOutRight": {
+          "movedVertices": 8,
+          "maximumDeltaMeters": 0.00023938594133495267
+        }
+      },
+      "RodjaBody.short02": {
+        "jawOpen": {
+          "movedVertices": 136,
+          "maximumDeltaMeters": 0.0015775932452659542
+        },
+        "mouthSmileLeft": {
+          "movedVertices": 55,
+          "maximumDeltaMeters": 0.001438801689548357
+        },
+        "mouthSmileRight": {
+          "movedVertices": 55,
+          "maximumDeltaMeters": 0.0017327271664698222
+        },
+        "browDownLeft": {
+          "movedVertices": 197,
+          "maximumDeltaMeters": 0.006718371279834008
+        },
+        "browDownRight": {
+          "movedVertices": 219,
+          "maximumDeltaMeters": 0.006843624040328898
+        }
+      },
+      "RodjaBody.teeth_base": {
+        "jawOpen": {
+          "movedVertices": 1884,
+          "maximumDeltaMeters": 0.030256370138346055
+        }
+      }
+    },
+    "fbxUnitScaleFactor": 1.0,
+    "fbxModelLclScaling": [
+      100,
+      100,
+      100
+    ],
+    "unityDeltaMeasurement": "Use renderer.transform.TransformVector(delta) for world-meter significance; raw deltas depend on imported units.",
+    "staticEyeDirectionEvidence": {
+      "glbSha256": "3a950614380872e5463d80bfe0810271093bc4f26ff3108d44410036d2da5307",
+      "coordinates": "glTF right-handed Y-up default-pose world space; authored face forward +Z",
+      "allEightDirectionsPassed": true,
+      "controls": {
+        "eyeLookOutLeft": {
+          "movedVertices": 48,
+          "baseMovedCentroid": [
+            0.028274310907969873,
+            1.368375872572263,
+            0.1284665895315508
+          ],
+          "deltaMovedCentroid": [
+            0.003343749810786297,
+            5.0008296966552734e-05,
+            -0.0009270828838149706
+          ],
+          "deltaFrontHalfMean": [
+            0.0045531247451435775,
+            5.0008296966552734e-05,
+            -0.0010843744967132807
+          ]
+        },
+        "eyeLookInRight": {
+          "movedVertices": 48,
+          "baseMovedCentroid": [
+            -0.028274310907969873,
+            1.368375872572263,
+            0.1284665895315508
+          ],
+          "deltaMovedCentroid": [
+            0.0035624999242524305,
+            -6.251037120819092e-06,
+            2.083399643500646e-05
+          ],
+          "deltaFrontHalfMean": [
+            0.004799999907845631,
+            9.376555681228638e-06,
+            -0.0001437491737306118
+          ]
+        },
+        "eyeLookInLeft": {
+          "movedVertices": 48,
+          "baseMovedCentroid": [
+            0.028274310907969873,
+            1.368375872572263,
+            0.1284665895315508
+          ],
+          "deltaMovedCentroid": [
+            -0.0035624999242524305,
+            -6.251037120819092e-06,
+            2.083399643500646e-05
+          ],
+          "deltaFrontHalfMean": [
+            -0.004799999907845631,
+            9.376555681228638e-06,
+            -0.0001437491737306118
+          ]
+        },
+        "eyeLookOutRight": {
+          "movedVertices": 48,
+          "baseMovedCentroid": [
+            -0.028274310907969873,
+            1.368375872572263,
+            0.1284665895315508
+          ],
+          "deltaMovedCentroid": [
+            -0.003343749810786297,
+            5.0008296966552734e-05,
+            -0.0009270828838149706
+          ],
+          "deltaFrontHalfMean": [
+            -0.0045531247451435775,
+            5.0008296966552734e-05,
+            -0.0010843744967132807
+          ]
+        },
+        "eyeLookUpLeft": {
+          "movedVertices": 48,
+          "baseMovedCentroid": [
+            0.028274310907969873,
+            1.368375872572263,
+            0.1284665895315508
+          ],
+          "deltaMovedCentroid": [
+            0.0,
+            0.0013458182414372761,
+            -0.0003270831269522508
+          ],
+          "deltaFrontHalfMean": [
+            0.0,
+            0.002159353345632553,
+            -0.0003343750722706318
+          ]
+        },
+        "eyeLookUpRight": {
+          "movedVertices": 48,
+          "baseMovedCentroid": [
+            -0.028274310907969873,
+            1.368375872572263,
+            0.1284665895315508
+          ],
+          "deltaMovedCentroid": [
+            0.0,
+            0.0013458182414372761,
+            -0.0003270831269522508
+          ],
+          "deltaFrontHalfMean": [
+            0.0,
+            0.002159353345632553,
+            -0.0003343750722706318
+          ]
+        },
+        "eyeLookDownLeft": {
+          "movedVertices": 48,
+          "baseMovedCentroid": [
+            0.028274310907969873,
+            1.368375872572263,
+            0.1284665895315508
+          ],
+          "deltaMovedCentroid": [
+            -7.083344583710034e-05,
+            -0.002427081267038981,
+            -0.0016333331974844139
+          ],
+          "deltaFrontHalfMean": [
+            -8.125021122395992e-05,
+            -0.0033531226217746735,
+            -0.0017218752764165401
+          ]
+        },
+        "eyeLookDownRight": {
+          "movedVertices": 48,
+          "baseMovedCentroid": [
+            -0.028274310907969873,
+            1.368375872572263,
+            0.1284665895315508
+          ],
+          "deltaMovedCentroid": [
+            7.083344583710034e-05,
+            -0.002427081267038981,
+            -0.0016333331974844139
+          ],
+          "deltaFrontHalfMean": [
+            8.125021122395992e-05,
+            -0.0033531226217746735,
+            -0.0017218752764165401
+          ]
+        }
+      },
+      "boundary": "Source GLB signed-direction proof only. Unity FBX handedness conversion may reflect an axis; native signed BakeMesh displacement in actor frame remains required."
+    },
+    "unityDirectionVerification": {
+      "positiveActorXAxisChannels": [
+        "eyeLookInLeft",
+        "eyeLookOutRight"
+      ],
+      "rightEyeMeanMeters": 0.0017210589721798897,
+      "passed": true,
+      "method": "Same-frame baked mesh counterfactual; signed world projection onto actor right; calibrated FBX coordinate frame."
+    }
+  },
+  "distributedFiles": [
+    {
+      "path": "Assets/CityGame/Resources/Models/RodjaHuman/brown_eye.png",
+      "bytes": 610817,
+      "sha256": "4659691c7295ad6206c78b003e5fd0e5f91dcd53032fa914a229bb48cabe424b"
+    },
+    {
+      "path": "Assets/CityGame/Resources/Models/RodjaHuman/brown_eye.png.meta",
+      "bytes": 3785,
+      "sha256": "47d38ff3725f0c6390f4374e75b2f198b8872a372f15863af9c028beefec734c"
+    },
+    {
+      "path": "Assets/CityGame/Resources/Models/RodjaHuman/eyebrow001.png",
+      "bytes": 89619,
+      "sha256": "9940f7d0b1b223709a19b05156ba6f6e9e4dbdbced02d7574f4d51d72c58967b"
+    },
+    {
+      "path": "Assets/CityGame/Resources/Models/RodjaHuman/eyebrow001.png.meta",
+      "bytes": 3785,
+      "sha256": "632cdd1fa48ac3d39d2c7a2fc254da7bacbc8c9701fcb6ec52707835d33dfa63"
+    },
+    {
+      "path": "Assets/CityGame/Resources/Models/RodjaHuman/male_casualsuit01_diffuse.png",
+      "bytes": 5531728,
+      "sha256": "3fd0bba5dcbdea0ac427f644a6c7c298938f7369b8f96626621ce1e88989394e"
+    },
+    {
+      "path": "Assets/CityGame/Resources/Models/RodjaHuman/male_casualsuit01_diffuse.png.meta",
+      "bytes": 3785,
+      "sha256": "f6e358bc3af865260720ad6ec6d27eca7a851f31251939241f3d10366b91253a"
+    },
+    {
+      "path": "Assets/CityGame/Resources/Models/RodjaHuman/male_casualsuit01_normal.png",
+      "bytes": 1738660,
+      "sha256": "ff029fc5a3350ebc72813cdf050afcffd23064c7701d99e664572713cfa98a5f"
+    },
+    {
+      "path": "Assets/CityGame/Resources/Models/RodjaHuman/male_casualsuit01_normal.png.meta",
+      "bytes": 3785,
+      "sha256": "ef8ca67f6eb69d93a45ac2571b8d307f720227417077f9d655bd694eaef22a97"
+    },
+    {
+      "path": "Assets/CityGame/Resources/Models/RodjaHuman/manifest.json",
+      "bytes": 28924,
+      "sha256": "608d8e8e72126183043e1bc8921887242d9b45fdb7408658267f94de3f0831eb"
+    },
+    {
+      "path": "Assets/CityGame/Resources/Models/RodjaHuman/manifest.json.meta",
+      "bytes": 162,
+      "sha256": "836ef8b8103b6b1275e8eb63c1b0192d105593e9a41c8bda250050ff46d67bb5"
+    },
+    {
+      "path": "Assets/CityGame/Resources/Models/RodjaHuman/Materials/Material.mat",
+      "bytes": 4009,
+      "sha256": "e13c0c10a28abd511895a7395878b0c9be68af9d225f38c9bcd438defeef443f"
+    },
+    {
+      "path": "Assets/CityGame/Resources/Models/RodjaHuman/Materials/Material.mat.meta",
+      "bytes": 193,
+      "sha256": "57e33cdf8eb95250586ca75df84a095674c88e9361ece1929676efdd19b52279"
+    },
+    {
+      "path": "Assets/CityGame/Resources/Models/RodjaHuman/Materials/RodjaBody.body.mat",
+      "bytes": 3985,
+      "sha256": "2ecfe5cf64733d64daff5f6d309d25d41b9a20e43acbb5ee4cad0f30fa2a02ba"
+    },
+    {
+      "path": "Assets/CityGame/Resources/Models/RodjaHuman/Materials/RodjaBody.body.mat.meta",
+      "bytes": 193,
+      "sha256": "d9fd463e5b0c42765956160212465fa292e14e467442016107242992bf877171"
+    },
+    {
+      "path": "Assets/CityGame/Resources/Models/RodjaHuman/Materials/RodjaBody.ears.mat",
+      "bytes": 3984,
+      "sha256": "397166d519f2953abc529eceecacaaa433edb70859b3eff8caa5f9eecfb01b70"
+    },
+    {
+      "path": "Assets/CityGame/Resources/Models/RodjaHuman/Materials/RodjaBody.ears.mat.meta",
+      "bytes": 193,
+      "sha256": "b9ac04655507e2cdf0113633f38370777da9142e79d6380b5b294bcf810bf589"
+    },
+    {
+      "path": "Assets/CityGame/Resources/Models/RodjaHuman/Materials/RodjaBody.eyebrow001.mat",
+      "bytes": 4017,
+      "sha256": "75554c4f7373a9eb3b2858075948a13ffe1c2062d6a3f61039708ec298083453"
+    },
+    {
+      "path": "Assets/CityGame/Resources/Models/RodjaHuman/Materials/RodjaBody.eyebrow001.mat.meta",
+      "bytes": 193,
+      "sha256": "c5db62a3af8a6404449b0f5709a6989566668243d6c16151a42bccf0524cd08d"
+    },
+    {
+      "path": "Assets/CityGame/Resources/Models/RodjaHuman/Materials/RodjaBody.fingernails.mat",
+      "bytes": 3993,
+      "sha256": "956159df801c373a71e0ea355b0e421857a00f76dde363d292673fccdd57ee67"
+    },
+    {
+      "path": "Assets/CityGame/Resources/Models/RodjaHuman/Materials/RodjaBody.fingernails.mat.meta",
+      "bytes": 193,
+      "sha256": "b56cce01551448adcd984d0067b0d5145c383431e2df5b0348c4849e03301530"
+    },
+    {
+      "path": "Assets/CityGame/Resources/Models/RodjaHuman/Materials/RodjaBody.genitals.mat",
+      "bytes": 4129,
+      "sha256": "4c00d62511d88667bd38526a77451fa5d822544429293f300a43fa75d704dcb9"
+    },
+    {
+      "path": "Assets/CityGame/Resources/Models/RodjaHuman/Materials/RodjaBody.genitals.mat.meta",
+      "bytes": 193,
+      "sha256": "acbddcbe4c1c643cc7ec7d1c0f5cbcebbd84cd63a6abd165cd6b60d78899ae25"
+    },
+    {
+      "path": "Assets/CityGame/Resources/Models/RodjaHuman/Materials/RodjaBody.lips.mat",
+      "bytes": 3985,
+      "sha256": "3cdfe9ed9e931b17afc885651f6f16658d6e39d7f118ee0a10e0c5c7e614da52"
+    },
+    {
+      "path": "Assets/CityGame/Resources/Models/RodjaHuman/Materials/RodjaBody.lips.mat.meta",
+      "bytes": 193,
+      "sha256": "b9ae2f60858536c9e0cb48338b4d90a13b362ff4dbe2f9dc269b75adf57500a2"
+    },
+    {
+      "path": "Assets/CityGame/Resources/Models/RodjaHuman/Materials/RodjaBody.low-poly.mat",
+      "bytes": 3989,
+      "sha256": "574304a35e794a078e45264b25c39caac8625ca526352ff953e3b1c411bff15f"
+    },
+    {
+      "path": "Assets/CityGame/Resources/Models/RodjaHuman/Materials/RodjaBody.low-poly.mat.meta",
+      "bytes": 193,
+      "sha256": "7f3d8d55b3aa4577ba09540fc117b7d512f3e01233da17fd41f9cc287d804327"
+    },
+    {
+      "path": "Assets/CityGame/Resources/Models/RodjaHuman/Materials/RodjaBody.male_casualsuit01.mat",
+      "bytes": 4065,
+      "sha256": "6779f81b735b56d15336a3ad249a1cbf0604d905348c68b0e8f826f0b45943dc"
+    },
+    {
+      "path": "Assets/CityGame/Resources/Models/RodjaHuman/Materials/RodjaBody.male_casualsuit01.mat.meta",
+      "bytes": 193,
+      "sha256": "c4b1a1b3388f4e781ec644dd147cbd5cac64636e5ed5fdd96fb53186d70f27ef"
+    },
+    {
+      "path": "Assets/CityGame/Resources/Models/RodjaHuman/Materials/RodjaBody.nipple.mat",
+      "bytes": 4127,
+      "sha256": "8377f95dd29e82c59c57a8bb1bba7955eefea8fe9cae8415bb032383e47a5cdc"
+    },
+    {
+      "path": "Assets/CityGame/Resources/Models/RodjaHuman/Materials/RodjaBody.nipple.mat.meta",
+      "bytes": 193,
+      "sha256": "3306bc00f2eb7d3f89d894679e935dc3de5b7abe25bb8aa3fee1cbf49d36e46f"
+    },
+    {
+      "path": "Assets/CityGame/Resources/Models/RodjaHuman/Materials/RodjaBody.shoes02.mat",
+      "bytes": 3988,
+      "sha256": "f4a475b689772731780a26e67481679024d1fb926dbb40901cd047fd731e22e0"
+    },
+    {
+      "path": "Assets/CityGame/Resources/Models/RodjaHuman/Materials/RodjaBody.shoes02.mat.meta",
+      "bytes": 193,
+      "sha256": "ffc2ae212d5e3e53d039199fd06c3e48896844c60be24be68fda8beab6df2b12"
+    },
+    {
+      "path": "Assets/CityGame/Resources/Models/RodjaHuman/Materials/RodjaBody.short02.mat",
+      "bytes": 4015,
+      "sha256": "63c648f4f759a61fee8bf3a2c791c2fb98ed02812d6a453ae3ca760eb9f9ed8d"
+    },
+    {
+      "path": "Assets/CityGame/Resources/Models/RodjaHuman/Materials/RodjaBody.short02.mat.meta",
+      "bytes": 193,
+      "sha256": "4c54797aeee237503a3fda43abb09d4c6917a6d97b123ef3125431452061c631"
+    },
+    {
+      "path": "Assets/CityGame/Resources/Models/RodjaHuman/Materials/RodjaBody.teeth_base.mat",
+      "bytes": 3992,
+      "sha256": "d8a3d75b7e9920136a89cf3ad17afd0e108b17f6baf7b7aa78a6cc243394a6a7"
+    },
+    {
+      "path": "Assets/CityGame/Resources/Models/RodjaHuman/Materials/RodjaBody.teeth_base.mat.meta",
+      "bytes": 193,
+      "sha256": "c4fa2bf8fa9fab427779e82bf68f40e678cb3c2b3d3ac8b979b54f249dcc3fef"
+    },
+    {
+      "path": "Assets/CityGame/Resources/Models/RodjaHuman/Materials/RodjaBody.toenails.mat",
+      "bytes": 4128,
+      "sha256": "d8f6d303b86209271af6b6590288a49e85ee1c65073847b26c05bb68165df6b0"
+    },
+    {
+      "path": "Assets/CityGame/Resources/Models/RodjaHuman/Materials/RodjaBody.toenails.mat.meta",
+      "bytes": 193,
+      "sha256": "b9b04abd302e056d4f910e0ed8e701397cba519841791519dd5dc6e89f5075af"
+    },
+    {
+      "path": "Assets/CityGame/Resources/Models/RodjaHuman/Materials.meta",
+      "bytes": 177,
+      "sha256": "9b24096df798f42adb7f9f63575f53e5e5a810ce7499dfaaaf49d832a896f7c3"
+    },
+    {
+      "path": "Assets/CityGame/Resources/Models/RodjaHuman/RodjaHuman.prefab",
+      "bytes": 90465,
+      "sha256": "daa6dc0300f7ff780d18bc8a2b65ed7a37f7f48e2377c8f688bf34ec42c5f931"
+    },
+    {
+      "path": "Assets/CityGame/Resources/Models/RodjaHuman/RodjaHuman.prefab.meta",
+      "bytes": 158,
+      "sha256": "f16e36333b1c990d3be079d9bbaa70997c2a0436f6d0e848ece721e4e2e50383"
+    },
+    {
+      "path": "Assets/CityGame/Resources/Models/RodjaHuman/RodjaSource.fbx",
+      "bytes": 2045948,
+      "sha256": "d2fd118ae3bd92b412fb5e74a98badd831792f3de3ceb72ed30feb9ffc7fc6e0"
+    },
+    {
+      "path": "Assets/CityGame/Resources/Models/RodjaHuman/RodjaSource.fbx.meta",
+      "bytes": 5744,
+      "sha256": "82284fadb9302fec29456ccb4b35de0aa74aa96ad671c925a8483bcd44da8b01"
+    },
+    {
+      "path": "Assets/CityGame/Resources/Models/RodjaHuman/shoes02_diffuse.png",
+      "bytes": 1282057,
+      "sha256": "efef94ea34b0e0c2283095cb47a9e0389b55449c61a4f4972d0ad4d2bf06b4f0"
+    },
+    {
+      "path": "Assets/CityGame/Resources/Models/RodjaHuman/shoes02_diffuse.png.meta",
+      "bytes": 3785,
+      "sha256": "640a9c7b7a84aaba19fbafd18d940adae68ea6a2e91ac3f42499eb1da4742078"
+    },
+    {
+      "path": "Assets/CityGame/Resources/Models/RodjaHuman/short02_diffuse.png",
+      "bytes": 3553543,
+      "sha256": "47fe33831a3929567c733356dd66243116e05df2ace1f884ddca0080b728229f"
+    },
+    {
+      "path": "Assets/CityGame/Resources/Models/RodjaHuman/short02_diffuse.png.meta",
+      "bytes": 3785,
+      "sha256": "a851787afcaa1e16f89b58281747939dbde006587090704e6dd6b9d936505ea4"
+    },
+    {
+      "path": "Assets/CityGame/Resources/Models/RodjaHuman/teeth.png",
+      "bytes": 1799930,
+      "sha256": "d0afb57869c6fbb56b98f5efc4aec629ee7593e70d8dd2bfb9de923acfb65f43"
+    },
+    {
+      "path": "Assets/CityGame/Resources/Models/RodjaHuman/teeth.png.meta",
+      "bytes": 3785,
+      "sha256": "85683ee2a8cf045b80ccb1b278ba4c565beb93be0204f87739c72b7e8df20e77"
+    },
+    {
+      "path": "Assets/CityGame/Resources/Models/RodjaHuman/young_lightskinned_male_diffuse.png",
+      "bytes": 3693828,
+      "sha256": "862a26e335e958b70534cb5f0d7c47ef30ab148a56c42b3e9da969cf76f12963"
+    },
+    {
+      "path": "Assets/CityGame/Resources/Models/RodjaHuman/young_lightskinned_male_diffuse.png.meta",
+      "bytes": 3785,
+      "sha256": "007a0774fd80693a59c4328647c5a3b844aa24d49cf594a019bd4881d9725ea5"
+    }
+  ],
+  "unverified": [
+    "Human aesthetic approval of face expressions",
+    "Speech phoneme alignment and Serbian voice review",
+    "Physical Android/iPhone and long FPS/thermal profiling",
+    "Human bench grip, irregular-ground contact, new city art and new AI intro"
+  ]
+}
