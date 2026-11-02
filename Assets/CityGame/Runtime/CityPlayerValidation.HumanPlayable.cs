@@ -16,7 +16,7 @@ namespace Pozarevac.CityGame
         {
             public bool passed, uiSelection, profileSelectionUnchanged, walking, sprinting, movementWithShift, bothKnees,
                 contralateral, pauseStable, teleportReset, stopSettles, firstPersonHidden, shoulderVisible,
-                cachedSelection, ownersUnchanged, flatGroundContact, benchFallback, boxingFallback, fallbackRestored,
+                cachedSelection, ownersUnchanged, flatGroundContact, benchFallback, boxingHuman, boxingGuard, boxingPunch, boxingPause, boxingCompletedOnce, fallbackRestored,
                 originalHiddenWalking, originalHiddenFirstPerson;
             public float walkMeters, sprintMeters, leftKneeDegrees, rightKneeDegrees, peakSpeed,
                 pausedLeftDegrees, pausedRightDegrees, leftSoleGap, rightSoleGap,
@@ -214,18 +214,44 @@ namespace Pozarevac.CityGame
                 runtime.Life.CancelWorkout(); yield return null; yield return null;
                 result.fallbackRestored = actor.IsVisible && rig.HumanSelected;
                 runtime.Life.Tick(91, false); rig.SetMode(CityCameraMode.FirstPerson);
-                if (!runtime.StartBoxing()) { Finish(false, "Could not start boxing fallback."); yield break; }
+                Transform finger=Array.Find(bones,bone=>bone.name=="index_02_r"), wrist=Array.Find(bones,bone=>bone.name=="hand_r");
+                Quaternion resting=finger.localRotation;
+                int sessions=runtime.Life.BoxingSessions;
+                if (!runtime.StartBoxing()) { Finish(false, "Could not start human boxing."); yield break; }
                 yield return null; yield return new WaitForEndOfFrame();
-                bool legacyVisible = false;
-                foreach (var skin in game.Player.GetComponentsInChildren<SkinnedMeshRenderer>()) if (skin.enabled && !skin.transform.IsChildOf(identity.transform)) legacyVisible = true;
-                result.boxingFallback = rig.HumanSelected && !actor.IsVisible && legacyVisible;
-                if (!CaptureRenderedFrame(game, Path.Combine(folder, "human-boxing-fallback.png"), out captureError)) { Finish(false, captureError); yield break; }
-                runtime.CancelBoxing(); yield return null; yield return null;
+                result.boxingHuman=rig.HumanSelected&&actor.IsVisible&&HumanRenderersHidden(originalRenderers)&&actor.IsBoxing;
+                result.boxingGuard=Quaternion.Angle(resting,finger.localRotation)>45;
+                Quaternion guard=finger.localRotation;Vector3 handStart=wrist.position;
+                double roundClock=runtime.Boxing.RoundTime;
+                game.Director.SetPaused(true);yield return new WaitForSecondsRealtime(.2f);yield return new WaitForEndOfFrame();
+                result.boxingPause=runtime.Boxing.RoundTime==roundClock&&Quaternion.Angle(guard,finger.localRotation)<.01f;
+                game.Director.SetPaused(false);
+                float deadline=Time.realtimeSinceStartup+25;
+                bool captured=false;
+                while(runtime.Life.IsBoxing&&Time.realtimeSinceStartup<deadline)
+                {
+                    if(runtime.Boxing.WindowOpen)yield return HumanPress(keys,runtime.Boxing.Expected==CityBoxingAction.Jab?Key.J:Key.K);
+                    yield return new WaitForEndOfFrame();
+                    if(runtime.Life.IsBoxing)
+                    {
+                        result.boxingPunch|=Vector3.Dot(wrist.position-handStart,game.Player.forward)>.08f;
+                        result.boxingHuman&=actor.IsVisible&&HumanRenderersHidden(originalRenderers);
+                    }
+                    if(!captured&&runtime.Boxing.Punch>.7f)
+                    {
+                        if(!CaptureRenderedFrame(game,Path.Combine(folder,"human-boxing-training.png"),out captureError)){Finish(false,captureError);yield break;}
+                        captured=true;
+                    }
+                }
+                result.boxingPunch&=captured;
+                result.boxingCompletedOnce=runtime.Life.BoxingSessions==sessions+1&&runtime.Life.Experience==xp+30&&!runtime.Boxing.TryClaim(runtime.Life);
+                if(runtime.Life.IsBoxing)runtime.CancelBoxing();
+                yield return null;yield return null;
                 result.fallbackRestored &= rig.Mode == CityCameraMode.FirstPerson && !actor.IsVisible;
                 rig.SetMode(CityCameraMode.Chase); yield return null; yield return null;
                 result.fallbackRestored &= actor.IsVisible && rig.HumanSelected;
                 result.ownersUnchanged = scope.OwnersUnchanged;
-                if (!result.benchFallback || !result.boxingFallback || !result.fallbackRestored || !result.ownersUnchanged || game.Session.Cash != cash || runtime.Life.Experience != xp)
+                if (!result.benchFallback || !result.boxingHuman || !result.boxingGuard || !result.boxingPunch || !result.boxingPause || !result.boxingCompletedOnce || !result.fallbackRestored || !result.ownersUnchanged || game.Session.Cash != cash || runtime.Life.Experience != xp+30)
                 { Finish(false, "Human training fallback, state restoration, owners or rewards failed: " + JsonUtility.ToJson(result)); yield break; }
                 result.passed = true; humanPlayableVerified = true;
                 Debug.Log("VKT_HUMAN_PLAYABLE_VERIFIED " + JsonUtility.ToJson(result));

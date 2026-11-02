@@ -69,6 +69,30 @@ namespace Pozarevac.CityGame.Tests.Editor
             finally{UnityEngine.Object.DestroyImmediate(empty);}
         }
         private void Call(string name,params object[] args)=>type.GetMethod(name).Invoke(actor,args);
+        [Test] public void BoxingUsesTheExistingTrainingClockAndFreezesItsDisplayedGuard()
+        {
+            MethodInfo bind=type.GetMethod("BindBoxing");
+            Assert.That(bind,Is.Not.Null,"Selected human must observe the existing boxing session.");
+            var life=new CityLifestyle(new CitySession(0));var run=new CityBoxingRun();
+            bind.Invoke(actor,new object[]{life,run});
+            Assert.That(life.TryStartBoxing(),Is.True);run.Start();
+            Transform finger=Array.Find(Value<GameObject>("Visual").GetComponentsInChildren<Transform>(),b=>b.name=="index_02_r");
+            Quaternion idle=finger.localRotation;
+            for(int i=0;i<20;i++)Call("Advance",.02f,false);
+            Assert.That(Quaternion.Angle(idle,finger.localRotation),Is.GreaterThan(45));
+            Quaternion guard=finger.localRotation;double clock=run.RoundTime;
+            Transform wrist=Array.Find(Value<GameObject>("Visual").GetComponentsInChildren<Transform>(),b=>b.name=="hand_r");
+            Vector3 guarded=wrist.position;
+            Call("Advance",.2f,true);
+            Assert.That(Quaternion.Angle(guard,finger.localRotation),Is.LessThan(.01f));
+            Assert.That(run.RoundTime,Is.EqualTo(clock),"Presentation must not advance training.");
+            Assert.That((bool)type.GetMethod("SetPhoneActive").Invoke(actor,new object[]{true}),Is.False);
+            run.Tick(1.05);Assert.That(run.Respond(CityBoxingAction.Jab),Is.True);Call("Advance",.02f,false);
+            Assert.That(Vector3.Dot(wrist.position-guarded,owner.transform.forward),Is.GreaterThan(.08f));
+            life.CancelBoxing();
+            for(int i=0;i<80;i++)Call("Advance",.02f,false);
+            Assert.That(Quaternion.Angle(idle,finger.localRotation),Is.LessThan(20));
+        }
         private T Value<T>(string name)=>(T)type.GetProperty(name).GetValue(actor);
     }
 }

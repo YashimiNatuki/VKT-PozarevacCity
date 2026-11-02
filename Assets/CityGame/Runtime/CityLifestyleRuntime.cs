@@ -116,7 +116,7 @@ namespace Pozarevac.CityGame
             {
                 benchVisual = root.gameObject.AddComponent<CityBenchVisual>();
                 benchVisual.Initialize(rounded, metal, blue);
-                game.Player.GetComponentInChildren<CityCameraRig>().ConfigureBench(benchVisual, Life);
+                game.Player.GetComponentInChildren<CityCameraRig>().ConfigureBench(benchVisual, Life, boxing);
             }
             GameObject target=new GameObject("Interaction",typeof(BoxCollider));target.transform.SetParent(root,false);target.transform.localPosition=Vector3.up;
             target.GetComponent<BoxCollider>().size=new Vector3(2.8f,2,.9f);root.gameObject.AddComponent<CityLifestyleStation>().Initialize(this,food);

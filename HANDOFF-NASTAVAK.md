@@ -1,6 +1,10 @@
 # VKT: nastavak rada, 2026-11-01
 
-## Najnovije: telefon, boks i reljef — 2. novembar 2026.
+## Najnovije: boks ljudskog lika — 2. novembar 2026.
+
+Odabrani ljudski model sada boksa bez prelaska na prethodni avatar: gard, udarac, pauza i osam rundi sa jednom isplatom. Koristi postojeći CityBoxingRun i isti kontroler/kameru. Benč ostaje prethodni trening-model. **46/46 ciljanih, 323/0/1 ceo Unity skup, Windows build i 11 native tokova izlaz 0.** [Izmene](Docs/Human-Boxing-20261102.md). Novi lokalni Windows build je proveren; poslednji objavljeni ZIP ostaje prethodno izdanje telefon/boks/reljef.
+
+## Prethodno: telefon, boks i reljef — 2. novembar 2026.
 
 Telefon novog ljudskog lika je u levoj ruci; stvarni dugmići pokreću dodir kažiprstom tokom pauze. Boks raspodeljuje axial roll na podlakticu; prethodni RED je izmerio 167,179° obrnutog zgloba. Mapa ima RELJEF OKOLINE / 4 km sa stvarnim Copernicus DSM uzorcima, OSM overlay-em i granicom igrivog centra. Pod, putevi i kolizije nisu pomerani.
 

@@ -37,13 +37,15 @@ namespace Pozarevac.CityGame
         private Transform weapon;
         private CityBenchVisual bench;
         private CityLifestyle lifestyle;
+        private CityBoxingRun boxingRun;
         private CityAppearance appearance;
         public void ConfigureAppearance(CityAppearance state){appearance=state;}
         private CityCharacterPhysique physique;
         private bool wasTraining;
         private CursorLockMode previousCursor;
         private bool previousCursorVisible;
-        public void ConfigureBench(CityBenchVisual visual,CityLifestyle state){bench=visual;lifestyle=state;}
+        public void ConfigureBench(CityBenchVisual visual,CityLifestyle state,CityBoxingRun run=null)
+        {bench=visual;lifestyle=state;boxingRun=run;HumanActor?.BindBoxing(state,run);}
         public CityCameraMode Mode { get; private set; }
         public bool AvatarAvailable => avatar != null;
 
@@ -97,6 +99,7 @@ namespace Pozarevac.CityGame
             {
                 if(!CityHumanActor.TryCreate(owner,Resources.Load<GameObject>("Models/RodjaHuman/RodjaHuman"),out CityHumanActor actor))return false;
                 HumanActor=actor;
+                HumanActor.BindBoxing(lifestyle,boxingRun);
                 HumanActor.BindFeedback(owner.GetComponent<CityPlayerVitals>(),feedbackAudio,view);
             }
             HumanSelected=selected;
@@ -107,8 +110,9 @@ namespace Pozarevac.CityGame
         {
             bool training=lifestyle!=null&&lifestyle.IsTraining&&bench!=null;
             bool boxing=lifestyle!=null&&lifestyle.IsBoxing;
-            if(avatar!=null)avatar.SetActive(!training&&(boxing||Mode!=CityCameraMode.FirstPerson)&&(!HumanSelected||boxing));
-            HumanActor?.SetVisible(HumanSelected&&!training&&!boxing&&(phoneView||Mode!=CityCameraMode.FirstPerson));
+            bool humanBoxing=boxing&&HumanSelected&&HumanActor!=null&&HumanActor.IsBoxing;
+            if(avatar!=null)avatar.SetActive(!training&&(boxing||Mode!=CityCameraMode.FirstPerson)&&(!HumanSelected||(boxing&&!humanBoxing)));
+            HumanActor?.SetVisible(HumanSelected&&!training&&(humanBoxing||(!boxing&&(phoneView||Mode!=CityCameraMode.FirstPerson))));
         }
         public static Vector3 Offset(CityCameraMode mode) => mode == CityCameraMode.FirstPerson ? Vector3.zero :
             mode == CityCameraMode.Shoulder ? new Vector3(.65f, .25f, -2.6f) : new Vector3(0, 1.1f, -5f);

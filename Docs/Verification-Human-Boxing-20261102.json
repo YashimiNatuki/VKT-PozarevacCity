@@ -1,0 +1,160 @@
+{
+  "baselineCommit": "a7cda412aa6bf3f1bc0d13cb69c8fea2da64c64f",
+  "tests": {
+    "mode": "tests",
+    "processExit": 0,
+    "total": "324",
+    "passed": "323",
+    "failed": "0",
+    "skipped": "1"
+  },
+  "focused": {
+    "mode": "focused",
+    "processExit": 0,
+    "total": "46",
+    "passed": "46",
+    "failed": "0",
+    "skipped": "0"
+  },
+  "build": {
+    "mode": "build",
+    "processExit": 0
+  },
+  "nativeResults": [
+    {
+      "name": "Phone",
+      "processExit": 0
+    },
+    {
+      "name": "PhoneTouch",
+      "processExit": 0
+    },
+    {
+      "name": "PhonePortrait",
+      "processExit": 0
+    },
+    {
+      "name": "Hands",
+      "processExit": 0
+    },
+    {
+      "name": "Face",
+      "processExit": 0
+    },
+    {
+      "name": "Playable",
+      "processExit": 0
+    },
+    {
+      "name": "Preview",
+      "processExit": 0
+    },
+    {
+      "name": "Desktop",
+      "processExit": 0
+    },
+    {
+      "name": "TouchPreview",
+      "processExit": 0
+    },
+    {
+      "name": "Intro-natural",
+      "processExit": 0
+    },
+    {
+      "name": "Intro-skip",
+      "processExit": 0
+    }
+  ],
+  "humanPlayable": {
+    "passed": true,
+    "processExit": 0,
+    "failedChecks": [],
+    "runtimeErrors": [],
+    "captures": true,
+    "metrics": {
+      "passed": true,
+      "uiSelection": true,
+      "profileSelectionUnchanged": true,
+      "walking": true,
+      "sprinting": true,
+      "movementWithShift": true,
+      "bothKnees": true,
+      "contralateral": true,
+      "pauseStable": true,
+      "teleportReset": true,
+      "stopSettles": true,
+      "firstPersonHidden": true,
+      "shoulderVisible": true,
+      "cachedSelection": true,
+      "ownersUnchanged": true,
+      "flatGroundContact": true,
+      "benchFallback": true,
+      "boxingHuman": true,
+      "boxingGuard": true,
+      "boxingPunch": true,
+      "boxingPause": true,
+      "boxingCompletedOnce": true,
+      "fallbackRestored": true,
+      "originalHiddenWalking": true,
+      "originalHiddenFirstPerson": true,
+      "walkMeters": 1.7249946594238281,
+      "sprintMeters": 9.064443588256836,
+      "leftKneeDegrees": 41.3006706237793,
+      "rightKneeDegrees": 14.316688537597656,
+      "peakSpeed": 4.786731719970703,
+      "pausedLeftDegrees": 0.0,
+      "pausedRightDegrees": 0.0,
+      "leftSoleGap": -0.00118255615234375,
+      "rightSoleGap": -0.001255035400390625,
+      "flatWalkObservedSpeed": 4.953871250152588,
+      "flatSprintObservedSpeed": 7.849660873413086,
+      "flatWalkPhysicalSpeed": 5.443660259246826,
+      "flatSprintPhysicalSpeed": 7.999120235443115,
+      "sampledFrames": 43,
+      "oppositeSamples": 13,
+      "incorrectPairs": 0,
+      "supportedFeet": 2
+    },
+    "report": {
+      "passed": true,
+      "details": "Actual Windows player: terrain loaded, nine physics interactions, three contracts, growth/trade, crew, district campaign and durable save restore passed. Three camera modes, imported player avatar, bounded orbit, obstruction retraction and first-person restoration passed. Human playable avatar: physical movement, pause, camera modes, teleport and training fallback passed.",
+      "product": "VKT"
+    },
+    "boundary": "Synthetic Windows input; flat support only; legacy bench fallback; selected human boxing; no physical mobile test."
+  },
+  "red": {
+    "mode": "red",
+    "processExit": 2,
+    "total": "26",
+    "passed": "25",
+    "failed": "1",
+    "skipped": "0"
+  },
+  "modelAssetsUnchanged": true,
+  "profileVersion": 9,
+  "localWindowsBuild": "C:\\Users\\jamal\\Documents\\CodexBuilds\\VKT-Human-Boxing-Windows-20261102",
+  "releaseArchiveCreated": false,
+  "unverified": [
+    "Physical Android/iPhone",
+    "Long FPS/thermal test",
+    "Human aesthetic acceptance",
+    "Human bench rig",
+    "Mounted training interaction",
+    "New voices/AI intro/3D terrain"
+  ],
+  "changedFiles": [
+    "Assets/CityGame/Runtime/CityCameraRig.cs",
+    "Assets/CityGame/Runtime/CityHumanActor.cs",
+    "Assets/CityGame/Runtime/CityLifestyleRuntime.cs",
+    "Assets/CityGame/Runtime/CityPlayerValidation.HumanPlayable.cs",
+    "Assets/CityGame/Tests/Editor/CityHumanPlayableTests.cs",
+    "Docs/Human-Boxing-20261102.md",
+    "Docs/Human-Boxing-Identity-20261102.json",
+    "Docs/Screenshots/human-boxing-training-windows-20261102.png",
+    "Docs/Verification-Human-Boxing-20261102.json",
+    "HANDOFF-NASTAVAK.md",
+    "README.md",
+    "Tools/Test-HumanPlayable.py"
+  ]
+}

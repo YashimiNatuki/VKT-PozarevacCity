@@ -18,6 +18,12 @@ namespace Pozarevac.CityGame
         private bool alert;
         private CityHumanPhonePose phone;
         private bool phoneUnavailable;
+        private CityLifestyle boxingLife;
+        private CityBoxingRun boxingRun;
+        private float combatPunch;
+        public bool BoxingReady => pose.HandsReady;
+        public bool IsBoxing => BoxingReady && boxingLife != null && boxingLife.IsBoxing && boxingRun != null;
+        public void BindBoxing(CityLifestyle life, CityBoxingRun run) { boxingLife=life;boxingRun=run; }
         public bool PhoneAvailable
         {
             get
@@ -49,7 +55,7 @@ namespace Pozarevac.CityGame
             if(audio!=null)audio.CueRequested+=OnCue;
         }
         public void SetAlert(bool value)=>alert=value;
-        public void SetCombatPunch(float value)=>pose.SetCombatPunch(value);
+        public void SetCombatPunch(float value)=>combatPunch=float.IsFinite(value)?Mathf.Clamp01(value):0;
         private void OnDamage(float amount)=>expression.Damage(amount);
         private void ClearExpression()=>expression.Clear();
         private void OnCue(CityAudioCue cue){if(cue==CityAudioCue.Success)expression.Celebrate();else expression.Focus();}
@@ -104,9 +110,12 @@ namespace Pozarevac.CityGame
             if(delta.sqrMagnitude>25)Visual.transform.rotation=Quaternion.Euler(0,owner.eulerAngles.y,0);
             else if(flat.sqrMagnitude>.00001f)
                 Visual.transform.rotation=Quaternion.Slerp(Visual.transform.rotation,Quaternion.LookRotation(flat),1-Mathf.Exp(-8*seconds));
-            pose.StepObserved(delta,seconds,false);
+            bool boxing=IsBoxing;
+            if(boxing)Visual.transform.rotation=Quaternion.Euler(0,owner.eulerAngles.y,0);
+            pose.SetCombatPunch(boxing?boxingRun.Punch:combatPunch);
+            pose.StepObserved(delta,seconds,boxing);
             pose.ApplyGrounding(body!=null&&body.enabled&&body.isGrounded&&!pose.WasTeleported,seconds);
-            float effort=Mathf.Clamp01(pose.ObservedSpeed/8);
+            float effort=boxing?.8f:Mathf.Clamp01(pose.ObservedSpeed/8);
             Face?.Step(seconds,view!=null?view.forward:Visual.transform.forward,expression.Resolve(effort,alert),effort);
         }
         public void Dispose()
