@@ -12,7 +12,10 @@ namespace Pozarevac.CityGame
         private readonly Quaternion[] rest;
         private readonly Vector3[] axes;
         private readonly Vector3 along, palm;
-        private readonly Quaternion localFrame;
+        private readonly Quaternion localFrame, pointerFrame;
+        private readonly Quaternion[] phoneBase = new Quaternion[15];
+        private Vector3 phoneAnchor, pointerOffset;
+        private bool phoneCaptured;
         private CityHumanHandPose(Transform hand, Transform forearm, Transform[] bones, Vector3 flex)
         {
             wrist = hand; elbow = forearm; joints = bones;
@@ -32,6 +35,15 @@ namespace Pozarevac.CityGame
                 }
                 axes[i] = joints[i].InverseTransformDirection(axis).normalized;
             }
+            ApplyPhonePreset(false);
+            Vector3 middle = Vector3.zero;
+            for (int digit = 0; digit < 4; digit++) middle += Tip(digit) * .25f;
+            phoneAnchor = wrist.InverseTransformPoint(middle + wrist.TransformDirection(along) * .04f + wrist.TransformDirection(palm) * .009f);
+            ApplyPhonePreset(true);
+            pointerOffset = Quaternion.Inverse(wrist.rotation) * (Tip(0) - wrist.position);
+            Vector3 indexDirection = wrist.InverseTransformDirection(joints[2].position - joints[1].position).normalized;
+            pointerFrame = Quaternion.LookRotation(Vector3.ProjectOnPlane(palm, indexDirection).normalized, indexDirection);
+            Reset();
         }
         internal static bool TryCreate(Transform[] all, bool left, out CityHumanHandPose pose)
         {
@@ -98,6 +110,49 @@ namespace Pozarevac.CityGame
         public void Reset()
         {
             for (int i = 0; i < joints.Length; i++) if (joints[i] != null) joints[i].localRotation = rest[i];
+            phoneCaptured = false;
+        }
+        internal Vector3 PhoneAnchor => wrist.TransformPoint(phoneAnchor);
+        internal Quaternion PhoneFrame => Quaternion.LookRotation(wrist.TransformDirection(palm), wrist.TransformDirection(along));
+        internal Quaternion PhoneOrientation(Vector3 up, Vector3 normal) => Quaternion.LookRotation(normal, up) * Quaternion.Inverse(localFrame);
+        internal Quaternion PointerOrientation(Vector3 direction, Vector3 normal) =>
+            Quaternion.LookRotation(Vector3.ProjectOnPlane(normal, direction).normalized, direction) * Quaternion.Inverse(pointerFrame);
+        internal Vector3 PointerWrist(Vector3 target, Quaternion rotation) => target - rotation * pointerOffset;
+        internal Vector3 Tip(int digit)
+        {
+            int end = digit * 3 + 2;
+            return joints[end].position + (joints[end].position - joints[end - 1].position) * .75f;
+        }
+        internal void BeginPhone()
+        {
+            if (phoneCaptured) return;
+            for (int i = 0; i < 15; i++) phoneBase[i] = joints[i].localRotation;
+            phoneCaptured = true;
+        }
+        internal void RestorePhone()
+        {
+            if (!phoneCaptured) return;
+            for (int i = 0; i < 15; i++) if (joints[i] != null) joints[i].localRotation = phoneBase[i];
+        }
+        internal void EndPhone() { RestorePhone(); phoneCaptured = false; }
+        internal void ApplyPhone(bool pointer, float weight)
+        {
+            if (!phoneCaptured) return;
+            for (int i = 0; i < 15; i++)
+                joints[i].localRotation = Quaternion.Slerp(phoneBase[i], rest[i] * Quaternion.AngleAxis(PhoneAngle(i, pointer), axes[i]), weight);
+        }
+        private void ApplyPhonePreset(bool pointer)
+        {
+            for (int i = 0; i < 15; i++) joints[i].localRotation = rest[i] * Quaternion.AngleAxis(PhoneAngle(i, pointer), axes[i]);
+        }
+        private static float PhoneAngle(int index, bool pointer)
+        {
+            int joint = index % 3;
+            if (pointer && index < 3) return joint == 1 ? 2 : 1;
+            if (pointer && index < 12) return joint == 0 ? 75 : joint == 1 ? 85 : 50;
+            if (pointer) return joint == 0 ? 30 : joint == 1 ? 35 : 20;
+            if (index >= 12) return joint == 0 ? 18 : joint == 1 ? 24 : 15;
+            return joint == 0 ? 25 : joint == 1 ? 45 : 28;
         }
         private static bool Finite(Vector3 v) => float.IsFinite(v.x) && float.IsFinite(v.y) && float.IsFinite(v.z);
     }

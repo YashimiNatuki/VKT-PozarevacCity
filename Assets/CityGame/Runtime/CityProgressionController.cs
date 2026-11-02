@@ -18,6 +18,10 @@ namespace Pozarevac.CityGame
         public string SaveStatus { get; private set; }
         public string SavePath => store.PathName;
         public CityProgression Progression => game.Progression;
+        public bool IsPhoneOpen => panel != null && panel.IsOpen && Progression.IsCreated;
+        public bool PhoneWorldPreviewSupported => panel != null && panel.SupportsWorldPreview;
+        public int PhoneInteractionVersion => panel != null ? panel.InteractionVersion : 0;
+        public void SetPhoneWorldPreview(bool active) { if (panel != null) panel.SetWorldPreview(active); }
 
         public void Initialize(CityGameBootstrap owner, CityHud cityHud, CitySaveStore saveStore, string status)
         {

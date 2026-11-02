@@ -1,6 +1,12 @@
 # VKT: nastavak rada, 2026-11-01
 
-## Najnovije: zajednički native fixture — 2. novembar 2026.
+## Najnovije: telefon, boks i reljef — 2. novembar 2026.
+
+Telefon novog ljudskog lika je u levoj ruci; stvarni dugmići pokreću dodir kažiprstom tokom pauze. Boks raspodeljuje axial roll na podlakticu; prethodni RED je izmerio 167,179° obrnutog zgloba. Mapa ima RELJEF OKOLINE / 4 km sa stvarnim Copernicus DSM uzorcima, OSM overlay-em i granicom igrivog centra. Pod, putevi i kolizije nisu pomerani.
+
+**40/40 ciljanih; 322/0/1 ceo Unity skup; Windows build i 11 native tokova izlaz 0.** [Izmene i uputstvo](Docs/Phone-Boxing-Relief-20261102.md) | [Dokazi](Docs/Verification-Phone-Boxing-Relief-20261102.json). Novi ljudski trening-rig, fizički mobilni, duži FPS test, novi glasovi/AI film i potvrđene 3D visine ostaju sledeći rad.
+
+## Prethodno: zajednički native fixture — 2. novembar 2026.
 
 Tri ljudska native scenarija sada dele privatni scope za virtuelni input, enabled/kursor stanje, neutralizaciju pogleda i identitet vlasnika. Jedan checkpoint poredi snapshot i sejv neposredno oko izbora modela. Potpis profila više ne menja ulazni snapshot. Nezavisan pregled je zatvorio P2 o pogledu i ojačao osetljivost testa.
 

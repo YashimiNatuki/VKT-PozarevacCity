@@ -10,18 +10,28 @@ namespace Pozarevac.CityGame
         private readonly Transform[] tips = new Transform[5];
         private readonly Vector3 along, across, palm;
         private readonly Vector3 grip;
-        private readonly Quaternion localFrame;
+        private readonly Quaternion localFrame, neutralWrist;
         public bool Ready { get; }
         public Vector3 GripPoint => hand.TransformPoint(grip);
         public Vector3 LongAxis => hand.TransformDirection(along);
         public Vector3 PalmNormal => hand.TransformDirection(palm);
         public Transform Hand => hand;
+        public float WristTwistDegrees
+        {
+            get
+            {
+                if (!Ready) return 0;
+                Quaternion delta = Quaternion.Inverse(neutralWrist) * hand.localRotation;
+                return Mathf.Abs(Mathf.DeltaAngle(0, 2 * Mathf.Atan2(Vector3.Dot(new Vector3(delta.x, delta.y, delta.z), along), delta.w) * Mathf.Rad2Deg));
+            }
+        }
         public Transform Finger(int index) => fingers[index];
 
         public CityHandPose(Transform wrist, bool left)
         {
             hand = wrist;
             if (hand == null) return;
+            neutralWrist = hand.localRotation;
             string side = left ? "Left" : "Right";
             fingers[0] = hand.Find(side + "HandIndex1");
             fingers[1] = fingers[0] != null ? fingers[0].Find(side + "HandIndex2") : null;
@@ -64,6 +74,19 @@ namespace Pozarevac.CityGame
             Curl(0, 55); Curl(1, 130); Curl(2, 185);
             Aim(3, along * .35f - across * .8f + palm * .5f);
             Aim(4, -along * .2f - across * .8f + palm * .2f);
+        }
+
+        public void AlignForearmRoll(Quaternion rotation)
+        {
+            if (!Ready || hand.parent == null) return;
+            Transform forearm = hand.parent;
+            Vector3 axis = (hand.position - forearm.position).normalized;
+            Quaternion neutral = forearm.rotation * neutralWrist;
+            neutral = Quaternion.FromToRotation(neutral * along, axis) * neutral;
+            Vector3 from = Vector3.ProjectOnPlane(neutral * palm, axis).normalized;
+            Vector3 to = Vector3.ProjectOnPlane(rotation * palm, axis).normalized;
+            // Axial rotation belongs in the forearm; the wrist retains its authored neutral seam.
+            forearm.rotation = Quaternion.AngleAxis(Vector3.SignedAngle(from, to, axis), axis) * forearm.rotation;
         }
 
         private void Curl(int index, float degrees)

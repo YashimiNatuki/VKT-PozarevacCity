@@ -22,6 +22,7 @@ namespace Pozarevac.CityGame
         public bool BoxingPoseActive=>boxingLife!=null&&boxingLife.IsBoxing&&leftArm!=null&&leftElbow!=null&&rightArm!=null&&rightElbow!=null;
         public bool BoxingHandsReady=>leftHandPose!=null&&rightHandPose!=null&&leftHandPose.Ready&&rightHandPose.Ready;
         public float BoxingWristAngle { get; private set; }
+        public float BoxingWristTwist { get; private set; }
         public void ConfigureBoxing(CityLifestyle life,CityBoxingRun run){boxingLife=life;boxing=run;}
         public float ObservedSpeed=>gait.Speed;
         public float LocomotionWeight=>gait.Weight;
@@ -138,11 +139,12 @@ namespace Pozarevac.CityGame
                 float glance=Mathf.Clamp(Mathf.Atan2(gaze.x,gaze.z)*Mathf.Rad2Deg,-28,28);
                 head.localRotation*=Quaternion.Euler(Mathf.Sin(breath*.5f)*1.4f,glance*.45f,turn*.35f);
             }
-            BoxingWristAngle=0;
+            BoxingWristAngle=0;BoxingWristTwist=0;
             if(boxingLife!=null&&boxingLife.IsBoxing)
             {
                 PoseBoxingArm(leftArm,leftElbow,transform,leftSide,boxing!=null?boxing.Punch:0,leftHandPose);
                 PoseBoxingArm(rightArm,rightElbow,transform,rightSide,0,rightHandPose);
+                if(BoxingHandsReady)BoxingWristTwist=Mathf.Max(leftHandPose.WristTwistDegrees,rightHandPose.WristTwistDegrees);
                 if(BoxingHandsReady)BoxingWristAngle=Mathf.Max(
                     Vector3.Angle(leftHandPose.LongAxis,leftHandPose.Hand.position-leftElbow.position),
                     Vector3.Angle(rightHandPose.LongAxis,rightHandPose.Hand.position-rightElbow.position));
@@ -194,7 +196,9 @@ namespace Pozarevac.CityGame
                 // A stable forearm frame avoids the 180-degree flip of a normal lerp
                 // when the requested palm vector becomes parallel to the forearm.
                 Vector3 palm=Quaternion.AngleAxis(90*side*punch,guard)*Vector3.Cross(guard,model.right);
-                handPose.Close(handPose.Orientation(guard,palm));
+                Quaternion fist=handPose.Orientation(guard,palm);
+                handPose.AlignForearmRoll(fist);
+                handPose.Close(fist);
             }
         }
     }

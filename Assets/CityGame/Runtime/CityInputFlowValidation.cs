@@ -32,7 +32,7 @@ namespace Pozarevac.CityGame
             public float benchMaxHandAngle,benchMinWristClearance=1;
             public bool boxingStarted,boxingCompleted,boxingHands,boxingPause,boxingSinglePayout,boxingReturnsControl;
             public int boxingPoseFrames;
-            public float boxingMaxWristAngle,boxingPauseHandDelta;
+            public float boxingMaxWristAngle,boxingPauseHandDelta,boxingMaxWristTwist;
             public bool gaitContralateral,gaitPausePreservesPose,gaitTeleportReset,gaitStopSettles;
             public int gaitPairSamples,gaitBadPairs;
             public float gaitPauseLeftDelta,gaitPauseRightDelta;
@@ -276,13 +276,14 @@ namespace Pozarevac.CityGame
                 {
                     report.boxingPoseFrames++;
                     report.boxingMaxWristAngle=Mathf.Max(report.boxingMaxWristAngle,motion.BoxingWristAngle);
+                    report.boxingMaxWristTwist=Mathf.Max(report.boxingMaxWristTwist,motion.BoxingWristTwist);
                 }
                 if(life.Boxing.WindowOpen)yield return Press(life.Boxing.Expected==CityBoxingAction.Jab?Key.J:Key.K);
                 if(!captured&&life.Boxing.Punch>.7f){Capture(game,"boxing");captured=true;}
                 yield return null;
             }
             report.boxingCompleted=life.Life.BoxingSessions==before+1&&life.Boxing.Successes>=CityBoxingRun.RequiredSuccesses;
-            report.boxingHands=report.boxingPoseFrames>=20&&report.boxingMaxWristAngle<.1f;
+            report.boxingHands=report.boxingPoseFrames>=20&&report.boxingMaxWristAngle<.1f&&report.boxingMaxWristTwist<60;
             report.boxingSinglePayout=life.Life.Experience==xp+30&&!life.Boxing.TryClaim(life.Life);
             Vector3 start=game.Player.position;
             InputSystem.QueueStateEvent(keyboard,new KeyboardState(Key.S));yield return new WaitForSecondsRealtime(.4f);

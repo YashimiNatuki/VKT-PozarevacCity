@@ -16,6 +16,31 @@ namespace Pozarevac.CityGame
         private CityGameAudio audio;
         private Transform view;
         private bool alert;
+        private CityHumanPhonePose phone;
+        private bool phoneUnavailable;
+        public bool PhoneAvailable
+        {
+            get
+            {
+                if (owner == null || phoneUnavailable || !pose.HandsReady || pose.GuardWeight >= .01f) return false;
+                Vector3 scale = owner.lossyScale;
+                return float.IsFinite(scale.x) && float.IsFinite(scale.y) && float.IsFinite(scale.z) &&
+                    scale.x > .0001f && scale.y > .0001f && scale.z > .0001f;
+            }
+        }
+        public bool PhoneActive => phone != null && phone.Active;
+        public GameObject PhoneVisual => phone?.Visual;
+        public float PhoneWeight => phone != null ? phone.Weight : 0;
+        public float PhoneGripDistance => phone != null ? phone.GripDistance : float.PositiveInfinity;
+        public float PhoneTapDistance => phone != null ? phone.TapDistance : float.PositiveInfinity;
+        public bool SetPhoneActive(bool active)
+        {
+            if (active && (!IsVisible || !PhoneAvailable)) { phone?.SetActive(false); return false; }
+            if (active && phone == null) { phone = pose.CreatePhone(owner); phoneUnavailable = phone == null; }
+            phone?.SetActive(active); return PhoneActive;
+        }
+        public void AdvancePhone(float unscaledSeconds) { if (IsVisible) phone?.Step(unscaledSeconds); }
+        public void NotifyPhoneTap() => phone?.NotifyTap();
         public CityHumanFace Face=>pose.Face;
         public void BindFeedback(CityPlayerVitals health,CityGameAudio feedback,Transform cameraView)
         {
@@ -56,6 +81,7 @@ namespace Pozarevac.CityGame
         public void SetVisible(bool visible)
         {
             if(Visual==null||Visual.activeSelf==visible)return;
+            SetPhoneActive(false);
             pose.Reset();previous=owner.position;pendingTeleport=false;
             Visual.transform.rotation=Quaternion.Euler(0,owner.eulerAngles.y,0);
             if(visible)pose.StepObserved(Vector3.zero,.001f,false);
@@ -64,6 +90,7 @@ namespace Pozarevac.CityGame
         public void Advance(float seconds,bool paused)
         {
             if(owner==null||Visual==null)return;
+            if(!paused&&PhoneActive)SetPhoneActive(false);
             Vector3 delta=owner.position-previous;previous=owner.position;
             if(paused&&delta.sqrMagnitude>25)pendingTeleport=true;
             if(!paused&&float.IsFinite(seconds)&&seconds>0)expression.Tick(seconds);
@@ -85,6 +112,7 @@ namespace Pozarevac.CityGame
         public void Dispose()
         {
             Unsubscribe();expression.Clear();
+            phone?.Dispose();phone=null;
             pose.Reset();
             if(Visual!=null){if(Application.isPlaying)UnityEngine.Object.Destroy(Visual);else UnityEngine.Object.DestroyImmediate(Visual);}
         }

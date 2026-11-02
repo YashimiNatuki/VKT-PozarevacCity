@@ -110,7 +110,7 @@ namespace Pozarevac.CityGame
                 float vertical = hip.y - soleHeights[index], across = hip.x - x;
                 float forward = Mathf.Min(.45f, Mathf.Sqrt(Mathf.Max(0, reach * reach - vertical * vertical - across * across)));
                 Vector3 target = transform.TransformPoint(new Vector3(x, soleHeights[index], hip.z + forward));
-                Solve(thigh, knee, foot, target, transform.up);
+                CityTwoBonePose.Solve(thigh, knee, foot, target, transform.up);
                 Quaternion orientation=transform.rotation*soleRotations[index];
                 foot.rotation=orientation;
                 plantedFeet++;
@@ -138,7 +138,7 @@ namespace Pozarevac.CityGame
             bool ready = grip != null && grip.Ready;
             Quaternion rotation = ready ? grip.Orientation(transform.up, transform.forward) : hand.rotation;
             Vector3 wrist = ready ? grip.WristTarget(contact, rotation) : contact;
-            Solve(upper, lower, hand, wrist, transform.right * side + transform.forward * .4f);
+            CityTwoBonePose.Solve(upper, lower, hand, wrist, transform.right * side + transform.forward * .4f);
             if (ready) grip.Close(rotation);
             HandError = Mathf.Max(HandError, Vector3.Distance(ready ? grip.GripPoint : hand.position, contact));
             if (ready) HandOrientationError = Mathf.Max(HandOrientationError,
@@ -155,18 +155,6 @@ namespace Pozarevac.CityGame
             float reach = (Vector3.Distance(upper.position, lower.position) + Vector3.Distance(lower.position, hand.position)) * .96f;
             float horizontal = (wrist.x - shoulder.x) * (wrist.x - shoulder.x) + (wrist.z - shoulder.z) * (wrist.z - shoulder.z);
             return shoulder.y + Mathf.Sqrt(Mathf.Max(.01f, reach * reach - horizontal)) - wrist.y;
-        }
-        private static void Solve(Transform upper, Transform lower, Transform tip, Vector3 target, Vector3 hint)
-        {
-            float a = Vector3.Distance(upper.position, lower.position), b = Vector3.Distance(lower.position, tip.position);
-            Vector3 delta = target - upper.position; float reach = Mathf.Clamp(delta.magnitude, Mathf.Abs(a - b) + .001f, a + b - .001f);
-            if (a < .001f || b < .001f || delta.sqrMagnitude < .000001f) return;
-            Vector3 direction = delta.normalized, bend = Vector3.ProjectOnPlane(hint, direction).normalized;
-            if (bend.sqrMagnitude < .001f) bend = Vector3.Cross(direction, Vector3.forward).normalized;
-            float along = (a * a - b * b + reach * reach) / (2 * reach);
-            Vector3 elbow = upper.position + direction * along + bend * Mathf.Sqrt(Mathf.Max(0, a * a - along * along));
-            upper.rotation = Quaternion.FromToRotation(lower.position - upper.position, elbow - upper.position) * upper.rotation;
-            lower.rotation = Quaternion.FromToRotation(tip.position - lower.position, target - lower.position) * lower.rotation;
         }
         private static void Part(string name, Transform parent, Vector3 at, Vector3 size, Mesh mesh, Material material, bool collide)
         {

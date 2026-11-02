@@ -255,6 +255,12 @@ namespace Pozarevac.CityGame
                 if(!humanHandsVerified)yield break;
                 details+=" Human hands: thirty finger joints, guard deformation, actual unarmed attack, pause and recovery passed.";
             }
+            if(Array.IndexOf(Environment.GetCommandLineArgs(),"-vktHumanPhoneSmoke")>=0)
+            {
+                yield return VerifyHumanPhone(game);
+                if(!humanPhoneVerified)yield break;
+                details+=" Human phone: real UI signal, held prop, unscaled contact, safe camera and original perspective restoration passed.";
+            }
             if (Array.Exists(Environment.GetCommandLineArgs(), arg => arg == "-vktPerspectiveCapture"))
             {
                 game.GetComponent<CityProgressionController>().ClosePanel();

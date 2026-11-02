@@ -46,5 +46,51 @@ namespace Pozarevac.CityGame.Tests.Editor
             phone.Close();Assert.That(phone.IsOpen,Is.False);
         }
         private static void Set(object target,string name,object value)=>target.GetType().GetField(name,BindingFlags.Instance|BindingFlags.NonPublic).SetValue(target,value);
+        [Test] public void RealNavigationButtonsPublishExactlyOnePresentationTapAndPreserveProfile()
+        {
+            root=new GameObject("PhoneInteractionFixture");root.SetActive(false);
+            var game=root.AddComponent<CityGameBootstrap>();var session=new CitySession(2500);var state=new CityProgression(session);
+            Assert.That(state.CreateCharacter("Phone Tap Test"),Is.True);
+            Set(game,"<Session>k__BackingField",session);Set(game,"<Progression>k__BackingField",state);
+            var owner=root.AddComponent<CityProgressionController>();Set(owner,"game",game);
+            var display=new GameObject("Phone",typeof(RectTransform));display.transform.SetParent(root.transform,false);
+            phone=display.AddComponent<CityPhonePanel>();phone.Initialize(owner);phone.Open();
+            PropertyInfo signal=typeof(CityPhonePanel).GetProperty("InteractionVersion");
+            Assert.That(signal,Is.Not.Null,"Real phone buttons must publish their own presentation signal.");
+            int before=(int)signal.GetValue(phone);string profile=JsonUtility.ToJson(state.Snapshot());
+            display.transform.Find("PhonePanel/Map").GetComponent<UnityEngine.UI.Button>().onClick.Invoke();
+            Assert.That((int)signal.GetValue(phone),Is.EqualTo(unchecked(before+1)));
+            Assert.That(display.transform.Find("MapPanel").gameObject.activeSelf,Is.True);
+            display.transform.Find("MapPanel/BackFromMap").GetComponent<UnityEngine.UI.Button>().onClick.Invoke();
+            Assert.That((int)signal.GetValue(phone),Is.EqualTo(unchecked(before+2)));
+            Assert.That(display.transform.Find("PhonePanel").gameObject.activeSelf,Is.True);
+            Assert.That(JsonUtility.ToJson(state.Snapshot()),Is.EqualTo(profile));
+        }
+        [Test] public void DestroyingPhoneBeforeItsOwnerAndRigLeavesTeardownSafe()
+        {
+            root=new GameObject("PhoneTeardownFixture");root.SetActive(false);
+            var game=root.AddComponent<CityGameBootstrap>();var session=new CitySession(2500);var state=new CityProgression(session);
+            Assert.That(state.CreateCharacter("Phone Teardown"),Is.True);
+            Set(game,"<Session>k__BackingField",session);Set(game,"<Progression>k__BackingField",state);
+            var owner=root.AddComponent<CityProgressionController>();Set(owner,"game",game);
+            var display=new GameObject("ActivePhoneCanvas",typeof(RectTransform));
+            var rigObject=new GameObject("PhoneTeardownRig");GameObject events=null;
+            try
+            {
+                phone=display.AddComponent<CityPhonePanel>();phone.Initialize(owner);Set(owner,"panel",phone);
+                events=(GameObject)typeof(CityPhonePanel).GetField("ownedEventSystem",BindingFlags.Instance|BindingFlags.NonPublic).GetValue(phone);
+                display.GetComponent<Canvas>().scaleFactor=2;phone.SetWorldPreview(false);
+                var rig=rigObject.AddComponent<CityCameraRig>();Set(rig,"phone",owner);
+                UnityEngine.Object.DestroyImmediate(display);display=null;
+                Assert.DoesNotThrow(()=>owner.SetPhoneWorldPreview(false));
+                Assert.DoesNotThrow(()=>UnityEngine.Object.DestroyImmediate(rigObject));rigObject=null;
+            }
+            finally
+            {
+                if(events!=null)UnityEngine.Object.DestroyImmediate(events);
+                if(display!=null)UnityEngine.Object.DestroyImmediate(display);
+                if(rigObject!=null)UnityEngine.Object.DestroyImmediate(rigObject);
+            }
+        }
     }
 }

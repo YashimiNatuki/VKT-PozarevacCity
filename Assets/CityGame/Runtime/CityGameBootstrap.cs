@@ -187,6 +187,7 @@ namespace Pozarevac.CityGame
                     CityCameraRig cameraRig = playerCamera.gameObject.AddComponent<CityCameraRig>();
                     cameraRig.Initialize(Player, playerCamera.transform);
                     cameraRig.ConfigureFeedback(Audio);
+                    cameraRig.ConfigurePhone(progressionController);
                     Touch.BindCamera(cameraRig.Cycle);
                     Combat = gameObject.AddComponent<CityCombatRuntime>();
                     Combat.Initialize(this, hud, georeference.transform, Player.position);

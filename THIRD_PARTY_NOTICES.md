@@ -132,3 +132,12 @@ The preceding dated section records the original 2026-10-29 preview boundary. Th
 Faceunits 01 ARKit-style targets were contributed by **Mika Suominen** and released under **CC0 1.0 Universal**. The official pack page is https://static.makehumancommunity.org/assets/assetpacks/faceunits01.html ; the official functional-pack license statement is https://static.makehumancommunity.org/assets/assetpacks.html . The downloaded archive is https://files2.makehumancommunity.org/functional/faceunits01.zip , 257,821 bytes, SHA-256 `d113107bd7eb59f3af4df6fc0ec29bfcc593f496d0b336aec14f086a80ce7146`. Its internal `packs/faceunits01.json` identifies Mika Suominen and CC0 for the targets.
 
 A reviewed subset of 15 target channels was transferred onto the existing CC0 human body, eyes, eyebrows, hair and teeth using MPFB 2.0.18 and Blender 4.5.9. The zero-pose geometry, skin weights and 53-bone rest rig were preserved in the production check. These graphical assets are separate from first-party MIT source. No user portrait, private scan, paid generation, new voice model or audio recording is part of this facial asset update. See Docs/Faceunits01-CC0-LICENSE.md and Docs/RodjaHuman-Face-Provenance-20261101.json for the source chain and current distribution hashes; the latter contains final normalized source-file hashes and separate Windows verification boundaries.
+# Copernicus GLO-30 — izvedena regionalna podloga mape
+
+Izvedeni `Assets/CityGame/Resources/Maps/PozarevacRelief.json` koristi Copernicus WorldDEM-30, sa zgradama i vegetacijom. Nije CC0. [Potpuna licenca](Docs/Copernicus-DEM-GLO30-License.pdf), [obrada i granice](Docs/Phone-Boxing-Relief-20261102.md).
+
+produced using Copernicus WorldDEM-30 © DLR e.V. 2010-2014 and © Airbus Defence and Space GmbH 2014-2018 provided under COPERNICUS by the European Union and ESA; all rights reserved.
+
+The organisations in charge of the Copernicus programme by law or by delegation do not incur any liability for any use of the Copernicus WorldDEM-30.
+
+No endorsement by these organisations is implied. Subsequent distribution of the derived data must preserve the attribution, disclaimer and obligations of Article 6 of the linked licence.

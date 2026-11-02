@@ -40,12 +40,36 @@ namespace Pozarevac.CityGame
         private ScrollRect jobScroll;
         private GameObject statistics;
         private Text statisticsText;
+        private Canvas phoneCanvas;
+        private RectTransform[] screens;
+        private int interactionVersion, layoutWidth = -1, layoutHeight = -1;
+        private Rect layoutSafeArea;
+        private float layoutScale;
+        private bool previewLayout;
+        public int InteractionVersion => interactionVersion;
+        internal void NotifyInteraction() { unchecked { interactionVersion++; } }
+        public bool SupportsWorldPreview => owner != null && owner.Progression.IsCreated && Screen.height > 0 &&
+            (Screen.safeArea.width > 0 ? Screen.safeArea.width : Screen.width) / Screen.height >= 1.5f;
+        public void SetWorldPreview(bool active)
+        {
+            if (this == null || screens == null || backdrop == null) return;
+            active &= SupportsWorldPreview;
+            Rect safe = Screen.safeArea.width > 0 ? Screen.safeArea : new Rect(0, 0, Screen.width, Screen.height);
+            float scale = phoneCanvas != null ? Mathf.Max(.01f, phoneCanvas.scaleFactor) : 1;
+            if (previewLayout == active && layoutWidth == Screen.width && layoutHeight == Screen.height && layoutSafeArea == safe && Mathf.Approximately(layoutScale, scale)) return;
+            previewLayout = active; layoutWidth = Screen.width; layoutHeight = Screen.height; layoutSafeArea = safe; layoutScale = scale;
+            foreach (RectTransform screen in screens)
+                if (screen != null) screen.anchoredPosition = active ? new Vector2((safe.xMax - Screen.width * .5f) / scale - screen.sizeDelta.x * .5f - 24,
+                    (safe.center.y - Screen.height * .5f) / scale) : Vector2.zero;
+            backdrop.GetComponent<Image>().color = new Color(0, 0, 0, active ? .28f : .75f);
+        }
         public bool IsOpen => (statistics != null && statistics.activeSelf) || (map != null && map.activeSelf) || (content != null && content.activeSelf) || (catalog != null && catalog.activeSelf) || (encyclopedia != null && encyclopedia.activeSelf) || (journal != null && journal.activeSelf);
 
         public void Initialize(CityProgressionController controller)
         {
             owner = controller;
             Canvas canvas = gameObject.AddComponent<Canvas>();
+            phoneCanvas = canvas;
             canvas.renderMode = RenderMode.ScreenSpaceOverlay;
             canvas.sortingOrder = 200;
             CanvasScaler scaler = gameObject.AddComponent<CanvasScaler>();
@@ -93,6 +117,8 @@ namespace Pozarevac.CityGame
             BuildJobs();
             BuildMap();
             BuildStatistics();
+            screens = new[] { (RectTransform)content.transform, (RectTransform)catalog.transform, (RectTransform)encyclopedia.transform,
+                (RectTransform)map.transform, (RectTransform)journal.transform, (RectTransform)statistics.transform };
             gameObject.AddComponent<CityUiSkin>().ApplyTree();
             Close();
         }
@@ -338,15 +364,19 @@ namespace Pozarevac.CityGame
             RectTransform rect = Rect(name, parent, new Vector2(650, height), new Vector2(0, 440 - top - height / 2));
             return ChildText(rect, name + "Text", value, size);
         }
-        private static Button Button(string name, Transform parent, string title, Vector2 offset, Action action)
+        private Button Button(string name, Transform parent, string title, Vector2 offset, Action action)
         {
             RectTransform rect = Rect(name, parent, new Vector2(300, 56), offset);
             Image image = rect.gameObject.AddComponent<Image>(); image.color = new Color(0.06f, 0.32f, 0.38f);
             Button button = rect.gameObject.AddComponent<Button>(); button.targetGraphic = image;
             ChildText(rect, "Text", title, 19);
-            button.onClick.AddListener(() => action());
+            button.onClick.AddListener(() => { NotifyInteraction(); action(); });
             return button;
         }
-        private void OnDestroy() { if (ownedEventSystem != null) Destroy(ownedEventSystem); }
+        private void OnDestroy()
+        {
+            if (ownedEventSystem == null) return;
+            if (Application.isPlaying) Destroy(ownedEventSystem); else DestroyImmediate(ownedEventSystem);
+        }
     }
 }

@@ -47,6 +47,38 @@ namespace Pozarevac.CityGame.Tests
 
         [TestCase(0)]
         [TestCase(1)]
+        [TestCase(0, 5)]
+        [TestCase(1, 5)]
+        public void GuardAndJabKeepThumbUpAndDistributeForearmRoll(int side, int strength = 0)
+        {
+            using (var rig = new Rig())
+            {
+                CityHandPose hand = rig.Hands[side];
+                Quaternion neutral = hand.Hand.localRotation;
+                Vector3 axis = hand.Hand.InverseTransformDirection(hand.LongAxis);
+                Vector3 thumb = Vector3.ProjectOnPlane(hand.Hand.InverseTransformPoint(hand.Finger(3).position), axis).normalized;
+                float outward = Mathf.Sign(rig.Wrapper.InverseTransformPoint(rig.Arms[side].position).x);
+                rig.Body.Apply(strength);
+                for (int sample = 0; sample <= 80; sample++)
+                {
+                    float punch = Mathf.PingPong(sample / 40f, 1);
+                    CityActorMotion.PoseBoxingArm(rig.Arms[side], rig.Elbows[side], rig.Wrapper, outward, punch, hand);
+                    Quaternion delta = Quaternion.Inverse(neutral) * hand.Hand.localRotation;
+                    float twist = Mathf.DeltaAngle(0, 2 * Mathf.Atan2(Vector3.Dot(new Vector3(delta.x, delta.y, delta.z), axis), delta.w) * Mathf.Rad2Deg);
+                    Assert.That(Mathf.Abs(twist), Is.LessThan(60), "Excessive axial wrist twist at punch=" + punch + ", side=" + side);
+                    if (sample == 0 || sample == 80)
+                        Assert.That(Vector3.Dot(hand.PalmNormal, -rig.Wrapper.forward), Is.GreaterThan(.85f), "Guard palm must face the body.");
+                    if (sample == 40)
+                    {
+                        Assert.That(Vector3.Dot(hand.Hand.TransformDirection(thumb), rig.Wrapper.up), Is.GreaterThan(.99f), "Vertical jab thumb is inverted.");
+                        Assert.That(Vector3.Dot(hand.PalmNormal, -rig.Wrapper.right * outward), Is.GreaterThan(.99f), "Jab palm must face inward.");
+                    }
+                }
+            }
+        }
+
+        [TestCase(0)]
+        [TestCase(1)]
         public void WristOrientationStaysContinuousAcrossTheWholePunch(int side)
         {
             using (var rig = new Rig())

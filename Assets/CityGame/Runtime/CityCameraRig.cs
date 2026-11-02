@@ -18,6 +18,13 @@ namespace Pozarevac.CityGame
         public CityOutfit CurrentOutfit => look!=null?look.Outfit:CityOutfit.Korzo;
         private CityGameAudio feedbackAudio;
         private CityCombatRuntime combat;
+        private CityProgressionController phone;
+        private CityPlayerController mover;
+        private bool phoneView, phoneBlocked;
+        private Quaternion phoneRotation;
+        private int phoneInteraction;
+        public bool PhonePresentationActive => phoneView;
+        public void ConfigurePhone(CityProgressionController controller) { phone = controller; }
         public void ConfigureCombat(CityCombatRuntime runtime){combat=runtime;}
         public void ConfigureFeedback(CityGameAudio audio)
         {
@@ -43,6 +50,7 @@ namespace Pozarevac.CityGame
         public void Initialize(Transform player, Transform cameraView)
         {
             owner = player; view = cameraView;
+            mover = owner.GetComponent<CityPlayerController>();
             GameObject source = CityCharacterModel.LoadSource();
             Texture2D texture = Resources.Load<Texture2D>("Models/KenneyRetro/humanMaleA");
             if (source != null && texture != null)
@@ -100,7 +108,7 @@ namespace Pozarevac.CityGame
             bool training=lifestyle!=null&&lifestyle.IsTraining&&bench!=null;
             bool boxing=lifestyle!=null&&lifestyle.IsBoxing;
             if(avatar!=null)avatar.SetActive(!training&&(boxing||Mode!=CityCameraMode.FirstPerson)&&(!HumanSelected||boxing));
-            HumanActor?.SetVisible(HumanSelected&&!training&&!boxing&&Mode!=CityCameraMode.FirstPerson);
+            HumanActor?.SetVisible(HumanSelected&&!training&&!boxing&&(phoneView||Mode!=CityCameraMode.FirstPerson));
         }
         public static Vector3 Offset(CityCameraMode mode) => mode == CityCameraMode.FirstPerson ? Vector3.zero :
             mode == CityCameraMode.Shoulder ? new Vector3(.65f, .25f, -2.6f) : new Vector3(0, 1.1f, -5f);
@@ -132,6 +140,13 @@ namespace Pozarevac.CityGame
             if(weapon==null)weapon=view.Find("VKT_HeldWeapon");
             bool training=lifestyle!=null&&lifestyle.IsTraining&&bench!=null;
             bool boxing=lifestyle!=null&&lifestyle.IsBoxing;
+            if (phone == null || !phone.IsPhoneOpen) phoneBlocked = false;
+            bool requested = phone != null && phone.IsPhoneOpen && phone.PhoneWorldPreviewSupported && Time.timeScale <= 0 &&
+                HumanSelected && HumanActor != null && HumanActor.PhoneAvailable && !training && !boxing &&
+                !phoneBlocked && (mover == null || mover.enabled) && (combat == null || combat.UnarmedPunch <= .001f);
+            if (requested && !phoneView) { phoneRotation = view.localRotation; phoneInteraction = phone.PhoneInteractionVersion; }
+            if (!requested && phoneView) { HumanActor?.SetPhoneActive(false); view.localRotation = phoneRotation; }
+            phoneView = requested;
             if(look!=null)look.Apply(appearance!=null?appearance.Outfit:CityOutfit.Korzo,lifestyle!=null?lifestyle.Strength:0);
             if(look!=null)look.Face.SetEffort(boxing?.8f:actorMotion!=null?Mathf.Clamp01(actorMotion.ObservedSpeed/8):0);
             if(look!=null)look.Face.SetAlert(lifestyle!=null&&lifestyle.Wanted);
@@ -139,6 +154,32 @@ namespace Pozarevac.CityGame
             HumanActor?.SetAlert(lifestyle!=null&&lifestyle.Wanted);
             HumanActor?.SetCombatPunch(combat!=null&&combat.CanAct?combat.UnarmedPunch:0);
             HumanActor?.Advance(Time.deltaTime,Time.timeScale<=0||Time.deltaTime<=0);
+            if (phoneView)
+            {
+                if (HumanActor.SetPhoneActive(true))
+                {
+                    Transform human = HumanActor.Visual.transform;
+                    Vector3 target = human.position + Vector3.up * 1.4f + human.forward * .05f;
+                    Vector3 position = RetractCamera(target, target + human.forward * 1.1f + human.right * .8f + Vector3.up * .2f);
+                    if ((position - target).sqrMagnitude >= .16f)
+                    {
+                        phone.SetPhoneWorldPreview(true);
+                        if (phoneInteraction != phone.PhoneInteractionVersion) { phoneInteraction = phone.PhoneInteractionVersion; HumanActor.NotifyPhoneTap(); }
+                        HumanActor.AdvancePhone(Time.unscaledDeltaTime);
+                        Vector3 right = Vector3.Cross(Vector3.up, (target - position).normalized).normalized;
+                        Vector3 lookAt = target + right * .4f;
+                        float blend = 1 - Mathf.Exp(-12 * Mathf.Min(Time.unscaledDeltaTime, .05f));
+                        view.position = Vector3.Lerp(view.position, position, blend);
+                        if ((lookAt - view.position).sqrMagnitude > .0001f)
+                            view.rotation = Quaternion.Slerp(view.rotation, Quaternion.LookRotation(lookAt - view.position, Vector3.up), blend);
+                        if (weapon != null) weapon.gameObject.SetActive(false);
+                        return;
+                    }
+                    phoneBlocked = true;
+                }
+                HumanActor.SetPhoneActive(false); phoneView = false; view.localRotation = phoneRotation; ApplyAvatarVisibility();
+            }
+            if (phone != null) phone.SetPhoneWorldPreview(false);
             if(training||boxing)
             {
                 if(!wasTraining){previousCursor=Cursor.lockState;previousCursorVisible=Cursor.visible;}
@@ -148,11 +189,7 @@ namespace Pozarevac.CityGame
                 Vector3 position=boxing?owner.TransformPoint(new Vector3(3.2f,2.05f,-1.4f)):bench.CameraPosition;
                 if(boxing)
                 {
-                    Vector3 path=position-target;float length=path.magnitude;
-                    int count=Physics.SphereCastNonAlloc(target,.18f,path.normalized,hits,length,Physics.DefaultRaycastLayers,QueryTriggerInteraction.Ignore);
-                    float allowed=count==hits.Length?0:length;
-                    for(int i=0;i<count;i++)if(hits[i].collider!=null&&!hits[i].transform.IsChildOf(owner))allowed=Mathf.Min(allowed,Mathf.Max(0,hits[i].distance-.08f));
-                    if(length>.001f)position=target+path*(allowed/length);
+                    position=RetractCamera(target,position);
                 }
                 view.position=Vector3.Lerp(view.position,position,blend);
                 if((target-view.position).sqrMagnitude>.001f)view.rotation=Quaternion.Slerp(view.rotation,Quaternion.LookRotation(target-view.position,Vector3.up),blend);
@@ -166,16 +203,21 @@ namespace Pozarevac.CityGame
             float distance = offset.magnitude;
             if (distance > .001f)
             {
-                int count = Physics.SphereCastNonAlloc(eye, .18f, offset / distance, hits, distance, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore);
-                float allowed = count == hits.Length ? 0 : distance;
-                for (int i = 0; i < count; i++)
-                    if (hits[i].collider != null && !hits[i].collider.transform.IsChildOf(owner)) allowed = Mathf.Min(allowed, Mathf.Max(0, hits[i].distance - .08f));
-                offset *= allowed / distance;
+                offset=RetractCamera(eye,eye+offset)-eye;
             }
             view.position = eye + offset;
             if (weapon == null) weapon = view.Find("VKT_HeldWeapon");
             if (weapon != null) weapon.gameObject.SetActive(Mode == CityCameraMode.FirstPerson);
         }
-        private void OnDestroy() { HumanActor?.Dispose();if (avatar != null) Destroy(avatar); if(look!=null)look.Dispose();else physique?.Dispose(); }
+        private Vector3 RetractCamera(Vector3 target,Vector3 position)
+        {
+            Vector3 path=position-target;float length=path.magnitude;
+            if(length<=.001f)return target;
+            int count=Physics.SphereCastNonAlloc(target,.18f,path/length,hits,length,Physics.DefaultRaycastLayers,QueryTriggerInteraction.Ignore);
+            float allowed=count==hits.Length?0:length;
+            for(int i=0;i<count;i++)if(hits[i].collider!=null&&!hits[i].transform.IsChildOf(owner))allowed=Mathf.Min(allowed,Mathf.Max(0,hits[i].distance-.08f));
+            return target+path*(allowed/length);
+        }
+        private void OnDestroy() { if(phone!=null)phone.SetPhoneWorldPreview(false);HumanActor?.Dispose();if (avatar != null) Destroy(avatar); if(look!=null)look.Dispose();else physique?.Dispose(); }
     }
 }

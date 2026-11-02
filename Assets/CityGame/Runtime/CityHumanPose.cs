@@ -20,6 +20,8 @@ namespace Pozarevac.CityGame
         private float guardWeight, combatPunch;
         public bool HandsReady => leftHand != null && rightHand != null;
         public float GuardWeight => guardWeight;
+        internal CityHumanPhonePose CreatePhone(Transform owner) => !HandsReady ? null : CityHumanPhonePose.Create(owner, frame,
+            new[] { bones[3], bones[4], bones[5], bones[6], bones[7], bones[8] }, leftHand, rightHand);
         public void SetCombatPunch(float value) { combatPunch = float.IsFinite(value) ? Mathf.Clamp01(value) : 0; }
         public CityHumanFace Face {get;private set;}
         public float Phase => gait.Phase;
