@@ -35,19 +35,13 @@ namespace Pozarevac.CityGame
             if (folder.Length == 0) { Finish(false, "Human face capture folder missing."); yield break; }
             Directory.CreateDirectory(folder);
             Keyboard keys = null;
-            bool movementBefore = mover.enabled;
             float healthBefore = game.Vitals.Health.Current;
-            Quaternion viewBefore = view.transform.localRotation;
-            CursorLockMode cursorBefore = Cursor.lockState;
-            bool cursorVisibleBefore = Cursor.visible;
+            var scope = new HumanValidationScope(mover);
             try
             {
                 progress.ClosePanel(); game.GetComponent<CityMusicPanel>()?.Close(); runtime.CloseMenu();
                 if (game.Hideout.IsInside) game.Hideout.Travel(false);
                 mover.enabled = false;
-                int cameras = FindObjectsByType<Camera>(FindObjectsInactive.Include, FindObjectsSortMode.None).Length;
-                int listeners = FindObjectsByType<AudioListener>(FindObjectsInactive.Include, FindObjectsSortMode.None).Length;
-                int controllers = game.Player.GetComponentsInChildren<CharacterController>(true).Length;
                 int cash = game.Session.Cash, xp = runtime.Life.Experience;
                 if (!runtime.Wardrobe.Open() || !runtime.Wardrobe.ToggleCandidate())
                 { Finish(false, "Human facial wardrobe route unavailable."); yield break; }
@@ -55,7 +49,7 @@ namespace Pozarevac.CityGame
                 runtime.Wardrobe.Rotate(15);
                 yield return new WaitForSecondsRealtime(.3f); yield return new WaitForEndOfFrame();
                 GameObject preview = GameObject.Find("ReviewedHumanPreview");
-                SkinnedMeshRenderer previewSkin = HumanFaceBody(preview);
+                SkinnedMeshRenderer previewSkin = HumanBodySkin(preview);
                 result.authoredChannels = previewSkin != null && HumanFaceHasChannels(previewSkin);
                 if (!result.authoredChannels)
                 { Finish(false, "Reviewed human is missing authored eye, jaw, smile or brow channels."); yield break; }
@@ -105,13 +99,11 @@ namespace Pozarevac.CityGame
                 if (!CaptureRenderedFrame(game, Path.Combine(folder, "face-gaze-portrait.png"), out captureError))
                 { Finish(false, captureError); yield break; }
 
-                progress.SaveNow();
-                string signature = PreviewProfileSignature(game.Progression.Snapshot());
-                string diskBefore = File.ReadAllText(progress.SavePath);
+                var checkpoint = new HumanProfileCheckpoint(game);
                 var play = HumanButton("IGRAJ U GRADU");
                 if (play == null) { Finish(false, "Human facial preview has no city choice."); yield break; }
                 play.onClick.Invoke();
-                result.profileSelectionUnchanged = signature == PreviewProfileSignature(game.Progression.Snapshot()) && diskBefore == File.ReadAllText(progress.SavePath);
+                result.profileSelectionUnchanged = checkpoint.IsUnchanged;
                 yield return null; yield return new WaitForEndOfFrame();
                 CityHumanActor actor = rig.HumanActor;
                 if (!result.profileSelectionUnchanged || !rig.HumanSelected || actor?.Face == null || !actor.IsVisible || game.Director.IsPaused)
@@ -119,7 +111,7 @@ namespace Pozarevac.CityGame
                 Transform[] bones = actor.Visual.GetComponentsInChildren<Transform>(true);
                 Transform head = Array.Find(bones, bone => bone.name == "head");
                 Transform neck = Array.Find(bones, bone => bone.name == "neck_01");
-                SkinnedMeshRenderer skin = HumanFaceBody(actor.Visual);
+                SkinnedMeshRenderer skin = HumanBodySkin(actor.Visual);
                 if (head == null || neck == null || skin == null)
                 { Finish(false, "World human facial geometry missing."); yield break; }
                 view.transform.rotation = Quaternion.LookRotation(actor.Visual.transform.forward, Vector3.up);
@@ -155,7 +147,7 @@ namespace Pozarevac.CityGame
                 result.hurtVertexMeters = HumanFaceVertexDelta(skin, brow);
                 result.worldDamage = actor.Face.Mood == CityFaceMood.Hurt && skin.GetBlendShapeWeight(brow) > 5 && result.hurtVertexMeters > .0001f;
                 if (!result.worldDamage) { Finish(false, "Actual damage event did not deform the human hurt expression."); yield break; }
-                keys = CityInputFlowValidation.CreateValidationKeyboard();
+                keys = scope.CreateKeyboard();
                 Cursor.lockState = CursorLockMode.Locked; Cursor.visible = false;
                 yield return HumanPress(keys, Key.P);
                 if (!game.Director.IsPaused) { Finish(false, "Facial pause test did not open the phone."); yield break; }
@@ -182,9 +174,7 @@ namespace Pozarevac.CityGame
                 yield return new WaitForSecondsRealtime(.2f); yield return new WaitForEndOfFrame();
                 if (!result.hiddenRecovery || !result.worldSuccess || !CaptureRenderedFrame(game, Path.Combine(folder, "face-success-world.png"), out captureError))
                 { Finish(false, "Hidden-state decay or real success cue did not restore the authored facial state: " + captureError); yield break; }
-                result.ownersUnchanged = cameras == FindObjectsByType<Camera>(FindObjectsInactive.Include, FindObjectsSortMode.None).Length &&
-                    listeners == FindObjectsByType<AudioListener>(FindObjectsInactive.Include, FindObjectsSortMode.None).Length &&
-                    controllers == game.Player.GetComponentsInChildren<CharacterController>(true).Length;
+                result.ownersUnchanged = scope.OwnersUnchanged;
                 result.controlRestored = !game.Director.IsPaused && !runtime.Wardrobe.IsOpen && runtime.CanSimulate;
                 if (!result.ownersUnchanged || !result.controlRestored || game.Session.Cash != cash || runtime.Life.Experience != xp)
                 { Finish(false, "Facial presentation changed owners, rewards or pause ownership."); yield break; }
@@ -193,24 +183,12 @@ namespace Pozarevac.CityGame
             }
             finally
             {
-                if (keys != null) { InputSystem.QueueStateEvent(keys, new KeyboardState()); InputSystem.RemoveDevice(keys); }
-                runtime.Wardrobe.Close(); progress.ClosePanel();
-                game.Vitals.Health.Restore(healthBefore);
-                view.transform.localRotation = viewBefore; mover.ResetView(); mover.enabled = movementBefore;
-                Cursor.lockState = cursorBefore; Cursor.visible = cursorVisibleBefore;
+                try { runtime.Wardrobe.Close(); progress.ClosePanel(); game.Vitals.Health.Restore(healthBefore); }
+                finally { scope.Dispose(); }
                 File.WriteAllText(Path.Combine(folder, "human-face.json"), JsonUtility.ToJson(result, true));
             }
         }
 
-        private static SkinnedMeshRenderer HumanFaceBody(GameObject root)
-        {
-            if (root == null) return null;
-            SkinnedMeshRenderer body = null;
-            foreach (var skin in root.GetComponentsInChildren<SkinnedMeshRenderer>(true))
-                if (HumanFaceShape(skin, "eyeBlinkLeft") >= 0 && HumanFaceShape(skin, "jawOpen") >= 0 &&
-                    (body == null || skin.sharedMesh.vertexCount > body.sharedMesh.vertexCount)) body = skin;
-            return body;
-        }
         private static SkinnedMeshRenderer HumanFaceEyes(GameObject root)
         {
             foreach (var skin in root.GetComponentsInChildren<SkinnedMeshRenderer>(true))
@@ -218,15 +196,6 @@ namespace Pozarevac.CityGame
                     HumanFaceShape(skin, "eyeLookOutLeft") >= 0 && HumanFaceShape(skin, "eyeLookInRight") >= 0 &&
                     HumanFaceShape(skin, "eyeLookInLeft") >= 0 && HumanFaceShape(skin, "eyeLookOutRight") >= 0) return skin;
             return null;
-        }
-        private static int HumanFaceShape(SkinnedMeshRenderer skin, string suffix)
-        {
-            if (skin == null || skin.sharedMesh == null) return -1;
-            int found = -1;
-            for (int i = 0; i < skin.sharedMesh.blendShapeCount; i++)
-                if (skin.sharedMesh.GetBlendShapeName(i).EndsWith(suffix, StringComparison.OrdinalIgnoreCase))
-                { if (found >= 0) return -1; found = i; }
-            return found;
         }
         private static bool HumanFaceHasChannels(SkinnedMeshRenderer skin)
         {

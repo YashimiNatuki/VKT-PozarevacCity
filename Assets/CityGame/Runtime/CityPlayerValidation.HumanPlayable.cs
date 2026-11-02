@@ -36,29 +36,23 @@ namespace Pozarevac.CityGame
             GameObject support = null;
             Mesh shoes = null;
             Vector3 beforeGround = Vector3.zero;
-            bool groundFixtureActive = false, moverWasEnabled = mover.enabled, initialMoverEnabled = mover.enabled;
-            CursorLockMode cursor = Cursor.lockState;
-            bool cursorVisible = Cursor.visible;
+            bool groundFixtureActive = false, moverWasEnabled = mover.enabled;
             string folder = Argument("-vktHumanPlayableCaptures", "");
             if (folder.Length == 0) { Finish(false, "Human playable capture folder missing."); yield break; }
             Directory.CreateDirectory(folder);
+            var scope = new HumanValidationScope(mover);
             try
             {
                 progress.ClosePanel(); game.GetComponent<CityMusicPanel>()?.Close(); runtime.CloseMenu();
                 if (game.Hideout.IsInside) game.Hideout.Travel(false);
                 mover.enabled = true; mover.ResetView();
-                int cameras = FindObjectsByType<Camera>(FindObjectsInactive.Include, FindObjectsSortMode.None).Length;
-                int listeners = FindObjectsByType<AudioListener>(FindObjectsInactive.Include, FindObjectsSortMode.None).Length;
-                int controllers = game.Player.GetComponentsInChildren<CharacterController>(true).Length;
                 if (!runtime.Wardrobe.Open() || !runtime.Wardrobe.ToggleCandidate())
                 { Finish(false, "Could not open human selection in the wardrobe."); yield break; }
-                progress.SaveNow();
-                string signature = PreviewProfileSignature(game.Progression.Snapshot());
-                string diskBefore = File.ReadAllText(progress.SavePath);
+                var checkpoint = new HumanProfileCheckpoint(game);
                 Button play = HumanButton("IGRAJ U GRADU");
                 if (play == null || !play.interactable) { Finish(false, "Playable human UI choice missing."); yield break; }
                 play.onClick.Invoke();
-                result.profileSelectionUnchanged = signature == PreviewProfileSignature(game.Progression.Snapshot()) && diskBefore == File.ReadAllText(progress.SavePath);
+                result.profileSelectionUnchanged = checkpoint.IsUnchanged;
                 yield return null; yield return null;
                 var actor = rig.HumanActor;
                 result.uiSelection = rig.HumanSelected && actor != null && actor.IsVisible && !runtime.Wardrobe.IsOpen && !game.Director.IsPaused && rig.Mode == CityCameraMode.Chase;
@@ -76,7 +70,7 @@ namespace Pozarevac.CityGame
                 Transform leftElbow = Array.Find(bones, b => b.name == "lowerarm_l"), rightElbow = Array.Find(bones, b => b.name == "lowerarm_r");
                 if (left == null || right == null || leftHip == null || rightHip == null || leftArm == null || rightArm == null || leftElbow == null || rightElbow == null)
                 { Finish(false, "Playable human limb geometry missing."); yield break; }
-                keys = CityInputFlowValidation.CreateValidationKeyboard();
+                keys = scope.CreateKeyboard();
                 Cursor.lockState = CursorLockMode.Locked; Cursor.visible = false;
                 Key walkKey = Key.W;
                 for (int attempt = 0; attempt < 2 && !result.walking; attempt++)
@@ -230,7 +224,7 @@ namespace Pozarevac.CityGame
                 result.fallbackRestored &= rig.Mode == CityCameraMode.FirstPerson && !actor.IsVisible;
                 rig.SetMode(CityCameraMode.Chase); yield return null; yield return null;
                 result.fallbackRestored &= actor.IsVisible && rig.HumanSelected;
-                result.ownersUnchanged = cameras == FindObjectsByType<Camera>(FindObjectsInactive.Include, FindObjectsSortMode.None).Length && listeners == FindObjectsByType<AudioListener>(FindObjectsInactive.Include, FindObjectsSortMode.None).Length && controllers == game.Player.GetComponentsInChildren<CharacterController>(true).Length;
+                result.ownersUnchanged = scope.OwnersUnchanged;
                 if (!result.benchFallback || !result.boxingFallback || !result.fallbackRestored || !result.ownersUnchanged || game.Session.Cash != cash || runtime.Life.Experience != xp)
                 { Finish(false, "Human training fallback, state restoration, owners or rewards failed: " + JsonUtility.ToJson(result)); yield break; }
                 result.passed = true; humanPlayableVerified = true;
@@ -238,16 +232,17 @@ namespace Pozarevac.CityGame
             }
             finally
             {
-                if (keys != null) { InputSystem.QueueStateEvent(keys, new KeyboardState()); InputSystem.RemoveDevice(keys); }
-                if (groundFixtureActive) { body.enabled = false; game.Player.position = beforeGround; body.enabled = true; mover.enabled = moverWasEnabled; Physics.SyncTransforms(); }
-                if (support != null) Destroy(support); if (shoes != null) Destroy(shoes);
-                mover.enabled = initialMoverEnabled;
-                Cursor.lockState = cursor; Cursor.visible = cursorVisible;
+                try
+                {
+                    if (groundFixtureActive) { body.enabled = false; game.Player.position = beforeGround; body.enabled = true; mover.enabled = moverWasEnabled; Physics.SyncTransforms(); }
+                    if (support != null) Destroy(support); if (shoes != null) Destroy(shoes);
+                    runtime.Wardrobe.Close(); progress.ClosePanel();
+                }
+                finally { scope.Dispose(); }
                 File.WriteAllText(Path.Combine(folder, "human-playable.json"), JsonUtility.ToJson(result, true));
             }
         }
 
-        private static Button HumanButton(string name) => Array.Find(FindObjectsByType<Button>(FindObjectsSortMode.None), button => button.name == name);
         private static bool HumanRenderersHidden(Renderer[] renderers)
         {
             foreach (Renderer renderer in renderers)
@@ -255,11 +250,6 @@ namespace Pozarevac.CityGame
             return true;
         }
         private static float HumanFlatDistance(Vector3 a, Vector3 b) => new Vector2(a.x - b.x, a.z - b.z).magnitude;
-        private static IEnumerator HumanPress(Keyboard keys, Key key)
-        {
-            InputSystem.QueueStateEvent(keys, new KeyboardState(key)); yield return null; yield return null;
-            InputSystem.QueueStateEvent(keys, new KeyboardState()); yield return null; yield return null;
-        }
     }
 }
 #endif

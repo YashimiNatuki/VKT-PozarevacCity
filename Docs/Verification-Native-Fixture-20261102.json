@@ -1,0 +1,557 @@
+{
+  "date": "2026-11-02",
+  "baselineCommit": "2ad16fed03cf12d195f2731736b59059cb4dcca2",
+  "profileVersion": 9,
+  "tests": {
+    "mode": "tests",
+    "processExit": 0,
+    "total": "301",
+    "passed": "300",
+    "failed": "0",
+    "skipped": "1"
+  },
+  "focused": {
+    "mode": "focused",
+    "processExit": 0,
+    "total": "8",
+    "passed": "8",
+    "failed": "0",
+    "skipped": "0"
+  },
+  "windowsBuild": {
+    "mode": "build",
+    "processExit": 0
+  },
+  "humanHands": {
+    "passed": true,
+    "processExit": 0,
+    "failedChecks": [],
+    "runtimeErrors": [],
+    "captures": true,
+    "metrics": {
+      "passed": true,
+      "previewFists": true,
+      "previewDeformation": true,
+      "worldAttack": true,
+      "cooldown": true,
+      "pauseStable": true,
+      "pausedAttackBlocked": true,
+      "recovery": true,
+      "profileUnchanged": true,
+      "ownersUnchanged": true,
+      "controlRestored": true,
+      "minimumFingerDegrees": 24.999967575073242,
+      "previewVertexMeters": 0.12654906511306763,
+      "maxRightCurlDegrees": 81.0,
+      "maxLeftCurlDegrees": 80.99999237060547,
+      "rightForwardChange": 0.8268468976020813,
+      "pauseFingerDelta": 0.0,
+      "recoveredFingerDelta": 0.0,
+      "fingerJoints": 30
+    },
+    "report": {
+      "passed": true,
+      "details": "Actual Windows player: terrain loaded, nine physics interactions, three contracts, growth/trade, crew, district campaign and durable save restore passed. Three camera modes, imported player avatar, bounded orbit, obstruction retraction and first-person restoration passed. Human hands: thirty finger joints, guard deformation, actual unarmed attack, pause and recovery passed.",
+      "product": "VKT"
+    },
+    "boundary": "Actual Windows combat endpoint and baked mesh checks; synthetic input, no physical phone, new bench grip or human aesthetic approval."
+  },
+  "humanFace": {
+    "passed": true,
+    "processExit": 0,
+    "failedChecks": [],
+    "runtimeErrors": [],
+    "captures": true,
+    "metrics": {
+      "passed": true,
+      "authoredChannels": true,
+      "previewBlink": true,
+      "previewJaw": true,
+      "previewSmile": true,
+      "previewUnscaled": true,
+      "profileSelectionUnchanged": true,
+      "gazeBounded": true,
+      "worldDamage": true,
+      "worldSuccess": true,
+      "pauseStable": true,
+      "hiddenRecovery": true,
+      "ownersUnchanged": true,
+      "controlRestored": true,
+      "eyeGaze": true,
+      "eyeDirectionCorrect": true,
+      "blinkWeight": 76.74143981933594,
+      "jawWeight": 26.101028442382812,
+      "smileWeight": 54.63703155517578,
+      "blinkVertexMeters": 0.011596721597015858,
+      "jawVertexMeters": 0.01211361214518547,
+      "smileVertexMeters": 0.012228977866470814,
+      "hurtVertexMeters": 0.004288710653781891,
+      "headDegrees": 34.94518280029297,
+      "neckDegrees": 12.194822311401367,
+      "pauseHeadDegrees": 0.0,
+      "pauseMorphDelta": 0.0,
+      "eyeInLeftWeight": 64.99714660644531,
+      "eyeOutRightWeight": 64.99714660644531,
+      "eyeOpposedWeight": 0.0,
+      "eyeVertexMeters": 0.004458562470972538,
+      "eyeRightMeanMeters": 0.0017210589721798897,
+      "previewFrames": 123
+    },
+    "report": {
+      "passed": true,
+      "details": "Actual Windows player: terrain loaded, nine physics interactions, three contracts, growth/trade, crew, district campaign and durable save restore passed. Three camera modes, imported player avatar, bounded orbit, obstruction retraction and first-person restoration passed. Human face: reviewed morphs, gaze, wardrobe, feedback and pause passed.",
+      "product": "VKT"
+    },
+    "boundary": "Synthetic Windows input and actual baked mesh checks; no phoneme lip sync, physical phone or human aesthetic/audio approval."
+  },
+  "humanPlayable": {
+    "passed": true,
+    "processExit": 0,
+    "failedChecks": [],
+    "runtimeErrors": [],
+    "captures": true,
+    "metrics": {
+      "passed": true,
+      "uiSelection": true,
+      "profileSelectionUnchanged": true,
+      "walking": true,
+      "sprinting": true,
+      "movementWithShift": true,
+      "bothKnees": true,
+      "contralateral": true,
+      "pauseStable": true,
+      "teleportReset": true,
+      "stopSettles": true,
+      "firstPersonHidden": true,
+      "shoulderVisible": true,
+      "cachedSelection": true,
+      "ownersUnchanged": true,
+      "flatGroundContact": true,
+      "benchFallback": true,
+      "boxingFallback": true,
+      "fallbackRestored": true,
+      "originalHiddenWalking": true,
+      "originalHiddenFirstPerson": true,
+      "walkMeters": 1.7249946594238281,
+      "sprintMeters": 8.665950775146484,
+      "leftKneeDegrees": 41.249549865722656,
+      "rightKneeDegrees": 14.038236618041992,
+      "peakSpeed": 4.821659088134766,
+      "pausedLeftDegrees": 0.0,
+      "pausedRightDegrees": 0.0,
+      "leftSoleGap": -0.001178741455078125,
+      "rightSoleGap": -0.001251220703125,
+      "flatWalkObservedSpeed": 4.929787635803223,
+      "flatSprintObservedSpeed": 7.816535472869873,
+      "flatWalkPhysicalSpeed": 5.303737163543701,
+      "flatSprintPhysicalSpeed": 8.00886344909668,
+      "sampledFrames": 80,
+      "oppositeSamples": 22,
+      "incorrectPairs": 0,
+      "supportedFeet": 2
+    },
+    "report": {
+      "passed": true,
+      "details": "Actual Windows player: terrain loaded, nine physics interactions, three contracts, growth/trade, crew, district campaign and durable save restore passed. Three camera modes, imported player avatar, bounded orbit, obstruction retraction and first-person restoration passed. Human playable avatar: physical movement, pause, camera modes, teleport and training fallback passed.",
+      "product": "VKT"
+    },
+    "boundary": "Synthetic Windows input; flat support only; legacy bench/boxing fallback; no physical mobile test."
+  },
+  "humanPreview": {
+    "passed": true,
+    "processExit": 0,
+    "previewChecks": true,
+    "captures": true,
+    "runtimeErrors": [],
+    "report": {
+      "passed": true,
+      "details": "Actual Windows player: terrain loaded, nine physics interactions, three contracts, growth/trade, crew, district campaign and durable save restore passed. Three camera modes, imported player avatar, bounded orbit, obstruction retraction and first-person restoration passed. Human candidate: rendered front/side/back/face, isolated art, repeat toggle, unchanged profile and restored control passed. Block life: physical gym and kiosk interaction, UI repetitions and anti-spam, pause ownership, paid/stolen food, wanted save restoration, police line-of-sight/occlusion and capture range, accelerated escape/arrest, one-time challenge and durable v5 character stats passed.",
+      "product": "VKT"
+    },
+    "boundary": "Windows preview only; not a playable replacement rig or physical mobile test."
+  },
+  "nativeFlows": {
+    "Desktop": {
+      "passed": true,
+      "phoneBeforeContract": true,
+      "mapBeforeContract": true,
+      "musicNonModal": true,
+      "movementAfterMusic": true,
+      "legsAnimated": true,
+      "benchStarted": true,
+      "benchCompleted": true,
+      "dockVisible": true,
+      "helpReturnsControl": true,
+      "onboardingCreated": true,
+      "distanceAfterMusic": 2.499875545501709,
+      "leftLegDegrees": 29.64063835144043,
+      "rightLegDegrees": 32.99706268310547,
+      "peakObservedSpeed": 4.966301918029785,
+      "gaitReady": true,
+      "musicControlsClear": true,
+      "signalBlockedByMenu": true,
+      "signalBlockedByWall": true,
+      "signalReachesOfficer": true,
+      "signalCooldown": true,
+      "signalDoesNotPauseOrAddHeat": true,
+      "hideoutScoreFades": true,
+      "hideoutScoreMutes": true,
+      "helpAudioTextFits": true,
+      "hideoutMusicPreferenceMutes": true,
+      "disabledSignalBlocked": true,
+      "mapPreservesAudio": true,
+      "muteShortcutWorks": true,
+      "gardenPacked": true,
+      "gardenDelivery": true,
+      "gardenPause": true,
+      "gardenDiskCargo": true,
+      "gardenDiskReceipt": true,
+      "gardenSinglePayout": true,
+      "gardenTrainingGate": true,
+      "gardenPhoneCancellation": true,
+      "statsWalking": true,
+      "statsSprinting": true,
+      "statsTeleportExcluded": true,
+      "statsPause": true,
+      "statsDisk": true,
+      "statsPage": true,
+      "benchContacts": true,
+      "benchContactFrames": 886,
+      "benchMaxHandError": 1.6518123402420315e-06,
+      "benchMaxFootError": 9.652457038100692e-07,
+      "benchMaxFootAngle": 0.0,
+      "benchMaxHandAngle": 0.0,
+      "benchMinWristClearance": 0.02938692830502987,
+      "boxingStarted": true,
+      "boxingCompleted": true,
+      "boxingHands": true,
+      "boxingPause": true,
+      "boxingSinglePayout": true,
+      "boxingReturnsControl": true,
+      "boxingPoseFrames": 815,
+      "boxingMaxWristAngle": 0.02797645516693592,
+      "boxingPauseHandDelta": 0.0,
+      "gaitContralateral": true,
+      "gaitPausePreservesPose": true,
+      "gaitTeleportReset": true,
+      "gaitStopSettles": true,
+      "gaitPairSamples": 23,
+      "gaitBadPairs": 0,
+      "gaitPauseLeftDelta": 0.0,
+      "gaitPauseRightDelta": 0.0,
+      "groundSlopeContacts": true,
+      "groundPauseFeet": true,
+      "groundAirborneRelease": true,
+      "groundContactFrames": 42,
+      "groundedFrames": 43,
+      "groundPauseLeftDelta": 0.0,
+      "groundPauseRightDelta": 0.0,
+      "groundVisualOffset": -0.08714822679758072,
+      "groundPauseOffsetDelta": 0.0,
+      "error": "",
+      "input": "Synthetic Unity Input System keyboard and EventSystem submit; not human input."
+    },
+    "TouchPreview": {
+      "passed": true,
+      "phoneBeforeContract": true,
+      "mapBeforeContract": true,
+      "musicNonModal": true,
+      "movementAfterMusic": true,
+      "legsAnimated": true,
+      "benchStarted": true,
+      "benchCompleted": true,
+      "dockVisible": true,
+      "helpReturnsControl": true,
+      "onboardingCreated": true,
+      "distanceAfterMusic": 2.4998939037323,
+      "leftLegDegrees": 29.640077590942383,
+      "rightLegDegrees": 32.99696350097656,
+      "peakObservedSpeed": 4.966301918029785,
+      "gaitReady": true,
+      "musicControlsClear": true,
+      "signalBlockedByMenu": true,
+      "signalBlockedByWall": true,
+      "signalReachesOfficer": true,
+      "signalCooldown": true,
+      "signalDoesNotPauseOrAddHeat": true,
+      "hideoutScoreFades": true,
+      "hideoutScoreMutes": true,
+      "helpAudioTextFits": true,
+      "hideoutMusicPreferenceMutes": true,
+      "disabledSignalBlocked": true,
+      "mapPreservesAudio": true,
+      "muteShortcutWorks": true,
+      "gardenPacked": true,
+      "gardenDelivery": true,
+      "gardenPause": true,
+      "gardenDiskCargo": true,
+      "gardenDiskReceipt": true,
+      "gardenSinglePayout": true,
+      "gardenTrainingGate": true,
+      "gardenPhoneCancellation": true,
+      "statsWalking": true,
+      "statsSprinting": true,
+      "statsTeleportExcluded": true,
+      "statsPause": true,
+      "statsDisk": true,
+      "statsPage": true,
+      "benchContacts": true,
+      "benchContactFrames": 919,
+      "benchMaxHandError": 1.430511474609375e-06,
+      "benchMaxFootError": 9.652457038100692e-07,
+      "benchMaxFootAngle": 0.0,
+      "benchMaxHandAngle": 0.0,
+      "benchMinWristClearance": 0.029387013986706734,
+      "boxingStarted": true,
+      "boxingCompleted": true,
+      "boxingHands": true,
+      "boxingPause": true,
+      "boxingSinglePayout": true,
+      "boxingReturnsControl": true,
+      "boxingPoseFrames": 816,
+      "boxingMaxWristAngle": 0.02797645516693592,
+      "boxingPauseHandDelta": 0.0,
+      "gaitContralateral": true,
+      "gaitPausePreservesPose": true,
+      "gaitTeleportReset": true,
+      "gaitStopSettles": true,
+      "gaitPairSamples": 22,
+      "gaitBadPairs": 0,
+      "gaitPauseLeftDelta": 0.0,
+      "gaitPauseRightDelta": 0.0,
+      "groundSlopeContacts": true,
+      "groundPauseFeet": true,
+      "groundAirborneRelease": true,
+      "groundContactFrames": 42,
+      "groundedFrames": 43,
+      "groundPauseLeftDelta": 0.0,
+      "groundPauseRightDelta": 0.0,
+      "groundVisualOffset": -0.08714822679758072,
+      "groundPauseOffsetDelta": 0.0,
+      "error": "",
+      "input": "Synthetic Unity Input System keyboard and EventSystem submit; not human input."
+    }
+  },
+  "nativeFlowRunner": {
+    "Desktop": {
+      "name": "Desktop",
+      "processExit": 0,
+      "command": [
+        "C:\\Users\\jamal\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+        "C:\\Users\\jamal\\Documents\\VKT-PozarevacCity\\Tools\\Test-StreetSound.py",
+        "--player",
+        "C:\\Users\\jamal\\Documents\\CodexBuilds\\VKT-Native-Fixture-Windows-20261102-r2\\VKT.exe",
+        "--output",
+        "C:\\Users\\jamal\\Documents\\VKT-Native-Fixture-Desktop-Accepted-Bound-Final-20261102"
+      ]
+    },
+    "TouchPreview": {
+      "name": "TouchPreview",
+      "processExit": 0,
+      "command": [
+        "C:\\Users\\jamal\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+        "C:\\Users\\jamal\\Documents\\VKT-PozarevacCity\\Tools\\Test-StreetSound.py",
+        "--player",
+        "C:\\Users\\jamal\\Documents\\CodexBuilds\\VKT-Native-Fixture-Windows-20261102-r2\\VKT.exe",
+        "--output",
+        "C:\\Users\\jamal\\Documents\\VKT-Native-Fixture-TouchPreview-Accepted-Bound-Final-20261102",
+        "--touch-preview"
+      ]
+    }
+  },
+  "introChecks": [
+    {
+      "mode": "natural",
+      "processExit": 0,
+      "report": {
+        "passed": true,
+        "details": "Original intro decoded, played to natural completion and resumed gameplay.",
+        "product": "VKT"
+      },
+      "decoded": [
+        "VKT_INTRO_VERIFIED frame=30 size=1280x720 seconds=30 audioTracks=1"
+      ],
+      "runtimeErrors": []
+    },
+    {
+      "mode": "skip",
+      "processExit": 0,
+      "report": {
+        "passed": true,
+        "details": "Actual Windows player: terrain loaded, nine physics interactions, three contracts, growth/trade, crew, district campaign and durable save restore passed. Three camera modes, imported player avatar, bounded orbit, obstruction retraction and first-person restoration passed.",
+        "product": "VKT"
+      },
+      "decoded": [
+        "VKT_INTRO_VERIFIED frame=30 size=1280x720 seconds=30 audioTracks=1"
+      ],
+      "runtimeErrors": []
+    }
+  ],
+  "redEvidence": {
+    "initial": {
+      "mode": "red",
+      "processExit": 2,
+      "total": "8",
+      "passed": "1",
+      "failed": "7",
+      "skipped": "0"
+    },
+    "neutralCleanup": {
+      "mode": "red",
+      "processExit": 2,
+      "total": "8",
+      "passed": "6",
+      "failed": "2",
+      "skipped": "0"
+    }
+  },
+  "infrastructureFailure": {
+    "mode": "red",
+    "processExit": 1073741845
+  },
+  "independentReview": {
+    "passed": true,
+    "readOnly": true,
+    "reviewer": "/root/phone_architecture_walk",
+    "resolvedFindings": 5,
+    "findings": [
+      {
+        "id": "P2-camera-controller-state",
+        "resolution": "Scope neutralizes view through ResetView only; no saved camera quaternion or Camera constructor argument."
+      },
+      {
+        "id": "test-sensitivity",
+        "resolution": "Test changes view to -25 degrees before Dispose and expects neutral; it detects omission of ResetView."
+      },
+      {
+        "id": "P2-source-build-drift",
+        "resolution": "Source manifests captured before gates/build; full input hashes checked throughout native and finalization."
+      },
+      {
+        "id": "P2-runtime-data-drift",
+        "resolution": "Full runtime manifest before native; all 309 files checked before packaging and against exact ZIP members."
+      },
+      {
+        "id": "finalizer-identity-shadow",
+        "resolution": "Loop variable renamed binary_identity; fresh AST/symtable confirms module identity is not locally shadowed."
+      }
+    ],
+    "reportContractsUnchanged": true,
+    "independentRuntimeVerification": false,
+    "scope": "Shared fixture, three human native callers and focused tests. No Unity/native execution by reviewer.",
+    "releaseReviewAccepted": true,
+    "remainingMaterialFindings": 0
+  },
+  "reportContracts": {
+    "HumanFace": {
+      "reportFieldsUnchanged": true,
+      "outputNamesUnchanged": true,
+      "metricAssignments": 31
+    },
+    "HumanHands": {
+      "reportFieldsUnchanged": true,
+      "outputNamesUnchanged": true,
+      "metricAssignments": 20
+    },
+    "HumanPlayable": {
+      "reportFieldsUnchanged": true,
+      "outputNamesUnchanged": true,
+      "metricAssignments": 35
+    }
+  },
+  "testedBinaryIdentity": {
+    "VKT.exe": {
+      "bytes": 667136,
+      "sha256": "b70442f90f50cd91f7af7bf2272602645fc5d02c4d3156fb221fc27c328d2436"
+    },
+    "VKT_Data/Managed/Assembly-CSharp.dll": {
+      "bytes": 513536,
+      "sha256": "f9819cfbf59001627f5043f0f73b99d5cd6ed32afdf1fe5667cb7ee95d3acf1f"
+    }
+  },
+  "inputRuntimeManifest": "Docs/Native-Fixture-Identity-20261102.json",
+  "sourceFingerprint": "ab32f3db4a2f52aa0f3c4f1a182fd1b169d5aa2dc67d016f66a6926ad10c1de6",
+  "generatedNormalization": {
+    "backup": "C:\\Users\\jamal\\Documents\\VKT-Native-Fixture-Generated-Backup-20261102-021506",
+    "restored": [
+      "Assets/CityGame/Resources/Models/KenneyRetro/characterMedium.fbx.meta",
+      "Assets/CityGame/Resources/Models/KenneyRetro/idle.fbx.meta",
+      "Assets/CityGame/Resources/Models/KenneyRetro/run.fbx.meta",
+      "ProjectSettings/ProjectSettings.asset"
+    ]
+  },
+  "assetProvenance": "Docs/RodjaHuman-Face-Provenance-20261101.json",
+  "modelAssetsUnchanged": true,
+  "playerExecutable": {
+    "path": "VKT.exe",
+    "bytes": 667136,
+    "sha256": "b70442f90f50cd91f7af7bf2272602645fc5d02c4d3156fb221fc27c328d2436"
+  },
+  "unverified": [
+    "Physical phone/object grip",
+    "New human bench/boxing training rig",
+    "Physical Android/iPhone",
+    "Long FPS/thermal profiling",
+    "New voices/fonts/AI intro",
+    "Human aesthetic approval"
+  ],
+  "packageReceiptBoundary": "Packaged receipt omits own archive hash; repository receipt adds it after ZIP verification.",
+  "changedFiles": [
+    "Assets/CityGame/Runtime/CityPlayerValidation.HumanFace.cs",
+    "Assets/CityGame/Runtime/CityPlayerValidation.HumanFixture.cs",
+    "Assets/CityGame/Runtime/CityPlayerValidation.HumanFixture.cs.meta",
+    "Assets/CityGame/Runtime/CityPlayerValidation.HumanHands.cs",
+    "Assets/CityGame/Runtime/CityPlayerValidation.HumanPlayable.cs",
+    "Assets/CityGame/Runtime/CityPlayerValidation.cs",
+    "Assets/CityGame/Tests/Editor/CityNativeValidationTests.cs",
+    "Assets/CityGame/Tests/Editor/CityNativeValidationTests.cs.meta",
+    "CONTEXT.md",
+    "Docs/Native-Fixture-Identity-20261102.json",
+    "Docs/Native-Verification-Framework-20261101.md",
+    "Docs/Verification-Native-Fixture-20261102.json",
+    "HANDOFF-NASTAVAK.md",
+    "README.md"
+  ],
+  "identityManifestSha256": "74042272c33541a86384777d0787fd5c148afa09041df650f4dfe98424f7886f",
+  "windows": {
+    "name": "VKT-Native-Fixture-Windows-20261102-r2.zip",
+    "bytes": 152664184,
+    "sha256": "5413de819c5f8d75c3fdfe280084d95108e10e6afd2560c3e3c870e6665c55d9",
+    "zipCrcPassed": true
+  },
+  "packagedReceiptSha256": "096b6b5dcff18b370d02dc62a7782de270bd7006e7a2c21e7cb4be2b7bfd011f",
+  "packagedDocumentFiles": [
+    "CONTEXT.md",
+    "Docs/Faceunits01-CC0-LICENSE.md",
+    "Docs/Human-Face-20261101.md",
+    "Docs/Human-Hands-20261101.md",
+    "Docs/Human-Playable-20261101.md",
+    "Docs/Native-Fixture-Identity-20261102.json",
+    "Docs/Native-Verification-Framework-20261101.md",
+    "Docs/Phone-Screens-20261101.md",
+    "Docs/RodjaHuman-CC0-LICENSE.md",
+    "Docs/RodjaHuman-Face-Provenance-20261101.json",
+    "Docs/RodjaHuman-Provenance-20261029.json",
+    "Docs/Screenshots/human-city-windows-20261101.png",
+    "Docs/Screenshots/human-face-blink-windows-20261101.png",
+    "Docs/Screenshots/human-face-calm-windows-20261101.png",
+    "Docs/Screenshots/human-face-effort-windows-20261101.png",
+    "Docs/Screenshots/human-face-gaze-portrait-windows-20261101.png",
+    "Docs/Screenshots/human-face-gaze-world-windows-20261101.png",
+    "Docs/Screenshots/human-face-success-windows-20261101.png",
+    "Docs/Screenshots/human-face-success-world-windows-20261101.png",
+    "Docs/Screenshots/human-hands-guard-front-windows-20261101.png",
+    "Docs/Screenshots/human-hands-left-windows-20261101.png",
+    "Docs/Screenshots/human-hands-right-windows-20261101.png",
+    "Docs/Screenshots/human-hands-world-attack-windows-20261101.png",
+    "Docs/Verification-Human-Face-20261101.json",
+    "Docs/Verification-Human-Hands-20261101.json",
+    "Docs/Verification-Human-Playable-20261101.json",
+    "Docs/Verification-Native-Fixture-20261102.json",
+    "Docs/Verification-Phone-Screens-20261101.json",
+    "Docs/iOS-Readiness-20261101.json",
+    "Docs/iPhone-Plan-20261101.md",
+    "THIRD_PARTY_NOTICES.md",
+    "Tools/Character/build_human_face.py"
+  ]
+}

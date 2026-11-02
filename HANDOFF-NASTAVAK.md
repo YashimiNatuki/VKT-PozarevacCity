@@ -1,6 +1,14 @@
 # VKT: nastavak rada, 2026-11-01
 
-## Najnovije: mapa i katalog telefona — 1. novembar 2026.
+## Najnovije: zajednički native fixture — 2. novembar 2026.
+
+Tri ljudska native scenarija sada dele privatni scope za virtuelni input, enabled/kursor stanje, neutralizaciju pogleda i identitet vlasnika. Jedan checkpoint poredi snapshot i sejv neposredno oko izbora modela. Potpis profila više ne menja ulazni snapshot. Nezavisan pregled je zatvorio P2 o pogledu i ojačao osetljivost testa.
+
+**300 Unity testova prošlo, 0 palo, 1 opcioni preskočen; 8/8 ciljanih testova.** Windows build, četiri native scenarija, desktop/touch-preview i oba toka prethodne špice prošli su izlazom 0. Sva tri report ugovora i 51 fajl modela ostali su isti. [Arhitektura i provere](Docs/Native-Verification-Framework-20261101.md) | [Dokazi](Docs/Verification-Native-Fixture-20261102.json).
+
+Ovaj korak unapređuje verifikacionu infrastrukturu. Fizički hvat telefona, novi trening-rig, teren, glasovi i novi AI film ostaju naredni gameplay rad. Fizički Android/iPhone i dug FPS/termalni test nisu deo prihvata. Jedan pad shader compilera sačuvan je odvojeno od uspešnih završnih provera.
+
+## Prethodno: mapa i katalog telefona — 1. novembar 2026.
 
 Ispravljen je prelaz mapa → otključani katalog: mapa se gasi kada se katalog otvori. Zaključani katalog ostavlja mapu dostupnom. Dva stvarna uGUI/progresija testa proveravaju oba stanja i nepromenjen profil v9.
 

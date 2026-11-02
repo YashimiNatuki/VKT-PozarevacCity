@@ -501,19 +501,6 @@ namespace Pozarevac.CityGame
             Debug.Log("VKT_HUMAN_PREVIEW_VERIFIED renderedAngles=4 reuse=true profileUnchanged=true controlRestored=true");
         }
 
-        private static string PreviewProfileSignature(CityProfileData copy)
-        {
-            // The existing garden intentionally advances in UTC while menus are open.
-            // Compare all saved gameplay fields, allowing only its clock/growth/moisture progression.
-            if(copy.garden!=null)
-            {
-                copy.garden.lastUtcSeconds=0;
-                foreach(CityGardenPlotData plot in copy.garden.plots)
-                {plot.grownSeconds=0;plot.moistureSeconds=0;}
-            }
-            return JsonUtility.ToJson(copy);
-        }
-
         private IEnumerator VerifyLifestyle(CityGameBootstrap game)
         {
             CityLifestyleRuntime runtime=game.GetComponent<CityLifestyleRuntime>();

@@ -22,18 +22,16 @@ namespace Pozarevac.CityGame
             var result=new HumanHandsReport();var life=game.GetComponent<CityLifestyleRuntime>();
             var progress=game.GetComponent<CityProgressionController>();
             var rig=game.Player.GetComponentInChildren<CityCameraRig>();
-            var mover=game.Player.GetComponent<CityPlayerController>();bool moverBefore=mover.enabled;
+            var mover=game.Player.GetComponent<CityPlayerController>();
             string folder=Argument("-vktHumanHandsCaptures","");
             if(folder.Length==0){Finish(false,"Human hand captures missing.");yield break;}
             Directory.CreateDirectory(folder);
+            var scope=new HumanValidationScope(mover);
             try
             {
                 progress.ClosePanel();game.GetComponent<CityMusicPanel>()?.Close();life.CloseMenu();
                 if(game.Hideout.IsInside)game.Hideout.Travel(false);
                 mover.enabled=false;
-                int cameras=FindObjectsByType<Camera>(FindObjectsInactive.Include,FindObjectsSortMode.None).Length;
-                int listeners=FindObjectsByType<AudioListener>(FindObjectsInactive.Include,FindObjectsSortMode.None).Length;
-                int controllers=game.Player.GetComponentsInChildren<CharacterController>(true).Length;
                 int cash=game.Session.Cash,xp=life.Life.Experience;
                 if(!life.Wardrobe.Open()||!life.Wardrobe.ToggleCandidate())
                 {Finish(false,"Human hand wardrobe unavailable.");yield break;}
@@ -48,7 +46,7 @@ namespace Pozarevac.CityGame
                 result.minimumFingerDegrees=180;
                 for(int i=0;i<fingers.Length;i++)result.minimumFingerDegrees=Mathf.Min(result.minimumFingerDegrees,Quaternion.Angle(relaxed[i],fingers[i].localRotation));
                 result.previewFists=result.minimumFingerDegrees>5&&game.Director.IsPaused&&life.Wardrobe.CandidateMotion==3;
-                result.previewVertexMeters=HumanHandsVertexDelta(HumanFaceBody(preview),fingers,relaxed);
+                result.previewVertexMeters=HumanHandsVertexDelta(HumanBodySkin(preview),fingers,relaxed);
                 result.previewDeformation=result.previewVertexMeters>.003f;
                 if(!result.previewFists||!result.previewDeformation)
                 {Finish(false,"Human guard did not close/deform all five digits.");yield break;}
@@ -68,10 +66,9 @@ namespace Pozarevac.CityGame
                     if(!CaptureRenderedFrame(game,Path.Combine(folder,hand==left?"hands-left.png":"hands-right.png"),out error))
                     {Finish(false,error);yield break;}
                 }
-                progress.SaveNow();string profile=PreviewProfileSignature(game.Progression.Snapshot());
-                string disk=File.ReadAllText(progress.SavePath);
+                var checkpoint=new HumanProfileCheckpoint(game);
                 HumanButton("IGRAJ U GRADU").onClick.Invoke();
-                result.profileUnchanged=profile==PreviewProfileSignature(game.Progression.Snapshot())&&disk==File.ReadAllText(progress.SavePath);
+                result.profileUnchanged=checkpoint.IsUnchanged;
                 yield return null;yield return new WaitForEndOfFrame();
                 var actor=rig.HumanActor;
                 if(actor==null||!actor.IsVisible||game.Director.IsPaused||!result.profileUnchanged)
@@ -112,8 +109,7 @@ namespace Pozarevac.CityGame
                 yield return new WaitForSecondsRealtime(.65f);yield return new WaitForEndOfFrame();
                 for(int i=0;i<fingers.Length;i++)result.recoveredFingerDelta=Mathf.Max(result.recoveredFingerDelta,Quaternion.Angle(relaxed[i],fingers[i].localRotation));
                 result.recovery=result.recoveredFingerDelta<1;
-                result.ownersUnchanged=cameras==FindObjectsByType<Camera>(FindObjectsInactive.Include,FindObjectsSortMode.None).Length&&
-                    listeners==FindObjectsByType<AudioListener>(FindObjectsInactive.Include,FindObjectsSortMode.None).Length&&controllers==game.Player.GetComponentsInChildren<CharacterController>(true).Length;
+                result.ownersUnchanged=scope.OwnersUnchanged;
                 result.controlRestored=!game.Director.IsPaused&&!life.Wardrobe.IsOpen&&life.CanSimulate;
                 result.passed=result.worldAttack&&result.previewFists&&result.previewDeformation&&result.cooldown&&result.pauseStable&&result.pausedAttackBlocked&&
                     result.recovery&&result.profileUnchanged&&result.ownersUnchanged&&result.controlRestored&&game.Session.Cash==cash&&life.Life.Experience==xp;
@@ -122,7 +118,8 @@ namespace Pozarevac.CityGame
             }
             finally
             {
-                life.Wardrobe.Close();progress.ClosePanel();mover.ResetView();mover.enabled=moverBefore;
+                try { life.Wardrobe.Close();progress.ClosePanel(); }
+                finally { scope.Dispose(); }
                 File.WriteAllText(Path.Combine(folder,"human-hands.json"),JsonUtility.ToJson(result,true));
             }
         }
