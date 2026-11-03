@@ -1,3 +1,5 @@
+> **Najnoviji kod: sprint i benč ljudskog lika — 2026-11-03.** 54/54 ciljanih, 326/0/1 ceo skup, Windows build i 11 native tokova izlaz 0. [Uputstvo](Docs/Running-Bench-20261103.md) | [Gemini pregled](Docs/Gemini-Intake-Review-20261103.md). Novi lokalni Windows build je proveren; javni ZIP ispod pripada prethodnom izdanju.
+
 > **Najnoviji kod: boks ljudskog lika — 2026-11-02.** 46/46 ciljanih testova, ceo skup 323/0/1, Windows build i 11 native tokova izlaz 0. [Uputstvo i granice](Docs/Human-Boxing-20261102.md). Ova dopuna ima lokalno proveren Windows build; objavljeni ZIP ispod pripada prethodnom izdanju.
 
 > **Najnovije Windows izdanje: telefon, boks i reljef — 2026-11-02.** [Windows ZIP](https://github.com/YashimiNatuki/VKT-PozarevacCity/releases/download/vkt-phone-boxing-relief-20261102/VKT-Phone-Boxing-Relief-Windows-20261102-r3.zip). Telefon u ruci novog ljudskog lika, ispravljen bokserski zglob i regionalna DSM mapa. **322 testa prošla, 0 palo, 1 opcioni preskočen; 40/40 ciljanih i 11 native tokova izlaz 0.** [Uputstvo i granice](Docs/Phone-Boxing-Relief-20261102.md) | [Dokazi](Docs/Verification-Phone-Boxing-Relief-20261102.json).

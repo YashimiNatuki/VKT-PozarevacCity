@@ -15,6 +15,17 @@ namespace Pozarevac.CityGame
         private readonly float[] soleHeights=new float[2];
         private CityCharacterPhysique physique;
         private CityHandPose leftGrip, rightGrip;
+        private CityHumanBenchPose human;
+        private bool humanSelected;
+        public GameObject HumanAthlete=>human!=null?human.Visual:null;
+        public bool UsesHuman=>humanSelected&&human!=null;
+        public bool SelectHuman(bool selected)
+        {
+            if(selected&&human==null)human=CityHumanBenchPose.Create(transform);
+            humanSelected=selected&&human!=null;
+            if(humanSelected&&bar!=null)human.Pose(true,1,bar);
+            Pose(false,1);return humanSelected;
+        }
         public void SetStrength(int value) { strength=value;if(look!=null)look.Apply(outfit,strength); }
         public void SetOutfit(CityOutfit value){outfit=value;if(look!=null)look.Apply(outfit,strength);}
         public void SetAppearance(CityOutfit value,int power){outfit=value;strength=power;if(look!=null)look.Apply(outfit,strength);}
@@ -27,7 +38,7 @@ namespace Pozarevac.CityGame
         public float FootError { get; private set; }
         public float FootOrientationError { get; private set; }
         private int plantedFeet;
-        public bool FeetReady => plantedFeet == 2;
+        public bool FeetReady => UsesHuman?human.FeetReady:plantedFeet == 2;
         // The positive-X side contains the authored boxing stand and bag.
         public Vector3 CameraPosition => transform.TransformPoint(new Vector3(-2.8f, 2.1f, 2.6f));
         public Vector3 CameraTarget => transform.TransformPoint(new Vector3(0, .7f, .1f));
@@ -123,6 +134,14 @@ namespace Pozarevac.CityGame
             extension = float.IsFinite(extension) ? Mathf.Clamp01(extension) : 1;
             if(look!=null)look.Face.SetEffort(active?Mathf.Lerp(.9f,.4f,Mathf.Clamp01(extension)):0);
             if (bar == null) return;
+            if(UsesHuman)
+            {
+                if(athlete!=null)athlete.gameObject.SetActive(false);
+                human.Pose(active,extension,bar);
+                HandError=human.HandError;FootError=human.FootError;HandOrientationError=human.HandOrientationError;
+                WristClearance=human.WristClearance;FootOrientationError=0;return;
+            }
+            if(human!=null)human.Visual.SetActive(false);
             if (athlete != null) athlete.gameObject.SetActive(active);
             bar.localPosition = new Vector3(0, Mathf.Lerp(lowerHeight, upperHeight, extension), barZ);
             if (!active || !RigReady) return;
@@ -169,6 +188,6 @@ namespace Pozarevac.CityGame
             obj.transform.localPosition = at; obj.transform.localRotation = Quaternion.Euler(0, 0, 90); obj.transform.localScale = scale;
             obj.GetComponent<Renderer>().sharedMaterial = material; obj.GetComponent<Collider>().enabled = false; obj.layer = 2;
         }
-        private void OnDestroy() { if(look!=null)look.Dispose();else physique?.Dispose(); }
+        private void OnDestroy() { human?.Dispose();if(look!=null)look.Dispose();else physique?.Dispose(); }
     }
 }

@@ -115,8 +115,8 @@ namespace Pozarevac.CityGame
                 if(delta.sqrMagnitude>.00001f)transform.rotation=Quaternion.Slerp(transform.rotation,Quaternion.LookRotation(delta),1-Mathf.Exp(-8*Time.deltaTime));
             }
             for(int i=0;i<poseBones.Length;i++)if(poseBones[i]!=null)basePose[i]=poseBones[i].localRotation;
-            RelaxArm(leftArm,leftElbow,transform,leftSide,gait.LeftArmSwing);
-            RelaxArm(rightArm,rightElbow,transform,rightSide,gait.RightArmSwing);
+            RelaxArm(leftArm,leftElbow,transform,leftSide,gait.LeftArmSwing,gait.RunningBlend);
+            RelaxArm(rightArm,rightElbow,transform,rightSide,gait.RightArmSwing,gait.RunningBlend);
             if(gait.Weight>.005f)
             {
                 PoseLeg(leftHip,leftKnee,leftFoot,transform,gait.LeftStride,gait.LeftKneeFlex);
@@ -152,7 +152,7 @@ namespace Pozarevac.CityGame
             for(int i=0;i<poseBones.Length;i++)if(poseBones[i]!=null)renderedPose[i]=poseBones[i].localRotation;
             posed=true;hasRenderedPose=true;
         }
-        public static void RelaxArm(Transform arm,Transform elbow,Transform model,float side,float swing)
+        public static void RelaxArm(Transform arm,Transform elbow,Transform model,float side,float swing,float running=0)
         {
             if(arm==null||elbow==null||model==null)return;
             Vector3 direction=elbow.position-arm.position;if(direction.sqrMagnitude<.00001f)return;
@@ -163,6 +163,8 @@ namespace Pozarevac.CityGame
                 Transform hand=elbow.GetChild(0);
                 Vector3 forearm=hand.position-elbow.position;
                 Vector3 bend=(-model.up*.85f+model.forward*(.15f+Mathf.Max(0,swing)*1.5f)).normalized;
+                running=float.IsFinite(running)?Mathf.Clamp01(running):0;
+                bend=Vector3.Slerp(bend,Quaternion.AngleAxis(-90,model.right)*target,running).normalized;
                 if(forearm.sqrMagnitude>.00001f)elbow.rotation=Quaternion.FromToRotation(forearm,bend)*elbow.rotation;
             }
         }

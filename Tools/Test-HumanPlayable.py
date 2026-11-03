@@ -34,15 +34,15 @@ def main():
         required = ['passed', 'uiSelection', 'profileSelectionUnchanged', 'walking', 'sprinting', 'bothKnees',
                     'contralateral', 'pauseStable', 'teleportReset', 'stopSettles', 'firstPersonHidden',
                     'shoulderVisible', 'cachedSelection', 'ownersUnchanged', 'flatGroundContact',
-                    'benchFallback', 'boxingHuman', 'boxingGuard', 'boxingPunch', 'boxingPause', 'boxingCompletedOnce', 'fallbackRestored']
+                    'benchHuman', 'benchPause', 'benchSinglePayout', 'runningArms', 'boxingHuman', 'boxingGuard', 'boxingPunch', 'boxingPause', 'boxingCompletedOnce', 'fallbackRestored']
         failed = [name for name in required if metrics.get(name) is not True]
         errors = re.findall(r'NullReferenceException|MissingReferenceException|IndexOutOfRangeException|Unhandled Exception|Shader error', log)
-        pictures = ['human-city-walk.png', 'human-flat-ground.png', 'human-bench-fallback.png', 'human-boxing-training.png']
+        pictures = ['human-city-walk.png', 'human-sprint-front.png', 'human-sprint-side.png', 'human-flat-ground.png', 'human-bench-training.png', 'human-boxing-training.png']
         captures_ok = all((captures / name).is_file() and (captures / name).stat().st_size > 50000 for name in pictures)
         passed = run.returncode == 0 and report.get('passed') is True and not failed and not errors and captures_ok and 'VKT_HUMAN_PLAYABLE_VERIFIED ' in log
         result = dict(passed=passed, processExit=run.returncode, failedChecks=failed, runtimeErrors=errors,
                       captures=captures_ok, metrics=metrics, report=report,
-                      boundary='Synthetic Windows input; flat support only; legacy bench fallback; selected human boxing; no physical mobile test.')
+                      boundary='Synthetic Windows input; flat support only; selected human bench and boxing; flat sprint elbow checks; no physical mobile test.')
         (output / 'verification.json').write_text(json.dumps(result, indent=2), encoding='utf-8')
         print(json.dumps(result, indent=2))
         return 0 if passed else 1

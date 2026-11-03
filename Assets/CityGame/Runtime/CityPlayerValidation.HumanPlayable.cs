@@ -16,11 +16,13 @@ namespace Pozarevac.CityGame
         {
             public bool passed, uiSelection, profileSelectionUnchanged, walking, sprinting, movementWithShift, bothKnees,
                 contralateral, pauseStable, teleportReset, stopSettles, firstPersonHidden, shoulderVisible,
-                cachedSelection, ownersUnchanged, flatGroundContact, benchFallback, boxingHuman, boxingGuard, boxingPunch, boxingPause, boxingCompletedOnce, fallbackRestored,
+                cachedSelection, ownersUnchanged, flatGroundContact, benchHuman, benchPause, benchSinglePayout, runningArms, boxingHuman, boxingGuard, boxingPunch, boxingPause, boxingCompletedOnce, fallbackRestored,
                 originalHiddenWalking, originalHiddenFirstPerson;
             public float walkMeters, sprintMeters, leftKneeDegrees, rightKneeDegrees, peakSpeed,
                 pausedLeftDegrees, pausedRightDegrees, leftSoleGap, rightSoleGap,
                 flatWalkObservedSpeed, flatSprintObservedSpeed, flatWalkPhysicalSpeed, flatSprintPhysicalSpeed;
+            public float minSprintElbow=180,maxSprintElbow,maxBenchHandError;
+            public int sprintArmSamples;
             public int sampledFrames, oppositeSamples, incorrectPairs, supportedFeet;
         }
 
@@ -144,6 +146,7 @@ namespace Pozarevac.CityGame
                 beforeGround = game.Player.position; moverWasEnabled = mover.enabled; groundFixtureActive = true;
                 support = GameObject.CreatePrimitive(PrimitiveType.Cube); support.name = "VKT_HumanFlatValidation";
                 support.transform.position = beforeGround + Vector3.up * 40; support.transform.localScale = new Vector3(20, .2f, 20);
+                support.GetComponent<Renderer>().enabled=false;
                 mover.enabled = false; body.enabled = false; game.Player.position = support.transform.position + Vector3.up * .3f; body.enabled = true; Physics.SyncTransforms();
                 for (int i = 0; i < 50; i++) { body.Move(Vector3.down * .04f); yield return null; yield return new WaitForEndOfFrame(); }
                 var shoeSkin = Array.Find(identity.GetComponentsInChildren<SkinnedMeshRenderer>(true), skin => skin.name.IndexOf("shoes02", StringComparison.OrdinalIgnoreCase) >= 0);
@@ -164,6 +167,7 @@ namespace Pozarevac.CityGame
 
                 // The raised fixture gives both measurements an unobstructed flat route and the same real controller.
                 mover.enabled = true; mover.ResetView(); Cursor.lockState = CursorLockMode.Locked; Cursor.visible = false;
+                bool sprintCaptured=false;
                 for (int mode = 0; mode < 2; mode++)
                 {
                     Vector3 start = game.Player.position;
@@ -174,6 +178,31 @@ namespace Pozarevac.CityGame
                     {
                         yield return new WaitForEndOfFrame();
                         if (Time.realtimeSinceStartup - started >= .2f) { observedTotal += actor.ObservedSpeed; speedSamples++; }
+                        if(mode==1&&Time.realtimeSinceStartup-started>=.45f)
+                        {
+                            foreach(string side in new[]{"l","r"})
+                            {
+                                Transform upper=Array.Find(bones,b=>b.name=="upperarm_"+side),elbow=Array.Find(bones,b=>b.name=="lowerarm_"+side),hand=Array.Find(bones,b=>b.name=="hand_"+side);
+                                float angle=Vector3.Angle(elbow.position-upper.position,hand.position-elbow.position);
+                                result.minSprintElbow=Mathf.Min(result.minSprintElbow,angle);result.maxSprintElbow=Mathf.Max(result.maxSprintElbow,angle);result.sprintArmSamples++;
+                            }
+                            if(!sprintCaptured)
+                            {
+                                Camera camera=game.Player.GetComponentInChildren<Camera>();Vector3 savedPosition=camera.transform.position;Quaternion savedRotation=camera.transform.rotation;
+                                try
+                                {
+                                    Vector3 target=identity.transform.position+Vector3.up*1.05f;
+                                    foreach(string angle in new[]{"front","side"})
+                                    {
+                                        camera.transform.position=target+(angle=="front"?identity.transform.forward:identity.transform.right)*2.7f+Vector3.up*.3f;
+                                        camera.transform.rotation=Quaternion.LookRotation(target-camera.transform.position);
+                                        if(!CaptureRenderedFrame(game,Path.Combine(folder,"human-sprint-"+angle+".png"),out captureError)){Finish(false,captureError);yield break;}
+                                    }
+                                }
+                                finally{camera.transform.SetPositionAndRotation(savedPosition,savedRotation);}
+                                sprintCaptured=true;
+                            }
+                        }
                     }
                     InputSystem.QueueStateEvent(keys, new KeyboardState());
                     float elapsed = Time.realtimeSinceStartup - started;
@@ -187,7 +216,8 @@ namespace Pozarevac.CityGame
                 result.sprinting = result.flatWalkPhysicalSpeed > 3 && result.flatWalkObservedSpeed > 3 &&
                     result.flatSprintPhysicalSpeed > result.flatWalkPhysicalSpeed * 1.2f &&
                     result.flatSprintObservedSpeed > result.flatWalkObservedSpeed * 1.2f;
-                if (!result.sprinting) { Finish(false, "Shift did not increase physical and observed speed on the clear flat route: " + JsonUtility.ToJson(result)); yield break; }
+                result.runningArms=sprintCaptured&&result.sprintArmSamples>=6&&result.minSprintElbow>65&&result.maxSprintElbow<115;
+                if (!result.sprinting||!result.runningArms) { Finish(false, "Shift did not increase physical and observed speed on the clear flat route: " + JsonUtility.ToJson(result)); yield break; }
                 body.enabled = false; game.Player.position = beforeGround; body.enabled = true; mover.enabled = moverWasEnabled; mover.ResetView(); Destroy(support); support = null; groundFixtureActive = false; Physics.SyncTransforms();
                 yield return null; yield return null;
 
@@ -206,12 +236,38 @@ namespace Pozarevac.CityGame
                 int cash = game.Session.Cash, xp = runtime.Life.Experience;
                 runtime.Life.Tick(91, false); // Isolated smoke profile: clear the shared workout rest.
                 body.enabled = false; game.Player.position = runtime.Gym.position + Vector3.back * 2; body.enabled = true; Physics.SyncTransforms(); yield return null; yield return null;
-                if (!runtime.StartWorkout()) { Finish(false, "Could not start bench fallback."); yield break; }
+                int workouts=runtime.Life.Workouts;
+                bool challenge=!runtime.Life.ChallengeClaimed&&runtime.Life.Meals>0&&runtime.Life.Escapes>0;
+                if (!runtime.StartWorkout()) { Finish(false, "Could not start human bench."); yield break; }
                 yield return null; yield return new WaitForEndOfFrame();
-                Transform trainee = runtime.BenchVisual.transform.Find("BenchAthlete");
-                result.benchFallback = rig.HumanSelected && !actor.IsVisible && trainee != null && trainee.gameObject.activeInHierarchy && runtime.BenchVisual.RigReady && runtime.BenchVisual.FeetReady;
-                if (!CaptureRenderedFrame(game, Path.Combine(folder, "human-bench-fallback.png"), out captureError)) { Finish(false, captureError); yield break; }
-                runtime.Life.CancelWorkout(); yield return null; yield return null;
+                GameObject trainee=runtime.BenchVisual.HumanAthlete;
+                result.benchHuman=rig.HumanSelected&&!actor.IsVisible&&runtime.BenchVisual.UsesHuman&&trainee!=null&&trainee.activeInHierarchy&&runtime.BenchVisual.FeetReady;
+                float extension=runtime.Bench.Extension;double remaining=runtime.Life.TrainingRemaining;
+                game.Director.SetPaused(true);yield return new WaitForSecondsRealtime(.2f);yield return new WaitForEndOfFrame();
+                result.benchPause=runtime.Bench.Extension==extension&&runtime.Life.TrainingRemaining==remaining&&trainee.activeInHierarchy;
+                game.Director.SetPaused(false);
+                for(int rep=0;rep<CityLifestyle.RequiredReps&&runtime.Life.IsTraining;rep++)
+                {
+                    float benchDeadline=Time.realtimeSinceStartup+5;
+                    while(runtime.Life.IsTraining&&runtime.Bench.Phase!=CityBenchPhase.Ready&&Time.realtimeSinceStartup<benchDeadline)yield return null;
+                    if(!runtime.Life.IsTraining||runtime.Bench.Phase!=CityBenchPhase.Ready)break;
+                    yield return HumanPress(keys,Key.F);
+                    benchDeadline=Time.realtimeSinceStartup+5;
+                    while(runtime.Life.IsTraining&&runtime.Bench.Phase!=CityBenchPhase.PressWindow&&Time.realtimeSinceStartup<benchDeadline)yield return null;
+                    if(!runtime.Life.IsTraining||runtime.Bench.Phase!=CityBenchPhase.PressWindow)break;
+                    yield return new WaitForEndOfFrame();
+                    result.maxBenchHandError=Mathf.Max(result.maxBenchHandError,runtime.BenchVisual.HandError);
+                    result.benchHuman&=trainee.activeInHierarchy&&!actor.IsVisible;
+                    if(rep==1&&!CaptureRenderedFrame(game,Path.Combine(folder,"human-bench-training.png"),out captureError)){Finish(false,captureError);yield break;}
+                    yield return HumanPress(keys,Key.F);
+                    benchDeadline=Time.realtimeSinceStartup+5;
+                    while(runtime.Life.IsTraining&&runtime.Bench.Phase!=CityBenchPhase.Ready&&Time.realtimeSinceStartup<benchDeadline)yield return null;
+                }
+                result.benchSinglePayout=runtime.Life.Workouts==workouts+1&&runtime.Life.Experience==xp+40+(challenge?60:0)&&game.Session.Cash==cash+(challenge?250:0)&&!runtime.Life.TryRep();
+                result.benchHuman&=result.maxBenchHandError<.006f;
+                if(runtime.Life.IsTraining)runtime.Life.CancelWorkout();
+                yield return null;yield return null;
+                cash=game.Session.Cash;xp=runtime.Life.Experience;
                 result.fallbackRestored = actor.IsVisible && rig.HumanSelected;
                 runtime.Life.Tick(91, false); rig.SetMode(CityCameraMode.FirstPerson);
                 Transform finger=Array.Find(bones,bone=>bone.name=="index_02_r"), wrist=Array.Find(bones,bone=>bone.name=="hand_r");
@@ -251,8 +307,8 @@ namespace Pozarevac.CityGame
                 rig.SetMode(CityCameraMode.Chase); yield return null; yield return null;
                 result.fallbackRestored &= actor.IsVisible && rig.HumanSelected;
                 result.ownersUnchanged = scope.OwnersUnchanged;
-                if (!result.benchFallback || !result.boxingHuman || !result.boxingGuard || !result.boxingPunch || !result.boxingPause || !result.boxingCompletedOnce || !result.fallbackRestored || !result.ownersUnchanged || game.Session.Cash != cash || runtime.Life.Experience != xp+30)
-                { Finish(false, "Human training fallback, state restoration, owners or rewards failed: " + JsonUtility.ToJson(result)); yield break; }
+                if (!result.benchHuman || !result.benchPause || !result.benchSinglePayout || !result.boxingHuman || !result.boxingGuard || !result.boxingPunch || !result.boxingPause || !result.boxingCompletedOnce || !result.fallbackRestored || !result.ownersUnchanged || game.Session.Cash != cash || runtime.Life.Experience != xp+30)
+                { Finish(false, "Human training presentation, state restoration, owners or rewards failed: " + JsonUtility.ToJson(result)); yield break; }
                 result.passed = true; humanPlayableVerified = true;
                 Debug.Log("VKT_HUMAN_PLAYABLE_VERIFIED " + JsonUtility.ToJson(result));
             }

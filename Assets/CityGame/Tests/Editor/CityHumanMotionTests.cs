@@ -50,6 +50,32 @@ namespace Pozarevac.CityGame.Tests.Editor
         }
 
         [Test]
+        public void SprintKeepsBothElbowsBentAndArmsOppositeTheThighs()
+        {
+            root.transform.position=Vector3.zero;
+            for(int i=0;i<120;i++)Step(1f/60,8,false);
+            foreach(string side in new[]{"l","r"})
+            {
+                Transform upper=Bone("upperarm_"+side), elbow=Bone("lowerarm_"+side),hand=Bone("hand_"+side);
+                float upperLength=Vector3.Distance(upper.position,elbow.position), lowerLength=Vector3.Distance(elbow.position,hand.position);
+                float forward=0,back=0;
+                for(int i=0;i<150;i++)
+                {
+                    Step(1f/60,8,false);
+                    Vector3 arm=(elbow.position-upper.position).normalized, forearm=(hand.position-elbow.position).normalized;
+                    Assert.That(Vector3.Angle(arm,forearm),Is.InRange(70,110),"Sprint forearm hangs down: "+side);
+                    float swing=Vector3.Dot(arm,root.transform.forward);
+                    forward=Mathf.Max(forward,swing);back=Mathf.Min(back,swing);
+                    float thigh=Vector3.Dot((Bone("calf_"+side).position-Bone("thigh_"+side).position).normalized,root.transform.forward);
+                    if(Mathf.Abs(swing)>.1f)Assert.That(swing*thigh,Is.LessThan(0));
+                    Assert.That(Vector3.Distance(upper.position,elbow.position),Is.EqualTo(upperLength).Within(.0001f));
+                    Assert.That(Vector3.Distance(elbow.position,hand.position),Is.EqualTo(lowerLength).Within(.0001f));
+                }
+                Assert.That(forward,Is.GreaterThan(.34f));Assert.That(back,Is.LessThan(-.34f));
+            }
+        }
+
+        [Test]
         public void FrozenOrInvalidTimeCannotChangeTheDisplayedPose()
         {
             Step(.2f, 5.5f, false);

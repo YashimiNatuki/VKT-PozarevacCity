@@ -7,6 +7,7 @@ namespace Pozarevac.CityGame
     public sealed class CityHumanHandPose
     {
         private static readonly string[] Digits = { "index", "middle", "ring", "pinky", "thumb" };
+        private static readonly float[] BenchCurls={60,75,55,55,80,50,50,80,40,35,65,40,11,39,73};
         private readonly Transform wrist, elbow;
         private readonly Transform[] joints;
         private readonly Quaternion[] rest;
@@ -15,6 +16,7 @@ namespace Pozarevac.CityGame
         private readonly Quaternion localFrame, pointerFrame;
         private readonly Quaternion[] phoneBase = new Quaternion[15];
         private Vector3 phoneAnchor, pointerOffset;
+        private readonly Vector3 benchAnchor;
         private bool phoneCaptured;
         private CityHumanHandPose(Transform hand, Transform forearm, Transform[] bones, Vector3 flex)
         {
@@ -23,6 +25,8 @@ namespace Pozarevac.CityGame
             along = wrist.InverseTransformDirection(joints[3].position - wrist.position).normalized;
             palm = wrist.InverseTransformDirection(Vector3.Cross(flex,wrist.TransformDirection(along))).normalized;
             localFrame = Quaternion.LookRotation(palm,along);
+            Vector3 knuckle=wrist.InverseTransformPoint(joints[3].position);
+            benchAnchor=knuckle*.70f+palm*knuckle.magnitude*.10f;
             for (int i = 0; i < joints.Length; i++)
             {
                 rest[i] = joints[i].localRotation;
@@ -113,6 +117,16 @@ namespace Pozarevac.CityGame
             phoneCaptured = false;
         }
         internal Vector3 PhoneAnchor => wrist.TransformPoint(phoneAnchor);
+        internal Vector3 BenchContact => wrist.TransformPoint(benchAnchor);
+        internal Vector3 BenchWrist(Vector3 contact,Quaternion orientation) => contact-orientation*(Quaternion.Inverse(wrist.rotation)*wrist.TransformVector(benchAnchor));
+        internal void ApplyBench(Quaternion orientation)
+        {
+            wrist.rotation=orientation;
+            for(int i=0;i<15;i++)
+            {
+                joints[i].localRotation=rest[i]*Quaternion.AngleAxis(BenchCurls[i],axes[i]);
+            }
+        }
         internal Quaternion PhoneFrame => Quaternion.LookRotation(wrist.TransformDirection(palm), wrist.TransformDirection(along));
         internal Quaternion PhoneOrientation(Vector3 up, Vector3 normal) => Quaternion.LookRotation(normal, up) * Quaternion.Inverse(localFrame);
         internal Quaternion PointerOrientation(Vector3 direction, Vector3 normal) =>

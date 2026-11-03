@@ -45,7 +45,7 @@ namespace Pozarevac.CityGame
         private CursorLockMode previousCursor;
         private bool previousCursorVisible;
         public void ConfigureBench(CityBenchVisual visual,CityLifestyle state,CityBoxingRun run=null)
-        {bench=visual;lifestyle=state;boxingRun=run;HumanActor?.BindBoxing(state,run);}
+        {bench=visual;lifestyle=state;boxingRun=run;HumanActor?.BindBoxing(state,run);if(bench!=null)bench.SelectHuman(HumanSelected);}
         public CityCameraMode Mode { get; private set; }
         public bool AvatarAvailable => avatar != null;
 
@@ -103,6 +103,7 @@ namespace Pozarevac.CityGame
                 HumanActor.BindFeedback(owner.GetComponent<CityPlayerVitals>(),feedbackAudio,view);
             }
             HumanSelected=selected;
+            if(bench!=null)bench.SelectHuman(selected);
             if(selected)Mode=CityCameraMode.Chase;
             ApplyAvatarVisibility();return true;
         }

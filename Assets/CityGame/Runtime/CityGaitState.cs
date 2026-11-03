@@ -18,6 +18,7 @@ namespace Pozarevac.CityGame
         public float RightKneeFlex => (6f + Mathf.Max(0f, Mathf.Cos(Phase)) * 42f) * Weight;
         public float LeftArmSwing => -Mathf.Sin(Phase) * Mathf.Lerp(.2f, .48f, Effort) * Weight;
         public float RightArmSwing => -LeftArmSwing;
+        public float RunningBlend => Mathf.InverseLerp(5,8,Speed)*Weight;
 
         public bool Step(Vector3 displacement, float seconds)
         {

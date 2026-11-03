@@ -241,7 +241,7 @@ namespace Pozarevac.CityGame
             {
                 yield return VerifyHumanPlayable(game);
                 if(!humanPlayableVerified)yield break;
-                details+=" Human playable avatar: physical movement, pause, camera modes, teleport and training fallback passed.";
+                details+=" Human playable avatar: physical movement, pause, camera modes, teleport and training presentation passed.";
             }
             if(Array.IndexOf(Environment.GetCommandLineArgs(),"-vktHumanFaceSmoke")>=0)
             {

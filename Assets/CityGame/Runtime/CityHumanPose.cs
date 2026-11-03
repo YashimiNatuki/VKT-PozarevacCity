@@ -19,6 +19,8 @@ namespace Pozarevac.CityGame
         private CityHumanHandPose leftHand, rightHand;
         private float guardWeight, combatPunch;
         public bool HandsReady => leftHand != null && rightHand != null;
+        internal CityHumanBenchPose CreateBench(Transform stage,GameObject visual) => !HandsReady?null:
+            new CityHumanBenchPose(stage,visual,bones,leftHand,rightHand);
         public float GuardWeight => guardWeight;
         internal CityHumanPhonePose CreatePhone(Transform owner) => !HandsReady ? null : CityHumanPhonePose.Create(owner, frame,
             new[] { bones[3], bones[4], bones[5], bones[6], bones[7], bones[8] }, leftHand, rightHand);
@@ -107,8 +109,8 @@ namespace Pozarevac.CityGame
             bones[14].rotation = frame.rotation * rightFootFrame;
             // Explicit wardrobe poses are immediate; live combat blends in and out.
             guardWeight=guard?1:Mathf.MoveTowards(guardWeight,combatPunch>0?1:0,Mathf.Min(deltaSeconds,.05f)*(combatPunch>0?18:7));
-            CityActorMotion.RelaxArm(bones[3], bones[4], frame, leftSide, gait.LeftArmSwing);
-            CityActorMotion.RelaxArm(bones[6], bones[7], frame, rightSide, gait.RightArmSwing);
+            CityActorMotion.RelaxArm(bones[3], bones[4], frame, leftSide, gait.LeftArmSwing, gait.RunningBlend);
+            CityActorMotion.RelaxArm(bones[6], bones[7], frame, rightSide, gait.RightArmSwing, gait.RunningBlend);
             if (guardWeight > 0)
             {
                 Quaternion leftArm=bones[3].localRotation,leftElbow=bones[4].localRotation;

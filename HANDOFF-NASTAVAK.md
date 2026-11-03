@@ -1,6 +1,10 @@
 # VKT: nastavak rada, 2026-11-01
 
-## Najnovije: boks ljudskog lika — 2. novembar 2026.
+## Najnovije: sprint i benč — 3. novembar 2026.
+
+Ruke tokom sprinta sada koriste savijene laktove kroz zajednički posmatrač hoda. Odabrani ljudski model dobija benč sa stvarnim prstima, keširanim prikazom i proverenim osloncem obuće. Trening-sat i nagrade ostaju postojeći. **54/54 ciljanih; 326/0/1 ceo Unity skup; Windows build i 11 native tokova izlaz 0.** [Izmene](Docs/Running-Bench-20261103.md) | [Gemini audit](Docs/Gemini-Intake-Review-20261103.md). Novi lokalni build je proveren; javni ZIP ostaje ranije izdanje.
+
+## Prethodno: boks ljudskog lika — 2. novembar 2026.
 
 Odabrani ljudski model sada boksa bez prelaska na prethodni avatar: gard, udarac, pauza i osam rundi sa jednom isplatom. Koristi postojeći CityBoxingRun i isti kontroler/kameru. Benč ostaje prethodni trening-model. **46/46 ciljanih, 323/0/1 ceo Unity skup, Windows build i 11 native tokova izlaz 0.** [Izmene](Docs/Human-Boxing-20261102.md). Novi lokalni Windows build je proveren; poslednji objavljeni ZIP ostaje prethodno izdanje telefon/boks/reljef.
 
