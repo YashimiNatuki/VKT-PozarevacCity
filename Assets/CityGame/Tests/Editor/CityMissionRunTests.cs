@@ -144,6 +144,35 @@ namespace Pozarevac.CityGame.Tests.Editor
             Assert.That(session.Heat, Is.EqualTo(21));
         }
 
+        [TestCase(0,"Prva noć / Mila",120,600,12,4,85)]
+        [TestCase(1,"Roba za blok / Kure",90,1000,18,7,75)]
+        [TestCase(2,"Noćni ekspres / Luka",60,1500,25,10,65)]
+        public void AuthoredCampaignUsesSerbianContactContinuityWithoutChangingItsSaveContract(
+            int index,string title,double seconds,int cash,int reputation,float heatGain,float heatLimit)
+        {
+            CityMissionContract[] contracts=CityMissionDirector.CreateContracts();
+            Assert.That(contracts.Length,Is.EqualTo(3),"Existing campaign checkpoints require three stable contracts.");
+            CityMissionContract contract=contracts[index];
+            Assert.That(contract.Title,Is.EqualTo(title));
+            foreach(string contact in new[]{"Mila","Kure","Luka"})
+                Assert.That(contract.Briefing,Does.Contain(contact),"Briefing must connect the same three contacts.");
+            Assert.That(contract.Briefing,Does.Contain("Isplata"),"Tell the player when the reward is paid.");
+            Assert.That(contract.TimeLimit,Is.EqualTo(seconds));
+            Assert.That(contract.CashReward,Is.EqualTo(cash));
+            Assert.That(contract.ReputationReward,Is.EqualTo(reputation));
+            Assert.That(contract.HeatGain,Is.EqualTo(heatGain));
+            Assert.That(contract.HeatLimit,Is.EqualTo(heatLimit));
+            Assert.That(contract.ObjectiveCount,Is.EqualTo(3));
+            string[] stationContacts={"Mila","Kure","Luka"};
+            for(int station=0;station<3;station++)
+            {
+                string objective=contract.ObjectiveTitle(station);
+                Assert.That(objective,Does.StartWith(stationContacts[station]+" / "),"Named contacts must not switch stations between contracts.");
+                for(int other=0;other<contracts.Length;other++)
+                    if(other!=index)Assert.That(objective,Is.Not.EqualTo(contracts[other].ObjectiveTitle(station)),"Each contract needs its own cargo and objective wording.");
+            }
+        }
+
         [Test]
         public void ElapsedTimeDoesNotDependOnFrameCount()
         {

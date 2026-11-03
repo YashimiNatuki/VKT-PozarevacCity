@@ -23,6 +23,16 @@ namespace Pozarevac.CityGame
         // The visual stroke follows accepted input, not an absolute timestamp in the round.
         public float Punch => State==CityBoxingState.Active && Expected==CityBoxingAction.Jab && successfulResponse
             ? (float)Math.Max(0,1-Math.Abs((RoundTime-responseTime)-.15)/.15) : 0;
+        // Kinematic presentation only: delayed recoil shares the accepted jab's game clock.
+        public float BagSwingDegrees
+        {
+            get
+            {
+                if(State!=CityBoxingState.Active || Expected!=CityBoxingAction.Jab || !successfulResponse)return 0;
+                double elapsed=RoundTime-responseTime-.15;
+                return elapsed<=0?0:(float)(12*Math.Exp(-6*elapsed)*Math.Sin(12*elapsed));
+            }
+        }
         public void Start()
         {
             if(State==CityBoxingState.Active)throw new InvalidOperationException("Boxing already active.");

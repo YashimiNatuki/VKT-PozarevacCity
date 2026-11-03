@@ -29,6 +29,8 @@ namespace Pozarevac.CityGame
         private bool applicationSuspended;
         private CityBenchVisual benchVisual;
         private CityBenchPress bench;
+        private Transform boxingBagPivot;
+        public Transform BoxingBagPivot => boxingBagPivot;
         private readonly CityConditioningRun conditioning=new CityConditioningRun();
         private readonly Vector3[] conditioningPoints=new Vector3[3];
         private readonly GameObject[] conditioningMarkers=new GameObject[3];
@@ -66,7 +68,9 @@ namespace Pozarevac.CityGame
             Shape("BoxingStand",Gym,new Vector3(1.8f,1.25f,1.5f),new Vector3(.12f,2.5f,.12f),metal,true);
             Shape("BoxingArm",Gym,new Vector3(1.2f,2.45f,1.5f),new Vector3(1.3f,.12f,.12f),metal,false);
             GameObject bag=GameObject.CreatePrimitive(PrimitiveType.Capsule);bag.name="VKT_BoxingBag";
-            bag.transform.SetParent(Gym,false);bag.transform.localPosition=new Vector3(.7f,1.55f,1.5f);bag.transform.localScale=new Vector3(.45f,.65f,.45f);bag.GetComponent<Renderer>().sharedMaterial=red;
+            boxingBagPivot=new GameObject("VKT_BoxingBagPivot").transform;
+            boxingBagPivot.SetParent(Gym,false);boxingBagPivot.localPosition=new Vector3(.7f,2.2f,1.5f);
+            bag.transform.SetParent(boxingBagPivot,false);bag.transform.localPosition=new Vector3(0,-.65f,0);bag.transform.localScale=new Vector3(.45f,.65f,.45f);bag.GetComponent<Renderer>().sharedMaterial=red;
             Food=Station("VKT_FoodKiosk",spawn+new Vector3(10,0,12),true);
             game.Director.BindLifestyle(Life,game.Audio);
             Vector3[] course={Food.position+new Vector3(-3,0,-3),spawn,Gym.position+Vector3.back*3};
@@ -237,14 +241,15 @@ namespace Pozarevac.CityGame
             if(!CanSimulate||!Life.IsBoxing||!Near(Gym))return false;
             bool success=boxing.Respond(action);game.Audio.PlayCue(success?CityAudioCue.Checkpoint:CityAudioCue.Failure);return success;
         }
-        public void CancelBoxing(){boxing.Cancel();Life.CancelBoxing();}
+        public void CancelBoxing(){boxing.Cancel();Life.CancelBoxing();PoseBoxingBag();}
+        private void PoseBoxingBag(){if(boxingBagPivot!=null)boxingBagPivot.localRotation=Quaternion.Euler(-boxing.BagSwingDegrees,0,0);}
         private void StepBoxing()
         {
             if(boxing.State!=CityBoxingState.Active)return;
             if(!Life.IsBoxing||!Near(Gym)||Life.Wanted||game.Hideout.IsInside){CancelBoxing();return;}
             Keyboard keyboard=Keyboard.current;
             if(keyboard!=null&&keyboard.escapeKey.wasPressedThisFrame&&!game.Director.PauseChangedThisFrame){game.Director.SuppressPauseThisFrame();CancelBoxing();return;}
-            boxing.Tick(Time.deltaTime);
+            boxing.Tick(Time.deltaTime);PoseBoxingBag();
             if(keyboard!=null&&keyboard.jKey.wasPressedThisFrame)BoxingInput(CityBoxingAction.Jab);
             if(keyboard!=null&&keyboard.kKey.wasPressedThisFrame)BoxingInput(CityBoxingAction.Guard);
             if(boxing.State==CityBoxingState.Completed)

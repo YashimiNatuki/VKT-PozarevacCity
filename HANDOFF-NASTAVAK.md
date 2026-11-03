@@ -1,5 +1,10 @@
 # VKT: nastavak rada, 2026-11-01
 
+## Najnovije: kontakti i uvodna kampanja — 3. novembar 2026.
+
+Kontakti vode do aktivnog zadatka; tri uvodne rute su na srpskom sa Milom, Kuretom i Lukom. Vreća ima kinematičku reakciju uz trening-sat i pauzu. 336/0/1 ceo Unity skup, Windows build i 11 native tokova izlaz 0. [Izmene](Docs/Campaign-Bag-20261103.md) | [Prvih deset scenarija](Docs/Campaign-First10-20261103.md). Lokalni build je nov; javni ZIP je prethodni.
+
+
 ## Boks: udarac prati pritisak — 3. novembar 2026.
 
 [Izmena i granice](Docs/Boxing-Stroke-20261103.md). 329/0/1 EditMode. Novi build i native pregled još nisu urađeni.

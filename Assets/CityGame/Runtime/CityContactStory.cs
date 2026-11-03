@@ -65,7 +65,9 @@ namespace Pozarevac.CityGame
             string name=facts.contact=="mila"?"Mila":facts.contact=="vuk"?"Vuk":"Luka";
             string action=Action(facts);
             return new CityContactReply{title=name+" / veza iz bloka",
-                line="Reč se drži, brate. Proveri stanje lika i cilj u dnevniku. Blok pamti pouzdane ljude.",
+                line=facts.contact=="mila"?"Dogovor prvo, frka posle. Proveri cilj i rok u dnevniku; niko ne plaća paket koji nije stigao. Ako si već preuzeo posao, zatvori ga kako treba.":
+                    facts.contact=="vuk"?"Ekipa pamti ko je pouzdan. Sredi hranu i energiju, pogledaj zadatak i ne guraj novi dogovor dok prethodni čeka. Nema reputacije na praznu priču.":
+                    "Polako, rođo. Mreža se gradi završenim poslovima. Dnevnik ti kaže kome ideš, a mapa gde si. Poslednja potvrda zatvara posao; tek onda gledamo dalje.",
                 tip=Tip(action),source="offline",action=action,reason=reason,model=""};
         }
         public static bool Valid(CityContactReply reply,string expectedAction)

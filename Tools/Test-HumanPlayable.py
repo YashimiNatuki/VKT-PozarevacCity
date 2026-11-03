@@ -34,10 +34,10 @@ def main():
         required = ['passed', 'uiSelection', 'profileSelectionUnchanged', 'walking', 'sprinting', 'bothKnees',
                     'contralateral', 'pauseStable', 'teleportReset', 'stopSettles', 'firstPersonHidden',
                     'shoulderVisible', 'cachedSelection', 'ownersUnchanged', 'flatGroundContact',
-                    'benchHuman', 'benchPause', 'benchSinglePayout', 'runningArms', 'boxingHuman', 'boxingGuard', 'boxingPunch', 'boxingPause', 'boxingCompletedOnce', 'fallbackRestored']
+                    'benchHuman', 'benchPause', 'benchSinglePayout', 'runningArms', 'boxingHuman', 'boxingGuard', 'boxingPunch', 'boxingPause', 'boxingCompletedOnce', 'boxingBag', 'boxingBagPause', 'contactJournal', 'fallbackRestored']
         failed = [name for name in required if metrics.get(name) is not True]
         errors = re.findall(r'NullReferenceException|MissingReferenceException|IndexOutOfRangeException|Unhandled Exception|Shader error', log)
-        pictures = ['human-city-walk.png', 'human-sprint-front.png', 'human-sprint-side.png', 'human-flat-ground.png', 'human-bench-training.png', 'human-boxing-training.png']
+        pictures = ['human-city-walk.png', 'human-sprint-front.png', 'human-sprint-side.png', 'human-flat-ground.png', 'human-bench-training.png', 'human-boxing-training.png', 'human-boxing-bag.png']
         captures_ok = all((captures / name).is_file() and (captures / name).stat().st_size > 50000 for name in pictures)
         passed = run.returncode == 0 and report.get('passed') is True and not failed and not errors and captures_ok and 'VKT_HUMAN_PLAYABLE_VERIFIED ' in log
         result = dict(passed=passed, processExit=run.returncode, failedChecks=failed, runtimeErrors=errors,

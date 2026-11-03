@@ -30,6 +30,30 @@ namespace Pozarevac.CityGame.Tests
             run.Start(); Assert.That(run.Punch, Is.Zero);
         }
 
+        [Test]
+        public void BagReactsOnlyAfterAcceptedContactAndUsesTheTrainingClock()
+        {
+            var property = typeof(CityBoxingRun).GetProperty("BagSwingDegrees");
+            Assert.That(property, Is.Not.Null, "The bag must observe the authoritative training clock.");
+            var run = new CityBoxingRun(); run.Start();
+            float Swing() => (float)property.GetValue(run);
+            Assert.That(Swing(), Is.Zero);
+            run.Tick(.8); Assert.That(run.Respond(CityBoxingAction.Jab), Is.True);
+            run.Tick(.14); Assert.That(Swing(), Is.Zero);
+            run.Tick(.11); float swung = Swing();
+            Assert.That(swung, Is.GreaterThan(3).And.LessThan(12));
+            run.Tick(0); Assert.That(Swing(), Is.EqualTo(swung), "Paused time freezes the bag.");
+            run.Tick(.3); Assert.That(System.Math.Abs(Swing()), Is.LessThan(swung));
+            Assert.That(run.Successes, Is.EqualTo(1), "Presentation must not add a hit.");
+            run.Cancel(); Assert.That(Swing(), Is.Zero);
+            run.Start(); run.Respond(CityBoxingAction.Jab); run.Tick(1.05);
+            Assert.That(Swing(), Is.Zero, "Rejected input never strikes the bag.");
+            run.Tick(.75);run.Tick(.8);
+            Assert.That(run.Expected, Is.EqualTo(CityBoxingAction.Guard));
+            Assert.That(run.Respond(CityBoxingAction.Guard), Is.True);
+            run.Tick(.25);Assert.That(Swing(), Is.Zero, "Accepted guard does not strike the bag.");
+        }
+
         private static void Finish(CityBoxingRun run)
         {
             for(int i=0;i<8;i++){run.Tick(.8);Assert.That(run.Respond(run.Expected),Is.True);run.Tick(1);}

@@ -399,12 +399,12 @@ namespace Pozarevac.CityGame
 
         public static CityMissionContract[] CreateContracts() => new[]
         {
-            new CityMissionContract("First Night Courier", "Collect a parcel, deliver it and report to the contact. Payment comes after the full route.",
-                120, 600, 12, 4f, 85f, "Collect the parcel", "Deliver to the shop", "Report to the contact"),
-            new CityMissionContract("Street Supply", "Collect the shop order and close the deal at the contact. Keep the cargo intact and beat the deadline.",
-                90, 1000, 18, 7f, 75f, "Collect the shop order", "Hand over the supplies", "Confirm the deal"),
-            new CityMissionContract("Night Express", "A tighter deadline and a bigger payout. Complete every checkpoint before the clock runs out.",
-                60, 1500, 25, 10f, 65f, "Collect the express package", "Deliver the express package", "Collect final confirmation")
+            new CityMissionContract("Prva noć / Mila", "Mila ti poverava prvi paket za Kureta. Kure čeka predaju, a Luka završnu potvrdu. Prati plave markere redom; rok kreće tek kad preuzmeš paket. Isplata tek posle sva tri koraka.",
+                120, 600, 12, 4f, 85f, "Mila / preuzmi prvi paket", "Kure / predaj paket iz bloka", "Luka / potvrdi prvu rutu"),
+            new CityMissionContract("Roba za blok / Kure", "Kure skuplja delove za radionicu. Mila ti predaje pošiljku; odnesi je Kuretu, pa Luka prima potvrdu da je dogovor završen. Sačuvaj paket i pazi na rok. Isplata tek nakon završne potvrde.",
+                90, 1000, 18, 7f, 75f, "Mila / preuzmi delove za radionicu", "Kure / isporuči delove", "Luka / vrati potvrdu radionice"),
+            new CityMissionContract("Noćni ekspres / Luka", "Luka ti nudi noćni dogovor sa kraćim rokom i većom nagradom. Mila čuva hitnu pošiljku, Kure je preuzima, a Luka zatvara rutu tek kad mu potvrdiš isporuku. Isplata tek na kraju; nema novca za nedovršen posao.",
+                60, 1500, 25, 10f, 65f, "Mila / preuzmi hitnu pošiljku", "Kure / predaj hitnu pošiljku", "Luka / zatvori noćni dogovor")
         };
 
         private static void SetCursor(bool locked)

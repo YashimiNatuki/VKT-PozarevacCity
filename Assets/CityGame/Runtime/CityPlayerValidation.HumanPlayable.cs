@@ -16,12 +16,12 @@ namespace Pozarevac.CityGame
         {
             public bool passed, uiSelection, profileSelectionUnchanged, walking, sprinting, movementWithShift, bothKnees,
                 contralateral, pauseStable, teleportReset, stopSettles, firstPersonHidden, shoulderVisible,
-                cachedSelection, ownersUnchanged, flatGroundContact, benchHuman, benchPause, benchSinglePayout, runningArms, boxingHuman, boxingGuard, boxingPunch, boxingPause, boxingCompletedOnce, fallbackRestored,
+                cachedSelection, ownersUnchanged, flatGroundContact, benchHuman, benchPause, benchSinglePayout, runningArms, boxingHuman, boxingGuard, boxingPunch, boxingPause, boxingCompletedOnce, boxingBag, boxingBagPause, contactJournal, fallbackRestored,
                 originalHiddenWalking, originalHiddenFirstPerson;
             public float walkMeters, sprintMeters, leftKneeDegrees, rightKneeDegrees, peakSpeed,
                 pausedLeftDegrees, pausedRightDegrees, leftSoleGap, rightSoleGap,
                 flatWalkObservedSpeed, flatSprintObservedSpeed, flatWalkPhysicalSpeed, flatSprintPhysicalSpeed;
-            public float minSprintElbow=180,maxSprintElbow,maxBenchHandError;
+            public float minSprintElbow=180,maxSprintElbow,maxBenchHandError,maxBagDegrees;
             public int sprintArmSamples;
             public int sampledFrames, oppositeSamples, incorrectPairs, supportedFeet;
         }
@@ -283,7 +283,7 @@ namespace Pozarevac.CityGame
                 result.boxingPause=runtime.Boxing.RoundTime==roundClock&&Quaternion.Angle(guard,finger.localRotation)<.01f;
                 game.Director.SetPaused(false);
                 float deadline=Time.realtimeSinceStartup+25;
-                bool captured=false;
+                bool captured=false,bagCaptured=false;float maxBagAngle=0;
                 while(runtime.Life.IsBoxing&&Time.realtimeSinceStartup<deadline)
                 {
                     if(runtime.Boxing.WindowOpen)yield return HumanPress(keys,runtime.Boxing.Expected==CityBoxingAction.Jab?Key.J:Key.K);
@@ -291,7 +291,26 @@ namespace Pozarevac.CityGame
                     if(runtime.Life.IsBoxing)
                     {
                         result.boxingPunch|=Vector3.Dot(wrist.position-handStart,game.Player.forward)>.08f;
+                        maxBagAngle=Mathf.Max(maxBagAngle,Quaternion.Angle(Quaternion.identity,runtime.BoxingBagPivot.localRotation));
                         result.boxingHuman&=actor.IsVisible&&HumanRenderersHidden(originalRenderers);
+                    }
+                    if(!bagCaptured&&runtime.Boxing.BagSwingDegrees>3)
+                    {
+                        Quaternion bagPose=runtime.BoxingBagPivot.localRotation;
+                        double bagClock=runtime.Boxing.RoundTime;
+                        game.Director.SetPaused(true);
+                        yield return new WaitForSecondsRealtime(.2f);yield return new WaitForEndOfFrame();
+                        result.boxingBagPause=runtime.Boxing.RoundTime==bagClock&&Quaternion.Angle(bagPose,runtime.BoxingBagPivot.localRotation)<.001f;
+                        Camera bagCamera=game.Player.GetComponentInChildren<Camera>();
+                        Vector3 bagCameraPosition=bagCamera.transform.position;Quaternion bagCameraRotation=bagCamera.transform.rotation;
+                        try
+                        {
+                            bagCamera.transform.position=runtime.BoxingBagPivot.position+new Vector3(2,.2f,-2);
+                            bagCamera.transform.LookAt(runtime.BoxingBagPivot.position-Vector3.up*.5f);
+                            if(!CaptureRenderedFrame(game,Path.Combine(folder,"human-boxing-bag.png"),out captureError)){Finish(false,captureError);yield break;}
+                        }
+                        finally{bagCamera.transform.SetPositionAndRotation(bagCameraPosition,bagCameraRotation);}
+                        game.Director.SetPaused(false);bagCaptured=true;
                     }
                     if(!captured&&runtime.Boxing.Punch>.7f)
                     {
@@ -299,15 +318,27 @@ namespace Pozarevac.CityGame
                         captured=true;
                     }
                 }
+                result.maxBagDegrees=maxBagAngle;
                 result.boxingPunch&=captured;
+                result.boxingBag=bagCaptured&&maxBagAngle>3&&Quaternion.Angle(Quaternion.identity,runtime.BoxingBagPivot.localRotation)<.01f;
                 result.boxingCompletedOnce=runtime.Life.BoxingSessions==sessions+1&&runtime.Life.Experience==xp+30&&!runtime.Boxing.TryClaim(runtime.Life);
                 if(runtime.Life.IsBoxing)runtime.CancelBoxing();
                 yield return null;yield return null;
                 result.fallbackRestored &= rig.Mode == CityCameraMode.FirstPerson && !actor.IsVisible;
                 rig.SetMode(CityCameraMode.Chase); yield return null; yield return null;
                 result.fallbackRestored &= actor.IsVisible && rig.HumanSelected;
+                string contactBefore=JsonUtility.ToJson(game.Progression.Snapshot());
+                if(!runtime.LocalStory.Open()){Finish(false,"Contact panel did not open after training.");yield break;}
+                runtime.LocalStory.Select(0);
+                Button follow=Array.Find(runtime.LocalStory.GetComponentsInChildren<Button>(true),button=>button.name=="PRATI CILJ");
+                if(follow==null){Finish(false,"Contact objective button missing.");yield break;}
+                follow.onClick.Invoke();
+                CityPhonePanel contactPhone=progress.GetComponentInChildren<CityPhonePanel>(true);
+                result.contactJournal=!runtime.LocalStory.IsOpen&&contactPhone!=null&&contactPhone.IsOpen&&
+                    contactPhone.transform.Find("JobsPanel").gameObject.activeSelf&&contactBefore==JsonUtility.ToJson(game.Progression.Snapshot());
+                progress.ClosePanel();
                 result.ownersUnchanged = scope.OwnersUnchanged;
-                if (!result.benchHuman || !result.benchPause || !result.benchSinglePayout || !result.boxingHuman || !result.boxingGuard || !result.boxingPunch || !result.boxingPause || !result.boxingCompletedOnce || !result.fallbackRestored || !result.ownersUnchanged || game.Session.Cash != cash || runtime.Life.Experience != xp+30)
+                if (!result.benchHuman || !result.benchPause || !result.benchSinglePayout || !result.boxingHuman || !result.boxingGuard || !result.boxingPunch || !result.boxingPause || !result.boxingCompletedOnce || !result.boxingBag || !result.boxingBagPause || !result.contactJournal || !result.fallbackRestored || !result.ownersUnchanged || game.Session.Cash != cash || runtime.Life.Experience != xp+30)
                 { Finish(false, "Human training presentation, state restoration, owners or rewards failed: " + JsonUtility.ToJson(result)); yield break; }
                 result.passed = true; humanPlayableVerified = true;
                 Debug.Log("VKT_HUMAN_PLAYABLE_VERIFIED " + JsonUtility.ToJson(result));

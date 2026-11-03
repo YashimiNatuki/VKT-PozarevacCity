@@ -1,3 +1,5 @@
+> **Najnovije: tok misija, kontakti i vreća — 2026-11-03.** Kontakti vode do aktivnog zadatka; tri uvodne rute su na srpskom sa Milom, Kuretom i Lukom. Vreća ima kinematičku reakciju uz trening-sat i pauzu. 336/0/1 ceo Unity skup, Windows build i 11 native tokova izlaz 0. [Izmene](Docs/Campaign-Bag-20261103.md) | [Prvih deset scenarija](Docs/Campaign-First10-20261103.md). Lokalni build je nov; javni ZIP je prethodni.
+
 > **Najnoviji kod: sprint i benč ljudskog lika — 2026-11-03.** 54/54 ciljanih, 326/0/1 ceo skup, Windows build i 11 native tokova izlaz 0. [Uputstvo](Docs/Running-Bench-20261103.md) | [Gemini pregled](Docs/Gemini-Intake-Review-20261103.md). Novi lokalni Windows build je proveren; javni ZIP ispod pripada prethodnom izdanju.
 
 > **Najnoviji kod: boks ljudskog lika — 2026-11-02.** 46/46 ciljanih testova, ceo skup 323/0/1, Windows build i 11 native tokova izlaz 0. [Uputstvo i granice](Docs/Human-Boxing-20261102.md). Ova dopuna ima lokalno proveren Windows build; objavljeni ZIP ispod pripada prethodnom izdanju.

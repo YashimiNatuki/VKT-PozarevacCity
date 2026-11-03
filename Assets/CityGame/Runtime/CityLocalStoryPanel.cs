@@ -72,7 +72,8 @@ namespace Pozarevac.CityGame
             chapter=game.Director.Jobs.StoryChapter,campaign=game.Progression.CompletedContracts,
             heat=Mathf.Clamp(Mathf.RoundToInt(game.Session.Heat),0,100),
             nutrition=Mathf.Clamp(Mathf.RoundToInt(lifestyle.Life.Nutrition),0,100),
-            stamina=Mathf.Clamp(Mathf.RoundToInt(lifestyle.Life.Stamina),0,100),job_active=game.Director.Jobs.IsActive,wanted=lifestyle.Life.Wanted};
+            stamina=Mathf.Clamp(Mathf.RoundToInt(lifestyle.Life.Stamina),0,100),
+            job_active=game.Director.Jobs.IsActive||game.Progression.GardenOrder.IsActive,wanted=lifestyle.Life.Wanted};
         public bool Open()
         {
             if(IsOpen||!lifestyle.CanSimulate||lifestyle.Life.IsTraining||lifestyle.Life.IsBoxing)return false;
@@ -137,9 +138,10 @@ namespace Pozarevac.CityGame
         private void Follow()
         {
             string action=CityContactStory.Action(Facts());Close();
-            if(action=="jobs"||action=="delivery")
+            if(action=="campaign"||action=="jobs"||action=="delivery")
             {
-                game.GetComponent<CityProgressionController>().OpenPanel();FindAnyObjectByType<CityPhonePanel>().OpenJobs();
+                var owner=game.GetComponent<CityProgressionController>();
+                owner.OpenPanel();owner.GetComponentInChildren<CityPhonePanel>(true)?.OpenJobs();
             }
             else if(action=="meal")lifestyle.OpenMenu();
         }
