@@ -88,6 +88,9 @@ namespace Pozarevac.CityGame.Tests.Editor
             Assert.That(run.RoundTime,Is.EqualTo(clock),"Presentation must not advance training.");
             Assert.That((bool)type.GetMethod("SetPhoneActive").Invoke(actor,new object[]{true}),Is.False);
             run.Tick(1.05);Assert.That(run.Respond(CityBoxingAction.Jab),Is.True);Call("Advance",.02f,false);
+            Assert.That(Vector3.Distance(wrist.position,guarded),Is.LessThan(.001f),"Accepted input starts from guard.");
+            run.Tick(.15);double contactClock=run.RoundTime;Call("Advance",.02f,false);
+            Assert.That(run.RoundTime,Is.EqualTo(contactClock),"Presentation must not advance the stroke clock.");
             Assert.That(Vector3.Dot(wrist.position-guarded,owner.transform.forward),Is.GreaterThan(.08f));
             life.CancelBoxing();
             for(int i=0;i<80;i++)Call("Advance",.02f,false);

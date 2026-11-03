@@ -16,14 +16,17 @@ namespace Pozarevac.CityGame
         public double RoundTime { get; private set; }
         public double LastReaction { get; private set; }
         public bool Responded { get; private set; }
-        private bool claimed;
+        private bool claimed, successfulResponse;
+        private double responseTime;
         public CityBoxingAction Expected => Round%2==0?CityBoxingAction.Jab:CityBoxingAction.Guard;
         public bool WindowOpen => State==CityBoxingState.Active && !Responded && RoundTime>=Windup && RoundTime<=Windup+ReactionWindow;
-        public float Punch => Expected==CityBoxingAction.Jab && Responded ? (float)Math.Max(0,1-Math.Abs(RoundTime-1.05)*4) : 0;
+        // The visual stroke follows accepted input, not an absolute timestamp in the round.
+        public float Punch => State==CityBoxingState.Active && Expected==CityBoxingAction.Jab && successfulResponse
+            ? (float)Math.Max(0,1-Math.Abs((RoundTime-responseTime)-.15)/.15) : 0;
         public void Start()
         {
             if(State==CityBoxingState.Active)throw new InvalidOperationException("Boxing already active.");
-            State=CityBoxingState.Active;Round=Successes=0;RoundTime=LastReaction=0;Responded=claimed=false;
+            State=CityBoxingState.Active;Round=Successes=0;RoundTime=LastReaction=0;Responded=claimed=successfulResponse=false;responseTime=0;
         }
         public bool Respond(CityBoxingAction action)
         {
@@ -31,6 +34,7 @@ namespace Pozarevac.CityGame
             if(State!=CityBoxingState.Active || Responded)return false;
             // An early or wrong press consumes the round: wait for the cue.
             bool correct=WindowOpen && action==Expected;Responded=true;
+            successfulResponse=correct;responseTime=RoundTime;
             if(correct){Successes++;LastReaction=RoundTime-Windup;}
             return correct;
         }
@@ -41,7 +45,7 @@ namespace Pozarevac.CityGame
             RoundTime+=seconds;
             while(State==CityBoxingState.Active && RoundTime>=RoundDuration)
             {
-                RoundTime-=RoundDuration;Round++;Responded=false;
+                RoundTime-=RoundDuration;Round++;Responded=successfulResponse=false;responseTime=0;
                 if(Round>=Rounds){RoundTime=0;State=Successes>=RequiredSuccesses?CityBoxingState.Completed:CityBoxingState.Failed;}
             }
         }

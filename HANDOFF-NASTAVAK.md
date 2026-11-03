@@ -1,5 +1,9 @@
 # VKT: nastavak rada, 2026-11-01
 
+## Boks: udarac prati pritisak — 3. novembar 2026.
+
+[Izmena i granice](Docs/Boxing-Stroke-20261103.md). 329/0/1 EditMode. Novi build i native pregled još nisu urađeni.
+
 ## Najnovije: sprint i benč — 3. novembar 2026.
 
 Ruke tokom sprinta sada koriste savijene laktove kroz zajednički posmatrač hoda. Odabrani ljudski model dobija benč sa stvarnim prstima, keširanim prikazom i proverenim osloncem obuće. Trening-sat i nagrade ostaju postojeći. **54/54 ciljanih; 326/0/1 ceo Unity skup; Windows build i 11 native tokova izlaz 0.** [Izmene](Docs/Running-Bench-20261103.md) | [Gemini audit](Docs/Gemini-Intake-Review-20261103.md). Novi lokalni build je proveren; javni ZIP ostaje ranije izdanje.

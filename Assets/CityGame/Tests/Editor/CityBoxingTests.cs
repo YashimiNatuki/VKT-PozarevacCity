@@ -5,6 +5,31 @@ namespace Pozarevac.CityGame.Tests
 {
     public sealed class CityBoxingTests
     {
+        [TestCase(.8)]
+        [TestCase(1.3)]
+        public void SuccessfulJabStartsAtInputAndCompletesItsOwnStroke(double cueTime)
+        {
+            var run = new CityBoxingRun(); run.Start(); run.Tick(cueTime);
+            Assert.That(run.Respond(CityBoxingAction.Jab), Is.True);
+            Assert.That(run.Punch, Is.Zero.Within(.0001));
+            run.Tick(.15); Assert.That(run.Punch, Is.EqualTo(1).Within(.0001));
+            run.Tick(.15); Assert.That(run.Punch, Is.Zero.Within(.0001));
+            Assert.That(run.Successes, Is.EqualTo(1));
+        }
+
+        [Test]
+        public void RejectedInputAndCancelledTrainingNeverProduceAPunch()
+        {
+            var run = new CityBoxingRun(); run.Start();
+            Assert.That(run.Respond(CityBoxingAction.Jab), Is.False);
+            run.Tick(1.05); Assert.That(run.Punch, Is.Zero);
+            run.Cancel(); Assert.That(run.Punch, Is.Zero);
+            run.Start(); run.Tick(.8); run.Respond(CityBoxingAction.Jab); run.Tick(.15);
+            Assert.That(run.Punch, Is.GreaterThan(.9));
+            run.Cancel(); Assert.That(run.Punch, Is.Zero);
+            run.Start(); Assert.That(run.Punch, Is.Zero);
+        }
+
         private static void Finish(CityBoxingRun run)
         {
             for(int i=0;i<8;i++){run.Tick(.8);Assert.That(run.Respond(run.Expected),Is.True);run.Tick(1);}

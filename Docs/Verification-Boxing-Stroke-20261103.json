@@ -1,0 +1,27 @@
+{
+  "validationExit": 0,
+  "tests": {
+    "mode": "tests",
+    "processExit": 0,
+    "total": "330",
+    "passed": "329",
+    "failed": "0",
+    "skipped": "1"
+  },
+  "changedFiles": [
+    "Assets/CityGame/Runtime/CityBoxingRun.cs",
+    "Assets/CityGame/Tests/Editor/CityBoxingTests.cs",
+    "Assets/CityGame/Tests/Editor/CityHumanPlayableTests.cs",
+    "Docs/Boxing-Stroke-20261103.md",
+    "HANDOFF-NASTAVAK.md"
+  ],
+  "hashes": {
+    "Assets/CityGame/Runtime/CityBoxingRun.cs": "94b88c4481309b1dcfc1ecac2cfcd716043f57557c7fa9e6734ab1d1bf0c5e37",
+    "Assets/CityGame/Tests/Editor/CityBoxingTests.cs": "40340d24884802cbca40e4e4a82313bb4f562bd72bd8c65c4fbd097bd5b5bdeb",
+    "Assets/CityGame/Tests/Editor/CityHumanPlayableTests.cs": "22e271506d7aef2da1bbe6624dcaa9caba7c2656b8a173faa9dccfecd1e3c8d3",
+    "Docs/Boxing-Stroke-20261103.md": "b61ff5383c54273ac240965280700ef8f4f6341d68e5305e6772fb670e853226",
+    "HANDOFF-NASTAVAK.md": "4557ec0a4529c2620ecbd39331fd51ca58edace81bf97b932e77842d27290040"
+  },
+  "newBuild": false,
+  "native": false
+}
