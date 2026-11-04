@@ -16,6 +16,7 @@ namespace Pozarevac.CityGame
         private Collider focusedCollider;
         private readonly RaycastHit[] interactionHits = new RaycastHit[16];
         private CityPlayerVitals vitals;
+        private CityPlayerController movement;
 
         public void Configure(Camera camera, CitySession citySession, CityHud cityHud)
         {
@@ -23,6 +24,7 @@ namespace Pozarevac.CityGame
             session = citySession;
             hud = cityHud;
             vitals = GetComponent<CityPlayerVitals>();
+            movement = GetComponent<CityPlayerController>();
         }
 
         private void Update()
@@ -39,12 +41,18 @@ namespace Pozarevac.CityGame
         public bool TryInteract()
         {
             if (Time.timeScale <= 0f || session == null || (vitals != null && !vitals.CanAct)) return false;
+            if (movement != null && movement.Vehicle != null) return movement.Vehicle.TryInteract(session);
             UpdateFocus();
             return focusedObject != null ? focusedObject.TryInteract(session) : focusedMission != null && focusedMission.TryComplete(session);
         }
 
         private void UpdateFocus()
         {
+            if (movement != null && movement.Vehicle != null)
+            {
+                if (hud != null) hud.SetPrompt(movement.Vehicle.Prompt);
+                return;
+            }
             Collider nextCollider = null;
             if (viewCamera != null)
             {

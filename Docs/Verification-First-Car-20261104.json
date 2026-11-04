@@ -1,0 +1,221 @@
+{
+  "windows": {
+    "validationExit": 0,
+    "passed": true,
+    "tests": {
+      "mode": "tests",
+      "processExit": 0,
+      "total": 362,
+      "passed": 361,
+      "failed": 0,
+      "skipped": 1
+    },
+    "focused": {
+      "mode": "focused",
+      "processExit": 0,
+      "total": 58,
+      "passed": 58,
+      "failed": 0,
+      "skipped": 0
+    },
+    "build": {
+      "mode": "build",
+      "processExit": 0
+    },
+    "nativeFlows": 5,
+    "sourceFingerprint": "44cb0c6e3244c3272776366bf6f93ae80c3761bf23a0c59b710a7769fbd5364c"
+  },
+  "desktopCar": {
+    "passed": true,
+    "outdoorEntered": true,
+    "outdoorDrove": true,
+    "outdoorExited": true,
+    "spawned": true,
+    "entered": true,
+    "drove": true,
+    "paused": true,
+    "stoppedAtWall": true,
+    "reverseSteering": true,
+    "blockedExits": true,
+    "safeExit": true,
+    "walkingRestored": true,
+    "checkpointExit": true,
+    "touchControls": false,
+    "outdoorDriveMeters": 0.7576938271522522,
+    "drivenMeters": 1.7013683319091797,
+    "recordedMeters": 1.7013684511184692,
+    "wallClearance": 1.9812994003295898,
+    "reverseMeters": 1.8028182983398438,
+    "reverseTurnDegrees": -29.227359771728516,
+    "walkedMeters": 2.5833866596221924,
+    "parkingStreet": "15. oktobra",
+    "error": "",
+    "input": "Synthetic Unity input against controlled geometry. Physical touch review is separate."
+  },
+  "touchPreviewCar": {
+    "passed": true,
+    "outdoorEntered": true,
+    "outdoorDrove": true,
+    "outdoorExited": true,
+    "spawned": true,
+    "entered": true,
+    "drove": true,
+    "paused": true,
+    "stoppedAtWall": true,
+    "reverseSteering": true,
+    "blockedExits": true,
+    "safeExit": true,
+    "walkingRestored": true,
+    "checkpointExit": true,
+    "touchControls": true,
+    "outdoorDriveMeters": 0.6898378729820251,
+    "drivenMeters": 1.7013864517211914,
+    "recordedMeters": 1.7013864517211914,
+    "wallClearance": 1.9813261032104492,
+    "reverseMeters": 1.7719554901123047,
+    "reverseTurnDegrees": -28.496503829956055,
+    "walkedMeters": 2.416717767715454,
+    "parkingStreet": "15. oktobra",
+    "error": "",
+    "input": "Synthetic Unity input against controlled geometry. Physical touch review is separate."
+  },
+  "android": {
+    "build": {
+      "validationExit": 0,
+      "unityExportExit": 0,
+      "gradleExit": 0,
+      "apk": "VKT-Vehicle-QA.apk",
+      "bytes": 116822571,
+      "sha256": "064e118559e5537df13666da17a22965b49a5fd14961739b229ab281bee46399",
+      "package": "com.yashimi.vkt.vehicleqa",
+      "label": "VKT QA - vozilo",
+      "activity": "com.unity3d.player.UnityPlayerActivity",
+      "architecture": "arm64-v8a",
+      "signatureVerified": true,
+      "introSha256": "d612ff230f759326d7729a95f5f59eaed4111e2a116c956a05e6d01c2e58a6d2",
+      "sourceFingerprint": "44cb0c6e3244c3272776366bf6f93ae80c3761bf23a0c59b710a7769fbd5364c",
+      "exportChanges": []
+    },
+    "transfer": {
+      "validationExit": 0,
+      "verifiedSha256": "064e118559e5537df13666da17a22965b49a5fd14961739b229ab281bee46399",
+      "download": "VKT-Vehicle-QA.apk"
+    },
+    "install": {
+      "validationExit": 0,
+      "installExit": 0,
+      "package": "com.yashimi.vkt.vehicleqa",
+      "method": "manual_package_installer",
+      "sha256": "064e118559e5537df13666da17a22965b49a5fd14961739b229ab281bee46399",
+      "productionPresentBeforeAndAfter": true,
+      "existingPackageVersionObserved": 8
+    },
+    "launch-smoke": {
+      "validationExit": 0,
+      "launchExit": 0,
+      "package": "com.yashimi.vkt.vehicleqa",
+      "vehicleSmokeIntent": true,
+      "deviceLaunchEpoch": 1793785637
+    },
+    "launch": {
+      "validationExit": 0,
+      "launchExit": 0,
+      "package": "com.yashimi.vkt.vehicleqa",
+      "vehicleSmokeIntent": false,
+      "deviceLaunchEpoch": 1793785730
+    },
+    "initialUsbInstallFailure": {
+      "validationExit": 1,
+      "installExit": 1,
+      "reason": "INSTALL_FAILED_USER_RESTRICTED"
+    },
+    "captures": [
+      {
+        "qaProcess": false,
+        "syntheticCarFlowPassed": true,
+        "vkt-device-metrics.json": true,
+        "vkt-car-flow.json": true,
+        "carFlow": {
+          "passed": true,
+          "outdoorEntered": true,
+          "outdoorDrove": true,
+          "outdoorExited": true,
+          "spawned": true,
+          "entered": true,
+          "drove": true,
+          "paused": true,
+          "stoppedAtWall": true,
+          "reverseSteering": true,
+          "blockedExits": true,
+          "safeExit": true,
+          "walkingRestored": true,
+          "checkpointExit": true,
+          "touchControls": true,
+          "outdoorDriveMeters": 0.7488332390785217,
+          "drivenMeters": 1.7990589141845703,
+          "recordedMeters": 1.7990589141845703,
+          "wallClearance": 1.981851577758789,
+          "reverseMeters": 1.8083515167236328,
+          "reverseTurnDegrees": -29.20600128173828,
+          "walkedMeters": 2.4980597496032715,
+          "parkingStreet": "15. oktobra",
+          "error": "",
+          "input": "Synthetic Unity input against controlled geometry. Physical touch review is separate."
+        },
+        "shortFrameSample": {
+          "width": 1640,
+          "height": 720,
+          "frames": 245,
+          "observedFps": 32.44391080876272,
+          "p95FrameMilliseconds": 33.34057703614235,
+          "eligibleSeconds": 7.551494067534804
+        }
+      },
+      {
+        "qaProcess": true,
+        "cityReadyMarker": true,
+        "fatalAndroidException": false,
+        "screenshot": true
+      }
+    ]
+  },
+  "red": {
+    "processExit": 2,
+    "total": "6",
+    "failed": "6",
+    "firstFailure": "  The parked car runtime must exist.\n  Expected: not null\n  But was:  null\n"
+  },
+  "sourceAfterNormalization": "66bd0c8a853a8b179c92790722fd29284b3b5837092d62b34bf4cf03b0064f2e",
+  "profileVersion": 10,
+  "changedFiles": [
+    "Assets/CityGame/Runtime/CityCameraRig.cs",
+    "Assets/CityGame/Runtime/CityCombatRuntime.cs",
+    "Assets/CityGame/Runtime/CityGameBootstrap.cs",
+    "Assets/CityGame/Runtime/CityHideout.cs",
+    "Assets/CityGame/Runtime/CityLifestyleRuntime.cs",
+    "Assets/CityGame/Runtime/CityOsmStreets.cs",
+    "Assets/CityGame/Runtime/CityParkedCar.cs",
+    "Assets/CityGame/Runtime/CityParkedCar.cs.meta",
+    "Assets/CityGame/Runtime/CityParkedCarValidation.cs",
+    "Assets/CityGame/Runtime/CityParkedCarValidation.cs.meta",
+    "Assets/CityGame/Runtime/CityParkedCarVisual.cs",
+    "Assets/CityGame/Runtime/CityParkedCarVisual.cs.meta",
+    "Assets/CityGame/Runtime/CityPlayerController.cs",
+    "Assets/CityGame/Runtime/CityPlayerInteraction.cs",
+    "Assets/CityGame/Runtime/CityPlayerValidation.cs",
+    "Assets/CityGame/Runtime/CityPlayerVitals.cs",
+    "Assets/CityGame/Tests/Editor/CityParkedCarTests.cs",
+    "Assets/CityGame/Tests/Editor/CityParkedCarTests.cs.meta",
+    "Docs/First-Car-20261104.md",
+    "Docs/Screenshots/first-car-20261104.png",
+    "Docs/Verification-First-Car-20261104.json",
+    "HANDOFF-NASTAVAK.md",
+    "README.md"
+  ],
+  "unverified": [
+    "Long city drive",
+    "Human touch driving",
+    "iOS",
+    "Long FPS and thermal test"
+  ]
+}

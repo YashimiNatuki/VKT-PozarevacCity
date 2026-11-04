@@ -1,3 +1,5 @@
+> **4. novembar 2026. / Prvi parkirani auto** Crveni hečbek u ulici 15. oktobra, ulazak preko E/KORISTI, vožnja, bezbedan izlaz i statistika. Unity 361/0/1, Windows build i pet izvršnih provera izlaz 0. [Uputstvo i provere](Docs/First-Car-20261104.md).
+
 > **4. novembar 2026. / Prvih pet ciljeva i benč** Dnevnik vodi kroz prva tri ugovora, posetu šteku i prvu negu biljke. Profil v10 pamti poslednja dva cilja. Zasebna provera obuhvata benč početnog lika i ljudskog modela. Unity 355/0/1, Windows build i svih 11 provera u igri izlaz 0. [Izmene i dokazi](Docs/Starter-Goals-20261104.md). Windows build je lokalni.
 
 > **Najnovije: tok misija, kontakti i vreća — 2026-11-03.** Kontakti vode do aktivnog zadatka; tri uvodne rute su na srpskom sa Milom, Kuretom i Lukom. Vreća ima kinematičku reakciju uz trening-sat i pauzu. 336/0/1 ceo Unity skup, Windows build i 11 native tokova izlaz 0. [Izmene](Docs/Campaign-Bag-20261103.md) | [Prvih deset scenarija](Docs/Campaign-First10-20261103.md). Lokalni build je nov; javni ZIP je prethodni.

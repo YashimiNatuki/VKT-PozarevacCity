@@ -43,6 +43,7 @@ namespace Pozarevac.CityGame
         public CityPlayerVitals Vitals { get; private set; }
         public CityTouchControls Touch { get; private set; }
         public CityCombatRuntime Combat { get; private set; }
+        public CityParkedCar Car { get; private set; }
         public CityWorldAtmosphere Atmosphere { get; private set; }
 
         private void Awake()
@@ -78,6 +79,7 @@ namespace Pozarevac.CityGame
             Intro.Begin(active =>
             {
                 if (Director != null) Director.SetPaused(active);
+                if (!active && WorldReady) AnnounceCity();
             });
         }
 
@@ -201,9 +203,10 @@ namespace Pozarevac.CityGame
                     gameObject.AddComponent<CityMusicPanel>().Initialize(music, () => Director.IsPaused, () => Director.SuppressPauseThisFrame(),Audio);
                     bool offline = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name == "VKTOffline";
                     bool authored = Array.Exists(Environment.GetCommandLineArgs(), arg => arg == "-vktAuthoredCenter");
+                    CityOsmStreets streets = null;
                     if (offline && !authored && CityOsmStreets.Load() != null)
                     {
-                        CityOsmStreets streets=gameObject.AddComponent<CityOsmStreets>();
+                        streets=gameObject.AddComponent<CityOsmStreets>();
                         streets.Initialize(georeference.transform, new Vector3(spawn.x, spawn.y, spawn.z));
                         Audio.ConfigureSurfaces(streets);
                         gameObject.AddComponent<CityParkDetails>().Initialize(georeference.transform,streets.GroundAnchor,streets.Source);
@@ -214,16 +217,23 @@ namespace Pozarevac.CityGame
                     gameObject.AddComponent<CityLifestyleRuntime>().Initialize(this, hud, spawn);
                     gameObject.AddComponent<CitySpatialSoundscape>().Initialize(this, spawn);
                     gameObject.AddComponent<CityStreetSignals>().Initialize(this, hud);
+                    if (offline)
+                    {
+                        Physics.SyncTransforms();
+                        Car = CityParkedCar.TryCreate(this, hud, georeference.transform, spawn, streets);
+                    }
                     if (Intro != null && Intro.IsActive) Director.SetPaused(true);
                     WorldReady = true;
                     gameObject.AddComponent<CityControlsDock>().Initialize(this);
 #if DEVELOPMENT_BUILD || UNITY_EDITOR
                     if(Application.platform==RuntimePlatform.Android||Array.IndexOf(Environment.GetCommandLineArgs(),"-vktDeviceMetrics")>=0)
                         gameObject.AddComponent<CityDeviceMetrics>().Initialize(this);
+                    if (IsSmokeValidation && Array.IndexOf(Environment.GetCommandLineArgs(), "-vktCarFlow") >= 0)
+                        gameObject.AddComponent<CityParkedCarValidation>().Initialize(this);
 #endif
                     Debug.Log("CITY_GAME_READY: grounded player, three mission contracts and one active audio listener.");
                     loadingTerrain = false;
-                    hud.ShowNotification("City ready. Follow the cyan pickup marker and press E to begin.", 6f);
+                    if (Intro == null || !Intro.IsActive) AnnounceCity();
                     yield break;
                 }
                 yield return interval;
@@ -232,6 +242,9 @@ namespace Pozarevac.CityGame
             hud.SetMissionText("CITY TERRAIN NOT READY\nCheck Cesium tiles, credentials and physics meshes.\nPress T to retry loading. The player is held safely above the scene.");
             Debug.LogWarning("CityGame could not find walkable surfaces at all route checkpoints within 45 seconds.");
         }
+
+        private void AnnounceCity() => hud.ShowNotification(Car == null ? "Prati plavi marker. E / KORISTI: prvi ugovor."
+            : $"Crveni auto / {Car.LocationFrom(Player.position)}. Plavi marker / prvi ugovor.", 8);
 
         private void CreateHazard(Vector3 approximate, CityHazardKind kind)
         {

@@ -21,6 +21,12 @@ namespace Pozarevac.CityGame
         private CityPlayerVitals vitals;
         private CityLifestyle lifestyle;
         private CityPlayerStats stats;
+        public CityParkedCar Vehicle { get; private set; }
+        internal void BindVehicle(CityParkedCar vehicle)
+        {
+            Vehicle = vehicle;
+            ResetView();
+        }
         public void ConfigureStats(CityPlayerStats state) { stats = state; }
         public void ConfigureLifestyle(CityLifestyle state) { lifestyle = state; }
         private Func<bool> canAct;
@@ -55,13 +61,23 @@ namespace Pozarevac.CityGame
                 return;
             }
             bool desktopInput = Keyboard.current != null && (Cursor.lockState == CursorLockMode.Locked || (touchActive && !Application.isMobilePlatform));
-            if (!desktopInput && !touchActive) return;
+            if (!desktopInput && !touchActive)
+            {
+                if (Vehicle != null) Vehicle.Brake();
+                return;
+            }
             Keyboard keyboard = Keyboard.current;
             Vector2 moveInput = desktopInput ? new Vector2(
                 (keyboard.dKey.isPressed ? 1f : 0f) - (keyboard.aKey.isPressed ? 1f : 0f),
                 (keyboard.wKey.isPressed ? 1f : 0f) - (keyboard.sKey.isPressed ? 1f : 0f)) : Vector2.zero;
             if (touchActive) moveInput += touch.MovementVector;
             moveInput = Vector2.ClampMagnitude(moveInput, 1f);
+            if (Vehicle != null)
+            {
+                if (touchActive) { touch.ConsumeLook(); touch.ConsumeJump(); }
+                Vehicle.Drive(moveInput, Time.deltaTime);
+                return;
+            }
             Vector2 look = touchActive ? touch.ConsumeLook() * 0.15f : Vector2.zero;
             if (desktopInput && Mouse.current != null) look += Mouse.current.delta.ReadValue() * mouseSensitivity;
             pitch = Mathf.Clamp(pitch - look.y, -82f, 82f);

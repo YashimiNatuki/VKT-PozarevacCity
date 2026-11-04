@@ -32,6 +32,7 @@ namespace Pozarevac.CityGame
         public int ParkCount {get;private set;}
         public int DetailedBuildingCount {get;private set;}
         public Vector3 GroundAnchor => layout != null ? layout.transform.position : Vector3.zero;
+        internal Vector3 RoadPoint(Point point) => layout.transform.TransformPoint(new Vector3(point.x, 0, point.z));
         public Data Source {get;private set;}
         public CityFootstepKind SurfaceAtWorld(Vector3 world)
         {

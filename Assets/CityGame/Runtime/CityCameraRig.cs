@@ -85,7 +85,7 @@ namespace Pozarevac.CityGame
                 if (!clip.name.StartsWith("__preview__", System.StringComparison.Ordinal)) return clip;
             return null;
         }
-        public void Cycle() { if ((lifestyle==null||(!lifestyle.IsTraining&&!lifestyle.IsBoxing)) && Time.timeScale > 0) SetMode((CityCameraMode)(((int)Mode + 1) % 3)); }
+        public void Cycle() { if ((mover==null||mover.Vehicle==null) && (lifestyle==null||(!lifestyle.IsTraining&&!lifestyle.IsBoxing)) && Time.timeScale > 0) SetMode((CityCameraMode)(((int)Mode + 1) % 3)); }
         public void SetMode(CityCameraMode mode)
         {
             if ((int)mode < 0 || (int)mode > 2) throw new System.ArgumentOutOfRangeException(nameof(mode));
@@ -109,6 +109,12 @@ namespace Pozarevac.CityGame
         }
         private void ApplyAvatarVisibility()
         {
+            if (mover != null && mover.Vehicle != null)
+            {
+                if (avatar != null) avatar.SetActive(false);
+                HumanActor?.SetVisible(false);
+                return;
+            }
             bool training=lifestyle!=null&&lifestyle.IsTraining&&bench!=null;
             bool boxing=lifestyle!=null&&lifestyle.IsBoxing;
             bool humanBoxing=boxing&&HumanSelected&&HumanActor!=null&&HumanActor.IsBoxing;
@@ -148,7 +154,7 @@ namespace Pozarevac.CityGame
             if (phone == null || !phone.IsPhoneOpen) phoneBlocked = false;
             bool requested = phone != null && phone.IsPhoneOpen && phone.PhoneWorldPreviewSupported && Time.timeScale <= 0 &&
                 HumanSelected && HumanActor != null && HumanActor.PhoneAvailable && !training && !boxing &&
-                !phoneBlocked && (mover == null || mover.enabled) && (combat == null || combat.UnarmedPunch <= .001f);
+                !phoneBlocked && (mover == null || (mover.enabled && mover.Vehicle == null)) && (combat == null || combat.UnarmedPunch <= .001f);
             if (requested && !phoneView) { phoneRotation = view.localRotation; phoneInteraction = phone.PhoneInteractionVersion; }
             if (!requested && phoneView) { HumanActor?.SetPhoneActive(false); view.localRotation = phoneRotation; }
             phoneView = requested;
@@ -203,6 +209,16 @@ namespace Pozarevac.CityGame
                 return;
             }
             if(wasTraining){wasTraining=false;owner.GetComponent<CityPlayerController>().ResetView();Cursor.lockState=previousCursor;Cursor.visible=previousCursorVisible;}
+            if (mover != null && mover.Vehicle != null)
+            {
+                Transform car = mover.Vehicle.transform;
+                Vector3 target = car.position + Vector3.up * 1.5f;
+                Vector3 position = RetractCamera(target, target + Vector3.up * 1.25f - car.forward * 4.7f);
+                Vector3 aim = car.position + Vector3.up * .95f - position;
+                view.SetPositionAndRotation(position, Quaternion.LookRotation(aim, Vector3.up));
+                if (weapon != null) weapon.gameObject.SetActive(false);
+                return;
+            }
             Vector3 eye = owner.TransformPoint(new Vector3(0, 1.62f, 0));
             Vector3 offset = view.rotation * Offset(Mode);
             float distance = offset.magnitude;
@@ -220,7 +236,9 @@ namespace Pozarevac.CityGame
             if(length<=.001f)return target;
             int count=Physics.SphereCastNonAlloc(target,.18f,path/length,hits,length,Physics.DefaultRaycastLayers,QueryTriggerInteraction.Ignore);
             float allowed=count==hits.Length?0:length;
-            for(int i=0;i<count;i++)if(hits[i].collider!=null&&!hits[i].transform.IsChildOf(owner))allowed=Mathf.Min(allowed,Mathf.Max(0,hits[i].distance-.08f));
+            CityParkedCar car = mover != null ? mover.Vehicle : null;
+            for(int i=0;i<count;i++)if(hits[i].collider!=null&&!hits[i].transform.IsChildOf(owner) &&
+                (car == null || !hits[i].transform.IsChildOf(car.transform)))allowed=Mathf.Min(allowed,Mathf.Max(0,hits[i].distance-.08f));
             return target+path*(allowed/length);
         }
         private void OnDestroy() { if(phone!=null)phone.SetPhoneWorldPreview(false);HumanActor?.Dispose();if (avatar != null) Destroy(avatar); if(look!=null)look.Dispose();else physique?.Dispose(); }

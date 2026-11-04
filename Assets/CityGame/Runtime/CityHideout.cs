@@ -182,7 +182,8 @@ namespace Pozarevac.CityGame
 
         public bool Travel(bool enter)
         {
-            if ((game.Vitals != null && !game.Vitals.CanAct) || game.Director.IsPaused || enter == IsInside || (enter && !Progression.PhoneUnlocked)) return false;
+            if ((game.Vitals != null && !game.Vitals.CanAct) || (game.Car != null && game.Car.IsOccupied) ||
+                game.Director.IsPaused || enter == IsInside || (enter && !Progression.PhoneUnlocked)) return false;
             if (enter) { room.SetActive(true); IsInside = true; Teleport(room.transform.TransformPoint(roomSpawn)); }
             else { Teleport(Entrance.position + new Vector3(0, -0.9f, -2.5f)); IsInside = false; room.SetActive(false); }
             if(enter)progression.Perform(Progression.RecordHideoutVisit);

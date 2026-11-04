@@ -28,6 +28,7 @@ namespace Pozarevac.CityGame
         public bool Respawn()
         {
             if (IsAlive || checkpoint == null) return false;
+            movement?.Vehicle?.ReleaseDriver();
             bool controllerEnabled = character != null && character.enabled;
             if (character != null) character.enabled = false;
             transform.SetPositionAndRotation(checkpoint.position, checkpoint.rotation);
@@ -40,6 +41,7 @@ namespace Pozarevac.CityGame
         public bool ReturnToCheckpoint()
         {
             if (checkpoint == null || !IsAlive) return false;
+            movement?.Vehicle?.ReleaseDriver();
             bool wasEnabled = character != null && character.enabled;
             if (character != null) character.enabled = false;
             transform.SetPositionAndRotation(checkpoint.position, checkpoint.rotation);

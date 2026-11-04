@@ -1,5 +1,10 @@
 # VKT: nastavak rada, 2026-11-01
 
+## Prvi parkirani auto, 4. novembar 2026.
+
+Crveni hečbek u ulici 15. oktobra, ulazak preko E/KORISTI, vožnja, bezbedan izlaz i statistika. Unity 361/0/1, Windows build i pet izvršnih provera izlaz 0. [Uputstvo i provere](Docs/First-Car-20261104.md).
+
+
 ## Prvih pet ciljeva i benč, 4. novembar 2026.
 
 Dnevnik vodi kroz prva tri ugovora, posetu šteku i prvu negu biljke. Profil v10 pamti poslednja dva cilja. Zasebna provera obuhvata benč početnog lika i ljudskog modela. Unity 355/0/1, Windows build i svih 11 provera u igri izlaz 0. [Izmene i dokazi](Docs/Starter-Goals-20261104.md). Windows build je lokalni.

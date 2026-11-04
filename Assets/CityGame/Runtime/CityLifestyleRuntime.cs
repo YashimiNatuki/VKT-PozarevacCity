@@ -52,6 +52,7 @@ namespace Pozarevac.CityGame
         public bool IsMenuOpen => menu != null && menu.activeSelf;
         public bool SirenPlaying => siren != null && siren.isPlaying;
         public bool CanSimulate => game != null && !applicationSuspended && game.WorldReady && game.Progression.IsCreated && game.Vitals.IsAlive && !game.Director.IsPaused && Time.timeScale > 0;
+        private bool OnFoot => movement == null || movement.Vehicle == null;
 
         public void Initialize(CityGameBootstrap owner, CityHud cityHud, Vector3 spawn)
         {
@@ -182,7 +183,7 @@ namespace Pozarevac.CityGame
         public void ToggleMenu(){if(IsMenuOpen)CloseMenu();else OpenMenu();}
         public void OpenMenu()
         {
-            if(!CanSimulate||Life.IsTraining||Life.IsBoxing)return;
+            if(!CanSimulate||!OnFoot||Life.IsTraining||Life.IsBoxing)return;
             locationIndex=-1;menu.SetActive(true);menuOwnedPause=true;game.Director.SetOverlayOpen(true);RefreshUi();
         }
         public void CloseMenu(){if(menu!=null)menu.SetActive(false);if(menuOwnedPause){menuOwnedPause=false;game.Director.SetOverlayOpen(false);}}
@@ -201,10 +202,10 @@ namespace Pozarevac.CityGame
             return "TRENING NIJE DOSTUPAN / proveri lik, pauzu i položaj kod klupe.";
         }
         public bool StartWorkout()
-        {if(!CanSimulate||!Near(Gym)||game.Director.Jobs.IsActive||game.Progression.GardenOrder.IsActive||game.Director.Run.State==CityMissionState.Active||benchVisual==null||!benchVisual.RigReady||!benchVisual.FeetReady||!Life.TryStartWorkout())return false;bench=new CityBenchPress();progress.SaveNow();hud.ShowNotification("BENČ: 8 celih ponavljanja za 45 s. F/TAP: spusti, pa pritisni kad piše GURAJ. ESC: prekid.",5);return true;}
+        {if(!CanSimulate||!OnFoot||!Near(Gym)||game.Director.Jobs.IsActive||game.Progression.GardenOrder.IsActive||game.Director.Run.State==CityMissionState.Active||benchVisual==null||!benchVisual.RigReady||!benchVisual.FeetReady||!Life.TryStartWorkout())return false;bench=new CityBenchPress();progress.SaveNow();hud.ShowNotification("BENČ: 8 celih ponavljanja za 45 s. F/TAP: spusti, pa pritisni kad piše GURAJ. ESC: prekid.",5);return true;}
         public bool StartConditioning()
         {
-            if(!CanSimulate||!Near(Gym)||game.Director.Jobs.IsActive||game.Progression.GardenOrder.IsActive||game.Director.Run.State==CityMissionState.Active||!Life.TryStartConditioning())return false;
+            if(!CanSimulate||!OnFoot||!Near(Gym)||game.Director.Jobs.IsActive||game.Progression.GardenOrder.IsActive||game.Director.Run.State==CityMissionState.Active||!Life.TryStartConditioning())return false;
             conditioning.Start();progress.SaveNow();game.Audio.PlayCue(CityAudioCue.Checkpoint);
             hud.ShowNotification("KONDICIJA: obiđi 3 plava kruga za 75 s. U svakom stani 1.2 s. +20 XP; zajednički odmor 90 s. ESC: prekid.",7);return true;
         }
@@ -231,7 +232,7 @@ namespace Pozarevac.CityGame
         }
         public bool StartBoxing()
         {
-            if(!CanSimulate||!Near(Gym)||game.Director.Jobs.IsActive||game.Progression.GardenOrder.IsActive||game.Director.Run.State==CityMissionState.Active||!Life.TryStartBoxing())return false;
+            if(!CanSimulate||!OnFoot||!Near(Gym)||game.Director.Jobs.IsActive||game.Progression.GardenOrder.IsActive||game.Director.Run.State==CityMissionState.Active||!Life.TryStartBoxing())return false;
             boxing.Start();progress.SaveNow();
             foreach(CityActorMotion motion in game.Player.GetComponentsInChildren<CityActorMotion>(true))motion.ConfigureBoxing(Life,boxing);
             hud.ShowNotification("BOKS: 8 reakcija, najmanje 6 tačnih. Sačekaj SAD, J/udarac ili K/gard. +30 XP i razvoj izdržljivosti. ESC: prekid.",8);return true;

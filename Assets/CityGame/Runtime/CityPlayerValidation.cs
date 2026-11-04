@@ -19,8 +19,9 @@ namespace Pozarevac.CityGame
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         private static void Install()
         {
-            if (Array.IndexOf(Environment.GetCommandLineArgs(), "-vktInputFlow") >= 0) return;
-            if (!Array.Exists(Environment.GetCommandLineArgs(), arg => arg == "-vktSmoke")) return;
+            string[] args = Environment.GetCommandLineArgs();
+            if (Array.IndexOf(args, "-vktInputFlow") >= 0 || Array.IndexOf(args, "-vktCarFlow") >= 0) return;
+            if (Array.IndexOf(args, "-vktSmoke") < 0) return;
             Application.runInBackground = true;
             Application.targetFrameRate = 30;
             new GameObject("VKTPlayerValidation").AddComponent<CityPlayerValidation>();
