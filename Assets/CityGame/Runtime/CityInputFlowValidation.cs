@@ -25,6 +25,8 @@ namespace Pozarevac.CityGame
             public bool helpAudioTextFits,hideoutMusicPreferenceMutes,disabledSignalBlocked;
             public bool mapPreservesAudio,muteShortcutWorks;
             public bool gardenPacked,gardenDelivery,gardenPause,gardenDiskCargo,gardenDiskReceipt,gardenSinglePayout,gardenTrainingGate,gardenPhoneCancellation;
+            public bool starterVisit,starterPlant,starterCare,starterDisk,starterJournal,starterNoReward;
+            public float starterJournalScrollPosition=-1;
             public bool statsWalking,statsSprinting,statsTeleportExcluded,statsPause,statsDisk,statsPage;
             public bool benchContacts;
             public int benchContactFrames;
@@ -301,6 +303,39 @@ namespace Pozarevac.CityGame
             }
             if(!director.StreetJobsUnlocked){Finish("Garden fixture did not unlock campaign.");yield break;}
             var garden=game.Progression.Garden;var order=game.Progression.GardenOrder;
+            if(game.Hideout.IsInside)game.Hideout.Travel(false);
+            game.Hideout.SelectVariety(0);
+            int starterCash=game.Session.Cash,starterXp=game.Progression.Lifestyle.Experience;
+            report.starterVisit=InteractAt(game,game.Hideout.Entrance,1.1f)&&game.Hideout.IsInside&&game.Progression.StarterGoals.hideoutVisited;
+            if(!report.starterVisit){Finish("Starter goal did not record actual hideout entry.");yield break;}
+            Transform seedCounter=game.Hideout.OrderDesk.parent.Find("KatalogSemena");
+            int seedsBefore=garden.Seeds(0);
+            if(!InteractAt(game,seedCounter,.7f)||garden.Seeds(0)!=seedsBefore+1){Finish("Starter seed purchase failed at the real counter.");yield break;}
+            bool careBefore=game.Progression.StarterGoals.firstPlantWatered;
+            report.starterPlant=InteractAt(game,game.Hideout.PlotTransform(3),.6f)&&garden.Plot(3).planted&&garden.Plot(3).catalogPlant&&
+                garden.Plot(3).moistureSeconds==0&&game.Progression.StarterGoals.firstPlantWatered==careBefore;
+            report.starterCare=InteractAt(game,game.Hideout.PlotTransform(3),.6f)&&garden.Plot(3).moistureSeconds>0&&game.Progression.StarterGoals.firstPlantWatered;
+            report.starterCare&=!InteractAt(game,game.Hideout.PlotTransform(3),.6f);
+            if(new CitySaveStore(progress.SavePath).TryLoad(out var starterSaved,out _))
+            {
+                var resumedStarter=new CityProgression(CitySession.Restore(starterSaved),starterSaved);
+                report.starterDisk=starterSaved.version==10&&resumedStarter.StarterGoals.hideoutVisited&&resumedStarter.StarterGoals.firstPlantWatered&&resumedStarter.Garden.Plot(3).moistureSeconds>0;
+            }
+            yield return Press(Key.P);
+            var phone=game.GetComponentInChildren<CityPhonePanel>();
+            phone.OpenJobs();
+            yield return null;
+            ScrollRect starterScroll=Array.Find(phone.GetComponentsInChildren<ScrollRect>(),item=>item.name=="JobDetails");
+            if(starterScroll!=null&&starterScroll.content!=null)
+            {
+                Text starterText=starterScroll.content.GetComponent<Text>();
+                report.starterJournalScrollPosition=starterScroll.verticalNormalizedPosition;
+                report.starterJournal=starterText!=null&&starterText.text.Contains("MOJ PUT / 5/5")&&report.starterJournalScrollPosition>.99f;
+            }
+            Capture(game,"starter-five-goals");yield return Press(Key.Escape);
+            report.starterNoReward=game.Session.Cash==starterCash-CityPlantCatalog.Get(0).SeedPrice&&game.Progression.Lifestyle.Experience==starterXp;
+            if(!report.starterPlant||!report.starterCare||!report.starterDisk||!report.starterJournal||!report.starterNoReward){Finish("Starter planting, explicit care, disk snapshot, journal or economy failed.");yield break;}
+            game.Hideout.Travel(false);
             GrowValidationHarvest(garden);int before=garden.Stock(0);
             game.Hideout.SelectVariety(0);game.Hideout.Travel(true);
             yield return null;
@@ -480,6 +515,7 @@ namespace Pozarevac.CityGame
             report.passed=report.passed&&report.helpAudioTextFits&&report.hideoutMusicPreferenceMutes&&report.disabledSignalBlocked;
             report.passed=report.passed&&report.mapPreservesAudio&&report.muteShortcutWorks;
             report.passed=report.passed&&report.gardenPacked&&report.gardenDelivery&&report.gardenPause&&report.gardenDiskCargo&&report.gardenDiskReceipt&&report.gardenSinglePayout&&report.gardenTrainingGate&&report.gardenPhoneCancellation;
+            report.passed=report.passed&&report.starterVisit&&report.starterPlant&&report.starterCare&&report.starterDisk&&report.starterJournal&&report.starterNoReward;
             report.passed=report.passed&&report.statsWalking&&report.statsSprinting&&report.statsTeleportExcluded&&report.statsPause&&report.statsDisk&&report.statsPage;
             report.benchContacts=report.benchContactFrames>=20&&report.benchMaxHandError<.005f&&report.benchMaxFootError<.03f&&report.benchMaxFootAngle<.1f&&report.benchMaxHandAngle<.1f&&report.benchMinWristClearance>.02f;
             report.passed=report.passed&&report.benchContacts;

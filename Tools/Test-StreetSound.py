@@ -41,6 +41,7 @@ def main():
                     "signalCooldown", "signalDoesNotPauseOrAddHeat", "hideoutScoreFades",
                     "hideoutScoreMutes", "helpAudioTextFits", "hideoutMusicPreferenceMutes",
                     "disabledSignalBlocked", "mapPreservesAudio", "muteShortcutWorks",
+                    "starterVisit", "starterPlant", "starterCare", "starterDisk", "starterJournal", "starterNoReward",
                     "gardenPacked", "gardenDelivery", "gardenPause", "gardenDiskCargo",
                     "gardenDiskReceipt", "gardenSinglePayout", "gardenTrainingGate", "gardenPhoneCancellation",
                     "statsWalking", "statsSprinting", "statsTeleportExcluded", "statsPause", "statsDisk", "statsPage", "benchContacts",

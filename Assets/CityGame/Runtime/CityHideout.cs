@@ -185,6 +185,7 @@ namespace Pozarevac.CityGame
             if ((game.Vitals != null && !game.Vitals.CanAct) || game.Director.IsPaused || enter == IsInside || (enter && !Progression.PhoneUnlocked)) return false;
             if (enter) { room.SetActive(true); IsInside = true; Teleport(room.transform.TransformPoint(roomSpawn)); }
             else { Teleport(Entrance.position + new Vector3(0, -0.9f, -2.5f)); IsInside = false; room.SetActive(false); }
+            if(enter)progression.Perform(Progression.RecordHideoutVisit);
             game.Audio.Speak(enter ? CityVoice.Mila : CityVoice.Vuk);
             return true;
         }
@@ -206,7 +207,7 @@ namespace Pozarevac.CityGame
             bool success;
             if (!garden.Plot(index).planted) success = progression.Perform(() => garden.PlantFromInventory(index, SelectedVariety, now));
             else if (garden.IsReady(index)) success = progression.Perform(() => garden.Harvest(index, now));
-            else success = progression.Perform(() => garden.Water(index, now));
+            else success = progression.Perform(() => Progression.WaterGardenPlot(index, now));
             progression.Notify(success ? "Mila: Završeno. Stanje bašte je sačuvano." : "Mila: Nega nije potrebna, nema kupljenog semena ili je skladište puno.");
             Refresh();
             return success;

@@ -45,7 +45,8 @@ namespace Pozarevac.CityGame
 
         public void Initialize(Mesh rounded, Material steel, Material pad)
         {
-            Part("BenchPad", transform, new Vector3(0, .42f, .05f), new Vector3(.56f, .14f, 1.7f), rounded, pad, true);
+            // Leave room beside the pad for a bent knee without raising the athlete's back.
+            Part("BenchPad", transform, new Vector3(0, .42f, .05f), new Vector3(.34f, .14f, 1.7f), rounded, pad, true);
             for (int side = -1; side <= 1; side += 2)
             {
                 // Keep the front support beneath the pad end, outside the planted shoe contacts.
@@ -109,19 +110,22 @@ namespace Pozarevac.CityGame
                     MaximumBarHeight(rightArm, rightElbow, rightHand, rightGrip, -gripSide * .43f));
             }
             FootError=0;FootOrientationError=0;plantedFeet=0;
-            PlantLeg(0,-.3f);PlantLeg(1,.3f);
+            PlantLeg(0, -1);
+            PlantLeg(1, 1);
         }
-        private void PlantLeg(int index,float x)
+        private void PlantLeg(int index, float side)
         {
             Transform thigh=thighs[index],knee=knees[index],foot=feet[index];
             if (foot != null)
             {
                 Vector3 hip = transform.InverseTransformPoint(thigh.position);
+                // Place the sole beside the pad and bend the knee toward the same side.
+                float x = side * .38f;
                 float reach = (Vector3.Distance(thigh.position, knee.position) + Vector3.Distance(knee.position, foot.position)) * .98f;
                 float vertical = hip.y - soleHeights[index], across = hip.x - x;
-                float forward = Mathf.Min(.45f, Mathf.Sqrt(Mathf.Max(0, reach * reach - vertical * vertical - across * across)));
+                float forward = Mathf.Min(.06f, Mathf.Sqrt(Mathf.Max(0, reach * reach - vertical * vertical - across * across)));
                 Vector3 target = transform.TransformPoint(new Vector3(x, soleHeights[index], hip.z + forward));
-                CityTwoBonePose.Solve(thigh, knee, foot, target, transform.up);
+                CityTwoBonePose.Solve(thigh, knee, foot, target, transform.up + transform.right * (side * .65f));
                 Quaternion orientation=transform.rotation*soleRotations[index];
                 foot.rotation=orientation;
                 plantedFeet++;

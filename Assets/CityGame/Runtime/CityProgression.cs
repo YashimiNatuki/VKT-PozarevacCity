@@ -3,6 +3,13 @@ using System;
 namespace Pozarevac.CityGame
 {
     [Serializable]
+    public sealed class CityStarterGoalsData
+    {
+        public bool hideoutVisited;
+        public bool firstPlantWatered;
+    }
+
+    [Serializable]
     public sealed class CityProfileData
     {
         public int version = 1;
@@ -25,6 +32,7 @@ namespace Pozarevac.CityGame
         public CityStreetJobSaveData streetJob;
         public CityGardenOrderData gardenOrder;
         public CityStatsData stats;
+        public CityStarterGoalsData starterGoals;
     }
 
     // Fictional, game-time economy. No real-world cultivation or trafficking instructions.
@@ -37,7 +45,7 @@ namespace Pozarevac.CityGame
         private CityStreetJobs streetJobs;
         private Func<CityMissionSaveData> captureMission;
         public CityMissionSaveData SavedMission => CityMissionSaveData.Copy(data.mission);
-        public const int CurrentProfileVersion = 9;
+        public const int CurrentProfileVersion = 10;
         public int CompletedStreetJobs => streetJobs != null ? streetJobs.CompletedJobs : data.completedStreetJobs;
         public CitySession Session { get; }
         public CityGarden Garden { get; }
@@ -45,6 +53,7 @@ namespace Pozarevac.CityGame
         public CityLifestyle Lifestyle { get; }
         public CityAppearance Appearance { get; }
         public CityPlayerStats Stats { get; }
+        public CityStarterGoalsData StarterGoals => CopyStarterGoals(data.starterGoals);
         public string Callsign => data.callsign;
         public bool IsCreated => !string.IsNullOrEmpty(Callsign);
         public int CompletedContracts => data.completedContracts;
@@ -62,6 +71,7 @@ namespace Pozarevac.CityGame
             Session = session ?? throw new ArgumentNullException(nameof(session));
             if (profile != null) Validate(profile);
             data = profile == null ? new CityProfileData() : Copy(profile);
+            data.starterGoals ??= new CityStarterGoalsData();
             Garden = new CityGarden(session, data.garden);
             Lifestyle = new CityLifestyle(session, data.lifestyle);
             GardenOrder = new CityGardenOrder(session, Garden, Lifestyle, data.gardenOrder);
@@ -80,6 +90,12 @@ namespace Pozarevac.CityGame
             CityStreetJobs.ValidateCheckpoint(value.streetJob,value.completedStreetJobs);
             CityGardenOrder.Validate(value.gardenOrder);
             CityPlayerStats.Validate(value.stats);
+            if (value.starterGoals != null)
+            {
+                bool visit = value.starterGoals.hideoutVisited, care = value.starterGoals.firstPlantWatered;
+                if ((care && !visit) || ((visit || care) && (value.version < 10 || value.completedContracts < 1 || string.IsNullOrEmpty(value.callsign))))
+                    throw new ArgumentException("Starter history requires profile v10, an unlocked character and an actual hideout visit.");
+            }
             if (!CityGardenOrder.IsEmpty(value.gardenOrder) && (value.version < 8 || value.completedContracts != 3))
                 throw new ArgumentException("Garden order progress requires profile v8 and the completed campaign.");
             if (value.gardenOrder != null && value.gardenOrder.phase != CityGardenOrderPhase.Idle && value.streetJob != null && value.streetJob.active)
@@ -123,6 +139,22 @@ namespace Pozarevac.CityGame
             if (!IsCreated || completedCount != CompletedContracts + 1 || completedCount > 3) return false;
             data.completedContracts = completedCount;
             return true;
+        }
+
+        public bool RecordHideoutVisit()
+        {
+            if (!PhoneUnlocked || data.starterGoals.hideoutVisited) return false;
+            data.starterGoals.hideoutVisited = true;
+            return true;
+        }
+
+        // Preserve the garden's authoritative action and clock; the guide only records its successful result.
+        public bool WaterGardenPlot(int index, long utcSeconds)
+        {
+            bool success = Garden.Water(index, utcSeconds);
+            if (success && PhoneUnlocked && data.starterGoals.hideoutVisited && Garden.Plot(index).catalogPlant)
+                data.starterGoals.firstPlantWatered = true;
+            return success;
         }
 
         public bool BuySeed()
@@ -230,7 +262,10 @@ namespace Pozarevac.CityGame
             version = source.version, callsign = source.callsign, cash = source.cash, reputation = source.reputation, heat = source.heat,
             completedContracts = source.completedContracts, completedStreetJobs = source.completedStreetJobs, seeds = source.seeds, stock = source.stock, growSeconds = source.growSeconds,
             harvestReady = source.harvestReady, crew = source.crew, territories = source.territories, garden = CityGarden.Copy(source.garden), lifestyle = CityLifestyle.Copy(source.lifestyle), appearance = CityAppearance.Copy(source.appearance),
-            mission=CityMissionSaveData.Copy(source.mission), streetJob=CityStreetJobSaveData.Copy(source.streetJob), gardenOrder=CityGardenOrder.Copy(source.gardenOrder), stats=CityPlayerStats.Copy(source.stats)
+            mission=CityMissionSaveData.Copy(source.mission), streetJob=CityStreetJobSaveData.Copy(source.streetJob), gardenOrder=CityGardenOrder.Copy(source.gardenOrder), stats=CityPlayerStats.Copy(source.stats),
+            starterGoals=CopyStarterGoals(source.starterGoals)
         };
+        private static CityStarterGoalsData CopyStarterGoals(CityStarterGoalsData source) => source == null ? null :
+            new CityStarterGoalsData { hideoutVisited=source.hideoutVisited, firstPlantWatered=source.firstPlantWatered };
     }
 }

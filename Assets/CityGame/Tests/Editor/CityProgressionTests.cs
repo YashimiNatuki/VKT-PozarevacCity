@@ -178,4 +178,159 @@ namespace Pozarevac.CityGame.Tests.Editor
             Assert.That(latest.cash, Is.EqualTo(2600));
         }
     }
+
+    public sealed class CityStarterGoalsTests
+    {
+        private static CityProgression Player(bool unlocked = true)
+        {
+            var player = new CityProgression(new CitySession(2500));
+            player.CreateCharacter("Starter Test");
+            if (unlocked) player.CompleteContract(1);
+            return player;
+        }
+        private static System.Reflection.MethodInfo Method(string name)
+        {
+            var method = typeof(CityProgression).GetMethod(name);
+            Assert.That(method, Is.Not.Null, name + " must use the existing progression owner.");
+            return method;
+        }
+        private static bool Visit(CityProgression player) => (bool)Method("RecordHideoutVisit").Invoke(player, null);
+        private static bool Water(CityProgression player, int plot, long utc) =>
+            (bool)Method("WaterGardenPlot").Invoke(player, new object[] { plot, utc });
+        private static System.Reflection.FieldInfo GoalsField()
+        {
+            var field = typeof(CityProfileData).GetField("starterGoals");
+            Assert.That(field, Is.Not.Null, "Persistent starter milestones need a versioned profile field.");
+            return field;
+        }
+        private static object Goals(CityProgression player)
+        {
+            var property = typeof(CityProgression).GetProperty("StarterGoals");
+            Assert.That(property, Is.Not.Null);
+            object result = property.GetValue(player);
+            Assert.That(result, Is.Not.Null);
+            return result;
+        }
+        private static bool Flag(object goals, string name) => (bool)goals.GetType().GetField(name).GetValue(goals);
+        private static void SetFlag(object goals, string name, bool value) => goals.GetType().GetField(name).SetValue(goals, value);
+
+        [Test]
+        public void VisitRequiresTheExistingUnlockAndNeverChangesEconomyOrTraining()
+        {
+            var player = Player(false);
+            Assert.That(Visit(player), Is.False);
+            Assert.That(Flag(Goals(player), "hideoutVisited"), Is.False);
+            player.CompleteContract(1);
+            int cash = player.Session.Cash, reputation = player.Session.Reputation, xp = player.Lifestyle.Experience;
+            Assert.That(Visit(player), Is.True);
+            Assert.That(Visit(player), Is.False);
+            Assert.That(Flag(Goals(player), "hideoutVisited"), Is.True);
+            Assert.That(Flag(Goals(player), "firstPlantWatered"), Is.False);
+            Assert.That(player.Session.Cash, Is.EqualTo(cash));
+            Assert.That(player.Session.Reputation, Is.EqualTo(reputation));
+            Assert.That(player.Lifestyle.Experience, Is.EqualTo(xp));
+            Assert.That(player.CompletedContracts, Is.EqualTo(1));
+        }
+
+        [Test]
+        public void ExplicitSuccessfulCatalogWateringLatchesCareWithoutAnotherReward()
+        {
+            var player = Player(); Visit(player);
+            Assert.That(player.Garden.BuySeed(0), Is.True);
+            Assert.That(player.Garden.PlantFromInventory(0, 0, 1000), Is.True);
+            Assert.That(Flag(Goals(player), "firstPlantWatered"), Is.False, "Planting is not explicit care.");
+            int cash = player.Session.Cash, reputation = player.Session.Reputation, xp = player.Lifestyle.Experience;
+            Assert.That(Water(player, 0, 1000), Is.True);
+            Assert.That(Flag(Goals(player), "firstPlantWatered"), Is.True);
+            Assert.That(player.Garden.Plot(0).moistureSeconds, Is.EqualTo(CityGarden.WaterDuration));
+            Assert.That(Water(player, 0, 1000), Is.False);
+            Assert.That(Water(player, 1, 1000), Is.False);
+            Assert.That(player.Session.Cash, Is.EqualTo(cash));
+            Assert.That(player.Session.Reputation, Is.EqualTo(reputation));
+            Assert.That(player.Lifestyle.Experience, Is.EqualTo(xp));
+        }
+
+        [Test]
+        public void CareDoesNotInferAVisitOrCountTheLegacyTrialPlant()
+        {
+            var unvisited = Player();
+            unvisited.Garden.BuySeed(0); unvisited.Garden.PlantFromInventory(0, 0, 1000);
+            Assert.That(Water(unvisited, 0, 1000), Is.True);
+            Assert.That(Flag(Goals(unvisited), "firstPlantWatered"), Is.False);
+            Assert.That(Flag(Goals(unvisited), "hideoutVisited"), Is.False);
+            var legacy = Player(); Visit(legacy); legacy.Garden.Plant(0, 0, 1000);
+            Assert.That(Water(legacy, 0, 1000), Is.True);
+            Assert.That(Flag(Goals(legacy), "firstPlantWatered"), Is.False);
+        }
+
+        [Test]
+        public void StarterSnapshotsAndPublicViewAreDeepCopies()
+        {
+            var player = Player(); Visit(player);
+            object exposed = Goals(player); SetFlag(exposed, "hideoutVisited", false);
+            Assert.That(Flag(Goals(player), "hideoutVisited"), Is.True);
+            object saved = GoalsField().GetValue(player.Snapshot()); SetFlag(saved, "hideoutVisited", false);
+            Assert.That(Flag(Goals(player), "hideoutVisited"), Is.True);
+        }
+
+        [TestCase(1)] [TestCase(8)] [TestCase(9)]
+        public void LegacyProfilesUpgradeWithoutInventingHistoricGoals(int version)
+        {
+            Assert.That(CityProgression.CurrentProfileVersion, Is.EqualTo(10));
+            var garden = new CityGarden(new CitySession(2500)); garden.BuySeed(0);
+            var old = new CityProfileData { version=version, callsign="Legacy", cash=2440, completedContracts=1, garden=garden.Snapshot() };
+            var player = new CityProgression(CitySession.Restore(old), old);
+            Assert.That(Flag(Goals(player), "hideoutVisited"), Is.False);
+            Assert.That(Flag(Goals(player), "firstPlantWatered"), Is.False);
+            Assert.That(player.Session.Cash, Is.EqualTo(2440));
+            Assert.That(player.Garden.Seeds(0), Is.EqualTo(1));
+            Assert.That(player.Snapshot().version, Is.EqualTo(10));
+            CityProgression.Validate(player.Snapshot());
+        }
+
+        [TestCase(10, true, false, 1)]
+        [TestCase(9, false, true, 1)]
+        [TestCase(10, false, true, 0)]
+        public void RejectsImpossibleOrBackdatedStarterHistory(int version, bool care, bool visit, int contracts)
+        {
+            var saved = Player().Snapshot(); saved.version=version; saved.completedContracts=contracts;
+            object goals = Activator.CreateInstance(GoalsField().FieldType);
+            SetFlag(goals, "hideoutVisited", visit); SetFlag(goals, "firstPlantWatered", care);
+            GoalsField().SetValue(saved, goals);
+            Assert.Throws<ArgumentException>(() => CityProgression.Validate(saved));
+        }
+
+        [Test]
+        public void DiskReloadPreservesVisitAndCareAfterThePlantIsHarvested()
+        {
+            string directory=Path.Combine(Path.GetTempPath(),"vkt-starter-"+Guid.NewGuid().ToString("N"));
+            string path=Path.Combine(directory,"profile.json");
+            try
+            {
+                var player=Player(); Visit(player);
+                var first=new CitySaveStore(path); first.Save(player.Snapshot());
+                var disk=new CitySaveStore(path); Assert.That(disk.TryLoad(out var saved,out _),Is.True);
+                player=new CityProgression(CitySession.Restore(saved),saved);
+                Assert.That(Flag(Goals(player),"hideoutVisited"),Is.True);
+                Assert.That(Flag(Goals(player),"firstPlantWatered"),Is.False);
+                player.Garden.BuySeed(0); player.Garden.PlantFromInventory(0,0,1000); Water(player,0,1000);
+                long now=1000;
+                while(!player.Garden.IsReady(0))
+                {
+                    now+=(long)CityGarden.WaterDuration;player.Garden.Advance(now);
+                    if(!player.Garden.IsReady(0))Assert.That(Water(player,0,now),Is.True);
+                }
+                Assert.That(player.Garden.Harvest(0,now),Is.True);
+                disk.Save(player.Snapshot());
+                var reload=new CitySaveStore(path);Assert.That(reload.TryLoad(out saved,out _),Is.True);
+                player=new CityProgression(CitySession.Restore(saved),saved);
+                Assert.That(player.Garden.Plot(0).planted,Is.False);
+                Assert.That(Flag(Goals(player),"hideoutVisited"),Is.True);
+                Assert.That(Flag(Goals(player),"firstPlantWatered"),Is.True);
+                Assert.That(Visit(player),Is.False);
+                CityProgression.Validate(player.Snapshot());
+            }
+            finally { if(Directory.Exists(directory))Directory.Delete(directory,true); }
+        }
+    }
 }

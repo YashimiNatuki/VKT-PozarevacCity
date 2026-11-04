@@ -208,7 +208,7 @@ namespace Pozarevac.CityGame
         {
             journal = Rect("JobsPanel", transform, new Vector2(720, 880), Vector2.zero).gameObject;
             journal.AddComponent<Image>().color = new Color(.025f, .04f, .065f, .99f);
-            Label("JobsTitle", journal.transform, "DNEVNIK / ULIČNI POSLOVI", 28, 25, 50);
+            Label("JobsTitle", journal.transform, "DNEVNIK / MOJ PUT I POSLOVI", 28, 25, 50);
             jobDetails = Label("JobDetails", journal.transform, "", 20, 100, 560);
             jobDetails.alignment = TextAnchor.UpperLeft; jobDetails.supportRichText = false;
             RectTransform viewport=(RectTransform)jobDetails.transform.parent;
@@ -239,23 +239,48 @@ namespace Pozarevac.CityGame
             Button("BackFromJobs", journal.transform, "NAZAD U TELEFON", new Vector2(0, -365), Open);
             journal.SetActive(false);
         }
+        private string StarterGuide()
+        {
+            CityProgression progress=owner.Progression;
+            CityStarterGoalsData goals=progress.StarterGoals;
+            int contracts=progress.CompletedContracts;
+            int completed=contracts+(goals.hideoutVisited?1:0)+(goals.firstPlantWatered?1:0);
+            string next=contracts==0
+                ? "SLEDEĆE / Prati označeni plavi marker i završi rutu. Štek i seme dostupni su posle prvog ugovora."
+                : contracts<3
+                    ? "SLEDEĆE / Nastavi glavni ugovor ispod. N otvara sledeći nakon završetka. Štek možeš da obiđeš i ranije."
+                    : !goals.hideoutVisited
+                        ? "SLEDEĆE / Pronađi vrata šteka kod trećeg markera. Priđi, pogledaj vrata i pritisni E."
+                        : !goals.firstPlantWatered
+                            ? "SLEDEĆE / U šteku kupi seme na pultu. Izaberi vrstu tasterom V, priđi praznoj saksiji i pritisni E za sadnju, zatim ponovo E da zaliješ."
+                            : "Prvih pet ciljeva je završeno. Za ovaj cilj ne moraš da čekaš berbu. Proveri dostupne poslove dok biljka raste.";
+            return $"MOJ PUT / {completed}/5\nPRVIH PET CILJEVA\n"+
+                $"{GoalStatus(contracts>=1,contracts==0)} 01 / Prva noć / Mila\n"+
+                $"{GoalStatus(contracts>=2,contracts==1)} 02 / Roba za blok / Kure\n"+
+                $"{GoalStatus(contracts>=3,contracts==2)} 03 / Noćni ekspres / Luka\n"+
+                $"{GoalStatus(goals.hideoutVisited,contracts==3&&!goals.hideoutVisited)} 04 / Pronađi štek\n"+
+                $"{GoalStatus(goals.firstPlantWatered,contracts==3&&goals.hideoutVisited&&!goals.firstPlantWatered)} 05 / Posadi i zalij\n\n"+next;
+        }
+        private static string GoalStatus(bool completed,bool current)=>completed?"[GOTOVO]":current?"[SLEDEĆE]":"[ČEKA]";
+
         private void RefreshJobs()
         {
             CityMissionDirector director = owner.GetComponent<CityMissionDirector>();
             CityStreetJobs jobs = director != null ? director.Jobs : null;
             if (jobs == null) { jobDetails.text = "Učitavanje dnevnika..."; acceptJob.interactable = cancelJob.interactable = false; return; }
             bool unlocked = director.StreetJobsUnlocked;
+            string guide=StarterGuide();
             var order=owner.Progression.GardenOrder;
             if(order.IsActive)
             {
                 string phase=order.HasCargo?"1 / PREDAJA: izađi iz šteka i predaj paket Kuretu kod markera 2.":"2 / POTVRDA: vrati se u štek, pult PORUDŽBINE, i pritisni E za isplatu.";
-                jobDetails.text=$"PORUDŽBINA IZ ŠTEKA / KURE\n{CityGarden.VarietyName(order.Variety)} × 2 / roba je već skinuta iz zaliha\n\n{phase}\n\nRok: {Math.Ceiling(order.RemainingSeconds)} s igre\nIsplata tek u šteku: {order.CashReward} DIN + 3 REP\n\n{order.BlockReason}\n{order.Message}\n\nOTKAZ, SMRT I ISTEK ROKA gube paket/potvrdu; nema povraćaja robe ni isplate. Telefon pauzira rok.\n\nNapredak i preostalo vreme nastavljaju posle učitavanja.";
+                jobDetails.text=$"PORUDŽBINA IZ ŠTEKA / KURE\n{CityGarden.VarietyName(order.Variety)} × 2 / roba je već skinuta iz zaliha\n\n{phase}\n\nRok: {Math.Ceiling(order.RemainingSeconds)} s igre\nIsplata tek u šteku: {order.CashReward} DIN + 3 REP\n\n{order.BlockReason}\n{order.Message}\n\nOTKAZ, SMRT I ISTEK ROKA gube paket/potvrdu; nema povraćaja robe ni isplate. Telefon pauzira rok.\n\nNapredak i preostalo vreme nastavljaju posle učitavanja."+ "\n\n"+guide;
                 acceptJob.interactable=false;cancelJob.interactable=true;return;
             }
             if(!unlocked)
             {
                 var run=director.Run;
-                jobDetails.text=$"GLAVNI UGOVOR {director.ContractNumber}/{director.ContractCount}\n{run.Contract.Title}\n\n{run.Contract.Briefing}\n\nCilj {Math.Min(3,run.ObjectiveIndex+1)}/3 / {run.State}\n{run.Message}\n\nE: prihvati ili potvrdi cilj kod plavog markera.\nM: mapa ulica / P: telefon / ESC: povratak.\nN: sledeći ugovor posle završetka / R: novi pokušaj posle neuspeha.\n\nTrening je blokiran tokom aktivne dostave.\nSporedni poslovi dolaze posle sva 3 glavna ugovora.\nTelefon pauzira igru dok čitaš.";
+                jobDetails.text=guide+"\n\n"+$"GLAVNI UGOVOR {director.ContractNumber}/{director.ContractCount}\n{run.Contract.Title}\n\n{run.Contract.Briefing}\n\nCilj {Math.Min(3,run.ObjectiveIndex+1)}/3 / {run.State}\n{run.Message}\n\nE: prihvati ili potvrdi cilj kod plavog markera.\nM: mapa ulica / P: telefon / ESC: povratak.\nN: sledeći ugovor posle završetka / R: novi pokušaj posle neuspeha.\n\nTrening je blokiran tokom aktivne dostave.\nSporedni poslovi dolaze posle sva 3 glavna ugovora.\nTelefon pauzira igru dok čitaš.";
                 acceptJob.interactable=cancelJob.interactable=false;return;
             }
             string route = "";
@@ -269,7 +294,8 @@ namespace Pozarevac.CityGame
                 : jobs.CooldownSeconds > 0 ? $"Novi poziv za {Math.Ceiling(jobs.CooldownSeconds)} sekundi igre" : "Ponuda je spremna za prihvatanje.";
             if (Time.unscaledTime < feedbackUntil) availability = feedback;
             else if(unlocked&&jobs.BlockReason.Length>0)availability=jobs.BlockReason+(jobs.IsActive?" Rok nastavlja kada zatvoriš telefon.":"");
-            jobDetails.text = $"Glavni ugovori: {owner.Progression.CompletedContracts}/3\nZavršeni poslovi: {jobs.CompletedJobs} / poglavlje {jobs.StoryChapter}/3\n{jobs.PhaseSummary}\n\n{jobs.Offer.Title}\n{jobs.Offer.Briefing}\n\n{route}\nNagrada: {jobs.Offer.CashReward} cash + {jobs.Offer.ReputationReward} REP\nRok ponude: {jobs.Offer.TimeLimit:0}s\n\n{availability}\nTelefon pauzira rok; zatvori ga za nastavak.\n\nPORUDŽBINE IZ ŠTEKA: {order.Completed} završeno. Pult PORUDŽBINE u šteku pakuje 2 komada izabranog strejna iz zaliha. V menja strejn. Prihvatanje skida robu; otkaz/istek roka je gube. Predaja kod markera 2, isplata nazad u šteku.";
+            string jobText = $"Glavni ugovori: {owner.Progression.CompletedContracts}/3\nZavršeni poslovi: {jobs.CompletedJobs} / poglavlje {jobs.StoryChapter}/3\n{jobs.PhaseSummary}\n\n{jobs.Offer.Title}\n{jobs.Offer.Briefing}\n\n{route}\nNagrada: {jobs.Offer.CashReward} cash + {jobs.Offer.ReputationReward} REP\nRok ponude: {jobs.Offer.TimeLimit:0}s\n\n{availability}\nTelefon pauzira rok; zatvori ga za nastavak.\n\nPORUDŽBINE IZ ŠTEKA: {order.Completed} završeno. Pult PORUDŽBINE u šteku pakuje 2 komada izabranog strejna iz zaliha. V menja strejn. Prihvatanje skida robu; otkaz/istek roka je gube. Predaja kod markera 2, isplata nazad u šteku.";
+            jobDetails.text=jobs.IsActive?jobText+"\n\n"+guide:guide+"\n\n"+jobText;
             acceptJob.interactable = unlocked && !jobs.IsActive && jobs.CooldownSeconds <= 0 && jobs.BlockReason.Length==0;
             cancelJob.interactable = jobs.IsActive;
         }
