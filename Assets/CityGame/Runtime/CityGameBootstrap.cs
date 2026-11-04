@@ -90,6 +90,9 @@ namespace Pozarevac.CityGame
 
         private void Update()
         {
+            bool driving = Car != null && Car.IsOccupied;
+            Touch?.SetDrivingMode(driving);
+            hud?.SetDrivingPresentation(driving, driving ? Car.Speed : 0f);
             if (Touch != null && Director != null) Touch.SetOverlayBlocked(Director.IsPaused || Progression.Lifestyle.IsTraining || Progression.Lifestyle.IsBoxing);
             if (Vitals != null)
             {

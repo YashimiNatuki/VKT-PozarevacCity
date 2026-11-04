@@ -1,0 +1,181 @@
+{
+  "windows": {
+    "validationExit": 0,
+    "passed": true,
+    "tests": {
+      "mode": "tests",
+      "processExit": 0,
+      "total": 362,
+      "passed": 361,
+      "failed": 0,
+      "skipped": 1
+    },
+    "focused": {
+      "mode": "focused",
+      "processExit": 0,
+      "total": 58,
+      "passed": 58,
+      "failed": 0,
+      "skipped": 0
+    },
+    "build": {
+      "mode": "build",
+      "processExit": 0
+    },
+    "nativeFlows": 5,
+    "sourceFingerprint": "8ce030c0666d6b3daa9b0b4af81b882beb09c968cf64ac7268b1c30579403a7e"
+  },
+  "desktop": {
+    "passed": true,
+    "outdoorEntered": true,
+    "outdoorDrove": true,
+    "outdoorExited": true,
+    "spawned": true,
+    "entered": true,
+    "drove": true,
+    "paused": true,
+    "stoppedAtWall": true,
+    "reverseSteering": true,
+    "blockedExits": true,
+    "safeExit": true,
+    "walkingRestored": true,
+    "checkpointExit": true,
+    "touchControls": false,
+    "outdoorDriveMeters": 18.052095413208008,
+    "drivenMeters": 1.7014274597167969,
+    "recordedMeters": 1.7014274597167969,
+    "wallClearance": 1.9812240600585938,
+    "reverseMeters": 2.1998825073242188,
+    "reverseTurnDegrees": -41.33140182495117,
+    "walkedMeters": 2.583338737487793,
+    "outdoorSeconds": 3.077770233154297,
+    "outdoorPeakSpeed": 7.5,
+    "outdoorStart": {
+      "x": -28.627174377441406,
+      "y": -0.019999980926513672,
+      "z": 8.923410415649414
+    },
+    "outdoorEnd": {
+      "x": -23.255077362060547,
+      "y": -0.019999980926513672,
+      "z": 26.15764045715332
+    },
+    "outdoorHeading": {
+      "x": 0.2975888252258301,
+      "y": 0.0,
+      "z": 0.9546941518783569
+    },
+    "outdoorStop": "",
+    "parkingStreet": "15. oktobra",
+    "error": "",
+    "input": "Synthetic Unity input on the authored street and a separate collision fixture. Physical touch review is separate."
+  },
+  "touchPreview": {
+    "passed": true,
+    "outdoorEntered": true,
+    "outdoorDrove": true,
+    "outdoorExited": true,
+    "spawned": true,
+    "entered": true,
+    "drove": true,
+    "paused": true,
+    "stoppedAtWall": true,
+    "reverseSteering": true,
+    "blockedExits": true,
+    "safeExit": true,
+    "walkingRestored": true,
+    "checkpointExit": true,
+    "touchControls": true,
+    "outdoorDriveMeters": 18.124387741088867,
+    "drivenMeters": 1.7015705108642578,
+    "recordedMeters": 1.7015705108642578,
+    "wallClearance": 1.9822807312011719,
+    "reverseMeters": 2.1500205993652344,
+    "reverseTurnDegrees": -41.33123016357422,
+    "walkedMeters": 2.583301544189453,
+    "outdoorSeconds": 3.147541046142578,
+    "outdoorPeakSpeed": 7.5,
+    "outdoorStart": {
+      "x": -28.627174377441406,
+      "y": -0.019999980926513672,
+      "z": 8.923410415649414
+    },
+    "outdoorEnd": {
+      "x": -23.233562469482422,
+      "y": -0.019999980926513672,
+      "z": 26.22665786743164
+    },
+    "outdoorHeading": {
+      "x": 0.2975888252258301,
+      "y": 0.0,
+      "z": 0.9546941518783569
+    },
+    "outdoorStop": "",
+    "parkingStreet": "15. oktobra",
+    "error": "",
+    "input": "Synthetic Unity input on the authored street and a separate collision fixture. Physical touch review is separate."
+  },
+  "beforeDriveChanges": {
+    "passed": true,
+    "outdoorEntered": true,
+    "outdoorDrove": true,
+    "outdoorExited": true,
+    "spawned": true,
+    "entered": true,
+    "drove": true,
+    "paused": true,
+    "stoppedAtWall": true,
+    "reverseSteering": true,
+    "blockedExits": true,
+    "safeExit": true,
+    "walkingRestored": true,
+    "checkpointExit": true,
+    "touchControls": false,
+    "outdoorDriveMeters": 18.10340118408203,
+    "drivenMeters": 1.7014007568359375,
+    "recordedMeters": 1.7014007568359375,
+    "wallClearance": 1.9813156127929688,
+    "reverseMeters": 1.7720069885253906,
+    "reverseTurnDegrees": -28.496870040893555,
+    "walkedMeters": 2.5833520889282227,
+    "outdoorSeconds": 3.1130738258361816,
+    "outdoorPeakSpeed": 7.5,
+    "outdoorStart": {
+      "x": -28.627174377441406,
+      "y": -0.019999980926513672,
+      "z": 8.923410415649414
+    },
+    "outdoorEnd": {
+      "x": -23.23981285095215,
+      "y": -0.019999980926513672,
+      "z": 26.206623077392578
+    },
+    "outdoorHeading": {
+      "x": 0.2975888252258301,
+      "y": 0.0,
+      "z": 0.9546941518783569
+    },
+    "outdoorStop": "",
+    "parkingStreet": "15. oktobra",
+    "error": "",
+    "input": "Synthetic Unity input on the authored street and a separate collision fixture. Physical touch review is separate."
+  },
+  "sourceFingerprint": "43556f3aeac6db3e4fcd9047feb71f03d866cb9e33e57b220fc9236448737e14",
+  "changedFiles": [
+    "Assets/CityGame/Runtime/CityCameraRig.cs",
+    "Assets/CityGame/Runtime/CityControlsDock.cs",
+    "Assets/CityGame/Runtime/CityGameBootstrap.cs",
+    "Assets/CityGame/Runtime/CityHud.cs",
+    "Assets/CityGame/Runtime/CityParkedCar.cs",
+    "Assets/CityGame/Runtime/CityParkedCarValidation.cs",
+    "Assets/CityGame/Runtime/CityParkedCarVisual.cs",
+    "Assets/CityGame/Runtime/CityPlayerController.cs",
+    "Assets/CityGame/Runtime/CityTouchControls.cs",
+    "Docs/Screenshots/clear-drive-20261104.png",
+    "Docs/Verification-Clear-Drive-20261104.json"
+  ],
+  "unverified": [
+    "New APK and physical touch",
+    "Reported phone stall cause"
+  ]
+}

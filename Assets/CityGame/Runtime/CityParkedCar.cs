@@ -23,13 +23,18 @@ namespace Pozarevac.CityGame
         private Func<Vector3, bool> exitClear;
         private int lastTransition = -1;
         private bool suspended;
+        private Collider driveBlockCollider;
+        private string driveBlockReason;
 
         public bool IsOccupied => driver != null;
         public float Speed { get; private set; }
+        internal string DriveBlock => driveBlockCollider != null
+            ? driveBlockCollider.transform.parent?.name + "/" + driveBlockCollider.name
+            : driveBlockReason ?? "";
         public string ParkingStreet { get; private set; }
         private bool TouchVisible => game != null && game.Touch != null && game.Touch.IsVisible;
         public override string Prompt => IsOccupied
-            ? TouchVisible ? "AUTO / ↑ ↓ gas i rikverc / ← → skretanje / KORISTI: izađi"
+            ? TouchVisible ? ""
                            : "AUTO / W S: gas i rikverc / A D: skretanje / E: izađi"
             : TouchVisible ? "KORISTI / Uđi u parkirani auto" : "E / Uđi u parkirani auto";
 
@@ -148,6 +153,8 @@ namespace Pozarevac.CityGame
             int steps = Mathf.CeilToInt(time / .03334f);
             float dt = time / steps;
             float meters = 0;
+            driveBlockReason = null;
+            driveBlockCollider = null;
             for (int i = 0; i < steps; i++)
             {
                 float throttle = Mathf.Clamp(input.y, -1, 1);
@@ -175,17 +182,31 @@ namespace Pozarevac.CityGame
             Quaternion rotation = current * Quaternion.Euler(0, yaw, 0);
             Vector3 forward = rotation * Vector3.forward;
             Vector3 approximate = start + forward * (Speed * dt);
-            if (!TryGround(approximate, out Vector3 end) || !HasSupport(end, rotation)) return false;
+            if ((approximate - start).sqrMagnitude <= .00000001f) return true;
+            if (!TryGround(approximate, out Vector3 end))
+            {
+                driveBlockReason = "ground";
+                return false;
+            }
+            if (!HasSupport(end, rotation))
+            {
+                driveBlockReason = "axle support";
+                return false;
+            }
             Vector3 displacement = end - start;
             float turnMargin = Mathf.Abs(yaw) * Mathf.Deg2Rad * 2f;
             if (!IsBodyClear(end, rotation, BodyHalf + new Vector3(turnMargin, 0, turnMargin))) return false;
             float distance = displacement.magnitude;
-            if (distance <= .0001f) return false;
+            if (distance <= .0001f) { driveBlockReason = "small step"; return false; }
             int count = Physics.BoxCastNonAlloc(start + BodyCenter, BodyHalf, displacement / distance,
                 hits, current, distance, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore);
-            if (count == hits.Length) return false;
+            if (count == hits.Length) { driveBlockReason = "sweep saturated"; return false; }
             for (int i = 0; i < count; i++)
-                if (IsObstacle(hits[i].collider)) return false;
+                if (IsObstacle(hits[i].collider))
+                {
+                    driveBlockCollider = hits[i].collider;
+                    return false;
+                }
             transform.SetPositionAndRotation(end, rotation);
             meters = new Vector2(displacement.x, displacement.z).magnitude;
             return true;
@@ -204,9 +225,13 @@ namespace Pozarevac.CityGame
         {
             int count = Physics.OverlapBoxNonAlloc(position + BodyCenter, half, overlaps, rotation,
                 Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore);
-            if (count == overlaps.Length) return false;
+            if (count == overlaps.Length) { driveBlockReason = "overlap saturated"; return false; }
             for (int i = 0; i < count; i++)
-                if (IsObstacle(overlaps[i])) return false;
+                if (IsObstacle(overlaps[i]))
+                {
+                    driveBlockCollider = overlaps[i];
+                    return false;
+                }
             return true;
         }
 

@@ -14,13 +14,16 @@ namespace Pozarevac.CityGame
         private Text identity;
         private Text health;
         private Text equipment;
+        private Text vehicleSpeed;
         private RectTransform healthFill;
         private GameObject promptCard,notificationCard;
         private CityUiSkin skin;
         private float notificationUntil;
         private bool trainingPresentation;
+        private bool drivingPresentation;
         private GameObject missionCard, crosshairObject;
         private int displayedMinute = -1;
+        private int displayedSpeed = int.MinValue;
         private CitySession session;
         private CityWorldAtmosphere atmosphere;
 
@@ -94,6 +97,8 @@ namespace Pozarevac.CityGame
             identity.text = "VKT / Velika Kradja Točkova / Po-Blok-C / what bike since 1995";
             health = CreateLabel("Health", new Vector2(-30f, -87f), new Vector2(232f, 24f), 15, TextAnchor.UpperRight);
             equipment = CreateLabel("Equipment", new Vector2(-30f, -123f), new Vector2(232f, 40f), 12, TextAnchor.UpperRight);
+            vehicleSpeed = CreateLabel("VehicleSpeed", new Vector2(-30f, -125f), new Vector2(232f, 34f), 24, TextAnchor.UpperRight);
+            vehicleSpeed.gameObject.SetActive(false);
             cash = CreateLabel("Cash", new Vector2(-30f, -27f), new Vector2(232f, 30f), 22, TextAnchor.UpperRight);
             clock = CreateLabel("Clock", new Vector2(-30f, -61f), new Vector2(232f, 22f), 12, TextAnchor.UpperRight);
             prompt = CreateLabel("Prompt", new Vector2(0f, 72f), new Vector2(580f, 40f), 16, TextAnchor.LowerCenter);
@@ -157,11 +162,29 @@ namespace Pozarevac.CityGame
             trainingPresentation=active;
             if(missionCard!=null)missionCard.SetActive(!active);
             if(mission!=null)mission.gameObject.SetActive(!active);
-            if(crosshairObject!=null)crosshairObject.SetActive(!active);
+            if(crosshairObject!=null)crosshairObject.SetActive(!active&&!drivingPresentation);
             if(promptCard!=null)promptCard.SetActive(!active&&!string.IsNullOrEmpty(prompt.text));
             if(prompt!=null)prompt.gameObject.SetActive(!active);
             if(notificationCard!=null)notificationCard.SetActive(!active&&Time.unscaledTime<notificationUntil&&!string.IsNullOrEmpty(notification.text));
             if(notification!=null)notification.gameObject.SetActive(!active);
+        }
+
+        public void SetDrivingPresentation(bool active, float metersPerSecond)
+        {
+            if (vehicleSpeed == null) return;
+            if (drivingPresentation != active)
+            {
+                drivingPresentation = active;
+                vehicleSpeed.gameObject.SetActive(active);
+                equipment.gameObject.SetActive(!active);
+                crosshairObject.SetActive(!active && !trainingPresentation);
+                displayedSpeed = int.MinValue;
+            }
+            if (!active) return;
+            int speed = float.IsFinite(metersPerSecond) ? Mathf.RoundToInt(metersPerSecond * 3.6f) : 0;
+            if (speed == displayedSpeed) return;
+            displayedSpeed = speed;
+            vehicleSpeed.text = speed < 0 ? $"R   {-speed} km/h" : $"{speed} km/h";
         }
 
         public void SetIdentity(string callsign, bool phoneUnlocked)

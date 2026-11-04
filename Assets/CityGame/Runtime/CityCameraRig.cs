@@ -213,8 +213,8 @@ namespace Pozarevac.CityGame
             {
                 Transform car = mover.Vehicle.transform;
                 Vector3 target = car.position + Vector3.up * 1.5f;
-                Vector3 position = RetractCamera(target, target + Vector3.up * 1.25f - car.forward * 4.7f);
-                Vector3 aim = car.position + Vector3.up * .95f - position;
+                Vector3 position = RetractCamera(target, target + Vector3.up * 1.65f - car.forward * 5.6f);
+                Vector3 aim = car.position + car.forward * 2f + Vector3.up * .95f - position;
                 view.SetPositionAndRotation(position, Quaternion.LookRotation(aim, Vector3.up));
                 if (weapon != null) weapon.gameObject.SetActive(false);
                 return;

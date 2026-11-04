@@ -69,7 +69,8 @@ namespace Pozarevac.CityGame
         {
             if(game==null)return;
             bool ready=game.WorldReady&&game.Progression.IsCreated&&game.Vitals.IsAlive&&(game.Intro==null||!game.Intro.IsActive);
-            dock.SetActive(ready&&!helpOwned&&!game.Director.IsPaused&&!life.Life.IsTraining&&!life.Life.IsBoxing);
+            dock.SetActive(ready&&!helpOwned&&!game.Director.IsPaused&&!life.Life.IsTraining&&!life.Life.IsBoxing&&
+                (game.Car==null||!game.Car.IsOccupied));
             var keys=Keyboard.current;if(!ready||keys==null)return;
             if(helpOwned&&keys.escapeKey.wasPressedThisFrame){CloseHelp();game.Director.SuppressPauseThisFrame();return;}
             if(keys.f1Key.wasPressedThisFrame){if(helpOwned)CloseHelp();else ShowHelp();}

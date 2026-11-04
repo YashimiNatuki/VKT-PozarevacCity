@@ -21,9 +21,12 @@ namespace Pozarevac.CityGame
             public bool spawned, entered, drove, paused, stoppedAtWall, reverseSteering, blockedExits, safeExit, walkingRestored, checkpointExit;
             public bool touchControls;
             public float outdoorDriveMeters, drivenMeters, recordedMeters, wallClearance, reverseMeters, reverseTurnDegrees, walkedMeters;
+            public float outdoorSeconds, outdoorPeakSpeed;
+            public Vector3 outdoorStart, outdoorEnd, outdoorHeading;
+            public string outdoorStop = "";
             public string parkingStreet = "";
             public string error = "";
-            public string input = "Synthetic Unity input against controlled geometry. Physical touch review is separate.";
+            public string input = "Synthetic Unity input on the authored street and a separate collision fixture. Physical touch review is separate.";
         }
 
         private readonly Report report = new Report();
@@ -90,13 +93,7 @@ namespace Pozarevac.CityGame
                 Finish("The parked car at its authored street location could not be entered.");
                 yield break;
             }
-            Vector3 outdoorStart = car.transform.position;
-            SetForward(true);
-            yield return new WaitForSecondsRealtime(.5f);
-            report.outdoorDriveMeters = HorizontalDistance(car.transform.position, outdoorStart);
-            report.outdoorDrove = report.outdoorDriveMeters > .08f;
-            if (report.outdoorDrove) Capture();
-            SetForward(false);
+            yield return DriveOutdoorRoute(car);
             yield return null;
             float stopDeadline = Time.realtimeSinceStartup + 2.5f;
             while (Mathf.Abs(car.Speed) > .08f && Time.realtimeSinceStartup < stopDeadline) yield return null;
@@ -104,7 +101,9 @@ namespace Pozarevac.CityGame
             report.outdoorExited = !car.IsOccupied && body.enabled;
             if (!report.outdoorDrove || !report.outdoorExited)
             {
-                Finish("The authored street location did not support a short drive and normal exit.");
+                Finish(!report.outdoorDrove
+                    ? $"The car covered only {report.outdoorDriveMeters:0.00} of 18 m on {report.parkingStreet}. {report.outdoorStop}"
+                    : "The authored street route did not support normal exit.");
                 yield break;
             }
 
@@ -246,6 +245,60 @@ namespace Pozarevac.CityGame
                 && Vector3.Distance(player.position, car.transform.position) > 5f
                 && Vector3.Distance(carBeforeCheckpoint, car.transform.position) < .01f;
             Finish(report.checkpointExit ? "" : "The occupied car did not release safely at checkpoint return.");
+        }
+
+        private IEnumerator DriveOutdoorRoute(CityParkedCar car)
+        {
+            const float requiredMeters = 18f;
+            report.outdoorStart = car.transform.position;
+            report.outdoorHeading = car.transform.forward;
+            float started = Time.realtimeSinceStartup;
+            float lastAdvance = started;
+            float lastDistance = 0f;
+            SetForward(true);
+            while (Time.realtimeSinceStartup - started < 15f && Time.realtimeSinceStartup - lastAdvance < 2f)
+            {
+                yield return null;
+                report.outdoorEnd = car.transform.position;
+                report.outdoorDriveMeters = Vector3.Dot(report.outdoorEnd - report.outdoorStart, report.outdoorHeading);
+                report.outdoorPeakSpeed = Mathf.Max(report.outdoorPeakSpeed, car.Speed);
+                if (report.outdoorDriveMeters >= requiredMeters) break;
+                if (report.outdoorDriveMeters - lastDistance < .05f) continue;
+                lastDistance = report.outdoorDriveMeters;
+                lastAdvance = Time.realtimeSinceStartup;
+            }
+            report.outdoorSeconds = Time.realtimeSinceStartup - started;
+            report.outdoorDrove = report.outdoorDriveMeters >= requiredMeters;
+            if (!report.outdoorDrove)
+                report.outdoorStop = string.IsNullOrEmpty(car.DriveBlock) ? DescribeOutdoorStop(car) : car.DriveBlock;
+            Capture();
+            SetForward(false);
+        }
+
+        private static string DescribeOutdoorStop(CityParkedCar car)
+        {
+            Physics.SyncTransforms();
+            Transform root = car.transform;
+            BoxCollider box = car.GetComponent<BoxCollider>();
+            Vector3 ahead = root.position + root.forward * .18f;
+            Vector3 axle = root.forward * 1.14f;
+            var ground = new CityGroundProbe();
+            string Probe(Vector3 position) => ground.TryFindSurface(position, out Vector3 surface)
+                ? (surface.y - position.y).ToString("+0.000;-0.000;0.000", System.Globalization.CultureInfo.InvariantCulture)
+                : "missing";
+            string summary = $"Ground deltas center/front/rear {Probe(ahead)}/{Probe(ahead + axle)}/{Probe(ahead - axle)} m.";
+            if (box == null) return summary;
+            Vector3 center = root.TransformPoint(box.center);
+            Vector3 half = Vector3.Scale(box.size * .5f, root.lossyScale);
+            foreach (Collider hit in Physics.OverlapBox(center + root.forward * .18f, half, root.rotation,
+                Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore))
+                if (hit != null && !hit.transform.IsChildOf(root))
+                    return summary + $" Candidate overlaps {hit.name} ({hit.GetType().Name}).";
+            foreach (RaycastHit hit in Physics.BoxCastAll(center, half, root.forward, root.rotation, .18f,
+                Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore))
+                if (hit.collider != null && !hit.collider.transform.IsChildOf(root))
+                    return summary + $" Forward cast hits {hit.collider.name} ({hit.collider.GetType().Name}).";
+            return summary + " The diagnostic body cast found no blocker.";
         }
 
         private static void PlaceBesideCar(Transform car, Transform player, CharacterController body, CityCameraRig camera)

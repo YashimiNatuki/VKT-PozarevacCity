@@ -11,6 +11,8 @@ namespace Pozarevac.CityGame
     {
         private CityTouchHold up, down, left, right, sprint;
         private CityTouchLook look;
+        private GameObject useButton, phoneButton;
+        private readonly List<GameObject> onFootControls = new List<GameObject>();
         private bool jump;
         private bool overlayBlocked;
         private GameObject overlay;
@@ -19,8 +21,10 @@ namespace Pozarevac.CityGame
         private Rect lastSafeArea;
         private int lastWidth, lastHeight;
         public bool IsVisible => overlay != null && overlay.activeInHierarchy;
-        public Vector2 MovementVector => !IsVisible ? Vector2.zero : Vector2.ClampMagnitude(new Vector2((right.Held ? 1 : 0) - (left.Held ? 1 : 0), (up.Held ? 1 : 0) - (down.Held ? 1 : 0)), 1f);
-        public bool Sprint => IsVisible && sprint.Held;
+        public bool DrivingMode { get; private set; }
+        public Vector2 MovementVector => !IsVisible ? Vector2.zero : new Vector2(
+            (right.Held ? 1 : 0) - (left.Held ? 1 : 0), (up.Held ? 1 : 0) - (down.Held ? 1 : 0));
+        public bool Sprint => IsVisible && !DrivingMode && sprint.Held;
         public void Initialize(Action interact, Action phone, Action next, Action retry, Action respawn)
         {
             if (overlay != null) return;
@@ -38,14 +42,16 @@ namespace Pozarevac.CityGame
             GameObject drag = new GameObject("Look", typeof(RectTransform), typeof(Image), typeof(CityTouchLook)); drag.transform.SetParent(safeArea, false);
             RectTransform area = drag.GetComponent<RectTransform>(); area.anchorMin = new Vector2(0.48f, 0.23f); area.anchorMax = new Vector2(0.98f, 0.90f); area.offsetMin = area.offsetMax = Vector2.zero;
             drag.GetComponent<Image>().color = new Color(0, 0, 0, 0.005f); look = drag.GetComponent<CityTouchLook>();
+            onFootControls.Add(drag);
             up = Hold("↑", new Vector2(0, 0), new Vector2(145, 230));
             down = Hold("↓", new Vector2(0, 0), new Vector2(145, 70));
             left = Hold("←", new Vector2(0, 0), new Vector2(60, 150));
             right = Hold("→", new Vector2(0, 0), new Vector2(230, 150));
             sprint = Hold("TRČI", new Vector2(1, 0), new Vector2(-250, 70));
+            onFootControls.Add(sprint.gameObject);
             Click("SKOK", new Vector2(1, 0), new Vector2(-145, 70), () => jump = true);
-            Click("KORISTI", new Vector2(1, 0), new Vector2(-60, 160), interact);
-            Click("TELEFON", new Vector2(.5f, 1), new Vector2(-165, -35), phone);
+            useButton = Click("KORISTI", new Vector2(1, 0), new Vector2(-60, 160), interact, false);
+            phoneButton = Click("TELEFON", new Vector2(.5f, 1), new Vector2(-165, -35), phone, false);
             Click("SLEDEĆE", new Vector2(.5f, 1), new Vector2(-55, -35), next);
             Click("PONOVI", new Vector2(.5f, 1), new Vector2(55, -35), retry);
             Click("BOLNICA", new Vector2(.5f, 1), new Vector2(165, -35), respawn);
@@ -70,9 +76,47 @@ namespace Pozarevac.CityGame
             return obj;
         }
         private CityTouchHold Hold(string title, Vector2 anchor, Vector2 at) => MakeButton(title, anchor, at).AddComponent<CityTouchHold>();
-        private void Click(string title, Vector2 anchor, Vector2 at, Action action)
+        private GameObject Click(string title, Vector2 anchor, Vector2 at, Action action, bool onFootOnly = true)
         {
-            Button button = MakeButton(title, anchor, at).AddComponent<Button>(); button.onClick.AddListener(() => action?.Invoke());
+            GameObject obj = MakeButton(title, anchor, at);
+            Button button = obj.AddComponent<Button>();
+            button.onClick.AddListener(() => { if (!onFootOnly || !DrivingMode) action?.Invoke(); });
+            if (onFootOnly)
+            {
+                onFootControls.Add(obj);
+                obj.SetActive(!DrivingMode);
+            }
+            return obj;
+        }
+
+        public void SetDrivingMode(bool active)
+        {
+            if (overlay == null || DrivingMode == active) return;
+            DrivingMode = active;
+            ResetInput();
+            foreach (GameObject control in onFootControls)
+                control.SetActive(!active);
+
+            LayoutDriveButton(left.gameObject, "←\nLEVO", "←", Vector2.zero, new Vector2(72, 106), Vector2.zero, new Vector2(60, 150));
+            LayoutDriveButton(right.gameObject, "→\nDESNO", "→", Vector2.zero, new Vector2(191, 106), Vector2.zero, new Vector2(230, 150));
+            LayoutDriveButton(up.gameObject, "↑  GAS", "↑", Vector2.right, new Vector2(-72, 214), Vector2.zero, new Vector2(145, 230));
+            LayoutDriveButton(down.gameObject, "↓  RIKVERC", "↓", Vector2.right, new Vector2(-72, 106), Vector2.zero, new Vector2(145, 70));
+            LayoutDriveButton(useButton, "IZAĐI", "KORISTI", Vector2.right, new Vector2(-191, 106), Vector2.right, new Vector2(-60, 160));
+            phoneButton.GetComponent<RectTransform>().anchoredPosition = new Vector2(active ? 0 : -165, -35);
+        }
+
+        private void LayoutDriveButton(GameObject button, string drivingText, string walkingText,
+            Vector2 drivingAnchor, Vector2 drivingPosition, Vector2 walkingAnchor, Vector2 walkingPosition)
+        {
+            RectTransform rect = button.GetComponent<RectTransform>();
+            rect.anchorMin = rect.anchorMax = DrivingMode ? drivingAnchor : walkingAnchor;
+            rect.anchoredPosition = DrivingMode ? drivingPosition : walkingPosition;
+            rect.sizeDelta = DrivingMode ? new Vector2(106, 88) : new Vector2(86, 72);
+            Text label = button.GetComponentInChildren<Text>(true);
+            label.text = DrivingMode ? drivingText : walkingText;
+            button.GetComponent<Image>().color = DrivingMode
+                ? new Color(.035f, .17f, .22f, .96f)
+                : new Color(.035f, .095f, .12f, .72f);
         }
         public Vector2 ConsumeLook() => IsVisible && look != null ? look.Consume() : Vector2.zero;
         public bool ConsumeJump() { bool value = IsVisible && jump; jump = false; return value; }

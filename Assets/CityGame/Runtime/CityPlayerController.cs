@@ -71,13 +71,13 @@ namespace Pozarevac.CityGame
                 (keyboard.dKey.isPressed ? 1f : 0f) - (keyboard.aKey.isPressed ? 1f : 0f),
                 (keyboard.wKey.isPressed ? 1f : 0f) - (keyboard.sKey.isPressed ? 1f : 0f)) : Vector2.zero;
             if (touchActive) moveInput += touch.MovementVector;
-            moveInput = Vector2.ClampMagnitude(moveInput, 1f);
             if (Vehicle != null)
             {
                 if (touchActive) { touch.ConsumeLook(); touch.ConsumeJump(); }
                 Vehicle.Drive(moveInput, Time.deltaTime);
                 return;
             }
+            moveInput = Vector2.ClampMagnitude(moveInput, 1f);
             Vector2 look = touchActive ? touch.ConsumeLook() * 0.15f : Vector2.zero;
             if (desktopInput && Mouse.current != null) look += Mouse.current.delta.ReadValue() * mouseSensitivity;
             pitch = Mathf.Clamp(pitch - look.y, -82f, 82f);
